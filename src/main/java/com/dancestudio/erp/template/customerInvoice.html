@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<style type="text/css">
+    .footer {
+        position: fixed;
+        text-align: center;
+        bottom: 0px;
+        width: 100%;
+    }
+
+    #abc {
+        border-collapse: collapse;
+    }
+
+    #abc th, #abc td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    .contact-info {
+        position: fixed;
+        bottom: 20px; /* Adjust this value as needed */
+        left: 20px; /* Adjust this value as needed */
+        font-size: 10px;
+    }
+
+</style>
+<body style='font-family:arial,sans-serif; background-color: #D3D3D3;' width='100%' >
+<table width='100%' style="border-collapse: collapse" >
+    <tr>
+        <td width='7%' style='font-size:16px' align='left'>
+            <b><img src="https://myntrascmuistatic.myntassets.com/unity-sso-assets/myntra-logo.png" width="80px" height="70px" alt="SB" align="left"></img></b>
+        </td>
+        <td align='left' width='8%' valign='top' style="padding-left: 6px;"></td>
+        <td align='right' width='8%' valign='top'>
+            <table width='100%'>
+                <tr>
+                    <p style='font-size:9px; margin-bottom: 5px'>Invoice Date : ${data.invoiceDate}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <p style='font-size:9px; margin-bottom: 5px'>Invoice Status : CLOSED</p>
+                    </td>
+                </tr>
+                <tr>
+                    <p style='font-size:9px; margin-bottom: 5px'>Currency Code : INR</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr style="border : 1px solid black">
+        <td colspan="14" style="border-top-color:#000000;border-top-width:1px;border-top-style:solid; 1px solid black;"></td>
+    </tr>
+    <tr>
+        <td width="30%" style="border-top:1px solid gray; padding-left: 6px;">
+            <br />
+            <b style='font-size:10px'>INVOICE TO:</b><br /><br />
+            <label style='font-size:9px'>$data.customerName</label><br />
+            <label style='font-size:9px'>$data.customerAddress</label><br />
+            <label style='font-size:9px'>$data.customerCityPincode</label><br />
+            <label style='font-size:9px'>$data.customerState</label>
+        </td>
+        <td width="30%" style="border-top:1px solid gray; padding-left: 6px;"></td>
+        <td style="border-top:1px solid gray">
+            <br />
+            <b style=' font-size:10px'>INVOICE FROM :</b><br /><br />
+            <label style='font-size:9px'>$data.sellerName</label><br />
+            <label style='font-size:9px'>$data.sellerAddress</label><br />
+            <label style='font-size:9px'>$data.sellerCityPincode</label><br />
+            <label style='font-size:9px'>$data.sellerState</label>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-left: 6px;">
+            <label style='font-size:9px'>GSTIN: $data.customerGSTIN</label>
+        </td>
+        <td style="padding-left: 6px;"></td>
+        <td>
+            <label style=' font-size:9px'>GSTIN: $data.sellerGSTIN</label>
+        </td>
+    </tr>
+    <tr style="border : 1px solid black">
+        <td colspan="14" style="border-top-color:#000000;border-top-width:1px;border-top-style:solid; 1px solid black;"></td>
+    </tr>
+
+</table>
+<br style="background-color: #D3D3D3;" />
+<br style="background-color: #D3D3D3;" />
+<table id="abc" width='100%' align="center" style='margin-left: 5px; margin-right: 5px; font-size:6; border : 1px solid black;'>
+    <tr>
+        <th style='font-size:7;background-color:#A9A9A9' align='center'>S. No </th>
+        <th style='font-size:7;background-color:#A9A9A9' align='center'>Product Name</th>
+        <th style='font-size:7;background-color:#A9A9A9' align='center'>Qty</th>
+        <th style='font-size:7;background-color:#A9A9A9' align='center'>Rate</th>
+        <th style='font-size:7;background-color:#A9A9A9' align='center'>Total Amount</th>
+    </tr>
+
+    #set ($totalValue = 0.0)
+    #set ($sno = 0)
+
+    #foreach($documentEntry in $data.documentEntries)
+
+    #set ($sno = $sno + 1)
+    #set ($amount = 0.0)
+    <tr style='border : 1px solid black'>
+        <td align='center' style='font-size:7' width='3%' >$sno <br/> </td>
+        <td align='center' style='font-size:7' width='13%' >$documentEntry.productName <br/> </td>
+        <td align='center' style='font-size:7' width='13%'>$documentEntry.quantity</td>
+        <td align='center' style='font-size:7' width='13%'>$documentEntry.rate</td>
+        <td align='center' style='font-size:7' width='8%'>
+            #set ($amount = $rate * $documentEntry.quantity)
+            #set ($totalValue = $totalValue + $amount)
+            $amount
+        </td>
+    </tr>
+    #end
+    <tr style='border : 1px solid black'>
+        <td align='center' style='font-size:7' width='3%' ><br/> </td>
+        <td align='center' style='font-size:7' width='13%' ><br/> </td>
+        <td align='center' style='font-size:7' width='13%'></td>
+        <td align='center' style='font-size:7' width='13%'></td>
+        <td align='center' style='font-size:7' width='8%'>$totalValue</td>
+    </tr>
+</table>
+
+<div class="contact-info" style='align: left'>
+    <p><h2>Contact Us:</h2></p>
+    <p>Phone: +91-7002012514 / +91-9101273554</p>
+    <p>Email: mukundagarwala156@gmail.com</p>
+</div>
+</body>
+</html>
