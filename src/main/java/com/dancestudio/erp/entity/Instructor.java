@@ -1,6 +1,7 @@
 package com.dancestudio.erp.entity;
 
 
+import com.dancestudio.erp.enums.MembershipStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,7 +15,8 @@ public class Instructor extends BaseEntity {
     private String name;
     private String email;
     private String phone;
-    private String profileDetails;
+    private String profileImage;
+    private MembershipStatus status;
 
     @OneToOne(mappedBy = "instructor", cascade = CascadeType.ALL, optional = true)
     private BankAccount bankAccount;

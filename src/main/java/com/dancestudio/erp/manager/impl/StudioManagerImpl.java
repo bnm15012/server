@@ -1,15 +1,14 @@
 package com.dancestudio.erp.manager.impl;
 
-import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entity.Studio;
-import com.dancestudio.erp.repository.StudioRepository;
+import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.manager.StudioManager;
+import com.dancestudio.erp.repository.StudioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StudioManagerImpl implements StudioManager {
@@ -50,7 +49,7 @@ public class StudioManagerImpl implements StudioManager {
 
     @Override
     public List<StudioEntry> getAllStudios() {
-        List<Studio> entries = studioRepository.findAll().stream().collect(Collectors.toList());
+        List<Studio> entries = studioRepository.findAll().stream().toList();
 
         List<StudioEntry> studioEntries = new ArrayList<>();
         for (Studio entry : entries) {
@@ -75,8 +74,8 @@ public class StudioManagerImpl implements StudioManager {
     public Studio convertToEntity(StudioEntry studioEntry) {
 
         Studio studio = new Studio();
-        studio.setId(studioEntry.getStudioId());
         studio.setStudioName(studioEntry.getStudioName());
+        studio.setLogo(studioEntry.getLogo());
         studio.setLocation(studioEntry.getLocation());
         studio.setContactDetails(studioEntry.getContactDetails());
 

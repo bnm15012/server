@@ -4,9 +4,13 @@ import com.dancestudio.erp.enums.MembershipStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
 @Entity
 public class StudentActivityRegistration extends BaseEntity {
 

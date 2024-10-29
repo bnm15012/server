@@ -14,7 +14,7 @@ public interface StudentManager {
 
     StudentEntry getStudentById(Long studentId);
 
-    List<StudentEntry> getAllStudents();
+    List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId);
 
     void resendEmail(Long studentId);
 

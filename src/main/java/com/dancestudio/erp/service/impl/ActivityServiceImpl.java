@@ -59,10 +59,10 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ActivityResponse getAllActivities() {
+    public ActivityResponse getAllActivities(Long studioId) {
         ActivityResponse response = new ActivityResponse();
 
-        List<ActivityEntry> entry = activityManager.getAllActivities();
+        List<ActivityEntry> entry = activityManager.getAllActivities(studioId);
         response.setData(entry);
         response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : entry.size()));
 

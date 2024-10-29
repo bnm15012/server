@@ -13,29 +13,29 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    @PostMapping
+    @PostMapping("/add")
     public StudentResponse addStudent(@RequestBody StudentEntry studentEntry) {
         return studentService.addStudent(studentEntry);
     }
 
-    @PutMapping("/{studentId}")
+    @PutMapping("/update/{studentId}")
     public StudentResponse updateStudent(@PathVariable Long studentId, @RequestBody StudentEntry studentEntry) {
         return studentService.updateStudent(studentId, studentEntry);
     }
 
-    @DeleteMapping("/{studentId}")
+    @DeleteMapping("/delete/{studentId}")
     public void deleteStudent(@PathVariable Long studentId) {
         studentService.deleteStudent(studentId);
     }
 
-    @GetMapping("/{studentId}")
+    @GetMapping("/get/{studentId}")
     public StudentResponse getStudentById(@PathVariable Long studentId) {
         return studentService.getStudentById(studentId);
     }
 
-    @GetMapping
-    public StudentResponse getAllStudents() {
-        return studentService.getAllStudents();
+    @GetMapping("/getAllStudents/{studioId}")
+    public StudentResponse getAllStudents(@PathVariable Long studioId, @RequestParam(required = false) Long activityId) {
+        return studentService.getAllStudents(studioId, activityId);
     }
 
     @PostMapping("/{studentId}/resendEmail")

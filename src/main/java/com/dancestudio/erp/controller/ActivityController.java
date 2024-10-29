@@ -13,28 +13,28 @@ public class ActivityController {
     @Autowired
     private ActivityService activityService;
 
-    @PostMapping
+    @PostMapping("/add")
     public ActivityResponse addActivity(@RequestBody ActivityEntry activityEntry) {
         return activityService.addActivity(activityEntry);
     }
 
-    @PutMapping("/{activityId}")
+    @PutMapping("/update/{activityId}")
     public ActivityResponse updateActivity(@PathVariable Long activityId, @RequestBody ActivityEntry activityEntry) {
         return activityService.updateActivity(activityId, activityEntry);
     }
 
-    @DeleteMapping("/{activityId}")
+    @DeleteMapping("/delete/{activityId}")
     public void deleteActivity(@PathVariable Long activityId) {
         activityService.deleteActivity(activityId);
     }
 
-    @GetMapping("/{activityId}")
+    @GetMapping("/get/{activityId}")
     public ActivityResponse getActivityById(@PathVariable Long activityId) {
         return activityService.getActivityById(activityId);
     }
 
-    @GetMapping
-    public ActivityResponse getAllActivities() {
-        return activityService.getAllActivities();
+    @GetMapping("/getAllActivities/{studioId}")
+    public ActivityResponse getAllActivities(@PathVariable Long studioId) {
+        return activityService.getAllActivities(studioId);
     }
 }

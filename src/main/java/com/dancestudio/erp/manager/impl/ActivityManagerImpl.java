@@ -1,17 +1,16 @@
 package com.dancestudio.erp.manager.impl;
 
 
+import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.ActivityEntry;
-import com.dancestudio.erp.entity.Activity;
-import com.dancestudio.erp.repository.ActivityRepository;
 import com.dancestudio.erp.manager.ActivityManager;
+import com.dancestudio.erp.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ActivityManagerImpl implements ActivityManager {
@@ -50,8 +49,8 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     @Override
-    public List<ActivityEntry> getAllActivities() {
-        List<Activity> entries = activityRepository.findAll().stream().collect(Collectors.toList());
+    public List<ActivityEntry> getAllActivities(Long studioId) {
+        List<Activity> entries = activityRepository.findAllByStudioId(studioId);
 
         List<ActivityEntry> activityEntries = new ArrayList<>();
         for (Activity entry : entries) {

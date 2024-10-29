@@ -1,41 +1,46 @@
 package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.PaymentEntry;
-import com.dancestudio.erp.manager.PaymentManager;
+import com.dancestudio.erp.enums.PaymentStatus;
+import com.dancestudio.erp.response.PaymentResponse;
+import com.dancestudio.erp.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/payments")
 public class PaymentController {
 
     @Autowired
-    private PaymentManager paymentService;
+    private PaymentService paymentService;
 
-    @PostMapping
-    public PaymentEntry addPayment(@RequestBody PaymentEntry paymentEntry) {
+    @PostMapping("/add")
+    public PaymentResponse addPayment(@RequestBody PaymentEntry paymentEntry) {
         return paymentService.addPayment(paymentEntry);
     }
 
-    @PutMapping("/{paymentId}")
-    public PaymentEntry updatePayment(@PathVariable Long paymentId, @RequestBody PaymentEntry paymentEntry) {
+    @PutMapping("/update/{paymentId}")
+    public PaymentResponse updatePayment(@PathVariable Long paymentId, @RequestBody PaymentEntry paymentEntry) {
         return paymentService.updatePayment(paymentId, paymentEntry);
     }
 
-    @DeleteMapping("/{paymentId}")
+    @PutMapping("/updateStatus/{paymentId}")
+    public PaymentResponse updatePaymentStatus(@PathVariable Long paymentId, @PathVariable PaymentStatus status) {
+        return paymentService.updatePaymentStatus(paymentId, status);
+    }
+
+    @DeleteMapping("/delete/{paymentId}")
     public void deletePayment(@PathVariable Long paymentId) {
         paymentService.deletePayment(paymentId);
     }
 
-    @GetMapping("/{paymentId}")
-    public PaymentEntry getPaymentById(@PathVariable Long paymentId) {
+    @GetMapping("/get/{paymentId}")
+    public PaymentResponse getPaymentById(@PathVariable Long paymentId) {
         return paymentService.getPaymentById(paymentId);
     }
 
-    @GetMapping
-    public List<PaymentEntry> getAllPayments() {
-        return paymentService.getAllPayments();
+    @GetMapping("/getAllPayments/{studioId}")
+    public PaymentResponse getAllPayments(@PathVariable Long studioId) {
+        return paymentService.getAllPayments(studioId);
     }
 }

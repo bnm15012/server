@@ -13,4 +13,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT new com.dancestudio.erp.entry.ReportEntry(MONTH(p.paymentDate), SUM(p.amount)) FROM Payment p WHERE YEAR(p.paymentDate) = :year GROUP BY MONTH(p.paymentDate) ORDER BY MONTH(p.paymentDate)")
     List<ReportEntry> calculateTotalIncomeByYear(@Param("year") int year);
 
+    @Query("SELECT s FROM Payment s WHERE s.studio.id = :studioId")
+    List<Payment> findAllByStudioId(@Param("studioId") Long studioId);
 }

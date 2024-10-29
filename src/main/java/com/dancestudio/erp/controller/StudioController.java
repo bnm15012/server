@@ -13,27 +13,27 @@ public class StudioController {
     @Autowired
     private StudioService studioService;
 
-    @PostMapping
+    @PostMapping("/add")
     public StudioResponse addStudio(@RequestBody StudioEntry studioEntry) {
         return studioService.addStudio(studioEntry);
     }
 
-    @PutMapping("/{studioId}")
+    @PutMapping("/update/{studioId}")
     public StudioResponse updateStudio(@PathVariable Long studioId, @RequestBody StudioEntry studioEntry) {
         return studioService.updateStudio(studioId, studioEntry);
     }
 
-    @DeleteMapping("/{studioId}")
+    @DeleteMapping("/delete/{studioId}")
     public void deleteStudio(@PathVariable Long studioId) {
         studioService.deleteStudio(studioId);
     }
 
-    @GetMapping("/{studioId}")
+    @GetMapping("/get/{studioId}")
     public StudioResponse getStudioById(@PathVariable Long studioId) {
         return studioService.getStudioById(studioId);
     }
 
-    @GetMapping
+    @GetMapping("/getAllStudios")
     public StudioResponse getAllStudios() {
         return studioService.getAllStudios();
     }

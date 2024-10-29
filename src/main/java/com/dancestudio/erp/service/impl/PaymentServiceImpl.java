@@ -2,6 +2,7 @@ package com.dancestudio.erp.service.impl;
 
 
 import com.dancestudio.erp.entry.PaymentEntry;
+import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.response.PaymentResponse;
 import com.dancestudio.erp.response.StatusResponse;
@@ -33,7 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentResponse updatePaymentStatus(Long paymentId, String status) {
+    public PaymentResponse updatePaymentStatus(Long paymentId, PaymentStatus status) {
         PaymentResponse response = new PaymentResponse();
 
         PaymentEntry entry = paymentManager.updatePaymentStatus(paymentId, status);
@@ -71,10 +72,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentResponse getAllPayments() {
+    public PaymentResponse getAllPayments(Long studioId) {
         PaymentResponse response = new PaymentResponse();
 
-        List<PaymentEntry> entry = paymentManager.getAllPayments();
+        List<PaymentEntry> entry = paymentManager.getAllPaymentsByStudio(studioId);
         response.setData(entry);
         response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : entry.size()));
 

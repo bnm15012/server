@@ -15,6 +15,8 @@ public class Studio extends BaseEntity {
 
     private String location;
 
+    private String logo;
+
     private String contactDetails;
 
     @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL)

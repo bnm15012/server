@@ -13,7 +13,7 @@ public interface StudentService {
 
     StudentResponse getStudentById(Long studentId);
 
-    StudentResponse getAllStudents();
+    StudentResponse getAllStudents(Long studioId, Long activityId);
 
     void resendEmail(Long studentId);
 }

@@ -13,5 +13,5 @@ public interface InstructorService {
 
     InstructorResponse getInstructorById(Long instructorId);
 
-    InstructorResponse getAllInstructors();
+    InstructorResponse getAllInstructors(Long studioId);
 }

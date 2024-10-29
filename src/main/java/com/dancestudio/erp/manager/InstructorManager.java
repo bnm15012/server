@@ -14,5 +14,5 @@ public interface InstructorManager {
 
     InstructorEntry getInstructorById(Long instructorId);
 
-    List<InstructorEntry> getAllInstructors();
+    List<InstructorEntry> getAllInstructorsByStudio(Long studioId);
 }

@@ -1,18 +1,17 @@
 package com.dancestudio.erp.manager.impl;
 
 
-import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entity.Payment;
+import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.ReportEntry;
 import com.dancestudio.erp.enums.PaymentStatus;
-import com.dancestudio.erp.repository.PaymentRepository;
 import com.dancestudio.erp.manager.PaymentManager;
+import com.dancestudio.erp.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PaymentManagerImpl implements PaymentManager {
@@ -31,11 +30,11 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public PaymentEntry updatePaymentStatus(Long paymentId, String status) {
+    public PaymentEntry updatePaymentStatus(Long paymentId, PaymentStatus status) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
-        payment.setStatus(PaymentStatus.valueOf(status));
+        payment.setStatus(status);
         return convertToEntry(paymentRepository.save(payment));
     }
 
@@ -61,8 +60,8 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public List<PaymentEntry> getAllPayments() {
-        List<Payment> entries = paymentRepository.findAll().stream().collect(Collectors.toList());
+    public List<PaymentEntry> getAllPaymentsByStudio(Long studioId) {
+        List<Payment> entries = paymentRepository.findAllByStudioId(studioId);
 
         List<PaymentEntry> paymentEntries = new ArrayList<>();
         for (Payment entry : entries) {

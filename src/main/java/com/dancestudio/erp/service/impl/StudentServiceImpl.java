@@ -58,10 +58,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse getAllStudents() {
+    public StudentResponse getAllStudents(Long studioId, Long activityId) {
         StudentResponse response = new StudentResponse();
 
-        List<StudentEntry> entry = studentManager.getAllStudents();
+        List<StudentEntry> entry = studentManager.getAllStudentsByStudio(studioId, activityId);
         response.setData(entry);
         response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
 

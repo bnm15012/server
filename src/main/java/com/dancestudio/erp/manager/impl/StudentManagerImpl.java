@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StudentManagerImpl implements StudentManager {
@@ -39,7 +38,6 @@ public class StudentManagerImpl implements StudentManager {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        sendEmail(student);
         Student newStudentEntry = convertToEntity(studentEntry);
         return convertToEntry(studentRepository.save(newStudentEntry));
     }
@@ -58,8 +56,8 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public List<StudentEntry> getAllStudents() {
-        List<Student> entries = studentRepository.findAll().stream().collect(Collectors.toList());
+    public List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId) {
+        List<Student> entries = studentRepository.findAllByStudioIdAndOptionalActivityId(studioId, activityId);
 
         List<StudentEntry> studentEntries = new ArrayList<>();
         for (Student entry : entries) {

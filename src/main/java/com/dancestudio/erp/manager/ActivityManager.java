@@ -14,5 +14,5 @@ public interface ActivityManager {
 
     ActivityEntry getActivityById(Long activityId);
 
-    List<ActivityEntry> getAllActivities();
+    List<ActivityEntry> getAllActivities(Long studioId);
 }

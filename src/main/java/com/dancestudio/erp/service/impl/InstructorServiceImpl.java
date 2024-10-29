@@ -59,10 +59,10 @@ public class InstructorServiceImpl implements InstructorService {
     }
 
     @Override
-    public InstructorResponse getAllInstructors() {
+    public InstructorResponse getAllInstructors(Long studioId) {
         InstructorResponse response = new InstructorResponse();
 
-        List<InstructorEntry> entry = instructorManager.getAllInstructors();
+        List<InstructorEntry> entry = instructorManager.getAllInstructorsByStudio(studioId);
         response.setData(entry);
         response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : entry.size()));
 

@@ -13,5 +13,5 @@ public interface ActivityService {
 
     ActivityResponse getActivityById(Long activityId);
 
-    ActivityResponse getAllActivities();
+    ActivityResponse getAllActivities(Long studioId);
 }

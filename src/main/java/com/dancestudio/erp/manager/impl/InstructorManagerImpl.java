@@ -1,8 +1,11 @@
 package com.dancestudio.erp.manager.impl;
 
 
+import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entity.BankAccount;
 import com.dancestudio.erp.entity.Instructor;
+import com.dancestudio.erp.entry.ActivityEntry;
+import com.dancestudio.erp.entry.InstructorActivityAssignmentEntry;
 import com.dancestudio.erp.entry.InstructorEntry;
 import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.manager.InstructorManager;
@@ -60,8 +63,8 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public List<InstructorEntry> getAllInstructors() {
-        List<Instructor> entries = instructorRepository.findAll().stream().collect(Collectors.toList());
+    public List<InstructorEntry> getAllInstructorsByStudio(Long studioId) {
+        List<Instructor> entries = instructorRepository.findAllByStudioId(studioId);
 
         List<InstructorEntry> instructorEntries = new ArrayList<>();
         for (Instructor entry : entries) {
@@ -73,14 +76,37 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     private InstructorEntry convertToEntry(Instructor instructor) {
-
         InstructorEntry instructorEntry = new InstructorEntry();
         instructorEntry.setName(instructor.getName());
         instructorEntry.setEmail(instructor.getEmail());
         instructorEntry.setPhone(instructor.getPhone());
-        instructorEntry.setStudioId(instructor.getStudio().getId());
-        instructorEntry.setProfileDetails(instructor.getProfileDetails());
 
+        // Handle optional Studio
+        if (instructor.getStudio() != null) {
+            instructorEntry.setStudioId(instructor.getStudio().getId());
+        }
+
+        instructorEntry.setInstructorStatus(instructor.getStatus());
+
+        // Convert InstructorActivityAssignment to InstructorActivityAssignmentEntry
+        List<InstructorActivityAssignmentEntry> assignmentEntries = instructor.getAssignments().stream()
+                .map(assignment -> {
+                    InstructorActivityAssignmentEntry assignmentEntry = new InstructorActivityAssignmentEntry();
+                    assignmentEntry.setAssignmentId(assignment.getId());
+                    assignmentEntry.setAssignedDate(assignment.getAssignedDate());
+
+                    // Convert Activity to ActivityEntry
+                    Activity activity = assignment.getActivity();
+                    ActivityEntry activityEntry = new ActivityEntry();
+                    activityEntry.setActivityId(activity.getId());
+                    activityEntry.setActivityType(activity.getActivityType());
+                    activityEntry.setDescription(activity.getDescription());
+
+                    assignmentEntry.setActivity(activityEntry);
+                    return assignmentEntry;
+                }).collect(Collectors.toList());
+
+        instructorEntry.setAssignments(assignmentEntries);
         return instructorEntry;
     }
 
@@ -91,7 +117,8 @@ public class InstructorManagerImpl implements InstructorManager {
         instructor.setName(instructorEntry.getName());
         instructor.setEmail(instructorEntry.getEmail());
         instructor.setPhone(instructorEntry.getPhone());
-        instructor.setProfileDetails(instructorEntry.getProfileDetails());
+        instructor.setProfileImage(instructorEntry.getProfileImage());
+        instructor.setStatus(instructorEntry.getInstructorStatus());
 
         if (instructorEntry.getBankAccountDetails() != null) {
             BankAccount bankAccount = new BankAccount();

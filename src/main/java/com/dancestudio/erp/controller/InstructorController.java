@@ -13,28 +13,28 @@ public class InstructorController {
     @Autowired
     private InstructorService instructorService;
 
-    @PostMapping
+    @PostMapping("/add")
     public InstructorResponse addInstructor(@RequestBody InstructorEntry instructorEntry) {
         return instructorService.addInstructor(instructorEntry);
     }
 
-    @PutMapping("/{instructorId}")
+    @PutMapping("/update/{instructorId}")
     public InstructorResponse updateInstructor(@PathVariable Long instructorId, @RequestBody InstructorEntry instructorEntry) {
         return instructorService.updateInstructor(instructorId, instructorEntry);
     }
 
-    @DeleteMapping("/{instructorId}")
+    @DeleteMapping("/delete/{instructorId}")
     public void deleteInstructor(@PathVariable Long instructorId) {
         instructorService.deleteInstructor(instructorId);
     }
 
-    @GetMapping("/{instructorId}")
+    @GetMapping("/get/{instructorId}")
     public InstructorResponse getInstructorById(@PathVariable Long instructorId) {
         return instructorService.getInstructorById(instructorId);
     }
 
-    @GetMapping
-    public InstructorResponse getAllInstructors() {
-        return instructorService.getAllInstructors();
+    @GetMapping("/getAllInstructors/{studioId")
+    public InstructorResponse getAllInstructors(@PathVariable Long studioId) {
+        return instructorService.getAllInstructors(studioId);
     }
 }
