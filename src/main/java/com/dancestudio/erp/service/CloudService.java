@@ -1,6 +1,6 @@
 package com.dancestudio.erp.service;
 
-public interface CloudStorage {
+public interface CloudService {
 
 //    public String write(FileEntry fileEntry, String baseFolder) throws AzureBlobStorageException;
 //

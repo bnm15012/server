@@ -88,6 +88,9 @@ public class StudentManagerImpl implements StudentManager {
         sendEmail(student);
     }
 
+    public Boolean checkIfStudentExistsinStudio(Long studioId) {
+        return studentRepository.studentsExistsByStudioId(studioId);
+    }
 
     private StudentEntry convertToEntry(Student student) {
 
@@ -97,7 +100,7 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setPhone(student.getPhone());
         studentEntry.setProfileDetails(student.getProfileDetails());
         studentEntry.setRegistrationDate(student.getRegistrationDate());
-        studentEntry.setMembershipStatus(student.getMembershipStatus());
+        studentEntry.setMembershipStatus(student.getStatus());
         studentEntry.setStudioId(student.getStudio().getId());
 
         return studentEntry;
@@ -112,7 +115,7 @@ public class StudentManagerImpl implements StudentManager {
         student.setPhone(studentEntry.getPhone());
         student.setProfileDetails(studentEntry.getProfileDetails());
         student.setRegistrationDate(studentEntry.getRegistrationDate());
-        student.setMembershipStatus(studentEntry.getMembershipStatus());
+        student.setStatus(studentEntry.getMembershipStatus());
 
         return student;
     }

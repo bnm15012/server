@@ -5,6 +5,7 @@ import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.StudioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,7 +13,11 @@ import java.util.List;
 
 @Service
 public class StudioManagerImpl implements StudioManager {
+
     private final StudioRepository studioRepository;
+
+    @Autowired
+    private StudentManagerImpl studentManager;
 
     @Autowired
     public StudioManagerImpl(StudioRepository studioRepository) {
@@ -35,8 +40,16 @@ public class StudioManagerImpl implements StudioManager {
     }
 
     @Override
-    public void deleteStudio(Long studioId) {
-        studioRepository.deleteById(studioId);
+    public Boolean deleteStudio(Long studioId) {
+        try {
+            if (studentManager.checkIfStudentExistsinStudio(studioId)) {
+                throw new RuntimeException("Cannot delete studio: it has students enrolled.");
+            }
+            studioRepository.deleteById(studioId);
+            return Boolean.TRUE;
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Cannot delete studio: it has students enrolled.", e);
+        }
     }
 
     @Override
@@ -64,7 +77,7 @@ public class StudioManagerImpl implements StudioManager {
 
         StudioEntry studioEntry = new StudioEntry();
         studioEntry.setStudioId(studio.getId());
-        studioEntry.setStudioName(studio.getStudioName());
+        studioEntry.setStudioName(studio.getName());
         studioEntry.setLocation(studio.getLocation());
         studioEntry.setContactDetails(studio.getContactDetails());
 
@@ -74,7 +87,7 @@ public class StudioManagerImpl implements StudioManager {
     public Studio convertToEntity(StudioEntry studioEntry) {
 
         Studio studio = new Studio();
-        studio.setStudioName(studioEntry.getStudioName());
+        studio.setName(studioEntry.getStudioName());
         studio.setLogo(studioEntry.getLogo());
         studio.setLocation(studioEntry.getLocation());
         studio.setContactDetails(studioEntry.getContactDetails());

@@ -126,7 +126,7 @@ public class InstructorManagerImpl implements InstructorManager {
             bankAccount.setBankName(instructorEntry.getBankAccountDetails().getBankName());
             bankAccount.setBranchName(instructorEntry.getBankAccountDetails().getBranchName());
             bankAccount.setIfscCode(instructorEntry.getBankAccountDetails().getIfscCode());
-
+            bankAccount.setUpiId(instructorEntry.getBankAccountDetails().getUpiId());
             instructor.setBankAccount(bankAccount);
             bankAccount.setInstructor(instructor);
         }

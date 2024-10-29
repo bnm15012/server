@@ -1,13 +1,9 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.manager.CloudStorage;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
-@Setter
 public class CloudStorageImpl implements CloudStorage {
 
 //    private static final String BASE_FOLDER_NAME = "invoicing";

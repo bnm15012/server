@@ -24,8 +24,8 @@ public class StudioController {
     }
 
     @DeleteMapping("/delete/{studioId}")
-    public void deleteStudio(@PathVariable Long studioId) {
-        studioService.deleteStudio(studioId);
+    public StudioResponse deleteStudio(@PathVariable Long studioId) {
+        return studioService.deleteStudio(studioId);
     }
 
     @GetMapping("/get/{studioId}")

@@ -9,7 +9,7 @@ public interface StudioManager {
 
     StudioEntry updateStudio(Long studioId, StudioEntry studioEntry);
 
-    void deleteStudio(Long studioId);
+    Boolean deleteStudio(Long studioId);
 
     StudioEntry getStudioById(Long studioId);
 

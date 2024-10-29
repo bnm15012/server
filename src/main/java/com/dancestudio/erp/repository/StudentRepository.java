@@ -14,4 +14,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     List<Student> findAllByStudioIdAndOptionalActivityId(@Param("studioId") Long studioId,
                                                          @Param("activityId") Long activityId);
 
+    @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.studio.id = :studioId")
+    boolean studentsExistsByStudioId(@Param("studioId") Long studioId);
 }

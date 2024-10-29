@@ -1,6 +1,6 @@
 package com.dancestudio.erp.service.impl;
 
-import com.dancestudio.erp.service.CloudStorage;
+import com.dancestudio.erp.service.CloudService;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @Setter
-public class CloudStorageImpl implements CloudStorage {
+public class CloudServiceImpl implements CloudService {
 
 //    private static final String BASE_FOLDER_NAME = "invoicing";
 //    private static final String SEPARATOR = "/";

@@ -12,10 +12,20 @@ import java.util.List;
 @Entity
 @Data
 public class Instructor extends BaseEntity {
+
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "email", nullable = false)
     private String email;
+
+    @Column(name = "phone", nullable = false, length = 10)
     private String phone;
+
     private String profileImage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private MembershipStatus status;
 
     @OneToOne(mappedBy = "instructor", cascade = CascadeType.ALL, optional = true)

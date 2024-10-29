@@ -22,12 +22,12 @@ public abstract class BaseEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
-    @Column(name = "created_on", nullable = false, insertable = true, updatable = true)
+    @Column(name = "created_on", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdOn;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
-    @Column(name = "last_modified_on", nullable = false, insertable = true, updatable = true)
+    @Column(name = "last_modified_on", nullable = false, insertable = true, updatable = true, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date lastModifiedOn;
 
     @Version

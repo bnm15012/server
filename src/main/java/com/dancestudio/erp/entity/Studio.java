@@ -11,12 +11,13 @@ import java.util.List;
 @Data
 public class Studio extends BaseEntity {
 
-    private String studioName;
+    private String name;
 
     private String location;
 
     private String logo;
 
+    @Column(name = "contact")
     private String contactDetails;
 
     @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL)

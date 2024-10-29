@@ -8,7 +8,7 @@ public interface StudioService {
 
     StudioResponse updateStudio(Long studioId, StudioEntry studioEntry);
 
-    void deleteStudio(Long studioId);
+    StudioResponse deleteStudio(Long studioId);
 
     StudioResponse getStudioById(Long studioId);
 

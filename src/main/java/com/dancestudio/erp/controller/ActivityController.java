@@ -3,6 +3,9 @@ package com.dancestudio.erp.controller;
 import com.dancestudio.erp.entry.ActivityEntry;
 import com.dancestudio.erp.response.ActivityResponse;
 import com.dancestudio.erp.service.ActivityService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +32,11 @@ public class ActivityController {
     }
 
     @GetMapping("/get/{activityId}")
+    @Operation(summary = "Get a greeting message")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful retrieval"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ActivityResponse getActivityById(@PathVariable Long activityId) {
         return activityService.getActivityById(activityId);
     }

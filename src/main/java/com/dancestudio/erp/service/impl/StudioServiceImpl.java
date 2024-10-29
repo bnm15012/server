@@ -42,8 +42,15 @@ public class StudioServiceImpl implements StudioService {
     }
 
     @Override
-    public void deleteStudio(Long studioId) {
-        studioManager.deleteStudio(studioId);
+    public StudioResponse deleteStudio(Long studioId) {
+        StudioResponse response = new StudioResponse();
+        try {
+            Boolean isDeleted = studioManager.deleteStudio(studioId);
+            response.setStatus(new StatusResponse(1, "Studio removed Successfully", StatusResponse.Type.SUCCESS));
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(1, ex.getMessage(), StatusResponse.Type.ERROR));
+        }
+        return response;
     }
 
     @Override

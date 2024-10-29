@@ -1,9 +1,7 @@
 package com.dancestudio.erp.entity;
 
 import com.dancestudio.erp.enums.MembershipStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,6 +21,9 @@ public class StudentActivityRegistration extends BaseEntity {
     private Activity activity;
 
     private LocalDate registrationDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private MembershipStatus status;
 
 }

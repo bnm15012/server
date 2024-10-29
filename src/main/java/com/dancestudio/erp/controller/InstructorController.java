@@ -33,7 +33,7 @@ public class InstructorController {
         return instructorService.getInstructorById(instructorId);
     }
 
-    @GetMapping("/getAllInstructors/{studioId")
+    @GetMapping("/getAllInstructors/{studioId}")
     public InstructorResponse getAllInstructors(@PathVariable Long studioId) {
         return instructorService.getAllInstructors(studioId);
     }
