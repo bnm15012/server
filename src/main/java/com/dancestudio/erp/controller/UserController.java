@@ -23,19 +23,19 @@ public class UserController {
         return userService.loginUser(userEntry.getUserName(), userEntry.getPassword());
     }
 
-    @PutMapping("/update/{studioId}")
-    public UserResponse updateStudio(@PathVariable Long studioId, @RequestBody UserEntry userEntry) {
-        return userService.updateUser(studioId, userEntry);
+    @PutMapping("/update/{userId}")
+    public UserResponse updateUser(@PathVariable Long userId, @RequestBody UserEntry userEntry) {
+        return userService.updateUser(userId, userEntry);
     }
 
-    @DeleteMapping("/delete/{studioId}")
-    public UserResponse deleteStudio(@PathVariable Long studioId) {
-        return userService.deleteUser(studioId);
+    @DeleteMapping("/delete/{userId}")
+    public UserResponse deleteSUser(@PathVariable Long userId) {
+        return userService.deleteUser(userId);
     }
 
-    @GetMapping("/get/{studioId}")
-    public UserResponse getStudioById(@PathVariable Long studioId) {
-        return userService.getUserById(studioId);
+    @GetMapping("/get/{userId}")
+    public UserResponse getUserById(@PathVariable Long userId) {
+        return userService.getUserById(userId);
     }
 
 }

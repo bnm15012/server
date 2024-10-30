@@ -4,11 +4,11 @@ import com.dancestudio.erp.entry.UserEntry;
 
 public interface UserManager {
 
-    UserEntry registerUser(UserEntry userEntry);
+    UserEntry registerUser(UserEntry userEntry) throws Exception;
 
     UserEntry loginUser(String userName, String password);
 
-    UserEntry updateUser(Long userId, UserEntry userEntry);
+    UserEntry updateUser(Long userId, UserEntry userEntry) throws Exception;
 
     Boolean deleteUser(Long userId);
 

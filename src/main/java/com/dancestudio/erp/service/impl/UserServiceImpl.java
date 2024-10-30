@@ -51,10 +51,13 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(Long studioId, UserEntry userEntry) {
         UserResponse response = new UserResponse();
 
-        UserEntry entry = userManager.updateUser(studioId, userEntry);
-        response.setData(Collections.singletonList(entry));
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
-
+        try {
+            UserEntry entry = userManager.updateUser(studioId, userEntry);
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, "User updated Successfully", StatusResponse.Type.SUCCESS));
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+        }
         return response;
     }
 

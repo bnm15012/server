@@ -2,12 +2,15 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.User;
 import com.dancestudio.erp.entry.UserEntry;
+import com.dancestudio.erp.enums.UserType;
 import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 import static org.bouncycastle.crypto.generators.OpenBSDBCrypt.checkPassword;
 
@@ -25,7 +28,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public UserEntry registerUser(UserEntry userEntry) {
+    public UserEntry registerUser(UserEntry userEntry) throws Exception {
         // Hash the password before saving
         userEntry.setPassword(hashPassword(userEntry.getPassword()));
 
@@ -35,7 +38,7 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public UserEntry loginUser(String username, String password) {
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByName(username)
                 .orElseThrow(() -> new RuntimeException("UserName not found"));
 
         // Check the password
@@ -46,7 +49,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public UserEntry updateUser(Long studioId, UserEntry userEntry) {
+    public UserEntry updateUser(Long studioId, UserEntry userEntry) throws Exception {
         User user = userRepository.findById(studioId)
                 .orElseThrow(() -> new RuntimeException("Studio not found"));
 
@@ -84,17 +87,21 @@ public class UserManagerImpl implements UserManager {
         userEntry.setPassword(user.getName());
         userEntry.setEmail(user.getEmail());
         userEntry.setPhone(user.getPhone());
-        user.setRole(user.getRole());
+        userEntry.setRole(UserType.valueOf(user.getRole()));
+        userEntry.setStudioId(user.getStudio().getId());
 
         return userEntry;
     }
 
-    public User convertToEntity(UserEntry userEntry) {
+    public User convertToEntity(UserEntry userEntry) throws Exception {
+        if (Objects.isNull(userEntry.getRole())) {
+            throw new Exception("RoleType is not a enum");
+        }
 
         User user = new User();
         user.setName(userEntry.getUserName());
         user.setPassword(userEntry.getPassword());
-        user.setRole(userEntry.getRole());
+        user.setRole(String.valueOf(userEntry.getRole()));
         user.setPhone(userEntry.getPhone());
         user.setEmail(userEntry.getEmail());
 

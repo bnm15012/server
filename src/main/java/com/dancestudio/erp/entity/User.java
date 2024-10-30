@@ -1,6 +1,5 @@
 package com.dancestudio.erp.entity;
 
-import com.dancestudio.erp.enums.UserType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -29,5 +28,5 @@ public class User extends BaseEntity {
     @JoinColumn(name = "studio_id")
     private Studio studio;
 
-    private UserType role;
+    private String role;
 }
