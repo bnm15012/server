@@ -1,6 +1,7 @@
 package com.dancestudio.erp.entity;
 
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.enums.MembershipType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,6 +30,13 @@ public class Student extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private MembershipStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private MembershipType membershipType;
+
+    private LocalDate membershipStartDate;
+
+    private LocalDate membershipEndDate;
 
     @Column(name = "email_sent", columnDefinition = "boolean default false")
     private boolean emailSent;

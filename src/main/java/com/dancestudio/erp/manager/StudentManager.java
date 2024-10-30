@@ -2,6 +2,7 @@ package com.dancestudio.erp.manager;
 
 import com.dancestudio.erp.entry.StudentEntry;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface StudentManager {
@@ -17,5 +18,7 @@ public interface StudentManager {
     List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId);
 
     void resendEmail(Long studentId);
+
+    List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate);
 
 }

@@ -10,6 +10,7 @@ import org.springframework.mail.MailException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,12 +82,27 @@ public class StudentManagerImpl implements StudentManager {
         }
     }
 
+    @Override
     public void resendEmail(Long studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         sendEmail(student);
     }
+
+    @Override
+    public List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate) {
+        List<Student> entries = studentRepository.findByMembershipEndDate(reminderDate);
+
+        List<StudentEntry> studentEntries = new ArrayList<>();
+        for (Student entry : entries) {
+            StudentEntry studentEntry = convertToEntry(entry);
+            studentEntries.add(studentEntry);
+        }
+
+        return studentEntries;
+    }
+
 
     public Boolean checkIfStudentExistsinStudio(Long studioId) {
         return studentRepository.studentsExistsByStudioId(studioId);
