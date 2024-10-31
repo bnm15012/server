@@ -18,8 +18,8 @@ public interface StudentManager {
 
     List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus);
 
-    void resendEmail(Long studentId);
-
     List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate);
+
+    boolean sendSubscriptionRenewalReminder(Long studentId);
 
 }

@@ -70,8 +70,19 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void resendEmail(Long studentId) {
-        studentManager.resendEmail(studentId);
+    public StudentResponse sendSubscriptionRenewalReminder(Long studentId) {
+        StudentResponse response = new StudentResponse();
+        try {
+            boolean sendSubscriptionRenewalReminder = studentManager.sendSubscriptionRenewalReminder(studentId);
+            if (sendSubscriptionRenewalReminder) {
+                response.setStatus(new StatusResponse(1, "Reminder sent successfully", StatusResponse.Type.SUCCESS));
+            } else {
+                response.setStatus(new StatusResponse(1, "Reminder not sent", StatusResponse.Type.ERROR));
+            }
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(1, ex.getMessage(), StatusResponse.Type.ERROR));
+        }
+        return response;
     }
 
 }

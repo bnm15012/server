@@ -4,9 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d3d594b4-2606-4801-9f23-036c79f064c0" name="Changes" comment="">
+    <list default="true" id="d3d594b4-2606-4801-9f23-036c79f064c0" name="Changes" comment="Added JWT OTP authentication">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/controller/MembershipFeeController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/entity/MembershipFee.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/entry/MembershipFeeEntry.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/MembershipFeeManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/MembershipFeeManagerImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/repository/MembershipFeeRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/response/MembershipFeeResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/MembershipFeeService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/impl/MembershipFeeServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/controller/StudentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/controller/StudentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/EmailManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/EmailManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/StudentManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/StudentManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/EmailManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/EmailManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/StudentManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/StudentManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/StudentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/StudentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/impl/StudentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/impl/StudentServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,11 +99,11 @@
       <recent name="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/control" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.dancestudio.erp.manager.impl" />
       <recent name="com.dancestudio.erp.manager" />
-      <recent name="com.dancestudio.erp.response" />
+      <recent name="com.dancestudio.erp.manager.impl" />
       <recent name="com.dancestudio.erp.service.impl" />
-      <recent name="com.dancestudio.erp.controller" />
+      <recent name="com.dancestudio.erp.service" />
+      <recent name="com.dancestudio.erp.response" />
     </key>
   </component>
   <component name="RunManager">
@@ -225,6 +240,7 @@
       <updated>1729721666232</updated>
       <workItem from="1729721668397" duration="11302000" />
       <workItem from="1730143259232" duration="21450000" />
+      <workItem from="1730406428356" duration="4688000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -378,7 +394,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730406057068</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Added JWT OTP authentication">
+      <option name="closed" value="true" />
+      <created>1730406611274</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1730406611274</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -401,7 +425,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/EmailManagerImpl.java</url>
-          <line>19</line>
+          <line>27</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>

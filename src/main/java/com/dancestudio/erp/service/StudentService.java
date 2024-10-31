@@ -16,5 +16,5 @@ public interface StudentService {
 
     StudentResponse getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus);
 
-    void resendEmail(Long studentId);
+    StudentResponse sendSubscriptionRenewalReminder(Long studentId);
 }

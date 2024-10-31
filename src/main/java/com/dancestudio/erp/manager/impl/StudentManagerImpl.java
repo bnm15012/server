@@ -8,8 +8,6 @@ import com.dancestudio.erp.manager.StudentManager;
 import com.dancestudio.erp.repository.StudentRepository;
 import com.dancestudio.erp.service.impl.AzureBlobUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -41,7 +39,7 @@ public class StudentManagerImpl implements StudentManager {
         student.setProfileImage(imageUrl);
         studentRepository.save(student);
 
-        sendEmail(student);
+        emailManager.sendRegistrationEmail(student);
         return convertToEntry(student);
     }
 
@@ -50,7 +48,7 @@ public class StudentManagerImpl implements StudentManager {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        if(Objects.nonNull(studentEntry.getProfileImage())) {
+        if (Objects.nonNull(studentEntry.getProfileImage())) {
             String imageUrl = azureBlobUploadService.uploadImageToBlob(studentEntry.getStudioId(), "Students", studentEntry.getName(), studentEntry.getProfileImage());
             student.setProfileImage(imageUrl);
         }
@@ -84,26 +82,6 @@ public class StudentManagerImpl implements StudentManager {
         return studentEntries;
     }
 
-    @Async
-    public void sendEmail(Student student) {
-        try {
-            String subject = "Welcome to Dance Studio";
-            String body = "Dear " + student.getName() + ",\n\nWelcome! You have been successfully registered.";
-            emailManager.sendEmail(student.getEmail(), subject, body);
-            studentRepository.save(student);  // Update email sent status
-        } catch (MailException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void resendEmail(Long studentId) {
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-
-        sendEmail(student);
-    }
-
     @Override
     public List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate) {
         List<Student> entries = studentRepository.findByMembershipEndDate(reminderDate);
@@ -115,6 +93,15 @@ public class StudentManagerImpl implements StudentManager {
         }
 
         return studentEntries;
+    }
+
+    @Override
+    public boolean sendSubscriptionRenewalReminder(Long studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        emailManager.sendSubscriptionRenewalEmail(student);
+        return true;
     }
 
 

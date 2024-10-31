@@ -41,8 +41,8 @@ public class StudentController {
         return studentService.getAllStudents(studioId, activityId, membershipStatus);
     }
 
-    @PostMapping("/{studentId}/resendEmail")
-    public void resendEmail(@PathVariable Long studentId) {
-        studentService.resendEmail(studentId);
+    @PostMapping("/sendSubscriptionRenewalReminder/{studentId}")
+    public StudentResponse sendSubscriptionRenewalReminder(@PathVariable Long studentId) {
+        return studentService.sendSubscriptionRenewalReminder(studentId);
     }
 }
