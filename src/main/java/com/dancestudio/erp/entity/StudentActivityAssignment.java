@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class StudentActivityRegistration extends BaseEntity {
+public class StudentActivityAssignment extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "student_id")

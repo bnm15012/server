@@ -8,6 +8,7 @@ import com.dancestudio.erp.entry.ActivityEntry;
 import com.dancestudio.erp.entry.InstructorActivityAssignmentEntry;
 import com.dancestudio.erp.entry.InstructorEntry;
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
@@ -63,8 +64,8 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public List<InstructorEntry> getAllInstructorsByStudio(Long studioId) {
-        List<Instructor> entries = instructorRepository.findAllByStudioId(studioId);
+    public List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus) {
+        List<Instructor> entries = instructorRepository.findAllByStudioId(studioId, membershipStatus);
 
         List<InstructorEntry> instructorEntries = new ArrayList<>();
         for (Instructor entry : entries) {

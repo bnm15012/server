@@ -53,6 +53,7 @@ public class UserManagerImpl implements UserManager {
         User user = userRepository.findById(studioId)
                 .orElseThrow(() -> new RuntimeException("Studio not found"));
 
+        userEntry.setPassword(hashPassword(userEntry.getPassword()));
         User newUserEntry = convertToEntity(userEntry);
         return convertToEntry(userRepository.save(newUserEntry));
     }

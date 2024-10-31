@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -22,7 +24,7 @@ public class Student extends BaseEntity {
     @Column(name = "phone", nullable = false, length = 10)
     private String phone;
 
-    private String profileDetails;
+    private String profileImage;
 
     @Column(name = "registration_date")
     private LocalDate registrationDate;
@@ -38,10 +40,16 @@ public class Student extends BaseEntity {
 
     private LocalDate membershipEndDate;
 
-    @Column(name = "email_sent", columnDefinition = "boolean default false")
-    private boolean emailSent;
+    @OneToMany(mappedBy = "student")
+    private List<StudentActivityAssignment> enrolledActivities;
 
     @ManyToOne
     @JoinColumn(name = "studio_id", nullable = true)
     private Studio studio;
+
+    public List<String> getEnrolledActivityNames() {
+        return enrolledActivities.stream()
+                .map(assignment -> assignment.getActivity().getActivityType().name()) // Assuming activityType is an Enum
+                .collect(Collectors.toList());
+    }
 }

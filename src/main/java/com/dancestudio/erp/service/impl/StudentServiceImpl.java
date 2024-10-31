@@ -1,6 +1,7 @@
 package com.dancestudio.erp.service.impl;
 
 import com.dancestudio.erp.entry.StudentEntry;
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.manager.StudentManager;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.response.StudentResponse;
@@ -58,12 +59,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse getAllStudents(Long studioId, Long activityId) {
+    public StudentResponse getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus) {
         StudentResponse response = new StudentResponse();
 
-        List<StudentEntry> entry = studentManager.getAllStudentsByStudio(studioId, activityId);
+        List<StudentEntry> entry = studentManager.getAllStudentsByStudio(studioId, activityId, membershipStatus);
         response.setData(entry);
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
+        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : entry.size()));
 
         return response;
     }

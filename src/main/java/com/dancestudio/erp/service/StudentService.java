@@ -1,6 +1,7 @@
 package com.dancestudio.erp.service;
 
 import com.dancestudio.erp.entry.StudentEntry;
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.response.StudentResponse;
 
 public interface StudentService {
@@ -13,7 +14,7 @@ public interface StudentService {
 
     StudentResponse getStudentById(Long studentId);
 
-    StudentResponse getAllStudents(Long studioId, Long activityId);
+    StudentResponse getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus);
 
     void resendEmail(Long studentId);
 }

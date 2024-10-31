@@ -2,9 +2,11 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entry.StudentEntry;
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.manager.EmailManager;
 import com.dancestudio.erp.manager.StudentManager;
 import com.dancestudio.erp.repository.StudentRepository;
+import com.dancestudio.erp.service.impl.AzureBlobUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.scheduling.annotation.Async;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class StudentManagerImpl implements StudentManager {
@@ -23,6 +26,9 @@ public class StudentManagerImpl implements StudentManager {
     private EmailManager emailManager;
 
     @Autowired
+    private AzureBlobUploadService azureBlobUploadService;
+
+    @Autowired
     public StudentManagerImpl(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
@@ -30,8 +36,13 @@ public class StudentManagerImpl implements StudentManager {
     @Override
     public StudentEntry addStudent(StudentEntry studentEntry) {
         Student student = convertToEntity(studentEntry);
+
+        String imageUrl = azureBlobUploadService.uploadImageToBlob(studentEntry.getStudioId(), "Students", studentEntry.getName(), studentEntry.getProfileImage());
+        student.setProfileImage(imageUrl);
+        studentRepository.save(student);
+
         sendEmail(student);
-        return convertToEntry(studentRepository.save(student));
+        return convertToEntry(student);
     }
 
     @Override
@@ -39,6 +50,10 @@ public class StudentManagerImpl implements StudentManager {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
+        if(Objects.nonNull(studentEntry.getProfileImage())) {
+            String imageUrl = azureBlobUploadService.uploadImageToBlob(studentEntry.getStudioId(), "Students", studentEntry.getName(), studentEntry.getProfileImage());
+            student.setProfileImage(imageUrl);
+        }
         Student newStudentEntry = convertToEntity(studentEntry);
         return convertToEntry(studentRepository.save(newStudentEntry));
     }
@@ -57,8 +72,8 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId) {
-        List<Student> entries = studentRepository.findAllByStudioIdAndOptionalActivityId(studioId, activityId);
+    public List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus) {
+        List<Student> entries = studentRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, activityId, membershipStatus);
 
         List<StudentEntry> studentEntries = new ArrayList<>();
         for (Student entry : entries) {
@@ -75,7 +90,6 @@ public class StudentManagerImpl implements StudentManager {
             String subject = "Welcome to Dance Studio";
             String body = "Dear " + student.getName() + ",\n\nWelcome! You have been successfully registered.";
             emailManager.sendEmail(student.getEmail(), subject, body);
-            student.setEmailSent(true);
             studentRepository.save(student);  // Update email sent status
         } catch (MailException e) {
             e.printStackTrace();
@@ -114,10 +128,16 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setStudentId(student.getId());
         studentEntry.setName(student.getName());
         studentEntry.setPhone(student.getPhone());
-        studentEntry.setProfileDetails(student.getProfileDetails());
+
+        byte[] imageBytes = azureBlobUploadService.getImageInBytes(student.getProfileImage());
+        studentEntry.setProfileImage(imageBytes);
+
         studentEntry.setRegistrationDate(student.getRegistrationDate());
         studentEntry.setMembershipStatus(student.getStatus());
         studentEntry.setStudioId(student.getStudio().getId());
+
+        List<String> activityNames = student.getEnrolledActivityNames();
+        studentEntry.setEnrolledActivities(activityNames);
 
         return studentEntry;
     }
@@ -129,7 +149,7 @@ public class StudentManagerImpl implements StudentManager {
         student.setName(studentEntry.getName());
         student.setEmail(studentEntry.getEmail());
         student.setPhone(studentEntry.getPhone());
-        student.setProfileDetails(studentEntry.getProfileDetails());
+        student.setProfileImage(studentEntry.getImageUrl());
         student.setRegistrationDate(studentEntry.getRegistrationDate());
         student.setStatus(studentEntry.getMembershipStatus());
 

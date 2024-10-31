@@ -2,6 +2,7 @@ package com.dancestudio.erp.service.impl;
 
 
 import com.dancestudio.erp.entry.InstructorEntry;
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.response.InstructorResponse;
 import com.dancestudio.erp.response.StatusResponse;
@@ -59,10 +60,10 @@ public class InstructorServiceImpl implements InstructorService {
     }
 
     @Override
-    public InstructorResponse getAllInstructors(Long studioId) {
+    public InstructorResponse getAllInstructors(Long studioId, MembershipStatus membershipStatus) {
         InstructorResponse response = new InstructorResponse();
 
-        List<InstructorEntry> entry = instructorManager.getAllInstructorsByStudio(studioId);
+        List<InstructorEntry> entry = instructorManager.getAllInstructorsByStudio(studioId, membershipStatus);
         response.setData(entry);
         response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : entry.size()));
 

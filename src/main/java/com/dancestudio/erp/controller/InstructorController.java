@@ -1,6 +1,7 @@
 package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.InstructorEntry;
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.response.InstructorResponse;
 import com.dancestudio.erp.service.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,8 @@ public class InstructorController {
     }
 
     @GetMapping("/getAllInstructors/{studioId}")
-    public InstructorResponse getAllInstructors(@PathVariable Long studioId) {
-        return instructorService.getAllInstructors(studioId);
+    public InstructorResponse getAllInstructors(@PathVariable Long studioId,
+                                                @RequestParam(required = false) MembershipStatus membershipStatus) {
+        return instructorService.getAllInstructors(studioId, membershipStatus);
     }
 }

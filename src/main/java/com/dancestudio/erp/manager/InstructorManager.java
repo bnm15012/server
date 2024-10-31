@@ -1,6 +1,7 @@
 package com.dancestudio.erp.manager;
 
 import com.dancestudio.erp.entry.InstructorEntry;
+import com.dancestudio.erp.enums.MembershipStatus;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface InstructorManager {
 
     InstructorEntry getInstructorById(Long instructorId);
 
-    List<InstructorEntry> getAllInstructorsByStudio(Long studioId);
+    List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus);
 }

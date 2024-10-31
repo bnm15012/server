@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d3d594b4-2606-4801-9f23-036c79f064c0" name="Changes" comment="Updated security configs">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/UserManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/UserManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/impl/UserServiceImpl.java" afterDir="false" />
+    <list default="true" id="d3d594b4-2606-4801-9f23-036c79f064c0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,35 +42,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "go.import.settings.migrated": "true",
-    "last_opened_file_path": "/Users/mukund.agarwala/Desktop/studio/src/main/java/com/dancestudio/erp/service",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices",
-    "spring.configuration.checksum": "c944634550c698febdd9c868db908d9d",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;integration&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/mukund.agarwala/Desktop/studio/src/main/java/com/dancestudio/erp/service&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.repository.indices&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;c944634550c698febdd9c868db908d9d&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.dancestudio.erp.entry" />
+      <recent name="com.dancestudio.erp.service" />
       <recent name="com.dancestudio.erp.dto" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
@@ -79,10 +84,10 @@
       <recent name="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/control" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.dancestudio.erp.service.impl" />
-      <recent name="com.dancestudio.erp.service" />
-      <recent name="com.dancestudio.erp.entry" />
+      <recent name="com.dancestudio.erp.manager.impl" />
+      <recent name="com.dancestudio.erp.manager" />
       <recent name="com.dancestudio.erp.response" />
+      <recent name="com.dancestudio.erp.service.impl" />
       <recent name="com.dancestudio.erp.controller" />
     </key>
   </component>
@@ -317,7 +322,63 @@
       <option name="project" value="LOCAL" />
       <updated>1730315861338</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Updated security configs">
+      <option name="closed" value="true" />
+      <created>1730315951666</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1730315951666</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Added JWT OTP authentication">
+      <option name="closed" value="true" />
+      <created>1730399501365</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1730399501365</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Added Dashboard view data integration">
+      <option name="closed" value="true" />
+      <created>1730403189318</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1730403189319</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Added Dashboard view data integration">
+      <option name="closed" value="true" />
+      <created>1730403824285</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1730403824286</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Added Dashboard view data integration">
+      <option name="closed" value="true" />
+      <created>1730405718753</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1730405718753</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Added Dashboard view data integration">
+      <option name="closed" value="true" />
+      <created>1730405779366</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1730405779366</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Added JWT OTP authentication">
+      <option name="closed" value="true" />
+      <created>1730406057068</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1730406057068</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -328,10 +389,23 @@
     <MESSAGE value="Added CRUD operations" />
     <MESSAGE value="Added swagger integration" />
     <MESSAGE value="Updated security configs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated security configs" />
+    <MESSAGE value="Added Dashboard view data integration" />
+    <MESSAGE value="Added JWT OTP authentication" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added JWT OTP authentication" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/EmailManagerImpl.java</url>
+          <line>19</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

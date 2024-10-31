@@ -1,6 +1,7 @@
 package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.StudentEntry;
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.response.StudentResponse;
 import com.dancestudio.erp.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,10 @@ public class StudentController {
     }
 
     @GetMapping("/getAllStudents/{studioId}")
-    public StudentResponse getAllStudents(@PathVariable Long studioId, @RequestParam(required = false) Long activityId) {
-        return studentService.getAllStudents(studioId, activityId);
+    public StudentResponse getAllStudents(@PathVariable Long studioId,
+                                          @RequestParam(required = false) Long activityId,
+                                          @RequestParam(required = false) MembershipStatus membershipStatus) {
+        return studentService.getAllStudents(studioId, activityId, membershipStatus);
     }
 
     @PostMapping("/{studentId}/resendEmail")

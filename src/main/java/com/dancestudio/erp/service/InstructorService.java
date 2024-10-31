@@ -1,6 +1,7 @@
 package com.dancestudio.erp.service;
 
 import com.dancestudio.erp.entry.InstructorEntry;
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.response.InstructorResponse;
 
 public interface InstructorService {
@@ -13,5 +14,5 @@ public interface InstructorService {
 
     InstructorResponse getInstructorById(Long instructorId);
 
-    InstructorResponse getAllInstructors(Long studioId);
+    InstructorResponse getAllInstructors(Long studioId, MembershipStatus membershipStatus);
 }
