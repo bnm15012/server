@@ -1,6 +1,7 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.User;
+import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.enums.UserType;
 import com.dancestudio.erp.manager.UserManager;
@@ -12,12 +13,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
-import static org.bouncycastle.crypto.generators.OpenBSDBCrypt.checkPassword;
-
 @Service
 public class UserManagerImpl implements UserManager {
 
     private final UserRepository userRepository;
+
+    @Autowired
+    private StudioManagerImpl studioManager;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -29,6 +31,10 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public UserEntry registerUser(UserEntry userEntry) throws Exception {
+        if(Objects.nonNull(userRepository.findByName(userEntry.getUserName()))) {
+            throw new Exception("User already exists");
+        }
+
         // Hash the password before saving
         userEntry.setPassword(hashPassword(userEntry.getPassword()));
 
@@ -42,7 +48,7 @@ public class UserManagerImpl implements UserManager {
                 .orElseThrow(() -> new RuntimeException("UserName not found"));
 
         // Check the password
-        if (!checkPassword(password, user.getPassword().toCharArray())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
         return convertToEntry(user);
@@ -85,7 +91,6 @@ public class UserManagerImpl implements UserManager {
 
         UserEntry userEntry = new UserEntry();
         userEntry.setUserName(user.getName());
-        userEntry.setPassword(user.getName());
         userEntry.setEmail(user.getEmail());
         userEntry.setPhone(user.getPhone());
         userEntry.setRole(UserType.valueOf(user.getRole()));
@@ -105,6 +110,9 @@ public class UserManagerImpl implements UserManager {
         user.setRole(String.valueOf(userEntry.getRole()));
         user.setPhone(userEntry.getPhone());
         user.setEmail(userEntry.getEmail());
+
+        StudioEntry studioEntry = studioManager.getStudioById(userEntry.getStudioId());
+        user.setStudio(studioManager.convertToEntity(studioEntry));
 
         return user;
     }

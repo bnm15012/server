@@ -87,6 +87,7 @@ public class StudioManagerImpl implements StudioManager {
     public Studio convertToEntity(StudioEntry studioEntry) {
 
         Studio studio = new Studio();
+        studio.setId(studioEntry.getStudioId());
         studio.setName(studioEntry.getStudioName());
         studio.setLogo(studioEntry.getLogo());
         studio.setLocation(studioEntry.getLocation());

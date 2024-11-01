@@ -49,7 +49,7 @@ public class Student extends BaseEntity {
 
     public List<String> getEnrolledActivityNames() {
         return enrolledActivities.stream()
-                .map(assignment -> assignment.getActivity().getActivityType().name()) // Assuming activityType is an Enum
+                .map(assignment -> assignment.getActivity().getActivityType().name())
                 .collect(Collectors.toList());
     }
 }
