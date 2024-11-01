@@ -4,10 +4,7 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entity.BankAccount;
 import com.dancestudio.erp.entity.Instructor;
-import com.dancestudio.erp.entry.ActivityEntry;
-import com.dancestudio.erp.entry.InstructorActivityAssignmentEntry;
-import com.dancestudio.erp.entry.InstructorEntry;
-import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudioManager;
@@ -88,6 +85,18 @@ public class InstructorManagerImpl implements InstructorManager {
         }
 
         instructorEntry.setInstructorStatus(instructor.getStatus());
+
+        // Convert Bank Account details if available
+        if (instructor.getBankAccount() != null) {
+            BankAccountEntry bankAccountEntry = new BankAccountEntry();
+            bankAccountEntry.setAccountNumber(instructor.getBankAccount().getAccountNumber());
+            bankAccountEntry.setBankName(instructor.getBankAccount().getBankName());
+            bankAccountEntry.setBranchName(instructor.getBankAccount().getBranchName());
+            bankAccountEntry.setIfscCode(instructor.getBankAccount().getIfscCode());
+            bankAccountEntry.setUpiId(instructor.getBankAccount().getUpiId());
+
+            instructorEntry.setBankAccountDetails(bankAccountEntry);
+        }
 
         // Convert InstructorActivityAssignment to InstructorActivityAssignmentEntry
         List<InstructorActivityAssignmentEntry> assignmentEntries = instructor.getAssignments().stream()

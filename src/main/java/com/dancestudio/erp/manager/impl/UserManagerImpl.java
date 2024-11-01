@@ -31,7 +31,7 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public UserEntry registerUser(UserEntry userEntry) throws Exception {
-        if(Objects.nonNull(userRepository.findByName(userEntry.getUserName()))) {
+        if (userRepository.findByName(userEntry.getUserName()).isPresent()) {
             throw new Exception("User already exists");
         }
 
