@@ -5,23 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d3d594b4-2606-4801-9f23-036c79f064c0" name="Changes" comment="Added JWT OTP authentication">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/controller/MembershipFeeController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/entity/MembershipFee.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/entry/MembershipFeeEntry.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/MembershipFeeManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/MembershipFeeManagerImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/repository/MembershipFeeRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/response/MembershipFeeResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/MembershipFeeService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/impl/MembershipFeeServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/controller/StudentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/controller/StudentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/EmailManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/EmailManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/StudentManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/StudentManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/EmailManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/EmailManagerImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/StudentManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/StudentManagerImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/StudentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/StudentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/impl/StudentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/impl/StudentServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/StudioManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/StudioManagerImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -427,6 +414,46 @@
           <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/EmailManagerImpl.java</url>
           <line>27</line>
           <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/service/impl/UserServiceImpl.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
+          <line>53</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
+          <line>38</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
+          <line>106</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
+          <line>113</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
+          <line>114</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
+          <line>96</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
