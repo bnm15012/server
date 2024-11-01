@@ -116,7 +116,9 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setName(student.getName());
         studentEntry.setPhone(student.getPhone());
 
-        byte[] imageBytes = azureBlobUploadService.getImageInBytes(student.getProfileImage());
+//        byte[] imageBytes = azureBlobUploadService.getImageInBytes(student.getProfileImage());
+
+        byte[] imageBytes = null;
         studentEntry.setProfileImage(imageBytes);
 
         studentEntry.setRegistrationDate(student.getRegistrationDate());
