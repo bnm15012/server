@@ -1,5 +1,6 @@
 package com.dancestudio.erp.manager.impl;
 
+import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entity.User;
 import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.UserEntry;
@@ -25,6 +26,9 @@ public class UserManagerImpl implements UserManager {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
     public UserManagerImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -39,7 +43,12 @@ public class UserManagerImpl implements UserManager {
         userEntry.setPassword(hashPassword(userEntry.getPassword()));
 
         User user = convertToEntity(userEntry);
-        return convertToEntry(userRepository.save(user));
+        UserEntry entry = convertToEntry(userRepository.save(user));
+
+        String token = jwtUtil.generateAuthToken(user.getEmail());
+        entry.setToken(token);
+
+        return entry;
     }
 
     @Override
@@ -51,7 +60,13 @@ public class UserManagerImpl implements UserManager {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
-        return convertToEntry(user);
+
+        UserEntry entry = convertToEntry(user);
+
+        String token = jwtUtil.generateAuthToken(user.getEmail());
+        entry.setToken(token);
+
+        return entry;
     }
 
     @Override

@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d3d594b4-2606-4801-9f23-036c79f064c0" name="Changes" comment="Added JWT OTP authentication" />
+    <list default="true" id="d3d594b4-2606-4801-9f23-036c79f064c0" name="Changes" comment="Added JWT token implementation">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/authentication/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/dancestudio/erp/authentication/SecurityConfig.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,9 +18,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -392,7 +394,47 @@
       <option name="project" value="LOCAL" />
       <updated>1730490017032</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Added JWT token implementation">
+      <option name="closed" value="true" />
+      <created>1730499957497</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1730499957497</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Added JWT token implementation">
+      <option name="closed" value="true" />
+      <created>1730501051730</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1730501051731</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Added JWT token implementation">
+      <option name="closed" value="true" />
+      <created>1730535093744</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1730535093744</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Added JWT token implementation">
+      <option name="closed" value="true" />
+      <created>1730539988881</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1730539988881</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Added JWT token implementation">
+      <option name="closed" value="true" />
+      <created>1730540275347</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1730540275347</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -406,7 +448,8 @@
     <MESSAGE value="Added Dashboard view data integration" />
     <MESSAGE value="Added JWT OTP authentication" />
     <MESSAGE value="Fixed getAllStudents" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed getAllStudents" />
+    <MESSAGE value="Added JWT token implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added JWT token implementation" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
@@ -426,37 +469,32 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
-          <line>53</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
-          <line>38</line>
+          <line>42</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
-          <line>40</line>
+          <line>44</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
-          <line>106</line>
+          <line>121</line>
           <option name="timeStamp" value="15" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
-          <line>113</line>
+          <line>128</line>
           <option name="timeStamp" value="16" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
-          <line>114</line>
+          <line>129</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/UserManagerImpl.java</url>
-          <line>96</line>
+          <line>111</line>
           <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -503,6 +541,16 @@
           <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/manager/impl/StudentManagerImpl.java</url>
           <line>119</line>
           <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/authentication/AuthenticationHandler.java</url>
+          <line>31</line>
+          <option name="timeStamp" value="48" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/dancestudio/erp/authentication/AuthenticationHandler.java</url>
+          <line>32</line>
+          <option name="timeStamp" value="49" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

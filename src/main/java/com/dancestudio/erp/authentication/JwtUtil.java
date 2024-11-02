@@ -1,0 +1,97 @@
+package com.dancestudio.erp.authentication;
+
+import com.dancestudio.erp.enums.AuthType;
+import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Random;
+
+@Service
+public class JwtUtil {
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    private static final long OTP_EXPIRATION_MS = 300_000;
+    private static final long AUTH_EXPIRATION_MS = 900_000;
+    private static final long REFRESH_EXPIRATION_MS = 1800_000;
+
+    public String generateOtp() {
+        Random random = new Random();
+        int otp = 100000 + random.nextInt(900000);
+        return String.valueOf(otp);
+    }
+
+    public String generateToken(String email, String otp, AuthType authType) {
+        Date now = new Date();
+        Date expiryDate;
+
+        if (authType == AuthType.OTP) {
+            expiryDate = new Date(now.getTime() + OTP_EXPIRATION_MS);
+        } else {
+            expiryDate = new Date(now.getTime() + AUTH_EXPIRATION_MS);
+        }
+
+        JwtBuilder tokenBuilder = Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret);
+
+        if (authType == AuthType.OTP) {
+            tokenBuilder.claim("otp", otp);
+        }
+
+        return tokenBuilder.compact();
+    }
+
+    public String generateAuthToken(String email) {
+        return generateToken(email, null, AuthType.AUTH);
+    }
+
+    public String generateAccessToken(String email) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + REFRESH_EXPIRATION_MS); // Define REFRESH_EXPIRATION_MS as needed
+
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
+
+    public boolean validateOtpToken(String token, String otp) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+            String tokenOtp = claims.get("otp", String.class);
+            return otp.equals(tokenOtp) && !claims.getExpiration().before(new Date());
+        } catch (JwtException e) {
+            return false;
+        }
+    }
+
+    public Claims validateAndParseClaims(String token) throws JwtException {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        if (claims.getExpiration().before(new Date())) {
+            throw new JwtException("Token expired");
+        }
+
+        return claims;
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            return true;
+        } catch (JwtException e) {
+            return false;
+        }
+    }
+}

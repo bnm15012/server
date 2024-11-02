@@ -13,4 +13,6 @@ public class UserEntry {
     private UserType role;
     private Long studioId;
 
+    private String token;
+
 }

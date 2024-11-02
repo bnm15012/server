@@ -1,9 +1,11 @@
 package com.dancestudio.erp.service.impl;
 
+import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entry.PasswordEntry;
 import com.dancestudio.erp.manager.impl.PasswordManagerImpl;
 import com.dancestudio.erp.response.PasswordResponse;
 import com.dancestudio.erp.response.StatusResponse;
+import com.dancestudio.erp.response.StringResponse;
 import com.dancestudio.erp.service.PasswordService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ public class PasswordServiceImpl implements PasswordService {
 
     @Autowired
     private PasswordManagerImpl passwordManager;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     public PasswordResponse initiatePasswordReset(String email) {
         PasswordResponse response = new PasswordResponse();
@@ -39,6 +44,21 @@ public class PasswordServiceImpl implements PasswordService {
         } else {
             response.setStatus(new StatusResponse(1, "Invalid or expired OTP", StatusResponse.Type.ERROR));
         }
+        return response;
+    }
+
+    public StringResponse refreshToken(String refreshToken, String email) {
+
+        StringResponse response = new StringResponse();
+        if (jwtUtil.validateRefreshToken(refreshToken)) {
+
+            String newAccessToken = jwtUtil.generateAccessToken(email);
+            response.setStatus(new StatusResponse(1, "Token fetched successfully", StatusResponse.Type.SUCCESS));
+            response.setData(Collections.singletonList(newAccessToken));
+            return response;
+        }
+
+        response.setStatus(new StatusResponse(1, "Invalid refresh token", StatusResponse.Type.ERROR));
         return response;
     }
 }

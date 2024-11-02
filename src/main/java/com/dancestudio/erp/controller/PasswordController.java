@@ -1,12 +1,10 @@
 package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.response.PasswordResponse;
+import com.dancestudio.erp.response.StringResponse;
 import com.dancestudio.erp.service.PasswordService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/password")
@@ -24,4 +22,10 @@ public class PasswordController {
     public PasswordResponse verifyOtp(@RequestParam String otpToken, @RequestParam String otp) {
         return passwordService.verifyOtp(otpToken, otp);
     }
+
+    @GetMapping("/refreshToken/{refreshToken}")
+    public StringResponse refreshToken(@PathVariable String refreshToken, @RequestHeader String email) {
+        return passwordService.refreshToken(refreshToken, email);
+    }
+
 }
