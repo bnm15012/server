@@ -2,15 +2,16 @@ package com.dancestudio.erp.service;
 
 import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.response.StudioResponse;
+import org.springframework.http.ResponseEntity;
 
 public interface StudioService {
-    StudioResponse addStudio(StudioEntry studioEntry);
+    ResponseEntity<StudioResponse> addStudio(StudioEntry studioEntry);
 
-    StudioResponse updateStudio(Long studioId, StudioEntry studioEntry);
+    ResponseEntity<StudioResponse> updateStudio(Long studioId, StudioEntry studioEntry);
 
-    StudioResponse deleteStudio(Long studioId);
+    ResponseEntity<Void> deleteStudio(Long studioId);
 
-    StudioResponse getStudioById(Long studioId);
+    ResponseEntity<StudioResponse> getStudioById(Long studioId);
 
-    StudioResponse getAllStudios();
+    ResponseEntity<StudioResponse> getAllStudios();
 }

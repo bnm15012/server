@@ -2,17 +2,18 @@ package com.dancestudio.erp.service;
 
 import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.response.UserResponse;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    UserResponse registerUser(UserEntry userEntry);
+    ResponseEntity<UserResponse> registerUser(UserEntry userEntry);
 
-    UserResponse loginUser(String userName, String password);
+    ResponseEntity<UserResponse> loginUser(String userName, String password);
 
-    UserResponse updateUser(Long userId, UserEntry userEntry);
+    ResponseEntity<UserResponse> updateUser(Long userId, UserEntry userEntry);
 
-    UserResponse deleteUser(Long userId);
+    ResponseEntity<UserResponse> deleteUser(Long userId);
 
-    UserResponse getUserById(Long userId);
+    ResponseEntity<UserResponse> getUserById(Long userId);
 
 }

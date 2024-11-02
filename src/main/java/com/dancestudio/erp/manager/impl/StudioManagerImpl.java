@@ -2,6 +2,7 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.StudioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +32,19 @@ public class StudioManagerImpl implements StudioManager {
     }
 
     @Override
-    public StudioEntry updateStudio(Long studioId, StudioEntry studioEntry) {
+    public StudioEntry updateStudio(Long studioId, StudioEntry studioEntry) throws EntityNotFoundException {
         Studio studio = studioRepository.findById(studioId)
-                .orElseThrow(() -> new RuntimeException("Studio not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
 
         Studio newStudioEntry = convertToEntity(studioEntry);
         return convertToEntry(studioRepository.save(newStudioEntry));
     }
 
     @Override
-    public Boolean deleteStudio(Long studioId) {
+    public Boolean deleteStudio(Long studioId) throws EntityNotFoundException {
+
+        studioRepository.findById(studioId)
+                .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
         try {
             if (studentManager.checkIfStudentExistsinStudio(studioId)) {
                 throw new RuntimeException("Cannot delete studio: it has students enrolled.");
@@ -53,9 +57,9 @@ public class StudioManagerImpl implements StudioManager {
     }
 
     @Override
-    public StudioEntry getStudioById(Long studioId) {
+    public StudioEntry getStudioById(Long studioId) throws EntityNotFoundException {
         Studio studio = studioRepository.findById(studioId)
-                .orElseThrow(() -> new RuntimeException("Studio not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
 
         return convertToEntry(studio);
     }

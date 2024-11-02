@@ -4,6 +4,7 @@ import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.response.StudioResponse;
 import com.dancestudio.erp.service.StudioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,27 +15,27 @@ public class StudioController {
     private StudioService studioService;
 
     @PostMapping("/add")
-    public StudioResponse addStudio(@RequestBody StudioEntry studioEntry) {
+    public ResponseEntity<StudioResponse> addStudio(@RequestBody StudioEntry studioEntry) {
         return studioService.addStudio(studioEntry);
     }
 
     @PutMapping("/update/{studioId}")
-    public StudioResponse updateStudio(@PathVariable Long studioId, @RequestBody StudioEntry studioEntry) {
+    public ResponseEntity<StudioResponse> updateStudio(@PathVariable Long studioId, @RequestBody StudioEntry studioEntry) {
         return studioService.updateStudio(studioId, studioEntry);
     }
 
     @DeleteMapping("/delete/{studioId}")
-    public StudioResponse deleteStudio(@PathVariable Long studioId) {
+    public ResponseEntity<Void> deleteStudio(@PathVariable Long studioId) {
         return studioService.deleteStudio(studioId);
     }
 
     @GetMapping("/get/{studioId}")
-    public StudioResponse getStudioById(@PathVariable Long studioId) {
+    public ResponseEntity<StudioResponse> getStudioById(@PathVariable Long studioId) {
         return studioService.getStudioById(studioId);
     }
 
     @GetMapping("/getAllStudios")
-    public StudioResponse getAllStudios() {
+    public ResponseEntity<StudioResponse> getAllStudios() {
         return studioService.getAllStudios();
     }
 }

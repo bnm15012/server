@@ -6,6 +6,7 @@ import com.dancestudio.erp.entity.BankAccount;
 import com.dancestudio.erp.entity.Instructor;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
@@ -33,29 +34,32 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public InstructorEntry addInstructor(InstructorEntry instructorEntry) {
+    public InstructorEntry addInstructor(InstructorEntry instructorEntry) throws EntityNotFoundException {
         Instructor instructor = convertToEntity(instructorEntry);
         return convertToEntry(instructorRepository.save(instructor));
     }
 
     @Override
-    public InstructorEntry updateInstructor(Long instructorId, InstructorEntry instructorEntry) {
+    public InstructorEntry updateInstructor(Long instructorId, InstructorEntry instructorEntry) throws EntityNotFoundException {
         Instructor instructor = instructorRepository.findById(instructorId)
-                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
         Instructor newInstructorEntry = convertToEntity(instructorEntry);
         return convertToEntry(instructorRepository.save(newInstructorEntry));
     }
 
     @Override
-    public void deleteInstructor(Long instructorId) {
+    public void deleteInstructor(Long instructorId) throws EntityNotFoundException {
+        Instructor instructor = instructorRepository.findById(instructorId)
+                .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
+
         instructorRepository.deleteById(instructorId);
     }
 
     @Override
-    public InstructorEntry getInstructorById(Long instructorId) {
+    public InstructorEntry getInstructorById(Long instructorId) throws EntityNotFoundException {
         Instructor instructor = instructorRepository.findById(instructorId)
-                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
         return convertToEntry(instructor);
     }
@@ -120,7 +124,7 @@ public class InstructorManagerImpl implements InstructorManager {
         return instructorEntry;
     }
 
-    private Instructor convertToEntity(InstructorEntry instructorEntry) {
+    private Instructor convertToEntity(InstructorEntry instructorEntry) throws EntityNotFoundException {
 
         Instructor instructor = new Instructor();
         instructor.setId(instructorEntry.getInstructorId());

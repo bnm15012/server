@@ -3,6 +3,7 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.MembershipFee;
 import com.dancestudio.erp.entry.MembershipFeeEntry;
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.MembershipFeeManager;
 import com.dancestudio.erp.repository.MembershipFeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
     }
 
     @Override
-    public MembershipFeeEntry addMembershipFee(MembershipFeeEntry membershipFeeEntry) {
+    public MembershipFeeEntry addMembershipFee(MembershipFeeEntry membershipFeeEntry) throws EntityNotFoundException {
         MembershipFee membershipFee = convertToEntity(membershipFeeEntry);
         membershipFeeRepository.save(membershipFee);
         return convertToEntry(membershipFee);
@@ -60,7 +61,7 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
         return membershipFeeEntry;
     }
 
-    private MembershipFee convertToEntity(MembershipFeeEntry membershipFeeEntry) {
+    private MembershipFee convertToEntity(MembershipFeeEntry membershipFeeEntry) throws EntityNotFoundException {
         MembershipFee membershipFee = new MembershipFee();
 
         StudioEntry studioEntry = studioManager.getStudioById(membershipFeeEntry.getStudioId());

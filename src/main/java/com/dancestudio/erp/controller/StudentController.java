@@ -5,6 +5,7 @@ import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.response.StudentResponse;
 import com.dancestudio.erp.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,34 +16,34 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping("/add")
-    public StudentResponse addStudent(@RequestBody StudentEntry studentEntry) {
+    public ResponseEntity<StudentResponse> addStudent(@RequestBody StudentEntry studentEntry) {
         return studentService.addStudent(studentEntry);
     }
 
     @PutMapping("/update/{studentId}")
-    public StudentResponse updateStudent(@PathVariable Long studentId, @RequestBody StudentEntry studentEntry) {
+    public ResponseEntity<StudentResponse> updateStudent(@PathVariable Long studentId, @RequestBody StudentEntry studentEntry) {
         return studentService.updateStudent(studentId, studentEntry);
     }
 
     @DeleteMapping("/delete/{studentId}")
-    public void deleteStudent(@PathVariable Long studentId) {
-        studentService.deleteStudent(studentId);
+    public ResponseEntity<Void> deleteStudent(@PathVariable Long studentId) {
+        return studentService.deleteStudent(studentId);
     }
 
     @GetMapping("/get/{studentId}")
-    public StudentResponse getStudentById(@PathVariable Long studentId) {
+    public ResponseEntity<StudentResponse> getStudentById(@PathVariable Long studentId) {
         return studentService.getStudentById(studentId);
     }
 
     @GetMapping("/getAllStudents/{studioId}")
-    public StudentResponse getAllStudents(@PathVariable Long studioId,
+    public ResponseEntity<StudentResponse> getAllStudents(@PathVariable Long studioId,
                                           @RequestParam(required = false) Long activityId,
                                           @RequestParam(required = false) MembershipStatus membershipStatus) {
         return studentService.getAllStudents(studioId, activityId, membershipStatus);
     }
 
     @PostMapping("/sendSubscriptionRenewalReminder/{studentId}")
-    public StudentResponse sendSubscriptionRenewalReminder(@PathVariable Long studentId) {
+    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(@PathVariable Long studentId) {
         return studentService.sendSubscriptionRenewalReminder(studentId);
     }
 }

@@ -3,6 +3,7 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EmailManager;
 import com.dancestudio.erp.manager.StudentManager;
 import com.dancestudio.erp.repository.StudentRepository;
@@ -32,7 +33,7 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public StudentEntry addStudent(StudentEntry studentEntry) {
+    public StudentEntry addStudent(StudentEntry studentEntry) throws Exception {
         Student student = convertToEntity(studentEntry);
 
         String imageUrl = azureBlobUploadService.uploadImageToBlob(studentEntry.getStudioId(), "Students", studentEntry.getName(), studentEntry.getProfileImage());
@@ -44,9 +45,9 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public StudentEntry updateStudent(Long studentId, StudentEntry studentEntry) {
+    public StudentEntry updateStudent(Long studentId, StudentEntry studentEntry) throws EntityNotFoundException {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
         if (Objects.nonNull(studentEntry.getProfileImage())) {
             String imageUrl = azureBlobUploadService.uploadImageToBlob(studentEntry.getStudioId(), "Students", studentEntry.getName(), studentEntry.getProfileImage());
@@ -57,14 +58,17 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public void deleteStudent(Long studentId) {
+    public void deleteStudent(Long studentId) throws EntityNotFoundException {
+        studentRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("Student not found"));
+
         studentRepository.deleteById(studentId);
     }
 
     @Override
-    public StudentEntry getStudentById(Long studentId) {
+    public StudentEntry getStudentById(Long studentId) throws EntityNotFoundException {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
         return convertToEntry(student);
     }
@@ -96,9 +100,9 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public boolean sendSubscriptionRenewalReminder(Long studentId) {
+    public boolean sendSubscriptionRenewalReminder(Long studentId) throws EntityNotFoundException {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
         emailManager.sendSubscriptionRenewalEmail(student);
         return true;

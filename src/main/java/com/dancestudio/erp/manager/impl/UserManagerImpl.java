@@ -5,6 +5,8 @@ import com.dancestudio.erp.entity.User;
 import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.enums.UserType;
+import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.exception.InvalidCredentialsException;
 import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,13 +54,12 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public UserEntry loginUser(String username, String password) {
+    public UserEntry loginUser(String username, String password) throws EntityNotFoundException, InvalidCredentialsException {
         User user = userRepository.findByName(username)
-                .orElseThrow(() -> new RuntimeException("UserName not found"));
+                .orElseThrow(() -> new EntityNotFoundException("UserName not found"));
 
-        // Check the password
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid credentials");
         }
 
         UserEntry entry = convertToEntry(user);
@@ -105,6 +106,7 @@ public class UserManagerImpl implements UserManager {
     private UserEntry convertToEntry(User user) {
 
         UserEntry userEntry = new UserEntry();
+        userEntry.setUserId(user.getId());
         userEntry.setUserName(user.getName());
         userEntry.setEmail(user.getEmail());
         userEntry.setPhone(user.getPhone());
