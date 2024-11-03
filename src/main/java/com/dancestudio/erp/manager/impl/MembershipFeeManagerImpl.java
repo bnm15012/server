@@ -19,7 +19,7 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
     private final MembershipFeeRepository membershipFeeRepository;
 
     @Autowired
-    private StudioManagerImpl studioManager;
+    private StudioManagerImpl studioManagerImpl;
 
     @Autowired
     public MembershipFeeManagerImpl(MembershipFeeRepository membershipFeeRepository) {
@@ -28,23 +28,32 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
 
     @Override
     public MembershipFeeEntry addMembershipFee(MembershipFeeEntry membershipFeeEntry) throws EntityNotFoundException {
-        MembershipFee membershipFee = convertToEntity(membershipFeeEntry);
+        MembershipFee membershipFee = convertToEntity(membershipFeeEntry, null);
         membershipFeeRepository.save(membershipFee);
         return convertToEntry(membershipFee);
     }
 
     @Override
-    public MembershipFeeEntry updateMembershipFee(Long id, Double newFeeAmount) {
-        MembershipFee membershipFee = membershipFeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Membership Fee not found"));
+    public MembershipFeeEntry updateMembershipFee(Long id, Double newFeeAmount) throws EntityNotFoundException {
+        MembershipFee existingMembershipFee = membershipFeeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Membership Fee not found"));
 
-        membershipFee.setFeeAmount(newFeeAmount);
-        return convertToEntry(membershipFeeRepository.save(membershipFee));
+        existingMembershipFee.setFeeAmount(newFeeAmount);
+        return convertToEntry(membershipFeeRepository.save(existingMembershipFee));
+    }
+
+    @Override
+    public MembershipFeeEntry getMembershipFeeById(Long id) throws EntityNotFoundException {
+        MembershipFee membershipFee = membershipFeeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Membership Fee not found"));
+
+        return convertToEntry(membershipFee);
     }
 
     @Override
     public List<MembershipFeeEntry> getMembershipFeesByStudio(Long studioId) {
         List<MembershipFee> membershipFees = membershipFeeRepository.findByStudioId(studioId);
+
         return membershipFees.stream()
                 .map(this::convertToEntry)
                 .collect(Collectors.toList());
@@ -61,14 +70,25 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
         return membershipFeeEntry;
     }
 
-    private MembershipFee convertToEntity(MembershipFeeEntry membershipFeeEntry) throws EntityNotFoundException {
-        MembershipFee membershipFee = new MembershipFee();
+    private MembershipFee convertToEntity(MembershipFeeEntry membershipFeeEntry, MembershipFee existingMembershipFee) throws EntityNotFoundException {
+        MembershipFee membershipFee = (existingMembershipFee != null) ? existingMembershipFee : new MembershipFee();
 
-        StudioEntry studioEntry = studioManager.getStudioById(membershipFeeEntry.getStudioId());
-        membershipFee.setStudio(studioManager.convertToEntity(studioEntry));
+        if (membershipFeeEntry.getStudioId() != null) {
+            StudioEntry studioEntry = studioManagerImpl.getStudioById(membershipFeeEntry.getStudioId());
+            if (studioEntry == null) {
+                throw new EntityNotFoundException("Studio not found with ID: " + membershipFeeEntry.getStudioId());
+            }
+            membershipFee.setStudio(studioManagerImpl.convertToEntity(studioEntry, null));
+        }
 
-        membershipFee.setMembershipType(membershipFeeEntry.getMembershipType());
-        membershipFee.setFeeAmount(membershipFeeEntry.getAmount());
+        if (membershipFeeEntry.getMembershipType() != null) {
+            membershipFee.setMembershipType(membershipFeeEntry.getMembershipType());
+        }
+
+        if (membershipFeeEntry.getAmount() != null) {
+            membershipFee.setFeeAmount(membershipFeeEntry.getAmount());
+        }
+
         return membershipFee;
     }
 

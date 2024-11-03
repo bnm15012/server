@@ -73,11 +73,34 @@ public class UserManagerImpl implements UserManager {
     @Override
     public UserEntry updateUser(Long studioId, UserEntry userEntry) throws Exception {
         User user = userRepository.findById(studioId)
-                .orElseThrow(() -> new RuntimeException("Studio not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        userEntry.setPassword(hashPassword(userEntry.getPassword()));
-        User newUserEntry = convertToEntity(userEntry);
-        return convertToEntry(userRepository.save(newUserEntry));
+        if (Objects.nonNull(userEntry.getUserName())) {
+            user.setName(userEntry.getUserName());
+        }
+
+        if (Objects.nonNull(userEntry.getPassword())) {
+            user.setPassword(hashPassword(userEntry.getPassword()));
+        }
+
+        if (Objects.nonNull(userEntry.getRole())) {
+            user.setRole(String.valueOf(userEntry.getRole()));
+        }
+
+        if (Objects.nonNull(userEntry.getPhone())) {
+            user.setPhone(userEntry.getPhone());
+        }
+
+        if (Objects.nonNull(userEntry.getEmail())) {
+            user.setEmail(userEntry.getEmail());
+        }
+
+        if (Objects.nonNull(userEntry.getStudioEntry())) {
+            StudioEntry studioEntry = studioManager.getStudioById(userEntry.getStudioEntry().getStudioId());
+            user.setStudio(studioManager.convertToEntity(studioEntry, null));
+        }
+
+        return convertToEntry(userRepository.save(user));
     }
 
     @Override
@@ -111,8 +134,7 @@ public class UserManagerImpl implements UserManager {
         userEntry.setEmail(user.getEmail());
         userEntry.setPhone(user.getPhone());
         userEntry.setRole(UserType.valueOf(user.getRole()));
-        userEntry.setStudioId(user.getStudio().getId());
-
+        userEntry.setStudioEntry(studioManager.convertToEntry(user.getStudio()));
         return userEntry;
     }
 
@@ -128,8 +150,8 @@ public class UserManagerImpl implements UserManager {
         user.setPhone(userEntry.getPhone());
         user.setEmail(userEntry.getEmail());
 
-        StudioEntry studioEntry = studioManager.getStudioById(userEntry.getStudioId());
-        user.setStudio(studioManager.convertToEntity(studioEntry));
+        StudioEntry studioEntry = studioManager.getStudioById(userEntry.getStudioEntry().getStudioId());
+        user.setStudio(studioManager.convertToEntity(studioEntry, null));
 
         return user;
     }

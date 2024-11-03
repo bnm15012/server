@@ -1,20 +1,25 @@
 package com.dancestudio.erp.manager.impl;
 
 
+import com.cloudinary.Cloudinary;
 import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entity.BankAccount;
 import com.dancestudio.erp.entity.Instructor;
+import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.InstructorManager;
-import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,11 +27,10 @@ public class InstructorManagerImpl implements InstructorManager {
     private final InstructorRepository instructorRepository;
 
     @Autowired
-    private StudioManager studioManager;
+    private StudioManagerImpl studioManagerImpl;
 
     @Autowired
-    private StudioManagerImpl studioManagers;
-
+    private Cloudinary cloudinary;
 
     @Autowired
     public InstructorManagerImpl(InstructorRepository instructorRepository) {
@@ -35,17 +39,30 @@ public class InstructorManagerImpl implements InstructorManager {
 
     @Override
     public InstructorEntry addInstructor(InstructorEntry instructorEntry) throws EntityNotFoundException {
-        Instructor instructor = convertToEntity(instructorEntry);
+        Instructor instructor = convertToEntity(instructorEntry, null);
         return convertToEntry(instructorRepository.save(instructor));
     }
 
     @Override
     public InstructorEntry updateInstructor(Long instructorId, InstructorEntry instructorEntry) throws EntityNotFoundException {
-        Instructor instructor = instructorRepository.findById(instructorId)
+        Instructor existingInstructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
-        Instructor newInstructorEntry = convertToEntity(instructorEntry);
-        return convertToEntry(instructorRepository.save(newInstructorEntry));
+        Instructor updatedInstructor = convertToEntity(instructorEntry, existingInstructor);
+        return convertToEntry(instructorRepository.save(updatedInstructor));
+    }
+
+    @Override
+    public InstructorEntry uploadImage(MultipartFile file) throws EntityNotFoundException, IOException {
+        InstructorEntry entry = new InstructorEntry();
+
+        if (Objects.nonNull(file)) {
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), Map.of());
+            String imageUrl = (String) uploadResult.get("url");
+            entry.setImageUrl(imageUrl);
+        }
+
+        return entry;
     }
 
     @Override
@@ -79,13 +96,15 @@ public class InstructorManagerImpl implements InstructorManager {
 
     private InstructorEntry convertToEntry(Instructor instructor) {
         InstructorEntry instructorEntry = new InstructorEntry();
+        instructorEntry.setInstructorId(instructor.getId());
         instructorEntry.setName(instructor.getName());
         instructorEntry.setEmail(instructor.getEmail());
         instructorEntry.setPhone(instructor.getPhone());
+        instructorEntry.setImageUrl(instructor.getProfileImage());
 
         // Handle optional Studio
         if (instructor.getStudio() != null) {
-            instructorEntry.setStudioId(instructor.getStudio().getId());
+            instructorEntry.setStudioEntry(studioManagerImpl.convertToEntry(instructor.getStudio()));
         }
 
         instructorEntry.setInstructorStatus(instructor.getStatus());
@@ -124,30 +143,54 @@ public class InstructorManagerImpl implements InstructorManager {
         return instructorEntry;
     }
 
-    private Instructor convertToEntity(InstructorEntry instructorEntry) throws EntityNotFoundException {
+    private Instructor convertToEntity(InstructorEntry instructorEntry, Instructor existingInstructor) throws EntityNotFoundException {
+        Instructor instructor = (existingInstructor != null) ? existingInstructor : new Instructor();
 
-        Instructor instructor = new Instructor();
-        instructor.setId(instructorEntry.getInstructorId());
-        instructor.setName(instructorEntry.getName());
-        instructor.setEmail(instructorEntry.getEmail());
-        instructor.setPhone(instructorEntry.getPhone());
-        instructor.setProfileImage(instructorEntry.getProfileImage());
-        instructor.setStatus(instructorEntry.getInstructorStatus());
-
-        if (instructorEntry.getBankAccountDetails() != null) {
-            BankAccount bankAccount = new BankAccount();
-            bankAccount.setAccountNumber(instructorEntry.getBankAccountDetails().getAccountNumber());
-            bankAccount.setBankName(instructorEntry.getBankAccountDetails().getBankName());
-            bankAccount.setBranchName(instructorEntry.getBankAccountDetails().getBranchName());
-            bankAccount.setIfscCode(instructorEntry.getBankAccountDetails().getIfscCode());
-            bankAccount.setUpiId(instructorEntry.getBankAccountDetails().getUpiId());
-            instructor.setBankAccount(bankAccount);
-            bankAccount.setInstructor(instructor);
+        if (Objects.nonNull(instructorEntry.getName())) {
+            instructor.setName(instructorEntry.getName());
+        }
+        if (Objects.nonNull(instructorEntry.getEmail())) {
+            instructor.setEmail(instructorEntry.getEmail());
+        }
+        if (Objects.nonNull(instructorEntry.getPhone())) {
+            instructor.setPhone(instructorEntry.getPhone());
+        }
+        if (Objects.nonNull(instructorEntry.getInstructorStatus())) {
+            instructor.setStatus(instructorEntry.getInstructorStatus());
         }
 
-        if (instructorEntry.getStudioId() != null) {
-            StudioEntry studioEntry = studioManager.getStudioById(instructorEntry.getStudioId());
-            instructor.setStudio(studioManagers.convertToEntity(studioEntry));
+        // Bank account details
+        if (Objects.nonNull(instructorEntry.getBankAccountDetails())) {
+            BankAccount bankAccount = instructor.getBankAccount();
+            if (bankAccount == null) {
+                bankAccount = new BankAccount();
+            }
+            BankAccountEntry bankAccountEntry = instructorEntry.getBankAccountDetails();
+
+            if (Objects.nonNull(bankAccountEntry.getAccountNumber())) {
+                bankAccount.setAccountNumber(bankAccountEntry.getAccountNumber());
+            }
+            if (Objects.nonNull(bankAccountEntry.getBankName())) {
+                bankAccount.setBankName(bankAccountEntry.getBankName());
+            }
+            if (Objects.nonNull(bankAccountEntry.getBranchName())) {
+                bankAccount.setBranchName(bankAccountEntry.getBranchName());
+            }
+            if (Objects.nonNull(bankAccountEntry.getIfscCode())) {
+                bankAccount.setIfscCode(bankAccountEntry.getIfscCode());
+            }
+            if (Objects.nonNull(bankAccountEntry.getUpiId())) {
+                bankAccount.setUpiId(bankAccountEntry.getUpiId());
+            }
+            bankAccount.setInstructor(instructor);
+            instructor.setBankAccount(bankAccount);
+        }
+
+        if (instructorEntry.getStudioEntry() != null) {
+            StudioEntry studioEntry = instructorEntry.getStudioEntry();
+            Studio studio = studioManagerImpl.convertToEntity(studioEntry, null);
+
+            instructor.setStudio(studio);
         }
 
         return instructor;

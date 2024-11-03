@@ -4,6 +4,7 @@ import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.response.StudentResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface StudentService {
 
@@ -11,11 +12,13 @@ public interface StudentService {
 
     ResponseEntity<StudentResponse> updateStudent(Long studentId, StudentEntry studentEntry);
 
+    ResponseEntity<StudentResponse> uploadImage(MultipartFile file);
+
     ResponseEntity<Void> deleteStudent(Long studentId);
 
     ResponseEntity<StudentResponse> getStudentById(Long studentId);
 
-    ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus);
+    ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size);
 
     ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId);
 }

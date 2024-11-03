@@ -2,8 +2,9 @@ package com.dancestudio.erp.manager.impl;
 
 
 import com.dancestudio.erp.entity.Activity;
-import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.ActivityEntry;
+import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
 import com.dancestudio.erp.repository.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ActivityManagerImpl implements ActivityManager {
     private final ActivityRepository activityRepository;
+
+    @Autowired
+    private StudioManagerImpl studioManagerImpl;
 
     @Autowired
     public ActivityManagerImpl(ActivityRepository activityRepository) {
@@ -22,29 +27,33 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     @Override
-    public ActivityEntry addActivity(ActivityEntry activityEntry) {
-        Activity activity = convertToEntity(activityEntry);
+    public ActivityEntry addActivity(ActivityEntry activityEntry) throws EntityNotFoundException {
+        Activity activity = convertToEntity(activityEntry, null);
         return convertToEntry(activityRepository.save(activity));
     }
 
     @Override
-    public ActivityEntry updateActivity(Long activityId, ActivityEntry activityEntry) {
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new RuntimeException("Activity not found"));
+    public ActivityEntry updateActivity(Long activityId, ActivityEntry activityEntry) throws EntityNotFoundException {
+        Activity existingActivity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 
-        Activity newActivityEntry = convertToEntity(activityEntry);
-        return convertToEntry(activityRepository.save(newActivityEntry));
+        Activity updatedActivity = convertToEntity(activityEntry, existingActivity);
+        return convertToEntry(activityRepository.save(updatedActivity));
     }
 
     @Override
-    public void deleteActivity(Long activityId) {
+    public void deleteActivity(Long activityId) throws EntityNotFoundException {
+        activityRepository.findById(activityId)
+                .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
+
         activityRepository.deleteById(activityId);
     }
 
     @Override
-    public ActivityEntry getActivityById(Long activityId) {
+    public ActivityEntry getActivityById(Long activityId) throws EntityNotFoundException {
         Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new RuntimeException("Activity not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
+
         return convertToEntry(activity);
     }
 
@@ -72,13 +81,20 @@ public class ActivityManagerImpl implements ActivityManager {
         return activityEntry;
     }
 
-    private Activity convertToEntity(ActivityEntry activityEntry) {
+    private Activity convertToEntity(ActivityEntry activityEntry, Activity existingActivity) throws EntityNotFoundException {
+        Activity activity = (existingActivity != null) ? existingActivity : new Activity();
 
-        Activity activity = new Activity();
-        activity.setId(activityEntry.getActivityId());
-        activity.setActivityType(activityEntry.getActivityType());
-        activity.setDescription(activityEntry.getDescription());
-        activity.setStudio(new Studio());
+        if (Objects.nonNull(activityEntry.getActivityType())) {
+            activity.setActivityType(activityEntry.getActivityType());
+        }
+        if (Objects.nonNull(activityEntry.getDescription())) {
+            activity.setDescription(activityEntry.getDescription());
+        }
+
+        if (activityEntry.getStudioId() != null) {
+            StudioEntry studioEntry = studioManagerImpl.getStudioById(activityEntry.getStudioId());
+            activity.setStudio(studioManagerImpl.convertToEntity(studioEntry, null));
+        }
 
         return activity;
     }

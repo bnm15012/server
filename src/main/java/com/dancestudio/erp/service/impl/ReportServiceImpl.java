@@ -7,6 +7,8 @@ import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.service.ReportService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,14 +21,17 @@ public class ReportServiceImpl implements ReportService {
     private ReportManager reportManager;
 
     @Override
-    public ReportResponse generateIncomeReport(Long year) {
-
+    public ResponseEntity<ReportResponse> generateIncomeReport(Long year) {
         ReportResponse response = new ReportResponse();
+        try {
+            List<ReportEntry> reportEntries = reportManager.generateIncomeReport(year);
+            response.setData(reportEntries);
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(reportEntries) ? 0 : reportEntries.size()));
 
-        List<ReportEntry> reportEntries = reportManager.generateIncomeReport(year);
-        response.setData(reportEntries);
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(reportEntries) ? 0 : reportEntries.size()));
-
-        return response;
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class StudioManagerImpl implements StudioManager {
@@ -27,17 +28,17 @@ public class StudioManagerImpl implements StudioManager {
 
     @Override
     public StudioEntry addStudio(StudioEntry studioEntry) {
-        Studio studio = convertToEntity(studioEntry);
+        Studio studio = convertToEntity(studioEntry, null);
         return convertToEntry(studioRepository.save(studio));
     }
 
     @Override
     public StudioEntry updateStudio(Long studioId, StudioEntry studioEntry) throws EntityNotFoundException {
-        Studio studio = studioRepository.findById(studioId)
+        Studio existingStudio = studioRepository.findById(studioId)
                 .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
 
-        Studio newStudioEntry = convertToEntity(studioEntry);
-        return convertToEntry(studioRepository.save(newStudioEntry));
+        Studio updatedStudio = convertToEntity(studioEntry, existingStudio);
+        return convertToEntry(studioRepository.save(updatedStudio));
     }
 
     @Override
@@ -77,7 +78,7 @@ public class StudioManagerImpl implements StudioManager {
         return studioEntries;
     }
 
-    private StudioEntry convertToEntry(Studio studio) {
+    public StudioEntry convertToEntry(Studio studio) {
 
         StudioEntry studioEntry = new StudioEntry();
         studioEntry.setStudioId(studio.getId());
@@ -88,14 +89,22 @@ public class StudioManagerImpl implements StudioManager {
         return studioEntry;
     }
 
-    public Studio convertToEntity(StudioEntry studioEntry) {
+    public Studio convertToEntity(StudioEntry studioEntry, Studio existingStudio) {
+        Studio studio = (existingStudio != null) ? existingStudio : new Studio();
 
-        Studio studio = new Studio();
-        studio.setId(studioEntry.getStudioId());
-        studio.setName(studioEntry.getStudioName());
-        studio.setLogo(studioEntry.getLogo());
-        studio.setLocation(studioEntry.getLocation());
-        studio.setContactDetails(studioEntry.getContactDetails());
+        // Update fields if they are not null
+        if (Objects.nonNull(studioEntry.getStudioName())) {
+            studio.setName(studioEntry.getStudioName());
+        }
+        if (Objects.nonNull(studioEntry.getLogo())) {
+            studio.setLogo(studioEntry.getLogo());
+        }
+        if (Objects.nonNull(studioEntry.getLocation())) {
+            studio.setLocation(studioEntry.getLocation());
+        }
+        if (Objects.nonNull(studioEntry.getContactDetails())) {
+            studio.setContactDetails(studioEntry.getContactDetails());
+        }
 
         return studio;
     }

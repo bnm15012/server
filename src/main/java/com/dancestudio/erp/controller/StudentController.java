@@ -7,6 +7,7 @@ import com.dancestudio.erp.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/students")
@@ -25,6 +26,12 @@ public class StudentController {
         return studentService.updateStudent(studentId, studentEntry);
     }
 
+    @PostMapping("/uploadImage")
+    public ResponseEntity<StudentResponse> uploadImage(@RequestParam("image") MultipartFile file) {
+        return studentService.uploadImage(file);
+    }
+
+
     @DeleteMapping("/delete/{studentId}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long studentId) {
         return studentService.deleteStudent(studentId);
@@ -36,10 +43,13 @@ public class StudentController {
     }
 
     @GetMapping("/getAllStudents/{studioId}")
-    public ResponseEntity<StudentResponse> getAllStudents(@PathVariable Long studioId,
-                                          @RequestParam(required = false) Long activityId,
-                                          @RequestParam(required = false) MembershipStatus membershipStatus) {
-        return studentService.getAllStudents(studioId, activityId, membershipStatus);
+    public ResponseEntity<StudentResponse> getAllStudents(
+            @PathVariable Long studioId,
+            @RequestParam(required = false) Long activityId,
+            @RequestParam(required = false) MembershipStatus membershipStatus,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "-1") int size) {
+        return studentService.getAllStudents(studioId, activityId, membershipStatus, page, size);
     }
 
     @PostMapping("/sendSubscriptionRenewalReminder/{studentId}")

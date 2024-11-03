@@ -2,12 +2,15 @@ package com.dancestudio.erp.service;
 
 import com.dancestudio.erp.entry.MembershipFeeEntry;
 import com.dancestudio.erp.response.MembershipFeeResponse;
+import org.springframework.http.ResponseEntity;
 
 public interface MembershipFeeService {
 
-    MembershipFeeResponse addMembershipFee(MembershipFeeEntry membershipFeeEntry);
+    ResponseEntity<MembershipFeeResponse> addMembershipFee(MembershipFeeEntry membershipFeeEntry);
 
-    MembershipFeeResponse updateMembershipFee(Long id, Double newFeeAmount);
+    ResponseEntity<MembershipFeeResponse> updateMembershipFee(Long id, Double newFeeAmount);
 
-    MembershipFeeResponse getMembershipFeesByStudio(Long studioId);
+    ResponseEntity<MembershipFeeResponse> getMembershipFee(Long id);
+
+    ResponseEntity<MembershipFeeResponse> getMembershipFeesByStudio(Long studioId);
 }

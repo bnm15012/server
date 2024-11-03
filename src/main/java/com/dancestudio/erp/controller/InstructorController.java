@@ -7,6 +7,7 @@ import com.dancestudio.erp.service.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/instructors")
@@ -23,6 +24,11 @@ public class InstructorController {
     @PutMapping("/update/{instructorId}")
     public ResponseEntity<InstructorResponse> updateInstructor(@PathVariable Long instructorId, @RequestBody InstructorEntry instructorEntry) {
         return instructorService.updateInstructor(instructorId, instructorEntry);
+    }
+
+    @PostMapping("/uploadImage")
+    public ResponseEntity<InstructorResponse> uploadImage(@RequestParam("image") MultipartFile file) {
+        return instructorService.uploadImage(file);
     }
 
     @DeleteMapping("/delete/{instructorId}")

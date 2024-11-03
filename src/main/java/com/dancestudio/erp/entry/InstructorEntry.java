@@ -12,10 +12,10 @@ public class InstructorEntry {
     private String name;
     private String email;
     private String phone;
-    private String profileImage;
+    private String imageUrl;
     private MembershipStatus instructorStatus;
     private BankAccountEntry bankAccountDetails;
-    private Long studioId;
+    private StudioEntry studioEntry;
 
     private List<InstructorActivityAssignmentEntry> assignments;
 }

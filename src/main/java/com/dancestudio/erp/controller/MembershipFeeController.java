@@ -4,27 +4,33 @@ import com.dancestudio.erp.entry.MembershipFeeEntry;
 import com.dancestudio.erp.response.MembershipFeeResponse;
 import com.dancestudio.erp.service.MembershipFeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/membership")
 public class MembershipFeeController {
 
     @Autowired
     private MembershipFeeService membershipFeeService;
 
-    @PostMapping
-    public MembershipFeeResponse createMembershipFee(@RequestBody MembershipFeeEntry membershipFeeEntry) {
+    @PostMapping("/create")
+    public ResponseEntity<MembershipFeeResponse> createMembershipFee(@RequestBody MembershipFeeEntry membershipFeeEntry) {
         return membershipFeeService.addMembershipFee(membershipFeeEntry);
     }
 
-    @PutMapping("/{id}")
-    public MembershipFeeResponse updateMembershipFee(@PathVariable Long id, @RequestParam Double newFeeAmount) {
+    @GetMapping("/get/{id}")
+    public ResponseEntity<MembershipFeeResponse> getMembershipFee(@PathVariable Long id) {
+        return membershipFeeService.getMembershipFee(id);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<MembershipFeeResponse> updateMembershipFee(@PathVariable Long id, @RequestParam Double newFeeAmount) {
         return membershipFeeService.updateMembershipFee(id, newFeeAmount);
     }
 
-    @GetMapping("/{studioId}")
-    public MembershipFeeResponse getFeesByStudio(@PathVariable Long studioId) {
+    @GetMapping("/getFeesByStudio/{studioId}")
+    public ResponseEntity<MembershipFeeResponse> getFeesByStudio(@PathVariable Long studioId) {
         return membershipFeeService.getMembershipFeesByStudio(studioId);
     }
 

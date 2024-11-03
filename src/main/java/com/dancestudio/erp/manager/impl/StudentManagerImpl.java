@@ -1,5 +1,6 @@
 package com.dancestudio.erp.manager.impl;
 
+import com.cloudinary.Cloudinary;
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
@@ -7,14 +8,20 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EmailManager;
 import com.dancestudio.erp.manager.StudentManager;
 import com.dancestudio.erp.repository.StudentRepository;
-import com.dancestudio.erp.service.impl.AzureBlobUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentManagerImpl implements StudentManager {
@@ -25,7 +32,7 @@ public class StudentManagerImpl implements StudentManager {
     private EmailManager emailManager;
 
     @Autowired
-    private AzureBlobUploadService azureBlobUploadService;
+    private Cloudinary cloudinary;
 
     @Autowired
     public StudentManagerImpl(StudentRepository studentRepository) {
@@ -34,10 +41,7 @@ public class StudentManagerImpl implements StudentManager {
 
     @Override
     public StudentEntry addStudent(StudentEntry studentEntry) throws Exception {
-        Student student = convertToEntity(studentEntry);
-
-        String imageUrl = azureBlobUploadService.uploadImageToBlob(studentEntry.getStudioId(), "Students", studentEntry.getName(), studentEntry.getProfileImage());
-        student.setProfileImage(imageUrl);
+        Student student = convertToEntity(studentEntry, null);
         studentRepository.save(student);
 
         emailManager.sendRegistrationEmail(student);
@@ -46,15 +50,24 @@ public class StudentManagerImpl implements StudentManager {
 
     @Override
     public StudentEntry updateStudent(Long studentId, StudentEntry studentEntry) throws EntityNotFoundException {
-        Student student = studentRepository.findById(studentId)
+        Student existingStudent = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-        if (Objects.nonNull(studentEntry.getProfileImage())) {
-            String imageUrl = azureBlobUploadService.uploadImageToBlob(studentEntry.getStudioId(), "Students", studentEntry.getName(), studentEntry.getProfileImage());
-            student.setProfileImage(imageUrl);
+        Student updatedStudentEntry = convertToEntity(studentEntry, existingStudent);
+        return convertToEntry(studentRepository.save(updatedStudentEntry));
+    }
+
+    @Override
+    public StudentEntry uploadImage(MultipartFile file) throws EntityNotFoundException, IOException {
+        StudentEntry entry = new StudentEntry();
+
+        if (Objects.nonNull(file)) {
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), Map.of());
+            String imageUrl = (String) uploadResult.get("url");
+            entry.setImageUrl(imageUrl);
         }
-        Student newStudentEntry = convertToEntity(studentEntry);
-        return convertToEntry(studentRepository.save(newStudentEntry));
+
+        return entry;
     }
 
     @Override
@@ -74,16 +87,19 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus) {
-        List<Student> entries = studentRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, activityId, membershipStatus);
-
-        List<StudentEntry> studentEntries = new ArrayList<>();
-        for (Student entry : entries) {
-            StudentEntry studentEntry = convertToEntry(entry);
-            studentEntries.add(studentEntry);
+    public List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size) {
+        if (size == -1) {
+            List<Student> entries = studentRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, activityId, membershipStatus);
+            return entries.stream()
+                    .map(this::convertToEntry)
+                    .collect(Collectors.toList());
+        } else {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Student> studentPage = studentRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, activityId, membershipStatus, pageable);
+            return studentPage.getContent().stream()
+                    .map(this::convertToEntry)
+                    .collect(Collectors.toList());
         }
-
-        return studentEntries;
     }
 
     @Override
@@ -119,12 +135,7 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setStudentId(student.getId());
         studentEntry.setName(student.getName());
         studentEntry.setPhone(student.getPhone());
-
-//        byte[] imageBytes = azureBlobUploadService.getImageInBytes(student.getProfileImage());
-
-        byte[] imageBytes = null;
-        studentEntry.setProfileImage(imageBytes);
-
+        studentEntry.setImageUrl(student.getProfileImage());
         studentEntry.setRegistrationDate(student.getRegistrationDate());
         studentEntry.setMembershipStatus(student.getStatus());
         studentEntry.setStudioId(student.getStudio().getId());
@@ -135,16 +146,27 @@ public class StudentManagerImpl implements StudentManager {
         return studentEntry;
     }
 
-    private Student convertToEntity(StudentEntry studentEntry) {
+    private Student convertToEntity(StudentEntry studentEntry, Student existingStudent) {
+        Student student = (existingStudent != null) ? existingStudent : new Student();
 
-        Student student = new Student();
-        student.setId(studentEntry.getStudentId());
-        student.setName(studentEntry.getName());
-        student.setEmail(studentEntry.getEmail());
-        student.setPhone(studentEntry.getPhone());
-        student.setProfileImage(studentEntry.getImageUrl());
-        student.setRegistrationDate(studentEntry.getRegistrationDate());
-        student.setStatus(studentEntry.getMembershipStatus());
+        if (Objects.nonNull(studentEntry.getName())) {
+            student.setName(studentEntry.getName());
+        }
+        if (Objects.nonNull(studentEntry.getEmail())) {
+            student.setEmail(studentEntry.getEmail());
+        }
+        if (Objects.nonNull(studentEntry.getPhone())) {
+            student.setPhone(studentEntry.getPhone());
+        }
+        if (Objects.nonNull(studentEntry.getImageUrl())) {
+            student.setProfileImage(studentEntry.getImageUrl());
+        }
+        if (Objects.nonNull(studentEntry.getRegistrationDate())) {
+            student.setRegistrationDate(studentEntry.getRegistrationDate());
+        }
+        if (Objects.nonNull(studentEntry.getMembershipStatus())) {
+            student.setStatus(studentEntry.getMembershipStatus());
+        }
 
         return student;
     }

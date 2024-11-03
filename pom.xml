@@ -67,6 +67,13 @@
             <version>12.23.0</version>
         </dependency>
 
+        <!-- Cloudinery -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.33.0</version>
+        </dependency>
+
         <!-- Email dependency-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

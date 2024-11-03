@@ -12,7 +12,7 @@ public class UserEntry {
     private String email;
     private String phone;
     private UserType role;
-    private Long studioId;
+    private StudioEntry studioEntry;
 
     private String token;
 

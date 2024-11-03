@@ -31,7 +31,7 @@ public abstract class BaseEntity {
     private Date lastModifiedOn;
 
     @Version
-    @Column(name = "version")
+    @Column(name = "version", nullable = false, columnDefinition = "bigint DEFAULT 0")
     protected Long version = 0L;
 
     public BaseEntity(Long id, String createdBy) {

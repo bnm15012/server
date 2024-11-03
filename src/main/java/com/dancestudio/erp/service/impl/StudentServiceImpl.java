@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,6 +58,21 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public ResponseEntity<StudentResponse> uploadImage(MultipartFile file) {
+        StudentResponse response = new StudentResponse();
+
+        try {
+            StudentEntry entry = studentManager.uploadImage(file);
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, "Image uploaded successfully", StatusResponse.Type.SUCCESS));
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(1, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
     public ResponseEntity<Void> deleteStudent(Long studentId) {
         try {
             studentManager.deleteStudent(studentId);
@@ -87,11 +103,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus) {
+    public ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size) {
         StudentResponse response = new StudentResponse();
 
         try {
-            List<StudentEntry> entries = studentManager.getAllStudentsByStudio(studioId, activityId, membershipStatus);
+            List<StudentEntry> entries = studentManager.getAllStudentsByStudio(studioId, activityId, membershipStatus, page, size);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : entries.size()));
             return ResponseEntity.ok(response);

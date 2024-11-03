@@ -57,11 +57,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserResponse> updateUser(Long studioId, UserEntry userEntry) {
+    public ResponseEntity<UserResponse> updateUser(Long userId, UserEntry userEntry) {
         UserResponse response = new UserResponse();
 
         try {
-            UserEntry entry = userManager.updateUser(studioId, userEntry);
+            UserEntry entry = userManager.updateUser(userId, userEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "User updated successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);

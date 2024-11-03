@@ -9,7 +9,9 @@ public interface MembershipFeeManager {
 
     MembershipFeeEntry addMembershipFee(MembershipFeeEntry membershipFeeEntry) throws EntityNotFoundException;
 
-    MembershipFeeEntry updateMembershipFee(Long id, Double newFeeAmount);
+    MembershipFeeEntry updateMembershipFee(Long id, Double newFeeAmount) throws EntityNotFoundException;
+
+    MembershipFeeEntry getMembershipFeeById(Long id) throws EntityNotFoundException;
 
     List<MembershipFeeEntry> getMembershipFeesByStudio(Long studioId);
 

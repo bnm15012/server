@@ -5,6 +5,7 @@ import com.dancestudio.erp.enums.MembershipStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -29,13 +30,16 @@ public class Instructor extends BaseEntity {
     private MembershipStatus status;
 
     @OneToOne(mappedBy = "instructor", cascade = CascadeType.ALL, optional = true)
+    @ToString.Exclude
     private BankAccount bankAccount;
 
     @ManyToOne
     @JoinColumn(name = "studio_id", nullable = true)
+    @ToString.Exclude
     private Studio studio;
 
     @OneToMany(mappedBy = "instructor")
+    @ToString.Exclude
     private List<InstructorActivityAssignment> assignments;
 
 }

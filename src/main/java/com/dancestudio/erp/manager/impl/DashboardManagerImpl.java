@@ -25,13 +25,13 @@ public class DashboardManagerImpl implements DashboardManager {
     public DashboardEntry getDashboardDetails(Long studioId) {
         DashboardEntry entry = new DashboardEntry();
 
-        List<StudentEntry> studentEntryList = studentManager.getAllStudentsByStudio(studioId, null, null);
+        List<StudentEntry> studentEntryList = studentManager.getAllStudentsByStudio(studioId, null, null, 0, -1);
         entry.setTotalStudents((long) studentEntryList.size());
 
         List<InstructorEntry> instructorEntryList = instructorManager.getAllInstructorsByStudio(studioId, null);
         entry.setTotalInstructors((long) instructorEntryList.size());
 
-        studentEntryList = studentManager.getAllStudentsByStudio(studioId, null, MembershipStatus.ACTIVE);
+        studentEntryList = studentManager.getAllStudentsByStudio(studioId, null, MembershipStatus.ACTIVE, 0, -1);
         entry.setTotalActiveMemberships((long) studentEntryList.size());
 
         return entry;

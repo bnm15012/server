@@ -3,10 +3,8 @@ package com.dancestudio.erp.controller;
 import com.dancestudio.erp.entry.ActivityEntry;
 import com.dancestudio.erp.response.ActivityResponse;
 import com.dancestudio.erp.service.ActivityService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,32 +15,27 @@ public class ActivityController {
     private ActivityService activityService;
 
     @PostMapping("/add")
-    public ActivityResponse addActivity(@RequestBody ActivityEntry activityEntry) {
+    public ResponseEntity<ActivityResponse> addActivity(@RequestBody ActivityEntry activityEntry) {
         return activityService.addActivity(activityEntry);
     }
 
     @PutMapping("/update/{activityId}")
-    public ActivityResponse updateActivity(@PathVariable Long activityId, @RequestBody ActivityEntry activityEntry) {
+    public ResponseEntity<ActivityResponse> updateActivity(@PathVariable Long activityId, @RequestBody ActivityEntry activityEntry) {
         return activityService.updateActivity(activityId, activityEntry);
     }
 
     @DeleteMapping("/delete/{activityId}")
-    public void deleteActivity(@PathVariable Long activityId) {
-        activityService.deleteActivity(activityId);
+    public ResponseEntity<Void> deleteActivity(@PathVariable Long activityId) {
+        return activityService.deleteActivity(activityId);
     }
 
     @GetMapping("/get/{activityId}")
-    @Operation(summary = "Get a greeting message")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ActivityResponse getActivityById(@PathVariable Long activityId) {
+    public ResponseEntity<ActivityResponse> getActivityById(@PathVariable Long activityId) {
         return activityService.getActivityById(activityId);
     }
 
     @GetMapping("/getAllActivities/{studioId}")
-    public ActivityResponse getAllActivities(@PathVariable Long studioId) {
+    public ResponseEntity<ActivityResponse> getAllActivities(@PathVariable Long studioId) {
         return activityService.getAllActivities(studioId);
     }
 }

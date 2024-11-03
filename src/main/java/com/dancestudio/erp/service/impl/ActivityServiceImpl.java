@@ -2,17 +2,19 @@ package com.dancestudio.erp.service.impl;
 
 
 import com.dancestudio.erp.entry.ActivityEntry;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
 import com.dancestudio.erp.response.ActivityResponse;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.service.ActivityService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @Setter(onMethod = @__({@Autowired}))
 @Component
@@ -21,51 +23,85 @@ public class ActivityServiceImpl implements ActivityService {
     private ActivityManager activityManager;
 
     @Override
-    public ActivityResponse addActivity(ActivityEntry activityEntry) {
+    public ResponseEntity<ActivityResponse> addActivity(ActivityEntry activityEntry) {
         ActivityResponse response = new ActivityResponse();
 
-        ActivityEntry entry = activityManager.addActivity(activityEntry);
-        response.setData(Collections.singletonList(entry));
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
+        try {
+            ActivityEntry entry = activityManager.addActivity(activityEntry);
 
-        return response;
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Override
-    public ActivityResponse updateActivity(Long activityId, ActivityEntry activityEntry) {
+    public ResponseEntity<ActivityResponse> updateActivity(Long activityId, ActivityEntry activityEntry) {
         ActivityResponse response = new ActivityResponse();
 
-        ActivityEntry entry = activityManager.updateActivity(activityId, activityEntry);
-        response.setData(Collections.singletonList(entry));
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
+        try {
+            ActivityEntry entry = activityManager.updateActivity(activityId, activityEntry);
 
-        return response;
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (EntityNotFoundException e) {
+            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Override
-    public void deleteActivity(Long activityId) {
-        activityManager.deleteActivity(activityId);
+    public ResponseEntity<Void> deleteActivity(Long activityId) {
+        try {
+            activityManager.deleteActivity(activityId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Override
-    public ActivityResponse getActivityById(Long activityId) {
+    public ResponseEntity<ActivityResponse> getActivityById(Long activityId) {
         ActivityResponse response = new ActivityResponse();
 
-        ActivityEntry entry = activityManager.getActivityById(activityId);
-        response.setData(Collections.singletonList(entry));
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
+        try {
+            ActivityEntry entry = activityManager.getActivityById(activityId);
 
-        return response;
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (EntityNotFoundException e) {
+            response.setData(Collections.emptyList());
+            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Override
-    public ActivityResponse getAllActivities(Long studioId) {
+    public ResponseEntity<ActivityResponse> getAllActivities(Long studioId) {
         ActivityResponse response = new ActivityResponse();
 
-        List<ActivityEntry> entry = activityManager.getAllActivities(studioId);
-        response.setData(entry);
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : entry.size()));
+        try {
+            List<ActivityEntry> entries = activityManager.getAllActivities(studioId);
 
-        return response;
+            response.setData(entries);
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, entries.size()));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }
