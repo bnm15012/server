@@ -84,7 +84,6 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
         if (membershipFeeEntry.getMembershipType() != null) {
             membershipFee.setMembershipType(membershipFeeEntry.getMembershipType());
         }
-
         if (membershipFeeEntry.getAmount() != null) {
             membershipFee.setFeeAmount(membershipFeeEntry.getAmount());
         }

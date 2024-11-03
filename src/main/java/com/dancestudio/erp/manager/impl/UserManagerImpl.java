@@ -43,8 +43,7 @@ public class UserManagerImpl implements UserManager {
 
         // Hash the password before saving
         userEntry.setPassword(hashPassword(userEntry.getPassword()));
-
-        User user = convertToEntity(userEntry);
+        User user = convertToEntity(userEntry, null);
         UserEntry entry = convertToEntry(userRepository.save(user));
 
         String token = jwtUtil.generateAuthToken(user.getEmail());
@@ -138,20 +137,34 @@ public class UserManagerImpl implements UserManager {
         return userEntry;
     }
 
-    public User convertToEntity(UserEntry userEntry) throws Exception {
-        if (Objects.isNull(userEntry.getRole())) {
-            throw new Exception("RoleType is not a enum");
+    public User convertToEntity(UserEntry userEntry, User existingUser) throws Exception {
+        User user = (existingUser != null) ? existingUser : new User();
+
+        if (Objects.nonNull(userEntry.getUserId())) {
+            user.setId(userEntry.getUserId());
+        }
+        if (Objects.nonNull(userEntry.getUserName())) {
+            user.setName(userEntry.getUserName());
+        }
+        if (Objects.nonNull(userEntry.getPassword())) {
+            user.setPassword(userEntry.getPassword());
+        }
+        if (Objects.nonNull(userEntry.getRole())) {
+            user.setRole(String.valueOf(userEntry.getRole()));
+        }
+        if (Objects.nonNull(userEntry.getPhone())) {
+            user.setPhone(userEntry.getPhone());
+        }
+        if (Objects.nonNull(userEntry.getEmail())) {
+            user.setEmail(userEntry.getEmail());
         }
 
-        User user = new User();
-        user.setName(userEntry.getUserName());
-        user.setPassword(userEntry.getPassword());
-        user.setRole(String.valueOf(userEntry.getRole()));
-        user.setPhone(userEntry.getPhone());
-        user.setEmail(userEntry.getEmail());
+        if (Objects.nonNull(userEntry.getStudioEntry()) && Objects.nonNull(userEntry.getStudioEntry().getStudioId())) {
+            Long studioId = userEntry.getStudioEntry().getStudioId();
 
-        StudioEntry studioEntry = studioManager.getStudioById(userEntry.getStudioEntry().getStudioId());
-        user.setStudio(studioManager.convertToEntity(studioEntry, null));
+            StudioEntry studioEntry = studioManager.getStudioById(studioId);
+            user.setStudio(studioManager.convertToEntity(studioEntry, null));
+        }
 
         return user;
     }

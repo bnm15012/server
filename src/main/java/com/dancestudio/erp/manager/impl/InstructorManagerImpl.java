@@ -1,7 +1,6 @@
 package com.dancestudio.erp.manager.impl;
 
 
-import com.cloudinary.Cloudinary;
 import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entity.BankAccount;
 import com.dancestudio.erp.entity.Instructor;
@@ -13,12 +12,9 @@ import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.repository.InstructorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -28,9 +24,6 @@ public class InstructorManagerImpl implements InstructorManager {
 
     @Autowired
     private StudioManagerImpl studioManagerImpl;
-
-    @Autowired
-    private Cloudinary cloudinary;
 
     @Autowired
     public InstructorManagerImpl(InstructorRepository instructorRepository) {
@@ -50,19 +43,6 @@ public class InstructorManagerImpl implements InstructorManager {
 
         Instructor updatedInstructor = convertToEntity(instructorEntry, existingInstructor);
         return convertToEntry(instructorRepository.save(updatedInstructor));
-    }
-
-    @Override
-    public InstructorEntry uploadImage(MultipartFile file) throws EntityNotFoundException, IOException {
-        InstructorEntry entry = new InstructorEntry();
-
-        if (Objects.nonNull(file)) {
-            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), Map.of());
-            String imageUrl = (String) uploadResult.get("url");
-            entry.setImageUrl(imageUrl);
-        }
-
-        return entry;
     }
 
     @Override
@@ -122,30 +102,36 @@ public class InstructorManagerImpl implements InstructorManager {
         }
 
         // Convert InstructorActivityAssignment to InstructorActivityAssignmentEntry
-        List<InstructorActivityAssignmentEntry> assignmentEntries = instructor.getAssignments().stream()
-                .map(assignment -> {
-                    InstructorActivityAssignmentEntry assignmentEntry = new InstructorActivityAssignmentEntry();
-                    assignmentEntry.setAssignmentId(assignment.getId());
-                    assignmentEntry.setAssignedDate(assignment.getAssignedDate());
+        if (instructor.getAssignments() != null) {
+            List<InstructorActivityAssignmentEntry> assignmentEntries = instructor.getAssignments().stream()
+                    .map(assignment -> {
+                        InstructorActivityAssignmentEntry assignmentEntry = new InstructorActivityAssignmentEntry();
+                        assignmentEntry.setAssignmentId(assignment.getId());
+                        assignmentEntry.setAssignedDate(assignment.getAssignedDate());
 
-                    // Convert Activity to ActivityEntry
-                    Activity activity = assignment.getActivity();
-                    ActivityEntry activityEntry = new ActivityEntry();
-                    activityEntry.setActivityId(activity.getId());
-                    activityEntry.setActivityType(activity.getActivityType());
-                    activityEntry.setDescription(activity.getDescription());
+                        // Convert Activity to ActivityEntry
+                        Activity activity = assignment.getActivity();
+                        ActivityEntry activityEntry = new ActivityEntry();
+                        activityEntry.setActivityId(activity.getId());
+                        activityEntry.setActivityType(activity.getActivityType());
+                        activityEntry.setDescription(activity.getDescription());
 
-                    assignmentEntry.setActivity(activityEntry);
-                    return assignmentEntry;
-                }).collect(Collectors.toList());
+                        assignmentEntry.setActivity(activityEntry);
+                        return assignmentEntry;
+                    }).collect(Collectors.toList());
 
-        instructorEntry.setAssignments(assignmentEntries);
+            instructorEntry.setAssignments(assignmentEntries);
+        }
+
         return instructorEntry;
     }
 
     private Instructor convertToEntity(InstructorEntry instructorEntry, Instructor existingInstructor) throws EntityNotFoundException {
         Instructor instructor = (existingInstructor != null) ? existingInstructor : new Instructor();
 
+        if (Objects.nonNull(instructorEntry.getInstructorId())) {
+            instructor.setId(instructorEntry.getInstructorId());
+        }
         if (Objects.nonNull(instructorEntry.getName())) {
             instructor.setName(instructorEntry.getName());
         }
@@ -154,6 +140,9 @@ public class InstructorManagerImpl implements InstructorManager {
         }
         if (Objects.nonNull(instructorEntry.getPhone())) {
             instructor.setPhone(instructorEntry.getPhone());
+        }
+        if (Objects.nonNull(instructorEntry.getImageUrl())) {
+            instructor.setProfileImage(instructorEntry.getImageUrl());
         }
         if (Objects.nonNull(instructorEntry.getInstructorStatus())) {
             instructor.setStatus(instructorEntry.getInstructorStatus());

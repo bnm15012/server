@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -61,22 +60,6 @@ public class InstructorServiceImpl implements InstructorService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
-    @Override
-    public ResponseEntity<InstructorResponse> uploadImage(MultipartFile file) {
-        InstructorResponse response = new InstructorResponse();
-
-        try {
-            InstructorEntry entry = instructorManager.uploadImage(file);
-            response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, "Image uploaded successfully", StatusResponse.Type.SUCCESS));
-            return ResponseEntity.ok(response);
-        } catch (Exception ex) {
-            response.setStatus(new StatusResponse(1, ex.getMessage(), StatusResponse.Type.ERROR));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
 
     @Override
     public ResponseEntity<Void> deleteInstructor(Long instructorId) {

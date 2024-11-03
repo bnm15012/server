@@ -4,15 +4,12 @@ import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.response.StudentResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface StudentService {
 
     ResponseEntity<StudentResponse> addStudent(StudentEntry studentEntry);
 
     ResponseEntity<StudentResponse> updateStudent(Long studentId, StudentEntry studentEntry);
-
-    ResponseEntity<StudentResponse> uploadImage(MultipartFile file);
 
     ResponseEntity<Void> deleteStudent(Long studentId);
 

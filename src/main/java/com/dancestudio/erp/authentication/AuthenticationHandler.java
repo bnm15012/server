@@ -31,7 +31,7 @@ public class AuthenticationHandler extends OncePerRequestFilter {
 
         List<String> excludedPaths = List.of("/swagger-ui", "/refreshToken", "api-docs", "/v3/api-docs", "/swagger-ui.html", "/users/login", "/password/reset");
         if (excludedPaths.stream().anyMatch(requestURI::contains)) {
-            filterChain.doFilter(request, response); // Skip JWT validation for these paths
+            filterChain.doFilter(request, response);
             return;
         }
 

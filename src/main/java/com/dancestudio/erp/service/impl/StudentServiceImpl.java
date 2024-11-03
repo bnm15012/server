@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,21 +52,6 @@ public class StudentServiceImpl implements StudentService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    @Override
-    public ResponseEntity<StudentResponse> uploadImage(MultipartFile file) {
-        StudentResponse response = new StudentResponse();
-
-        try {
-            StudentEntry entry = studentManager.uploadImage(file);
-            response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, "Image uploaded successfully", StatusResponse.Type.SUCCESS));
-            return ResponseEntity.ok(response);
-        } catch (Exception ex) {
-            response.setStatus(new StatusResponse(1, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

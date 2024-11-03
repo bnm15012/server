@@ -15,6 +15,13 @@ public class StatusResponse implements Serializable {
         this.statusType = Type.SUCCESS;
     }
 
+    public StatusResponse(int statusCode, String statusMessage, Type type, int totalCount) {
+        this.statusCode = statusCode;
+        this.statusMessage = statusMessage;
+        this.statusType = type;
+        this.totalCount = totalCount;
+    }
+
     public StatusResponse(int statusCode, String statusMessage, Type type) {
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;

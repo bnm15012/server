@@ -92,7 +92,9 @@ public class StudioManagerImpl implements StudioManager {
     public Studio convertToEntity(StudioEntry studioEntry, Studio existingStudio) {
         Studio studio = (existingStudio != null) ? existingStudio : new Studio();
 
-        // Update fields if they are not null
+        if (Objects.nonNull(studioEntry.getStudioId())) {
+            studio.setId(studioEntry.getStudioId());
+        }
         if (Objects.nonNull(studioEntry.getStudioName())) {
             studio.setName(studioEntry.getStudioName());
         }

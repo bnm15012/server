@@ -1,6 +1,5 @@
 package com.dancestudio.erp.manager.impl;
 
-import com.cloudinary.Cloudinary;
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
@@ -13,13 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -30,9 +26,6 @@ public class StudentManagerImpl implements StudentManager {
 
     @Autowired
     private EmailManager emailManager;
-
-    @Autowired
-    private Cloudinary cloudinary;
 
     @Autowired
     public StudentManagerImpl(StudentRepository studentRepository) {
@@ -55,19 +48,6 @@ public class StudentManagerImpl implements StudentManager {
 
         Student updatedStudentEntry = convertToEntity(studentEntry, existingStudent);
         return convertToEntry(studentRepository.save(updatedStudentEntry));
-    }
-
-    @Override
-    public StudentEntry uploadImage(MultipartFile file) throws EntityNotFoundException, IOException {
-        StudentEntry entry = new StudentEntry();
-
-        if (Objects.nonNull(file)) {
-            Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), Map.of());
-            String imageUrl = (String) uploadResult.get("url");
-            entry.setImageUrl(imageUrl);
-        }
-
-        return entry;
     }
 
     @Override
@@ -149,6 +129,9 @@ public class StudentManagerImpl implements StudentManager {
     private Student convertToEntity(StudentEntry studentEntry, Student existingStudent) {
         Student student = (existingStudent != null) ? existingStudent : new Student();
 
+        if (Objects.nonNull(studentEntry.getStudentId())) {
+            student.setId(studentEntry.getStudentId());
+        }
         if (Objects.nonNull(studentEntry.getName())) {
             student.setName(studentEntry.getName());
         }

@@ -84,6 +84,9 @@ public class ActivityManagerImpl implements ActivityManager {
     private Activity convertToEntity(ActivityEntry activityEntry, Activity existingActivity) throws EntityNotFoundException {
         Activity activity = (existingActivity != null) ? existingActivity : new Activity();
 
+        if (Objects.nonNull(activityEntry.getActivityId())) {
+            activity.setId(activityEntry.getActivityId());
+        }
         if (Objects.nonNull(activityEntry.getActivityType())) {
             activity.setActivityType(activityEntry.getActivityType());
         }

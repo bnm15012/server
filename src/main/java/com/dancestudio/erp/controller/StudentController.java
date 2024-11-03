@@ -7,7 +7,6 @@ import com.dancestudio.erp.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/students")
@@ -25,12 +24,6 @@ public class StudentController {
     public ResponseEntity<StudentResponse> updateStudent(@PathVariable Long studentId, @RequestBody StudentEntry studentEntry) {
         return studentService.updateStudent(studentId, studentEntry);
     }
-
-    @PostMapping("/uploadImage")
-    public ResponseEntity<StudentResponse> uploadImage(@RequestParam("image") MultipartFile file) {
-        return studentService.uploadImage(file);
-    }
-
 
     @DeleteMapping("/delete/{studentId}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long studentId) {
