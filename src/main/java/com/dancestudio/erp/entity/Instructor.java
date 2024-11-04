@@ -25,7 +25,6 @@ public class Instructor extends BaseEntity {
 
     private String profileImage;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private MembershipStatus status;
 
@@ -34,7 +33,7 @@ public class Instructor extends BaseEntity {
     private BankAccount bankAccount;
 
     @ManyToOne
-    @JoinColumn(name = "studio_id", nullable = true)
+    @JoinColumn(name = "studio_id", referencedColumnName = "id", nullable = true)
     @ToString.Exclude
     private Studio studio;
 
