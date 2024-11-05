@@ -29,7 +29,7 @@ public class Instructor extends BaseEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @Column(name = "bank_acocunt_id", nullable = true)
+    @Column(name = "bank_account_id", nullable = true)
     private Long bankAccountId;
 
     @Column(name = "studio_id", nullable = false)

@@ -1,6 +1,7 @@
 package com.dancestudio.erp.manager;
 
 import com.dancestudio.erp.entity.Student;
+import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 
 public interface EmailManager {
 
@@ -8,6 +9,6 @@ public interface EmailManager {
 
     void sendRegistrationEmail(Student student);
 
-    void sendSubscriptionRenewalEmail(Student student);
+    void sendSubscriptionRenewalEmail(Student student, StudentActivityAssignmentEntry entry);
 
 }

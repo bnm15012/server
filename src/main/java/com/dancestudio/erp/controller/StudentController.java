@@ -45,8 +45,8 @@ public class StudentController {
         return studentService.getAllStudents(studioId, activityId, membershipStatus, page, size);
     }
 
-    @PostMapping("/sendSubscriptionRenewalReminder/{studentId}")
-    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(@PathVariable Long studentId) {
-        return studentService.sendSubscriptionRenewalReminder(studentId);
+    @PostMapping("/sendSubscriptionRenewalReminder/{studentId}/{activityId}")
+    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(@PathVariable Long studentId, @PathVariable Long activityId) {
+        return studentService.sendSubscriptionRenewalReminder(studentId, activityId);
     }
 }

@@ -19,8 +19,8 @@ public interface StudentManager {
 
     List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size);
 
-    List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate);
+    List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate) throws EntityNotFoundException;
 
-    boolean sendSubscriptionRenewalReminder(Long studentId) throws EntityNotFoundException;
+    boolean sendSubscriptionRenewalReminder(Long studentId, Long activityId) throws EntityNotFoundException;
 
 }

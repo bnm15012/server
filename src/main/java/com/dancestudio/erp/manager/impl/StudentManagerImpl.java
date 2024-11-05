@@ -1,13 +1,15 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Student;
+import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
-import com.dancestudio.erp.enums.MembershipType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EmailManager;
+import com.dancestudio.erp.manager.StudentActivityAssignmentManager;
 import com.dancestudio.erp.manager.StudentManager;
 import com.dancestudio.erp.repository.StudentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,12 +23,16 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class StudentManagerImpl implements StudentManager {
 
     private final StudentRepository studentRepository;
 
     @Autowired
     private EmailManager emailManager;
+
+    @Autowired
+    private StudentActivityAssignmentManager studentActivityAssignmentManager;
 
     @Autowired
     public StudentManagerImpl(StudentRepository studentRepository) {
@@ -36,7 +42,7 @@ public class StudentManagerImpl implements StudentManager {
     @Override
     public StudentEntry addStudent(StudentEntry studentEntry) throws Exception {
         Student student = convertToEntity(studentEntry, null);
-        student= studentRepository.save(student);
+        student = studentRepository.save(student);
 
         emailManager.sendRegistrationEmail(student);
         return convertToEntry(student);
@@ -85,7 +91,7 @@ public class StudentManagerImpl implements StudentManager {
 
     @Override
     public List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate) {
-        List<Student> entries = studentRepository.findByMembershipEndDate(reminderDate);
+        List<Student> entries = studentRepository.findStudentsWithMembershipEndingOnDate(reminderDate);
 
         List<StudentEntry> studentEntries = new ArrayList<>();
         for (Student entry : entries) {
@@ -97,14 +103,18 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public boolean sendSubscriptionRenewalReminder(Long studentId) throws EntityNotFoundException {
+    public boolean sendSubscriptionRenewalReminder(Long studentId, Long activityId) throws EntityNotFoundException {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-        emailManager.sendSubscriptionRenewalEmail(student);
+        StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.getStudentAssignmentsByStudentAndActivityId(studentId, activityId);
+
+        if (Objects.isNull(entry)) {
+            throw new EntityNotFoundException("No such entries found");
+        }
+        emailManager.sendSubscriptionRenewalEmail(student, entry);
         return true;
     }
-
 
     public Boolean checkIfStudentExistsinStudio(Long studioId) {
         return studentRepository.studentsExistsByStudioId(studioId);
@@ -117,16 +127,23 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setName(student.getName());
         studentEntry.setPhone(student.getPhone());
         studentEntry.setImageUrl(student.getProfileImage());
-        studentEntry.setRegistrationDate(student.getRegistrationDate());
         studentEntry.setMembershipStatus(MembershipStatus.valueOf(student.getStatus()));
-        studentEntry.setMembershipStartDate(student.getMembershipStartDate());
-        studentEntry.setMembershipEndDate(student.getMembershipEndDate());
-        studentEntry.setMembershipType(MembershipType.valueOf(student.getMembershipType()));
         studentEntry.setStudioId(student.getStudioId());
 
-        if(Objects.nonNull(student.getEnrolledActivityNames())) {
-            List<String> activityNames = student.getEnrolledActivityNames();
-            studentEntry.setEnrolledActivities(activityNames);
+        if (Objects.nonNull(student.getEnrolledActivityIdList())) {
+            List<Long> activityIds = student.getEnrolledActivityIdList();
+            List<StudentActivityAssignmentEntry> activityAssignmentEntries = new ArrayList<>();
+
+            try {
+                for (Long id : activityIds) {
+                    StudentActivityAssignmentEntry studentActivityAssignmentEntry = studentActivityAssignmentManager.getStudentActivityAssignmentById(id);
+                    activityAssignmentEntries.add(studentActivityAssignmentEntry);
+                }
+                studentEntry.setEnrolledActivities(activityAssignmentEntries);
+            } catch (EntityNotFoundException ex) {
+                log.info("No Student Activity Assignment Entry found for given student");
+                studentEntry.setEnrolledActivities(null);
+            }
         }
 
         return studentEntry;
@@ -150,23 +167,15 @@ public class StudentManagerImpl implements StudentManager {
         if (Objects.nonNull(studentEntry.getImageUrl())) {
             student.setProfileImage(studentEntry.getImageUrl());
         }
-        if (Objects.nonNull(studentEntry.getRegistrationDate())) {
-            student.setRegistrationDate(studentEntry.getRegistrationDate());
-        }
         if (Objects.nonNull(studentEntry.getMembershipStatus())) {
             student.setStatus(studentEntry.getMembershipStatus().name());
         }
-        if (Objects.nonNull(studentEntry.getMembershipStartDate())) {
-            student.setMembershipStartDate(studentEntry.getMembershipStartDate());
-        }
-        if (Objects.nonNull(studentEntry.getMembershipEndDate())) {
-            student.setMembershipEndDate(studentEntry.getMembershipEndDate());
-        }
-        if (Objects.nonNull(studentEntry.getMembershipType())) {
-            student.setMembershipType(studentEntry.getMembershipType().name());
-        }
         if (Objects.nonNull(studentEntry.getStudioId())) {
             student.setStudioId(studentEntry.getStudioId());
+        }
+        if (Objects.nonNull(studentEntry.getEnrolledActivities())) {
+            List<Long> ids = studentEntry.getEnrolledActivityIds();
+            student.setEnrolledActivityIds(ids);
         }
 
         return student;

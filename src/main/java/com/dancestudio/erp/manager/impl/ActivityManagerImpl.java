@@ -3,7 +3,6 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entry.ActivityEntry;
-import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.enums.ActivityType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
@@ -18,9 +17,6 @@ import java.util.Objects;
 @Service
 public class ActivityManagerImpl implements ActivityManager {
     private final ActivityRepository activityRepository;
-
-    @Autowired
-    private StudioManagerImpl studioManagerImpl;
 
     @Autowired
     public ActivityManagerImpl(ActivityRepository activityRepository) {
@@ -96,8 +92,7 @@ public class ActivityManagerImpl implements ActivityManager {
         }
 
         if (Objects.nonNull(activityEntry.getStudioId())) {
-            StudioEntry studioEntry = studioManagerImpl.getStudioById(activityEntry.getStudioId());
-            activity.setStudioId(studioEntry.getStudioId());
+            activity.setStudioId(activityEntry.getStudioId());
         }
 
         return activity;

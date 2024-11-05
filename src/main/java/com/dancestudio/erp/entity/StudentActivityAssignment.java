@@ -1,7 +1,7 @@
 package com.dancestudio.erp.entity;
 
-import com.dancestudio.erp.enums.MembershipStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,18 +12,24 @@ import java.time.LocalDate;
 @Entity
 public class StudentActivityAssignment extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "student_id")
-    private Student student;
+    @Column(name = "student_id", nullable = false)
+    private Long studentId;
 
-    @ManyToOne
-    @JoinColumn(name = "activity_id")
-    private Activity activity;
+    @Column(name = "activity_id", nullable = false)
+    private Long activityId;
 
+    @Column(name = "registration_date", nullable = false)
     private LocalDate registrationDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private MembershipStatus status;
+    @Column(name = "membership_start_date", nullable = false)
+    private LocalDate membershipStartDate;
 
+    @Column(name = "membership_end_date", nullable = false)
+    private LocalDate membershipEndDate;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @Column(name = "membership_type", nullable = false)
+    private String membershipType;
 }

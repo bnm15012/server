@@ -102,10 +102,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId) {
+    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId, Long activityId) {
         StudentResponse response = new StudentResponse();
         try {
-            boolean reminderSent = studentManager.sendSubscriptionRenewalReminder(studentId);
+            boolean reminderSent = studentManager.sendSubscriptionRenewalReminder(studentId, activityId);
 
             response.setStatus(new StatusResponse(0, "Reminder not sent", StatusResponse.Type.ERROR));
             if (reminderSent) {

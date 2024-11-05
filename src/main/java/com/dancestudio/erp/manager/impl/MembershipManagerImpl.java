@@ -1,6 +1,7 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entry.StudentEntry;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EmailManager;
 import com.dancestudio.erp.manager.StudentManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class MembershipManagerImpl {
     private EmailManager emailManager;
 
     @Scheduled(cron = "0 0 12 * * ?")
-    public void sendMembershipRenewalReminders() {
+    public void sendMembershipRenewalReminders() throws EntityNotFoundException {
         LocalDate today = LocalDate.now();
         LocalDate reminderDate = today.plusDays(5);
 

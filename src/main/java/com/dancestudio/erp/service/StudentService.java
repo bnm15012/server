@@ -17,5 +17,5 @@ public interface StudentService {
 
     ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size);
 
-    ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId);
+    ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId, Long activityId);
 }

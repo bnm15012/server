@@ -16,7 +16,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("SELECT s FROM Student s " +
             "WHERE s.studioId = :studioId " +
             "AND (:activityId IS NULL OR s.id IN " +
-            "(SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activity.id = :activityId)) " +
+            "(SELECT sa.studentId FROM StudentActivityAssignment sa WHERE sa.activityId = :activityId)) " +
             "AND (:membershipStatus IS NULL OR s.status = :membershipStatus)")
     List<Student> findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(@Param("studioId") Long studioId,
                                                          @Param("activityId") Long activityId,
@@ -25,7 +25,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("SELECT s FROM Student s " +
             "WHERE s.studioId = :studioId " +
             "AND (:activityId IS NULL OR s.id IN " +
-            "(SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activity.id = :activityId)) " +
+            "(SELECT sa.studentId FROM StudentActivityAssignment sa WHERE sa.activityId = :activityId)) " +
             "AND (:membershipStatus IS NULL OR s.status = :membershipStatus)")
     Page<Student> findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(@Param("studioId") Long studioId, @Param("activityId") Long activityId,
             @Param("membershipStatus") MembershipStatus membershipStatus, Pageable pageable);
@@ -33,6 +33,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.studioId = :studioId")
     boolean studentsExistsByStudioId(@Param("studioId") Long studioId);
 
-    @Query("SELECT s FROM Student s WHERE s.membershipEndDate = :reminderDate")
-    List<Student> findByMembershipEndDate(LocalDate reminderDate);
+    @Query("SELECT s FROM Student s " +
+            "JOIN StudentActivityAssignment a ON FIND_IN_SET(a.id, s.enrolledActivityIds) > 0 " +
+            "WHERE a.membershipEndDate <= :reminderDate")
+    List<Student> findStudentsWithMembershipEndingOnDate(@Param("reminderDate") LocalDate reminderDate);
 }

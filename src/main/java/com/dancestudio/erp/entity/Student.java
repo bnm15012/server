@@ -1,12 +1,12 @@
 package com.dancestudio.erp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -27,30 +27,34 @@ public class Student extends BaseEntity {
 
     private String profileImage;
 
-    @Column(name = "registration_date", nullable = false)
-    private LocalDate registrationDate;
+    @Column(name = "enrolled_activity_ids")
+    private String enrolledActivityIds;
 
     @Column(name = "status", nullable = false)
     private String status;
 
-    @Column(name = "membership_type", nullable = false)
-    private String membershipType;
-
-    @Column(name = "membership_start_date", nullable = false)
-    private LocalDate membershipStartDate;
-
-    @Column(name = "membership_end_date", nullable = false)
-    private LocalDate membershipEndDate;
-
-    @OneToMany(mappedBy = "student")
-    private List<StudentActivityAssignment> enrolledActivities;
-
     @Column(name = "studio_id", nullable = false)
     private Long studioId;
 
-    public List<String> getEnrolledActivityNames() {
-        return Objects.nonNull(enrolledActivities) ? enrolledActivities.stream()
-                .map(assignment -> assignment.getActivity().getActivityType())
-                .collect(Collectors.toList()) : null;
+
+    @JsonIgnore
+    public List<Long> getEnrolledActivityIdList() {
+        return Objects.nonNull(enrolledActivityIds) ?
+                List.of(enrolledActivityIds.split(",")).stream().map(Long::valueOf).collect(Collectors.toList()) : List.of();
+    }
+
+    @JsonIgnore
+    public void setEnrolledActivityIds(List<Long> ids) {
+        this.enrolledActivityIds = String.join(",", ids.stream().map(String::valueOf).collect(Collectors.toList()));
+    }
+
+    @JsonIgnore
+    public void addEnrolledActivityId(Long id) {
+        List<Long> ids = new ArrayList<>(getEnrolledActivityIdList());
+        if (!ids.contains(id)) {
+            ids.add(id);
+        }
+
+        setEnrolledActivityIds(ids);
     }
 }

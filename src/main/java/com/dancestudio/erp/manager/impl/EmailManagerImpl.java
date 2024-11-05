@@ -1,6 +1,7 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Student;
+import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.manager.EmailManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,16 +45,16 @@ public class EmailManagerImpl implements EmailManager {
     }
 
     @Override
-    public void sendSubscriptionRenewalEmail(Student student) {
+    public void sendSubscriptionRenewalEmail(Student student, StudentActivityAssignmentEntry entry) {
         try {
-            LocalDate endDate = student.getMembershipEndDate();
+            LocalDate endDate = entry.getMembershipEndDate();
             String formattedEndDate = formatDateWithSuffix(endDate);
 
             String subject = "Subscription Renewal Request";
 
             String body = "Dear " + student.getName() + ",\n\n"
                     + "This is a gentle reminder that your subscription is due for renewal soon. "
-                    + "Please renew your membership before " + formattedEndDate + " to continue enjoying our services.\n\n"
+                    + "Please renew your " + entry.getActivity().getActivityType().name() + "membership before " + formattedEndDate + " to continue enjoying our services.\n\n"
                     + "Thank you,\nDance Studio Team";
 
             sendEmail(student.getEmail(), subject, body);

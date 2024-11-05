@@ -2,10 +2,10 @@ package com.dancestudio.erp.entry;
 
 
 import com.dancestudio.erp.enums.MembershipStatus;
-import com.dancestudio.erp.enums.MembershipType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,12 +16,23 @@ public class StudentEntry {
     private String email;
     private String phone;
     private String imageUrl;
-    private LocalDate registrationDate;
     private MembershipStatus membershipStatus;
-    private LocalDate membershipStartDate;
-    private LocalDate membershipEndDate;
-    private MembershipType membershipType;
     private Long studioId;
-    private List<String> enrolledActivities;
+    private List<StudentActivityAssignmentEntry> enrolledActivities;
+
+    @JsonIgnore
+    public List<Long> getEnrolledActivityIds() {
+        List<Long> activityIds = new ArrayList<>();
+
+        if (enrolledActivities != null) {
+            for (StudentActivityAssignmentEntry activity : enrolledActivities) {
+                if (activity != null) {
+                    activityIds.add(activity.getAssignmentId());
+                }
+            }
+        }
+
+        return activityIds;
+    }
 
 }
