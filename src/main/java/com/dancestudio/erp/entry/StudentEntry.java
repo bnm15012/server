@@ -2,8 +2,8 @@ package com.dancestudio.erp.entry;
 
 
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.enums.MembershipType;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +18,9 @@ public class StudentEntry {
     private String imageUrl;
     private LocalDate registrationDate;
     private MembershipStatus membershipStatus;
+    private LocalDate membershipStartDate;
+    private LocalDate membershipEndDate;
+    private MembershipType membershipType;
     private Long studioId;
     private List<String> enrolledActivities;
 

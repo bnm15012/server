@@ -4,6 +4,7 @@ import com.dancestudio.erp.entry.DashboardEntry;
 import com.dancestudio.erp.entry.InstructorEntry;
 import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.DashboardManager;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudentManager;
@@ -22,7 +23,7 @@ public class DashboardManagerImpl implements DashboardManager {
     private InstructorManager instructorManager;
 
     @Override
-    public DashboardEntry getDashboardDetails(Long studioId) {
+    public DashboardEntry getDashboardDetails(Long studioId) throws EntityNotFoundException {
         DashboardEntry entry = new DashboardEntry();
 
         List<StudentEntry> studentEntryList = studentManager.getAllStudentsByStudio(studioId, null, null, 0, -1);

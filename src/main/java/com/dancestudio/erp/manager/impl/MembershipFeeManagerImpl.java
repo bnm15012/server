@@ -3,8 +3,10 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.MembershipFee;
 import com.dancestudio.erp.entry.MembershipFeeEntry;
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.enums.MembershipType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.MembershipFeeManager;
+import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.MembershipFeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
     private final MembershipFeeRepository membershipFeeRepository;
 
     @Autowired
-    private StudioManagerImpl studioManagerImpl;
+    private StudioManager studioManager;
 
     @Autowired
     public MembershipFeeManagerImpl(MembershipFeeRepository membershipFeeRepository) {
@@ -29,7 +31,7 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
     @Override
     public MembershipFeeEntry addMembershipFee(MembershipFeeEntry membershipFeeEntry) throws EntityNotFoundException {
         MembershipFee membershipFee = convertToEntity(membershipFeeEntry, null);
-        membershipFeeRepository.save(membershipFee);
+        membershipFee = membershipFeeRepository.save(membershipFee);
         return convertToEntry(membershipFee);
     }
 
@@ -63,9 +65,10 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
 
         MembershipFeeEntry membershipFeeEntry = new MembershipFeeEntry();
 
-        membershipFeeEntry.setMembershipType(membershipFee.getMembershipType());
+        membershipFeeEntry.setMemberShipId(membershipFee.getId());
+        membershipFeeEntry.setMembershipType(MembershipType.valueOf(membershipFee.getMembershipType()));
         membershipFeeEntry.setAmount(membershipFee.getFeeAmount());
-        membershipFeeEntry.setStudioId(membershipFee.getStudio().getId());
+        membershipFeeEntry.setStudioId(membershipFee.getStudioId());
 
         return membershipFeeEntry;
     }
@@ -74,15 +77,11 @@ public class MembershipFeeManagerImpl implements MembershipFeeManager {
         MembershipFee membershipFee = (existingMembershipFee != null) ? existingMembershipFee : new MembershipFee();
 
         if (membershipFeeEntry.getStudioId() != null) {
-            StudioEntry studioEntry = studioManagerImpl.getStudioById(membershipFeeEntry.getStudioId());
-            if (studioEntry == null) {
-                throw new EntityNotFoundException("Studio not found with ID: " + membershipFeeEntry.getStudioId());
-            }
-            membershipFee.setStudio(studioManagerImpl.convertToEntity(studioEntry, null));
+            StudioEntry studioEntry = studioManager.getStudioById(membershipFeeEntry.getStudioId());
+            membershipFee.setStudioId(studioEntry.getStudioId());
         }
-
         if (membershipFeeEntry.getMembershipType() != null) {
-            membershipFee.setMembershipType(membershipFeeEntry.getMembershipType());
+            membershipFee.setMembershipType(membershipFeeEntry.getMembershipType().name());
         }
         if (membershipFeeEntry.getAmount() != null) {
             membershipFee.setFeeAmount(membershipFeeEntry.getAmount());

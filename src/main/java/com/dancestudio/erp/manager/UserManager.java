@@ -14,6 +14,6 @@ public interface UserManager {
 
     Boolean deleteUser(Long userId);
 
-    UserEntry getUserById(Long userId);
+    UserEntry getUserById(Long userId) throws EntityNotFoundException;
 
 }

@@ -1,36 +1,25 @@
 package com.dancestudio.erp.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 public class Studio extends BaseEntity {
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "location")
     private String location;
 
+    @Column(name = "logo")
     private String logo;
 
     @Column(name = "contact")
     private String contactDetails;
-
-    @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<Instructor> instructors;
-
-    @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<Student> students;
-
-    @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<Activity> activities;
 
 }

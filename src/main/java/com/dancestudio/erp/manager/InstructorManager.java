@@ -16,5 +16,5 @@ public interface InstructorManager {
 
     InstructorEntry getInstructorById(Long instructorId) throws EntityNotFoundException;
 
-    List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus);
+    List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus) throws EntityNotFoundException;
 }

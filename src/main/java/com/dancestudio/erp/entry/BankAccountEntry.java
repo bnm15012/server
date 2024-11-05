@@ -10,7 +10,7 @@ public class BankAccountEntry {
     private String bankName;
     private String branchName;
     private String ifscCode;
-
     private String upiId;
+    private Long instructorId;
 
 }

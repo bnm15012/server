@@ -48,12 +48,12 @@ public class StudioManagerImpl implements StudioManager {
                 .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
         try {
             if (studentManager.checkIfStudentExistsinStudio(studioId)) {
-                throw new RuntimeException("Cannot delete studio: it has students enrolled.");
+                throw new RuntimeException("Cannot delete studio: it has some dependency.");
             }
             studioRepository.deleteById(studioId);
             return Boolean.TRUE;
         } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Cannot delete studio: it has students enrolled.", e);
+            throw new RuntimeException("Cannot delete studio: It has some dependency", e);
         }
     }
 

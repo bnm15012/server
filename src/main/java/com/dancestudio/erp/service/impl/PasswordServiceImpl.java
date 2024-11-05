@@ -50,7 +50,7 @@ public class PasswordServiceImpl implements PasswordService {
     public StringResponse refreshToken(String refreshToken, String email) {
 
         StringResponse response = new StringResponse();
-        if (jwtUtil.validateRefreshToken(refreshToken)) {
+        if (jwtUtil.validateRefreshToken(refreshToken, email)) {
 
             String newAccessToken = jwtUtil.generateAccessToken(email);
             response.setStatus(new StatusResponse(1, "Token fetched successfully", StatusResponse.Type.SUCCESS));

@@ -4,6 +4,7 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entry.ActivityEntry;
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.enums.ActivityType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
 import com.dancestudio.erp.repository.ActivityRepository;
@@ -74,9 +75,9 @@ public class ActivityManagerImpl implements ActivityManager {
 
         ActivityEntry activityEntry = new ActivityEntry();
         activityEntry.setActivityId(activity.getId());
-        activityEntry.setActivityType(activity.getActivityType());
+        activityEntry.setActivityType(ActivityType.valueOf(activity.getActivityType()));
         activityEntry.setDescription(activity.getDescription());
-        activityEntry.setStudioId(activity.getStudio().getId());
+        activityEntry.setStudioId(activity.getStudioId());
 
         return activityEntry;
     }
@@ -88,15 +89,15 @@ public class ActivityManagerImpl implements ActivityManager {
             activity.setId(activityEntry.getActivityId());
         }
         if (Objects.nonNull(activityEntry.getActivityType())) {
-            activity.setActivityType(activityEntry.getActivityType());
+            activity.setActivityType(activityEntry.getActivityType().name());
         }
         if (Objects.nonNull(activityEntry.getDescription())) {
             activity.setDescription(activityEntry.getDescription());
         }
 
-        if (activityEntry.getStudioId() != null) {
+        if (Objects.nonNull(activityEntry.getStudioId())) {
             StudioEntry studioEntry = studioManagerImpl.getStudioById(activityEntry.getStudioId());
-            activity.setStudio(studioManagerImpl.convertToEntity(studioEntry, null));
+            activity.setStudioId(studioEntry.getStudioId());
         }
 
         return activity;

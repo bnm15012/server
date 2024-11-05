@@ -46,7 +46,7 @@ public class MiscellaneousController {
     }
 
     @GetMapping("password/refreshToken/{refreshToken}")
-    public StringResponse refreshToken(@PathVariable String refreshToken, @RequestHeader String email) {
+    public StringResponse refreshToken(@PathVariable String refreshToken, @RequestHeader("email") String email) {
         return passwordService.refreshToken(refreshToken, email);
     }
 

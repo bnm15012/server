@@ -1,9 +1,7 @@
 package com.dancestudio.erp.entity;
 
-import com.dancestudio.erp.enums.MembershipType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,11 +10,10 @@ import lombok.EqualsAndHashCode;
 @Data
 public class MembershipFee extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "studio_id", nullable = false)
-    private Studio studio;
+    @Column(name = "studio_id", nullable = false)
+    private Long studioId;
 
-    private MembershipType membershipType;
+    private String membershipType;
 
     private Double feeAmount;
 

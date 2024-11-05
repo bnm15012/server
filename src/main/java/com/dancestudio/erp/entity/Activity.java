@@ -1,7 +1,7 @@
 package com.dancestudio.erp.entity;
 
-import com.dancestudio.erp.enums.ActivityType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -10,13 +10,11 @@ import lombok.EqualsAndHashCode;
 @Data
 public class Activity extends BaseEntity {
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "activityType", nullable = false)
-    private ActivityType activityType;
+    private String activityType;
 
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "studio_id")
-    private Studio studio;
+    @Column(name = "studio_id", nullable = false)
+    private Long studioId;
 }

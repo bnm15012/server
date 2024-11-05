@@ -3,6 +3,7 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.enums.MembershipType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EmailManager;
 import com.dancestudio.erp.manager.StudentManager;
@@ -35,7 +36,7 @@ public class StudentManagerImpl implements StudentManager {
     @Override
     public StudentEntry addStudent(StudentEntry studentEntry) throws Exception {
         Student student = convertToEntity(studentEntry, null);
-        studentRepository.save(student);
+        student= studentRepository.save(student);
 
         emailManager.sendRegistrationEmail(student);
         return convertToEntry(student);
@@ -117,11 +118,16 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setPhone(student.getPhone());
         studentEntry.setImageUrl(student.getProfileImage());
         studentEntry.setRegistrationDate(student.getRegistrationDate());
-        studentEntry.setMembershipStatus(student.getStatus());
-        studentEntry.setStudioId(student.getStudio().getId());
+        studentEntry.setMembershipStatus(MembershipStatus.valueOf(student.getStatus()));
+        studentEntry.setMembershipStartDate(student.getMembershipStartDate());
+        studentEntry.setMembershipEndDate(student.getMembershipEndDate());
+        studentEntry.setMembershipType(MembershipType.valueOf(student.getMembershipType()));
+        studentEntry.setStudioId(student.getStudioId());
 
-        List<String> activityNames = student.getEnrolledActivityNames();
-        studentEntry.setEnrolledActivities(activityNames);
+        if(Objects.nonNull(student.getEnrolledActivityNames())) {
+            List<String> activityNames = student.getEnrolledActivityNames();
+            studentEntry.setEnrolledActivities(activityNames);
+        }
 
         return studentEntry;
     }
@@ -148,7 +154,19 @@ public class StudentManagerImpl implements StudentManager {
             student.setRegistrationDate(studentEntry.getRegistrationDate());
         }
         if (Objects.nonNull(studentEntry.getMembershipStatus())) {
-            student.setStatus(studentEntry.getMembershipStatus());
+            student.setStatus(studentEntry.getMembershipStatus().name());
+        }
+        if (Objects.nonNull(studentEntry.getMembershipStartDate())) {
+            student.setMembershipStartDate(studentEntry.getMembershipStartDate());
+        }
+        if (Objects.nonNull(studentEntry.getMembershipEndDate())) {
+            student.setMembershipEndDate(studentEntry.getMembershipEndDate());
+        }
+        if (Objects.nonNull(studentEntry.getMembershipType())) {
+            student.setMembershipType(studentEntry.getMembershipType().name());
+        }
+        if (Objects.nonNull(studentEntry.getStudioId())) {
+            student.setStudioId(studentEntry.getStudioId());
         }
 
         return student;

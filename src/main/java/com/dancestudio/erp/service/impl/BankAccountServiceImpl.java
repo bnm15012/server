@@ -1,12 +1,12 @@
 package com.dancestudio.erp.service.impl;
 
 
-import com.dancestudio.erp.entry.ActivityEntry;
+import com.dancestudio.erp.entry.BankAccountEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.ActivityManager;
-import com.dancestudio.erp.response.ActivityResponse;
+import com.dancestudio.erp.manager.BankAccountManager;
+import com.dancestudio.erp.response.BankAccountResponse;
 import com.dancestudio.erp.response.StatusResponse;
-import com.dancestudio.erp.service.ActivityService;
+import com.dancestudio.erp.service.BankAccountService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,20 +14,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.List;
 
 @Setter(onMethod = @__({@Autowired}))
 @Component
-public class ActivityServiceImpl implements ActivityService {
+public class BankAccountServiceImpl implements BankAccountService {
 
-    private ActivityManager activityManager;
+    private BankAccountManager bankAccountManager;
 
     @Override
-    public ResponseEntity<ActivityResponse> addActivity(ActivityEntry activityEntry) {
-        ActivityResponse response = new ActivityResponse();
+    public ResponseEntity<BankAccountResponse> addBankAccount(BankAccountEntry bankAccountEntry) {
+        BankAccountResponse response = new BankAccountResponse();
 
         try {
-            ActivityEntry entry = activityManager.addActivity(activityEntry);
+            BankAccountEntry entry = bankAccountManager.addBankAccount(bankAccountEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
@@ -39,11 +38,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ResponseEntity<ActivityResponse> updateActivity(Long activityId, ActivityEntry activityEntry) {
-        ActivityResponse response = new ActivityResponse();
+    public ResponseEntity<BankAccountResponse> updateBankAccount(Long bankAccountId, BankAccountEntry bankAccountEntry) {
+        BankAccountResponse response = new BankAccountResponse();
 
         try {
-            ActivityEntry entry = activityManager.updateActivity(activityId, activityEntry);
+            BankAccountEntry entry = bankAccountManager.updateBankAccount(bankAccountId, bankAccountEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
@@ -58,9 +57,9 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteActivity(Long activityId) {
+    public ResponseEntity<Void> deleteBankAccount(Long bankAccountId) {
         try {
-            activityManager.deleteActivity(activityId);
+            bankAccountManager.deleteBankAccount(bankAccountId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -70,11 +69,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ResponseEntity<ActivityResponse> getActivityById(Long activityId) {
-        ActivityResponse response = new ActivityResponse();
+    public ResponseEntity<BankAccountResponse> getBankAccountById(Long bankAccountId) {
+        BankAccountResponse response = new BankAccountResponse();
 
         try {
-            ActivityEntry entry = activityManager.getActivityById(activityId);
+            BankAccountEntry entry = bankAccountManager.getBankAccountById(bankAccountId);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
@@ -85,22 +84,6 @@ public class ActivityServiceImpl implements ActivityService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
-    @Override
-    public ResponseEntity<ActivityResponse> getAllActivities(Long studioId) {
-        ActivityResponse response = new ActivityResponse();
-
-        try {
-            List<ActivityEntry> entries = activityManager.getAllActivities(studioId);
-
-            response.setData(entries);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, entries.size()));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

@@ -1,10 +1,8 @@
 package com.dancestudio.erp.entity;
 
 
-import com.dancestudio.erp.enums.PayeeType;
-import com.dancestudio.erp.enums.PaymentStatus;
-import com.dancestudio.erp.enums.PaymentType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,13 +14,11 @@ import java.time.LocalDate;
 @Data
 public class Payment extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "studio_id")
-    private Studio studio;
+    @Column(name = "studio_id")
+    private Long studioId;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "payee_type", nullable = false)
-    private PayeeType payeeType;
+    private String payeeType;
 
     private Long payeeId;
 
@@ -30,13 +26,11 @@ public class Payment extends BaseEntity {
 
     private LocalDate paymentDate;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private PaymentStatus status;
+    private String status;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "payment_type", nullable = false)
-    private PaymentType paymentType;
+    private String paymentType;
 
 }
 

@@ -2,13 +2,14 @@ package com.dancestudio.erp.manager.impl;
 
 
 import com.dancestudio.erp.entity.Activity;
-import com.dancestudio.erp.entity.BankAccount;
 import com.dancestudio.erp.entity.Instructor;
-import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.*;
+import com.dancestudio.erp.enums.ActivityType;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.BankAccountManager;
 import com.dancestudio.erp.manager.InstructorManager;
+import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,10 @@ public class InstructorManagerImpl implements InstructorManager {
     private final InstructorRepository instructorRepository;
 
     @Autowired
-    private StudioManagerImpl studioManagerImpl;
+    private StudioManager studioManager;
+
+    @Autowired
+    private BankAccountManager bankAccountManager;
 
     @Autowired
     public InstructorManagerImpl(InstructorRepository instructorRepository) {
@@ -33,7 +37,13 @@ public class InstructorManagerImpl implements InstructorManager {
     @Override
     public InstructorEntry addInstructor(InstructorEntry instructorEntry) throws EntityNotFoundException {
         Instructor instructor = convertToEntity(instructorEntry, null);
-        return convertToEntry(instructorRepository.save(instructor));
+
+        InstructorEntry entry = convertToEntry(instructorRepository.save(instructor));
+        if(Objects.nonNull(instructorEntry.getBankAccountDetails())) {
+            BankAccountEntry bankAccountEntry = bankAccountManager.addBankAccount(instructorEntry.getBankAccountDetails());
+            entry.setBankAccountDetails(bankAccountEntry);
+        }
+        return entry;
     }
 
     @Override
@@ -62,7 +72,7 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus) {
+    public List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus) throws EntityNotFoundException {
         List<Instructor> entries = instructorRepository.findAllByStudioId(studioId, membershipStatus);
 
         List<InstructorEntry> instructorEntries = new ArrayList<>();
@@ -74,7 +84,7 @@ public class InstructorManagerImpl implements InstructorManager {
         return instructorEntries;
     }
 
-    private InstructorEntry convertToEntry(Instructor instructor) {
+    private InstructorEntry convertToEntry(Instructor instructor) throws EntityNotFoundException {
         InstructorEntry instructorEntry = new InstructorEntry();
         instructorEntry.setInstructorId(instructor.getId());
         instructorEntry.setName(instructor.getName());
@@ -83,21 +93,16 @@ public class InstructorManagerImpl implements InstructorManager {
         instructorEntry.setImageUrl(instructor.getProfileImage());
 
         // Handle optional Studio
-        if (instructor.getStudio() != null) {
-            instructorEntry.setStudioEntry(studioManagerImpl.convertToEntry(instructor.getStudio()));
+        if (instructor.getStudioId() != null) {
+            StudioEntry studioEntry = studioManager.getStudioById(instructor.getStudioId());
+            instructorEntry.setStudioEntry(studioEntry);
         }
 
-        instructorEntry.setInstructorStatus(instructor.getStatus());
+        instructorEntry.setInstructorStatus(MembershipStatus.valueOf(instructor.getStatus()));
 
         // Convert Bank Account details if available
-        if (instructor.getBankAccount() != null) {
-            BankAccountEntry bankAccountEntry = new BankAccountEntry();
-            bankAccountEntry.setAccountNumber(instructor.getBankAccount().getAccountNumber());
-            bankAccountEntry.setBankName(instructor.getBankAccount().getBankName());
-            bankAccountEntry.setBranchName(instructor.getBankAccount().getBranchName());
-            bankAccountEntry.setIfscCode(instructor.getBankAccount().getIfscCode());
-            bankAccountEntry.setUpiId(instructor.getBankAccount().getUpiId());
-
+        if (instructor.getBankAccountId() != null) {
+            BankAccountEntry bankAccountEntry = bankAccountManager.getBankAccountById(instructor.getBankAccountId());
             instructorEntry.setBankAccountDetails(bankAccountEntry);
         }
 
@@ -113,7 +118,7 @@ public class InstructorManagerImpl implements InstructorManager {
                         Activity activity = assignment.getActivity();
                         ActivityEntry activityEntry = new ActivityEntry();
                         activityEntry.setActivityId(activity.getId());
-                        activityEntry.setActivityType(activity.getActivityType());
+                        activityEntry.setActivityType(ActivityType.valueOf(activity.getActivityType()));
                         activityEntry.setDescription(activity.getDescription());
 
                         assignmentEntry.setActivity(activityEntry);
@@ -145,41 +150,17 @@ public class InstructorManagerImpl implements InstructorManager {
             instructor.setProfileImage(instructorEntry.getImageUrl());
         }
         if (Objects.nonNull(instructorEntry.getInstructorStatus())) {
-            instructor.setStatus(instructorEntry.getInstructorStatus());
+            instructor.setStatus(instructorEntry.getInstructorStatus().name());
         }
 
         // Bank account details
-        if (Objects.nonNull(instructorEntry.getBankAccountDetails())) {
-            BankAccount bankAccount = instructor.getBankAccount();
-            if (bankAccount == null) {
-                bankAccount = new BankAccount();
-            }
-            BankAccountEntry bankAccountEntry = instructorEntry.getBankAccountDetails();
-
-            if (Objects.nonNull(bankAccountEntry.getAccountNumber())) {
-                bankAccount.setAccountNumber(bankAccountEntry.getAccountNumber());
-            }
-            if (Objects.nonNull(bankAccountEntry.getBankName())) {
-                bankAccount.setBankName(bankAccountEntry.getBankName());
-            }
-            if (Objects.nonNull(bankAccountEntry.getBranchName())) {
-                bankAccount.setBranchName(bankAccountEntry.getBranchName());
-            }
-            if (Objects.nonNull(bankAccountEntry.getIfscCode())) {
-                bankAccount.setIfscCode(bankAccountEntry.getIfscCode());
-            }
-            if (Objects.nonNull(bankAccountEntry.getUpiId())) {
-                bankAccount.setUpiId(bankAccountEntry.getUpiId());
-            }
-            bankAccount.setInstructor(instructor);
-            instructor.setBankAccount(bankAccount);
+        if (Objects.nonNull(instructorEntry.getBankAccountDetails()) && Objects.nonNull(instructorEntry.getBankAccountDetails().getBankAccountId())) {
+            instructor.setBankAccountId(instructorEntry.getBankAccountDetails().getBankAccountId());
         }
 
-        if (instructorEntry.getStudioEntry() != null) {
-            StudioEntry studioEntry = instructorEntry.getStudioEntry();
-            Studio studio = studioManagerImpl.convertToEntity(studioEntry, null);
-
-            instructor.setStudio(studio);
+        // Studio details
+        if (instructorEntry.getStudioEntry() != null && instructorEntry.getStudioEntry().getStudioId() != null) {
+            instructor.setStudioId(instructorEntry.getStudioEntry().getStudioId());
         }
 
         return instructor;

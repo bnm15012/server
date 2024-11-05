@@ -1,13 +1,14 @@
 package com.dancestudio.erp.entity;
 
-import com.dancestudio.erp.enums.MembershipStatus;
-import com.dancestudio.erp.enums.MembershipType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
@@ -26,30 +27,30 @@ public class Student extends BaseEntity {
 
     private String profileImage;
 
-    @Column(name = "registration_date")
+    @Column(name = "registration_date", nullable = false)
     private LocalDate registrationDate;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private MembershipStatus status;
+    private String status;
 
-    @Enumerated(EnumType.STRING)
-    private MembershipType membershipType;
+    @Column(name = "membership_type", nullable = false)
+    private String membershipType;
 
+    @Column(name = "membership_start_date", nullable = false)
     private LocalDate membershipStartDate;
 
+    @Column(name = "membership_end_date", nullable = false)
     private LocalDate membershipEndDate;
 
     @OneToMany(mappedBy = "student")
     private List<StudentActivityAssignment> enrolledActivities;
 
-    @ManyToOne
-    @JoinColumn(name = "studio_id", nullable = true)
-    private Studio studio;
+    @Column(name = "studio_id", nullable = false)
+    private Long studioId;
 
     public List<String> getEnrolledActivityNames() {
-        return enrolledActivities.stream()
-                .map(assignment -> assignment.getActivity().getActivityType().name())
-                .collect(Collectors.toList());
+        return Objects.nonNull(enrolledActivities) ? enrolledActivities.stream()
+                .map(assignment -> assignment.getActivity().getActivityType())
+                .collect(Collectors.toList()) : null;
     }
 }

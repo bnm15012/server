@@ -22,7 +22,7 @@ public class UserManagerImpl implements UserManager {
     private final UserRepository userRepository;
 
     @Autowired
-    private StudioManagerImpl studioManager;
+    private StudioManagerImpl studioManagerImpl;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -38,13 +38,14 @@ public class UserManagerImpl implements UserManager {
     @Override
     public UserEntry registerUser(UserEntry userEntry) throws Exception {
         if (userRepository.findByName(userEntry.getUserName()).isPresent()) {
-            throw new Exception("User already exists");
+            throw new Exception("UserName already exists");
         }
 
         // Hash the password before saving
         userEntry.setPassword(hashPassword(userEntry.getPassword()));
         User user = convertToEntity(userEntry, null);
-        UserEntry entry = convertToEntry(userRepository.save(user));
+        user = userRepository.save(user);
+        UserEntry entry = convertToEntry(user);
 
         String token = jwtUtil.generateAuthToken(user.getEmail());
         entry.setToken(token);
@@ -71,35 +72,11 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public UserEntry updateUser(Long studioId, UserEntry userEntry) throws Exception {
-        User user = userRepository.findById(studioId)
+        User existingUser = userRepository.findById(studioId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (Objects.nonNull(userEntry.getUserName())) {
-            user.setName(userEntry.getUserName());
-        }
-
-        if (Objects.nonNull(userEntry.getPassword())) {
-            user.setPassword(hashPassword(userEntry.getPassword()));
-        }
-
-        if (Objects.nonNull(userEntry.getRole())) {
-            user.setRole(String.valueOf(userEntry.getRole()));
-        }
-
-        if (Objects.nonNull(userEntry.getPhone())) {
-            user.setPhone(userEntry.getPhone());
-        }
-
-        if (Objects.nonNull(userEntry.getEmail())) {
-            user.setEmail(userEntry.getEmail());
-        }
-
-        if (Objects.nonNull(userEntry.getStudioEntry())) {
-            StudioEntry studioEntry = studioManager.getStudioById(userEntry.getStudioEntry().getStudioId());
-            user.setStudio(studioManager.convertToEntity(studioEntry, null));
-        }
-
-        return convertToEntry(userRepository.save(user));
+        User updatedUser = convertToEntity(userEntry, existingUser);
+        return convertToEntry(userRepository.save(updatedUser));
     }
 
     @Override
@@ -108,12 +85,12 @@ public class UserManagerImpl implements UserManager {
             userRepository.deleteById(userId);
             return Boolean.TRUE;
         } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Cannot delete user: it has dependency.", e);
+            throw new RuntimeException("Cannot delete user, It has some dependency ", e);
         }
     }
 
     @Override
-    public UserEntry getUserById(Long userId) {
+    public UserEntry getUserById(Long userId) throws EntityNotFoundException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -125,7 +102,7 @@ public class UserManagerImpl implements UserManager {
         return passwordEncoder.encode(password);
     }
 
-    private UserEntry convertToEntry(User user) {
+    private UserEntry convertToEntry(User user) throws EntityNotFoundException {
 
         UserEntry userEntry = new UserEntry();
         userEntry.setUserId(user.getId());
@@ -133,12 +110,17 @@ public class UserManagerImpl implements UserManager {
         userEntry.setEmail(user.getEmail());
         userEntry.setPhone(user.getPhone());
         userEntry.setRole(UserType.valueOf(user.getRole()));
-        userEntry.setStudioEntry(studioManager.convertToEntry(user.getStudio()));
+
+        if(Objects.nonNull(user.getStudioId())) {
+            StudioEntry studioEntry = studioManagerImpl.getStudioById(user.getStudioId());
+            userEntry.setStudioEntry(studioEntry);
+        }
         return userEntry;
     }
 
     public User convertToEntity(UserEntry userEntry, User existingUser) throws Exception {
         User user = (existingUser != null) ? existingUser : new User();
+        user.setId(null);
 
         if (Objects.nonNull(userEntry.getUserId())) {
             user.setId(userEntry.getUserId());
@@ -162,8 +144,8 @@ public class UserManagerImpl implements UserManager {
         if (Objects.nonNull(userEntry.getStudioEntry()) && Objects.nonNull(userEntry.getStudioEntry().getStudioId())) {
             Long studioId = userEntry.getStudioEntry().getStudioId();
 
-            StudioEntry studioEntry = studioManager.getStudioById(studioId);
-            user.setStudio(studioManager.convertToEntity(studioEntry, null));
+            StudioEntry studioEntry = studioManagerImpl.getStudioById(studioId);
+            user.setStudioId(studioEntry.getStudioId());
         }
 
         return user;

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
-    @Query("SELECT s FROM Activity s WHERE s.studio.id = :studioId")
+    @Query("SELECT s FROM Activity s WHERE s.studioId = :studioId")
     List<Activity> findAllByStudioId(@Param("studioId") Long studioId);
 
 }

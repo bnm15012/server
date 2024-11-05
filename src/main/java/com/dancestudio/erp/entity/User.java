@@ -24,9 +24,8 @@ public class User extends BaseEntity {
     @Column(name = "phone", nullable = false, length = 10)
     private String phone;
 
-    @ManyToOne
-    @JoinColumn(name = "studio_id")
-    private Studio studio;
+    @Column(name = "studio_id", nullable = true)
+    private Long studioId;
 
     private String role;
 }

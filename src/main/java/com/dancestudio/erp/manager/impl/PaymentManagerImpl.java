@@ -5,6 +5,7 @@ import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.ReportEntry;
 import com.dancestudio.erp.enums.PaymentStatus;
+import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class PaymentManagerImpl implements PaymentManager {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
-        payment.setStatus(status);
+        payment.setStatus(status.name());
         return convertToEntry(paymentRepository.save(payment));
     }
 
@@ -84,8 +85,8 @@ public class PaymentManagerImpl implements PaymentManager {
         paymentEntry.setPayeeId(payment.getPayeeId());
         paymentEntry.setAmount(payment.getAmount());
         paymentEntry.setPaymentDate(payment.getPaymentDate());
-        paymentEntry.setStatus(payment.getStatus());
-        paymentEntry.setPaymentType(payment.getPaymentType());
+        paymentEntry.setStatus(PaymentStatus.valueOf(payment.getStatus()));
+        paymentEntry.setPaymentType(PaymentType.valueOf(payment.getPaymentType()));
 
         return paymentEntry;
     }
@@ -97,8 +98,8 @@ public class PaymentManagerImpl implements PaymentManager {
         payment.setPayeeId(paymentEntry.getPayeeId());
         payment.setAmount(paymentEntry.getAmount());
         payment.setPaymentDate(paymentEntry.getPaymentDate());
-        payment.setStatus(paymentEntry.getStatus());
-        payment.setPaymentType(paymentEntry.getPaymentType());
+        payment.setStatus(paymentEntry.getStatus().name());
+        payment.setPaymentType(paymentEntry.getPaymentType().name());
 
         return payment;
     }

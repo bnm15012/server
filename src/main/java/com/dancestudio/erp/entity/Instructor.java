@@ -1,8 +1,9 @@
 package com.dancestudio.erp.entity;
 
 
-import com.dancestudio.erp.enums.MembershipStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -26,16 +27,13 @@ public class Instructor extends BaseEntity {
     private String profileImage;
 
     @Column(name = "status", nullable = false)
-    private MembershipStatus status;
+    private String status;
 
-    @OneToOne(mappedBy = "instructor", cascade = CascadeType.ALL, optional = true)
-    @ToString.Exclude
-    private BankAccount bankAccount;
+    @Column(name = "bank_acocunt_id", nullable = true)
+    private Long bankAccountId;
 
-    @ManyToOne
-    @JoinColumn(name = "studio_id", referencedColumnName = "id", nullable = true)
-    @ToString.Exclude
-    private Studio studio;
+    @Column(name = "studio_id", nullable = false)
+    private Long studioId;
 
     @OneToMany(mappedBy = "instructor")
     @ToString.Exclude

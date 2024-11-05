@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface InstructorRepository extends JpaRepository<Instructor, Long> {
 
-    @Query("SELECT s FROM Instructor s WHERE s.studio.id = :studioId AND (:membershipStatus IS NULL OR s.status = :membershipStatus)")
+    @Query("SELECT s FROM Instructor s WHERE s.studioId = :studioId AND (:membershipStatus IS NULL OR s.status = :membershipStatus)")
     List<Instructor> findAllByStudioId(@Param("studioId") Long studioId, @Param("membershipStatus") MembershipStatus membershipStatus);
 }
 

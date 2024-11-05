@@ -86,10 +86,16 @@ public class JwtUtil {
         return claims;
     }
 
-    public boolean validateRefreshToken(String token) {
+    public boolean validateRefreshToken(String token, String email) {
+
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token)
+                    .getBody();
             return true;
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject().equals(email);
         } catch (JwtException e) {
             return false;
         }
