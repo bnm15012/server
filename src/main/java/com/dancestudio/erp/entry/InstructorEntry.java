@@ -1,8 +1,10 @@
 package com.dancestudio.erp.entry;
 
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,4 +20,20 @@ public class InstructorEntry {
     private StudioEntry studioEntry;
 
     private List<InstructorActivityAssignmentEntry> assignments;
+
+
+    @JsonIgnore
+    public List<Long> getAssignedActivityIds() {
+        List<Long> activityIds = new ArrayList<>();
+
+        if (assignments != null) {
+            for (InstructorActivityAssignmentEntry activity : assignments) {
+                if (activity != null) {
+                    activityIds.add(activity.getAssignmentId());
+                }
+            }
+        }
+
+        return activityIds;
+    }
 }

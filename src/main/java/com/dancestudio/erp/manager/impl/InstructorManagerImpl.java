@@ -1,25 +1,25 @@
 package com.dancestudio.erp.manager.impl;
 
 
-import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entity.Instructor;
 import com.dancestudio.erp.entry.*;
-import com.dancestudio.erp.enums.ActivityType;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BankAccountManager;
+import com.dancestudio.erp.manager.InstructorActivityAssignmentManager;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class InstructorManagerImpl implements InstructorManager {
     private final InstructorRepository instructorRepository;
 
@@ -28,6 +28,9 @@ public class InstructorManagerImpl implements InstructorManager {
 
     @Autowired
     private BankAccountManager bankAccountManager;
+
+    @Autowired
+    private InstructorActivityAssignmentManager instructorActivityAssignmentManager;
 
     @Autowired
     public InstructorManagerImpl(InstructorRepository instructorRepository) {
@@ -105,26 +108,20 @@ public class InstructorManagerImpl implements InstructorManager {
             instructorEntry.setBankAccountDetails(bankAccountEntry);
         }
 
-        // Convert InstructorActivityAssignment to InstructorActivityAssignmentEntry
-        if (instructor.getAssignments() != null) {
-            List<InstructorActivityAssignmentEntry> assignmentEntries = instructor.getAssignments().stream()
-                    .map(assignment -> {
-                        InstructorActivityAssignmentEntry assignmentEntry = new InstructorActivityAssignmentEntry();
-                        assignmentEntry.setAssignmentId(assignment.getId());
-                        assignmentEntry.setAssignedDate(assignment.getAssignedDate());
+        if (Objects.nonNull(instructor.getEnrolledActivityIdList())) {
+            List<Long> activityIds = instructor.getEnrolledActivityIdList();
+            List<InstructorActivityAssignmentEntry> activityAssignmentEntries = new ArrayList<>();
 
-                        // Convert Activity to ActivityEntry
-                        Activity activity = assignment.getActivity();
-                        ActivityEntry activityEntry = new ActivityEntry();
-                        activityEntry.setActivityId(activity.getId());
-                        activityEntry.setActivityType(ActivityType.valueOf(activity.getActivityType()));
-                        activityEntry.setDescription(activity.getDescription());
-
-                        assignmentEntry.setActivity(activityEntry);
-                        return assignmentEntry;
-                    }).collect(Collectors.toList());
-
-            instructorEntry.setAssignments(assignmentEntries);
+            try {
+                for (Long id : activityIds) {
+                    InstructorActivityAssignmentEntry instructorActivityAssignmentEntry = instructorActivityAssignmentManager.getInstructorActivityAssignmentById(id);
+                    activityAssignmentEntries.add(instructorActivityAssignmentEntry);
+                }
+                instructorEntry.setAssignments(activityAssignmentEntries);
+            } catch (EntityNotFoundException ex) {
+                log.info("No Instructor Activity Assignment Entry found for given instructor");
+                instructorEntry.setAssignments(null);
+            }
         }
 
         return instructorEntry;

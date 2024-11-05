@@ -1,8 +1,7 @@
 package com.dancestudio.erp.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -11,13 +10,21 @@ import java.time.LocalDate;
 @Entity
 public class InstructorActivityAssignment extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "instructor_id")
-    private Instructor instructor;
+    @Column(name = "instructor_id")
+    private Long instructorId;
 
-    @ManyToOne
-    @JoinColumn(name = "activity_id")
-    private Activity activity;
+    @Column(name = "activity_id", nullable = false)
+    private Long activityId;
 
     private LocalDate assignedDate;
+
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
+
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
 }
