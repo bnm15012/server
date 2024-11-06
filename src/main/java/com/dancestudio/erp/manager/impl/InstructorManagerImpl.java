@@ -45,7 +45,8 @@ public class InstructorManagerImpl implements InstructorManager {
             instructor.setBankAccountId(bankAccountEntry.getBankAccountId());
         }
 
-        return convertToEntry(instructorRepository.save(instructor));
+        instructor = instructorRepository.save(instructor);
+        return convertToEntry(instructor);
     }
 
     @Override

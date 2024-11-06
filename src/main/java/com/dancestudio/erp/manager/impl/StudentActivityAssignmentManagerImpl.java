@@ -85,13 +85,13 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     private StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment) throws EntityNotFoundException {
 
-        if(Objects.isNull(studentActivityAssignment)) {
+        if (Objects.isNull(studentActivityAssignment)) {
             return null;
         }
 
         StudentActivityAssignmentEntry studentActivityAssignmentEntry = new StudentActivityAssignmentEntry();
         studentActivityAssignmentEntry.setAssignmentId(studentActivityAssignment.getId());
-        studentActivityAssignmentEntry.setStudentId(studentActivityAssignment.getStudentId());
+        studentActivityAssignmentEntry.setStudentId(studentActivityAssignment.getStudent().getId());
         studentActivityAssignmentEntry.setRegistrationDate(studentActivityAssignment.getRegistrationDate());
         studentActivityAssignmentEntry.setMembershipStartDate(studentActivityAssignment.getMembershipStartDate());
         studentActivityAssignmentEntry.setMembershipEndDate(studentActivityAssignment.getMembershipEndDate());
@@ -127,7 +127,9 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
             studentActivityAssignment.setMembershipType(studentActivityAssignmentEntry.getMembershipType().name());
         }
         if (Objects.nonNull(studentActivityAssignmentEntry.getStudentId())) {
-            studentActivityAssignment.setStudentId(studentActivityAssignmentEntry.getStudentId());
+            Student student = studentRepository.findById(studentActivityAssignmentEntry.getStudentId())
+                    .orElseThrow(() -> new EntityNotFoundException("Student not found"));
+            studentActivityAssignment.setStudent(student);
         }
 
         if (Objects.nonNull(studentActivityAssignmentEntry.getActivity()) && Objects.nonNull(studentActivityAssignmentEntry.getActivity().getActivityId())) {

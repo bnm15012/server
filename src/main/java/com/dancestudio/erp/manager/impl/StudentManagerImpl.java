@@ -8,6 +8,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EmailManager;
 import com.dancestudio.erp.manager.StudentActivityAssignmentManager;
 import com.dancestudio.erp.manager.StudentManager;
+import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class StudentManagerImpl implements StudentManager {
 
     private final StudentRepository studentRepository;
+    private final StudentActivityAssignmentRepository studentActivityAssignmentRepository;
 
     @Autowired
     private EmailManager emailManager;
@@ -35,8 +37,9 @@ public class StudentManagerImpl implements StudentManager {
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
 
     @Autowired
-    public StudentManagerImpl(StudentRepository studentRepository) {
+    public StudentManagerImpl(StudentRepository studentRepository, StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
         this.studentRepository = studentRepository;
+        this.studentActivityAssignmentRepository = studentActivityAssignmentRepository;
     }
 
     @Override
@@ -114,6 +117,19 @@ public class StudentManagerImpl implements StudentManager {
         }
         emailManager.sendSubscriptionRenewalEmail(student, entry);
         return true;
+    }
+
+    @Override
+    public List<StudentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) {
+        List<Student> entries = studentActivityAssignmentRepository.findByOptionalActivityIdAndStudioIdAndStatus(activityId, studioId, status);
+
+        List<StudentEntry> studentEntries = new ArrayList<>();
+        for (Student entry : entries) {
+            StudentEntry studentEntry = convertToEntry(entry);
+            studentEntries.add(studentEntry);
+        }
+
+        return studentEntries;
     }
 
     public Boolean checkIfStudentExistsinStudio(Long studioId) {

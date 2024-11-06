@@ -61,10 +61,6 @@ public class BankAccountManagerImpl implements BankAccountManager {
         bankAccountEntry.setBranchName(bankAccount.getBranchName());
         bankAccountEntry.setIfscCode(bankAccount.getIfscCode());
         bankAccountEntry.setUpiId(bankAccount.getUpiId());
-        if(Objects.nonNull(bankAccount.getInstructorId())) {
-            bankAccountEntry.setInstructorId(bankAccount.getInstructorId());
-        }
-
         return bankAccountEntry;
     }
 
@@ -80,16 +76,15 @@ public class BankAccountManagerImpl implements BankAccountManager {
         if (Objects.nonNull(bankAccountEntry.getBankName())) {
             bankAccount.setBankName(bankAccountEntry.getBankName());
         }
+        if (Objects.nonNull(bankAccountEntry.getBranchName())) {
+            bankAccount.setBranchName(bankAccountEntry.getBranchName());
+        }
         if (Objects.nonNull(bankAccountEntry.getIfscCode())) {
             bankAccount.setIfscCode(bankAccountEntry.getIfscCode());
         }
         if (Objects.nonNull(bankAccountEntry.getUpiId())) {
             bankAccount.setUpiId(bankAccountEntry.getUpiId());
         }
-        if (Objects.nonNull(bankAccountEntry.getInstructorId())) {
-            bankAccount.setInstructorId(bankAccountEntry.getInstructorId());
-        }
-
         return bankAccount;
     }
 
