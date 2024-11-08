@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface InstructorManager {
 
-    InstructorEntry addInstructor(InstructorEntry instructorEntry) throws EntityNotFoundException;
+    InstructorEntry addInstructor(InstructorEntry instructorEntry) throws Exception;
 
     InstructorEntry updateInstructor(Long instructorId, InstructorEntry instructorEntry) throws EntityNotFoundException;
 

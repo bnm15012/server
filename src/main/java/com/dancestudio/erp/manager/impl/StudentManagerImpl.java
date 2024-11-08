@@ -44,6 +44,10 @@ public class StudentManagerImpl implements StudentManager {
 
     @Override
     public StudentEntry addStudent(StudentEntry studentEntry) throws Exception {
+        if (studentRepository.findByNameAndEmail(studentEntry.getName(), studentEntry.getEmail()).isPresent()) {
+            throw new Exception("Student already exists");
+        }
+
         Student student = convertToEntity(studentEntry, null);
         student = studentRepository.save(student);
 
@@ -142,6 +146,7 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setStudentId(student.getId());
         studentEntry.setName(student.getName());
         studentEntry.setPhone(student.getPhone());
+        studentEntry.setEmail(student.getEmail());
         studentEntry.setImageUrl(student.getProfileImage());
         studentEntry.setMembershipStatus(MembershipStatus.valueOf(student.getStatus()));
         studentEntry.setStudioId(student.getStudioId());

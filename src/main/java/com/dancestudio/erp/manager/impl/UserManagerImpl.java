@@ -2,9 +2,7 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entity.User;
-import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.UserEntry;
-import com.dancestudio.erp.enums.UserType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.exception.InvalidCredentialsException;
 import com.dancestudio.erp.manager.UserManager;
@@ -14,7 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntity;
+import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 
 @Service
 public class UserManagerImpl implements UserManager {
@@ -100,55 +99,6 @@ public class UserManagerImpl implements UserManager {
 
     public String hashPassword(String password) {
         return passwordEncoder.encode(password);
-    }
-
-    private UserEntry convertToEntry(User user) throws EntityNotFoundException {
-
-        UserEntry userEntry = new UserEntry();
-        userEntry.setUserId(user.getId());
-        userEntry.setUserName(user.getName());
-        userEntry.setEmail(user.getEmail());
-        userEntry.setPhone(user.getPhone());
-        userEntry.setRole(UserType.valueOf(user.getRole()));
-
-        if(Objects.nonNull(user.getStudioId())) {
-            StudioEntry studioEntry = studioManagerImpl.getStudioById(user.getStudioId());
-            userEntry.setStudioEntry(studioEntry);
-        }
-        return userEntry;
-    }
-
-    public User convertToEntity(UserEntry userEntry, User existingUser) throws Exception {
-        User user = (existingUser != null) ? existingUser : new User();
-        user.setId(null);
-
-        if (Objects.nonNull(userEntry.getUserId())) {
-            user.setId(userEntry.getUserId());
-        }
-        if (Objects.nonNull(userEntry.getUserName())) {
-            user.setName(userEntry.getUserName());
-        }
-        if (Objects.nonNull(userEntry.getPassword())) {
-            user.setPassword(userEntry.getPassword());
-        }
-        if (Objects.nonNull(userEntry.getRole())) {
-            user.setRole(String.valueOf(userEntry.getRole()));
-        }
-        if (Objects.nonNull(userEntry.getPhone())) {
-            user.setPhone(userEntry.getPhone());
-        }
-        if (Objects.nonNull(userEntry.getEmail())) {
-            user.setEmail(userEntry.getEmail());
-        }
-
-        if (Objects.nonNull(userEntry.getStudioEntry()) && Objects.nonNull(userEntry.getStudioEntry().getStudioId())) {
-            Long studioId = userEntry.getStudioEntry().getStudioId();
-
-            StudioEntry studioEntry = studioManagerImpl.getStudioById(studioId);
-            user.setStudioId(studioEntry.getStudioId());
-        }
-
-        return user;
     }
 
 }

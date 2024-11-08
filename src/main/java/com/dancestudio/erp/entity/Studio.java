@@ -19,6 +19,9 @@ public class Studio extends BaseEntity {
     @Column(name = "logo")
     private String logo;
 
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled;
+
     @Column(name = "contact")
     private String contactDetails;
 

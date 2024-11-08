@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntity;
+import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 
 @Service
 public class StudioManagerImpl implements StudioManager {
@@ -76,38 +78,5 @@ public class StudioManagerImpl implements StudioManager {
         }
 
         return studioEntries;
-    }
-
-    public StudioEntry convertToEntry(Studio studio) {
-
-        StudioEntry studioEntry = new StudioEntry();
-        studioEntry.setStudioId(studio.getId());
-        studioEntry.setStudioName(studio.getName());
-        studioEntry.setLocation(studio.getLocation());
-        studioEntry.setContactDetails(studio.getContactDetails());
-
-        return studioEntry;
-    }
-
-    public Studio convertToEntity(StudioEntry studioEntry, Studio existingStudio) {
-        Studio studio = (existingStudio != null) ? existingStudio : new Studio();
-
-        if (Objects.nonNull(studioEntry.getStudioId())) {
-            studio.setId(studioEntry.getStudioId());
-        }
-        if (Objects.nonNull(studioEntry.getStudioName())) {
-            studio.setName(studioEntry.getStudioName());
-        }
-        if (Objects.nonNull(studioEntry.getLogo())) {
-            studio.setLogo(studioEntry.getLogo());
-        }
-        if (Objects.nonNull(studioEntry.getLocation())) {
-            studio.setLocation(studioEntry.getLocation());
-        }
-        if (Objects.nonNull(studioEntry.getContactDetails())) {
-            studio.setContactDetails(studioEntry.getContactDetails());
-        }
-
-        return studio;
     }
 }
