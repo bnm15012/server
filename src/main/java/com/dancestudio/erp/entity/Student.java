@@ -3,6 +3,8 @@ package com.dancestudio.erp.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,6 +16,9 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@Table(name = "student", uniqueConstraints = {
+        @UniqueConstraint(name = "name_email_key", columnNames = {"name", "email"})
+})
 public class Student extends BaseEntity {
 
     @Column(name = "name", nullable = false)

@@ -92,8 +92,9 @@ public class StudentServiceImpl implements StudentService {
 
         try {
             List<StudentEntry> entries = studentManager.getAllStudentsByStudio(studioId, activityId, membershipStatus, page, size);
+            int totalSize = studentManager.getAllStudentsByStudio(studioId, activityId, membershipStatus, page, -1).size();
             response.setData(entries);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : entries.size()));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : totalSize));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
