@@ -3,11 +3,13 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.entry.StudentEntry;
+import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EmailManager;
 import com.dancestudio.erp.manager.StudentActivityAssignmentManager;
 import com.dancestudio.erp.manager.StudentManager;
+import com.dancestudio.erp.manager.TemplateManager;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_STUDENT_EMAIL;
+import static com.dancestudio.erp.constants.TemplateName.UPDATE_STUDENT_EMAIL;
+
 @Service
 @Slf4j
 public class StudentManagerImpl implements StudentManager {
@@ -32,6 +37,9 @@ public class StudentManagerImpl implements StudentManager {
 
     @Autowired
     private EmailManager emailManager;
+
+    @Autowired
+    private TemplateManager templateManager;
 
     @Autowired
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
@@ -51,7 +59,8 @@ public class StudentManagerImpl implements StudentManager {
         Student student = convertToEntity(studentEntry, null);
         student = studentRepository.save(student);
 
-        emailManager.sendRegistrationEmail(student);
+        TemplateEntry templateEntry = templateManager.getTemplateDetails(ADD_NEW_STUDENT_EMAIL);
+        emailManager.sendEmail(student.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
         return convertToEntry(student);
     }
 
@@ -61,7 +70,12 @@ public class StudentManagerImpl implements StudentManager {
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
         Student updatedStudentEntry = convertToEntity(studentEntry, existingStudent);
-        return convertToEntry(studentRepository.save(updatedStudentEntry));
+        updatedStudentEntry = studentRepository.save(updatedStudentEntry);
+
+        TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_STUDENT_EMAIL);
+        emailManager.sendEmail(updatedStudentEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
+
+        return convertToEntry(updatedStudentEntry);
     }
 
     @Override

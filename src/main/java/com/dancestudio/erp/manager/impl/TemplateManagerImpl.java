@@ -2,6 +2,7 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Template;
 import com.dancestudio.erp.entry.TemplateEntry;
+import com.dancestudio.erp.enums.TemplateType;
 import com.dancestudio.erp.manager.TemplateManager;
 import com.dancestudio.erp.repository.TemplateRepository;
 import lombok.Setter;
@@ -20,7 +21,7 @@ public class TemplateManagerImpl implements TemplateManager {
 
     @Override
     public TemplateEntry getTemplateDetails(String templateName) {
-        Optional<Template> template = Optional.ofNullable(templateRepository.getInvoicesByTemplateName(templateName));
+        Optional<Template> template = Optional.ofNullable(templateRepository.findByName(templateName));
         return template.map(this::convertToEntry).orElse(null);
     }
 
@@ -33,7 +34,8 @@ public class TemplateManagerImpl implements TemplateManager {
         entry.setId(entity.getId());
         entry.setTemplateName(entity.getName());
         entry.setTemplateBody(entity.getBody());
-
+        entry.setSubject(entity.getSubject());
+        entry.setTemplateType(TemplateType.valueOf(entity.getTemplateType()));
         return entry;
     }
 

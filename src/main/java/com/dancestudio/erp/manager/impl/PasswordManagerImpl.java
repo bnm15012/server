@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Setter(onMethod = @__({@Autowired}))
 @Component
 public class PasswordManagerImpl {
@@ -41,5 +43,9 @@ public class PasswordManagerImpl {
         passwordEntry.setValid(isValid);
 
         return passwordEntry;
+    }
+
+    public static String generateRandomPassword() {
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 10);
     }
 }

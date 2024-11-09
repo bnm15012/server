@@ -19,4 +19,11 @@ public class Template extends BaseEntity {
     @Column(name = "body", columnDefinition = "TEXT", nullable = false)
     private String body;
 
+    @Column(name = "subject")
+    private String subject;
+
+    @Column(name = "templateType", nullable = false)
+    private String templateType;
+
+
 }

@@ -2,12 +2,17 @@ package com.dancestudio.erp.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@Table(name = "studio", uniqueConstraints = {
+        @UniqueConstraint(name = "name_location_key", columnNames = {"name", "location"})
+})
 public class Studio extends BaseEntity {
 
     @Column(name = "name")

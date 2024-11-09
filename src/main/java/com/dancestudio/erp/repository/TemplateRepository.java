@@ -9,9 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TemplateRepository extends JpaRepository<Template, Long> {
 
-    @Query(value = "select * from template where id = :templateId", nativeQuery = true)
-    Template getInvoicesByTemplateId(Long templateId);
-
     @Query(value = "select * from template where name = :templateName", nativeQuery = true)
-    Template getInvoicesByTemplateName(String templateName);
+    Template findByName(String templateName);
+
 }

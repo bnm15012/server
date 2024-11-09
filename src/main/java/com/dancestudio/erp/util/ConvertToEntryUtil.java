@@ -71,7 +71,6 @@ public class ConvertToEntryUtil {
             user.setEnabled(userEntry.getEnabled());
         }
 
-
         if (Objects.nonNull(userEntry.getStudioEntry()) && Objects.nonNull(userEntry.getStudioEntry().getStudioId())) {
             Long studioId = userEntry.getStudioEntry().getStudioId();
 

@@ -21,9 +21,6 @@ public class UserManagerImpl implements UserManager {
     private final UserRepository userRepository;
 
     @Autowired
-    private StudioManagerImpl studioManagerImpl;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired

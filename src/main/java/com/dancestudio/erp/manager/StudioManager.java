@@ -6,7 +6,8 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import java.util.List;
 
 public interface StudioManager {
-    StudioEntry addStudio(StudioEntry studioEntry);
+
+    StudioEntry addStudio(StudioEntry studioEntry) throws Exception;
 
     StudioEntry updateStudio(Long studioId, StudioEntry studioEntry) throws EntityNotFoundException;
 

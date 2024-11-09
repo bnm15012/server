@@ -7,8 +7,6 @@ public interface EmailManager {
 
     void sendEmail(String to, String subject, String body);
 
-    void sendRegistrationEmail(Student student);
-
     void sendSubscriptionRenewalEmail(Student student, StudentActivityAssignmentEntry entry);
 
 }
