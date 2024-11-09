@@ -90,7 +90,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
 
         InstructorActivityAssignmentEntry instructorActivityAssignmentEntry = new InstructorActivityAssignmentEntry();
         instructorActivityAssignmentEntry.setAssignmentId(instructorActivityAssignment.getId());
-        instructorActivityAssignmentEntry.setInstructorId(instructorActivityAssignment.getInstructorId());
+        instructorActivityAssignmentEntry.setInstructorId(instructorActivityAssignment.getInstructor().getId());
         instructorActivityAssignmentEntry.setAssignedDate(instructorActivityAssignment.getAssignedDate());
         instructorActivityAssignmentEntry.setStartDate(instructorActivityAssignment.getStartDate());
         instructorActivityAssignmentEntry.setEndDate(instructorActivityAssignment.getEndDate());
@@ -122,7 +122,9 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
             instructorActivityAssignment.setStatus(instructorActivityAssignmentEntry.getMembershipStatus().name());
         }
         if (Objects.nonNull(instructorActivityAssignmentEntry.getInstructorId())) {
-            instructorActivityAssignment.setInstructorId(instructorActivityAssignmentEntry.getInstructorId());
+            Instructor instructor = instructorRepository.findById(instructorActivityAssignmentEntry.getInstructorId())
+                    .orElseThrow(() -> new EntityNotFoundException("Student not found"));
+            instructorActivityAssignment.setInstructor(instructor);
         }
 
         if (Objects.nonNull(instructorActivityAssignmentEntry.getActivity()) && Objects.nonNull(instructorActivityAssignmentEntry.getActivity().getActivityId())) {
