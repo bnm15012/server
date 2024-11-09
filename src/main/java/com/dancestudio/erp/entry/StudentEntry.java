@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 public class StudentEntry {
@@ -22,16 +23,15 @@ public class StudentEntry {
 
     @JsonIgnore
     public List<Long> getEnrolledActivityIds() {
-        List<Long> activityIds = new ArrayList<>();
+        if(Objects.isNull(enrolledActivities))
+            return null;
 
-        if (enrolledActivities != null) {
-            for (StudentActivityAssignmentEntry activity : enrolledActivities) {
-                if (activity != null) {
-                    activityIds.add(activity.getAssignmentId());
-                }
+        List<Long> activityIds = new ArrayList<>();
+        for (StudentActivityAssignmentEntry activity : enrolledActivities) {
+            if (activity != null) {
+                activityIds.add(activity.getAssignmentId());
             }
         }
-
         return activityIds;
     }
 

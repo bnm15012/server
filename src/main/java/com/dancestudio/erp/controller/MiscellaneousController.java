@@ -1,5 +1,6 @@
 package com.dancestudio.erp.controller;
 
+import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.response.PasswordResponse;
 import com.dancestudio.erp.response.ReportResponse;
 import com.dancestudio.erp.response.StringResponse;
@@ -45,9 +46,9 @@ public class MiscellaneousController {
         return passwordService.verifyOtp(otpToken, otp);
     }
 
-    @GetMapping("password/refreshToken/{refreshToken}")
-    public StringResponse refreshToken(@PathVariable String refreshToken, @RequestHeader("email") String email) {
-        return passwordService.refreshToken(refreshToken, email);
+    @PostMapping("password/refreshToken")
+    public StringResponse refreshToken(@RequestBody UserEntry userEntry) {
+        return passwordService.refreshToken(userEntry);
     }
 
 }

@@ -14,9 +14,14 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    private static final long OTP_EXPIRATION_MS = 300_000;
-    private static final long AUTH_EXPIRATION_MS = 900_000;
-    private static final long REFRESH_EXPIRATION_MS = 1800_000;
+    @Value("${jwt.auth.expiration.ms}")
+    private long jwtAuthTokenExpirationTime;
+
+    @Value("${jwt.refresh.expiration.ms}")
+    private long jwtRefreshTokenExpirationTime;
+
+    @Value("${jwt.otp.expiration.ms}")
+    private long jwtOtpExpirationTime;
 
     public String generateOtp() {
         Random random = new Random();
@@ -29,9 +34,9 @@ public class JwtUtil {
         Date expiryDate;
 
         if (authType == AuthType.OTP) {
-            expiryDate = new Date(now.getTime() + OTP_EXPIRATION_MS);
+            expiryDate = new Date(now.getTime() + jwtOtpExpirationTime);
         } else {
-            expiryDate = new Date(now.getTime() + AUTH_EXPIRATION_MS);
+            expiryDate = new Date(now.getTime() + jwtAuthTokenExpirationTime);
         }
 
         JwtBuilder tokenBuilder = Jwts.builder()
@@ -53,8 +58,7 @@ public class JwtUtil {
 
     public String generateAccessToken(String email) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + REFRESH_EXPIRATION_MS); // Define REFRESH_EXPIRATION_MS as needed
-
+        Date expiryDate = new Date(now.getTime() + jwtRefreshTokenExpirationTime);
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(now)

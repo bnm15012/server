@@ -2,6 +2,7 @@ package com.dancestudio.erp.service.impl;
 
 import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entry.PasswordEntry;
+import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.manager.impl.PasswordManagerImpl;
 import com.dancestudio.erp.response.PasswordResponse;
 import com.dancestudio.erp.response.StatusResponse;
@@ -47,16 +48,16 @@ public class PasswordServiceImpl implements PasswordService {
         return response;
     }
 
-    public StringResponse refreshToken(String refreshToken, String email) {
+    public StringResponse refreshToken(UserEntry userEntry) {
 
         StringResponse response = new StringResponse();
-        if (refreshToken.startsWith("Bearer ")) {
-            refreshToken = refreshToken.substring(7);
+        if (userEntry.getToken().startsWith("Bearer ")) {
+            userEntry.setToken(userEntry.getToken().substring(7));
         }
 
-        if (jwtUtil.validateRefreshToken(refreshToken, email)) {
+        if (jwtUtil.validateRefreshToken(userEntry.getToken(), userEntry.getEmail())) {
 
-            String newAccessToken = jwtUtil.generateAccessToken(email);
+            String newAccessToken = jwtUtil.generateAccessToken(userEntry.getEmail());
             response.setStatus(new StatusResponse(1, "Token fetched successfully", StatusResponse.Type.SUCCESS));
             response.setData(Collections.singletonList(newAccessToken));
             return response;
