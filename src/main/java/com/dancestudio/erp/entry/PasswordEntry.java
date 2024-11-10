@@ -6,6 +6,8 @@ import lombok.Data;
 public class PasswordEntry {
 
     private String otpToken;
+    private String otp;
+    private UserEntry userEntry;
     private Long tokenValidity;
 
     private boolean isValid = false;

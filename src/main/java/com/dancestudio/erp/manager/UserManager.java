@@ -16,4 +16,6 @@ public interface UserManager {
 
     UserEntry getUserById(Long userId) throws EntityNotFoundException;
 
+    UserEntry getUserByEmail(String email) throws EntityNotFoundException;
+
 }

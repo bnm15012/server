@@ -12,6 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntity;
 import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 
@@ -71,6 +73,9 @@ public class UserManagerImpl implements UserManager {
         User existingUser = userRepository.findById(studioId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if(Objects.nonNull(userEntry.getPassword())) {
+            userEntry.setPassword(hashPassword(userEntry.getPassword()));
+        }
         User updatedUser = convertToEntity(userEntry, existingUser);
         return convertToEntry(userRepository.save(updatedUser));
     }
@@ -88,6 +93,14 @@ public class UserManagerImpl implements UserManager {
     @Override
     public UserEntry getUserById(Long userId) throws EntityNotFoundException {
         User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return convertToEntry(user);
+    }
+
+    @Override
+    public UserEntry getUserByEmail(String email) throws EntityNotFoundException {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return convertToEntry(user);

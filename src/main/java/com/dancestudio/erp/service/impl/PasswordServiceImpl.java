@@ -3,6 +3,7 @@ package com.dancestudio.erp.service.impl;
 import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entry.PasswordEntry;
 import com.dancestudio.erp.entry.UserEntry;
+import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.manager.impl.PasswordManagerImpl;
 import com.dancestudio.erp.response.PasswordResponse;
 import com.dancestudio.erp.response.StatusResponse;
@@ -10,6 +11,8 @@ import com.dancestudio.erp.response.StringResponse;
 import com.dancestudio.erp.service.PasswordService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -22,33 +25,46 @@ public class PasswordServiceImpl implements PasswordService {
     private PasswordManagerImpl passwordManager;
 
     @Autowired
+    private UserManager userManager;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
-    public PasswordResponse initiatePasswordReset(String email) {
+    public ResponseEntity<PasswordResponse> initiatePasswordReset(String email) {
         PasswordResponse response = new PasswordResponse();
         try {
             PasswordEntry entry = passwordManager.initiatePasswordReset(email);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "OTP sent to your email.", StatusResponse.Type.SUCCESS));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(1, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        return response;
     }
 
-    public PasswordResponse verifyOtp(String otpToken, String otp) {
+    public ResponseEntity<PasswordResponse> verifyOtp(PasswordEntry passwordEntry) {
         PasswordResponse response = new PasswordResponse();
 
-        PasswordEntry entry = passwordManager.verifyOtp(otpToken, otp);
-        if (entry.isValid()) {
-            response.setStatus(new StatusResponse(1, "OTP verified. Proceed with password reset", StatusResponse.Type.SUCCESS));
-        } else {
-            response.setStatus(new StatusResponse(1, "Invalid or expired OTP", StatusResponse.Type.ERROR));
+        try {
+            PasswordEntry entry = passwordManager.verifyOtp(passwordEntry);
+            if (entry.isValid()) {
+                UserEntry userEntry = userManager.getUserByEmail(passwordEntry.getUserEntry().getEmail());
+                userEntry.setPassword(passwordEntry.getUserEntry().getPassword());
+                userManager.updateUser(userEntry.getUserId(), userEntry);
+                response.setStatus(new StatusResponse(1, "OTP veriried, Password changed successfully", StatusResponse.Type.SUCCESS));
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            } else {
+                response.setStatus(new StatusResponse(1, "Invalid or expired OTP", StatusResponse.Type.ERROR));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        return response;
     }
 
-    public StringResponse refreshToken(UserEntry userEntry) {
+    public ResponseEntity<StringResponse> refreshToken(UserEntry userEntry) {
 
         StringResponse response = new StringResponse();
         if (userEntry.getToken().startsWith("Bearer ")) {
@@ -60,10 +76,10 @@ public class PasswordServiceImpl implements PasswordService {
             String newAccessToken = jwtUtil.generateAccessToken(userEntry.getEmail());
             response.setStatus(new StatusResponse(1, "Token fetched successfully", StatusResponse.Type.SUCCESS));
             response.setData(Collections.singletonList(newAccessToken));
-            return response;
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
         response.setStatus(new StatusResponse(1, "Invalid refresh token", StatusResponse.Type.ERROR));
-        return response;
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }
