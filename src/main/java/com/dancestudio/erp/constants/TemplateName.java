@@ -10,4 +10,6 @@ public class TemplateName {
     public static final String ADD_NEW_STUDIO_EMAIL = "NEW_STUDIO_EMAIL";
     public static final String UPDATE_STUDIO_EMAIL = "UPDATE_STUDIO_EMAIL";
 
+    public static final String SUBSCRIPTION_RENEWAL_REMINDER = "SUBSCRIPTION_RENEWAL_REMINDER";
+
 }
