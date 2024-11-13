@@ -11,9 +11,7 @@ import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.manager.TemplateManager;
 import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.repository.StudioRepository;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,21 +24,23 @@ import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntity;
 import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 
 @Service
-@Setter(onMethod = @__({@Autowired}))
 public class StudioManagerImpl implements StudioManager {
 
     private final StudioRepository studioRepository;
 
-    private StudentManagerImpl studentManager;
+    @Autowired
     private UserManager userManager;
+
+    @Autowired
     private EmailManager emailManager;
+
+    @Autowired
     private TemplateManager templateManager;
 
     @Autowired
     public StudioManagerImpl(StudioRepository studioRepository) {
         this.studioRepository = studioRepository;
     }
-
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -77,15 +77,9 @@ public class StudioManagerImpl implements StudioManager {
 
         studioRepository.findById(studioId)
                 .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
-        try {
-            if (studentManager.checkIfStudentExistsinStudio(studioId)) {
-                throw new RuntimeException("Cannot delete studio: it has some dependency.");
-            }
-            studioRepository.deleteById(studioId);
-            return Boolean.TRUE;
-        } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Cannot delete studio: It has some dependency", e);
-        }
+
+        studioRepository.deleteById(studioId);
+        return Boolean.TRUE;
     }
 
     @Override

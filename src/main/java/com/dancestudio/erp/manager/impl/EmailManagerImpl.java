@@ -2,11 +2,8 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
-import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.TemplateEntry;
-import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EmailManager;
-import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.manager.TemplateManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +24,6 @@ public class EmailManagerImpl implements EmailManager {
     @Autowired
     private TemplateManager templateManager;
 
-    @Autowired
-    private StudioManager studioManager;
-
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
@@ -39,26 +33,22 @@ public class EmailManagerImpl implements EmailManager {
     }
 
     @Override
-    public void sendSubscriptionRenewalEmail(Student student, StudentActivityAssignmentEntry entry) {
+    public void sendSubscriptionRenewalEmail(Student student, StudentActivityAssignmentEntry entry, String studioName) {
         try {
             TemplateEntry templateEntry = templateManager.getTemplateDetails(SUBSCRIPTION_RENEWAL_REMINDER);
-            StudioEntry studioEntry = studioManager.getStudioById(entry.getActivity().getStudioId());
 
-            String updatedBody = formatEmailBody(templateEntry, studioEntry.getStudioName(), student.getName(), entry.getActivity().getActivityType().name());
+            String updatedBody = formatEmailBody(templateEntry, studioName, student.getName(), entry.getActivity().getActivityType().name());
             sendEmail(student.getEmail(), templateEntry.getSubject(), updatedBody);
         } catch (MailException e) {
             log.error(e.getMessage());
-        } catch (EntityNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 
     private String formatEmailBody(TemplateEntry templateEntry, String studioName, String studentName, String activityType) {
-        String updatedBody = templateEntry.getTemplateBody()
+        return templateEntry.getTemplateBody()
                 .replace("{studio_name}", studioName)
                 .replace("{student_name}", studentName)
                 .replace("{activity_type}", activityType);
-        return updatedBody;
     }
 
 }

@@ -3,13 +3,11 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.entry.StudentEntry;
+import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.EmailManager;
-import com.dancestudio.erp.manager.StudentActivityAssignmentManager;
-import com.dancestudio.erp.manager.StudentManager;
-import com.dancestudio.erp.manager.TemplateManager;
+import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +35,9 @@ public class StudentManagerImpl implements StudentManager {
 
     @Autowired
     private EmailManager emailManager;
+
+    @Autowired
+    private StudioManager studioManager;
 
     @Autowired
     private TemplateManager templateManager;
@@ -136,7 +137,9 @@ public class StudentManagerImpl implements StudentManager {
         if (Objects.isNull(entry)) {
             throw new EntityNotFoundException("No such entries found");
         }
-        emailManager.sendSubscriptionRenewalEmail(student, entry);
+
+        StudioEntry studioEntry = studioManager.getStudioById(entry.getActivity().getStudioId());
+        emailManager.sendSubscriptionRenewalEmail(student, entry, studioEntry.getStudioName());
         return true;
     }
 

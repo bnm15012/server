@@ -1,0 +1,21 @@
+package com.dancestudio.erp.entry;
+
+import com.dancestudio.erp.enums.SubscriptionType;
+import com.dancestudio.erp.enums.SubscriptionStatus;
+import lombok.Data;
+
+import java.util.Date;
+
+@Data
+public class SubscriptionPlanEntry {
+
+    private Long planId;
+    private Long studioId;
+    private SubscriptionType subscriptionPlan; // e.g., "Monthly", "Yearly", "Half-Yearly"
+    private Date startDate;
+    private Date endDate;
+    private SubscriptionStatus status; // e.g., "ACTIVE", "EXPIRED", "CANCELLED"
+    private Double price;
+    private Date renewalDate;
+
+}

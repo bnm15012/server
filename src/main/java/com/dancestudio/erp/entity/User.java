@@ -25,7 +25,7 @@ public class User extends BaseEntity {
     private String phone;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "studio_id", nullable = true)
+    @JoinColumn(name = "studio_id", nullable = true, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_studio_id"))
     private Studio studio;
 
     @Column(name = "enabled", nullable = false)
