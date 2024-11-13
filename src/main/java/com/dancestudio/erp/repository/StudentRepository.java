@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,8 +35,4 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.studioId = :studioId")
     boolean studentsExistsByStudioId(@Param("studioId") Long studioId);
 
-    @Query("SELECT s FROM Student s " +
-            "JOIN StudentActivityAssignment a ON FIND_IN_SET(a.id, s.enrolledActivityIds) > 0 " +
-            "WHERE a.membershipEndDate <= :reminderDate")
-    List<Student> findStudentsWithMembershipEndingOnDate(@Param("reminderDate") LocalDate reminderDate);
 }

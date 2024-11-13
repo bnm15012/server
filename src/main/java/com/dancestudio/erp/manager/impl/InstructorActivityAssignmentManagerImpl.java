@@ -33,10 +33,12 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
 
     @Override
     public InstructorActivityAssignmentEntry addInstructorActivityAssignment(InstructorActivityAssignmentEntry instructorActivityAssignmentEntry) throws EntityNotFoundException {
+        instructorRepository.findById(instructorActivityAssignmentEntry.getInstructorId())
+                .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
+
         InstructorActivityAssignment instructorActivityAssignment = convertToEntity(instructorActivityAssignmentEntry, null);
         instructorActivityAssignment = instructorActivityAssignmentRepository.save(instructorActivityAssignment);
 
-        addAssignmentToInstructor(instructorActivityAssignmentEntry.getInstructorId(), instructorActivityAssignment.getId());
         return convertToEntry(instructorActivityAssignment);
     }
 
@@ -48,7 +50,6 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         InstructorActivityAssignment updatedInstructorActivityAssignment = convertToEntity(instructorActivityAssignmentEntry, existingInstructorActivityAssignment);
         updatedInstructorActivityAssignment = instructorActivityAssignmentRepository.save(updatedInstructorActivityAssignment);
 
-        addAssignmentToInstructor(instructorActivityAssignmentEntry.getInstructorId(), updatedInstructorActivityAssignment.getId());
         return convertToEntry(instructorActivityAssignmentRepository.save(updatedInstructorActivityAssignment));
     }
 
@@ -72,14 +73,6 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
     public InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, Long activityId) throws EntityNotFoundException {
         InstructorActivityAssignment assignment = instructorActivityAssignmentRepository.findByInstructorIdAndActivityId(instructorId, activityId);
         return convertToEntry(assignment);
-    }
-
-    private void addAssignmentToInstructor(Long instructorId, Long assignmentId) throws EntityNotFoundException {
-        Instructor instructor = instructorRepository.findById(instructorId)
-                .orElseThrow(() -> new EntityNotFoundException("Student not found"));
-
-        instructor.addEnrolledActivityId(assignmentId);
-        instructorRepository.save(instructor);
     }
 
     private InstructorActivityAssignmentEntry convertToEntry(InstructorActivityAssignment instructorActivityAssignment) throws EntityNotFoundException {

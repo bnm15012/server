@@ -17,4 +17,7 @@ public class Activity extends BaseEntity {
 
     @Column(name = "studio_id", nullable = false)
     private Long studioId;
+
+    @Column(name = "membership_plans", columnDefinition = "json")
+    private String membershipPlans;
 }

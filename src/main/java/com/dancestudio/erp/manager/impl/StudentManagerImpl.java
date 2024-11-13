@@ -112,14 +112,17 @@ public class StudentManagerImpl implements StudentManager {
 
     @Override
     public List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate) {
-        List<Student> entries = studentRepository.findStudentsWithMembershipEndingOnDate(reminderDate);
+        List<Long> studentIds = studentActivityAssignmentRepository.findStudentIdsWithMembershipEndingOnDate(reminderDate);
 
         List<StudentEntry> studentEntries = new ArrayList<>();
-        for (Student entry : entries) {
-            StudentEntry studentEntry = convertToEntry(entry);
-            studentEntries.add(studentEntry);
+        for (Long studentId : studentIds) {
+            try {
+                StudentEntry studentEntry = getStudentById(studentId);
+                studentEntries.add(studentEntry);
+            } catch (EntityNotFoundException ex) {
+                log.error("Entity not found : {}", ex.getMessage());
+            }
         }
-
         return studentEntries;
     }
 
@@ -165,22 +168,6 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setMembershipStatus(MembershipStatus.valueOf(student.getStatus()));
         studentEntry.setStudioId(student.getStudioId());
 
-        if (Objects.nonNull(student.getEnrolledActivityIdList())) {
-            List<Long> activityIds = student.getEnrolledActivityIdList();
-            List<StudentActivityAssignmentEntry> activityAssignmentEntries = new ArrayList<>();
-
-            try {
-                for (Long id : activityIds) {
-                    StudentActivityAssignmentEntry studentActivityAssignmentEntry = studentActivityAssignmentManager.getStudentActivityAssignmentById(id);
-                    activityAssignmentEntries.add(studentActivityAssignmentEntry);
-                }
-                studentEntry.setEnrolledActivities(activityAssignmentEntries);
-            } catch (EntityNotFoundException ex) {
-                log.info("No Student Activity Assignment Entry found for given student");
-                studentEntry.setEnrolledActivities(null);
-            }
-        }
-
         return studentEntry;
     }
 
@@ -207,10 +194,6 @@ public class StudentManagerImpl implements StudentManager {
         }
         if (Objects.nonNull(studentEntry.getStudioId())) {
             student.setStudioId(studentEntry.getStudioId());
-        }
-        if (Objects.nonNull(studentEntry.getEnrolledActivities())) {
-            List<Long> ids = studentEntry.getEnrolledActivityIds();
-            student.setEnrolledActivityIds(ids);
         }
 
         return student;

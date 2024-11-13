@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface StudentActivityAssignmentRepository extends JpaRepository<StudentActivityAssignment, Long> {
@@ -18,4 +19,8 @@ public interface StudentActivityAssignmentRepository extends JpaRepository<Stude
     List<Student> findByOptionalActivityIdAndStudioIdAndStatus(@Param("activityId") Long activityId,
                                                                @Param("studioId") Long studioId,
                                                                @Param("status") String status);
+
+    @Query("SELECT a.student FROM StudentActivityAssignment a WHERE a.membershipEndDate <= :reminderDate")
+    List<Long> findStudentIdsWithMembershipEndingOnDate(@Param("reminderDate") LocalDate reminderDate);
+
 }

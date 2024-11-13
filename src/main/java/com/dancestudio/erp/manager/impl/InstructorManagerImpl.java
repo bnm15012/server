@@ -2,11 +2,12 @@ package com.dancestudio.erp.manager.impl;
 
 
 import com.dancestudio.erp.entity.Instructor;
-import com.dancestudio.erp.entry.*;
+import com.dancestudio.erp.entry.BankAccountEntry;
+import com.dancestudio.erp.entry.InstructorEntry;
+import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BankAccountManager;
-import com.dancestudio.erp.manager.InstructorActivityAssignmentManager;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
@@ -28,9 +29,6 @@ public class InstructorManagerImpl implements InstructorManager {
 
     @Autowired
     private BankAccountManager bankAccountManager;
-
-    @Autowired
-    private InstructorActivityAssignmentManager instructorActivityAssignmentManager;
 
     @Autowired
     public InstructorManagerImpl(InstructorRepository instructorRepository) {
@@ -111,22 +109,6 @@ public class InstructorManagerImpl implements InstructorManager {
         if (instructor.getBankAccountId() != null) {
             BankAccountEntry bankAccountEntry = bankAccountManager.getBankAccountById(instructor.getBankAccountId());
             instructorEntry.setBankAccountDetails(bankAccountEntry);
-        }
-
-        if (Objects.nonNull(instructor.getEnrolledActivityIdList())) {
-            List<Long> activityIds = instructor.getEnrolledActivityIdList();
-            List<InstructorActivityAssignmentEntry> activityAssignmentEntries = new ArrayList<>();
-
-            try {
-                for (Long id : activityIds) {
-                    InstructorActivityAssignmentEntry instructorActivityAssignmentEntry = instructorActivityAssignmentManager.getInstructorActivityAssignmentById(id);
-                    activityAssignmentEntries.add(instructorActivityAssignmentEntry);
-                }
-                instructorEntry.setAssignments(activityAssignmentEntries);
-            } catch (EntityNotFoundException ex) {
-                log.info("No Instructor Activity Assignment Entry found for given instructor");
-                instructorEntry.setAssignments(null);
-            }
         }
 
         return instructorEntry;
