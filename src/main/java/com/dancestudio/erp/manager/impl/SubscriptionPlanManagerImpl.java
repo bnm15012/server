@@ -2,13 +2,15 @@ package com.dancestudio.erp.manager.impl;
 
 
 import com.dancestudio.erp.entity.SubscriptionPlan;
+import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.SubscriptionPlanEntry;
 import com.dancestudio.erp.enums.SubscriptionStatus;
 import com.dancestudio.erp.enums.SubscriptionType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.manager.SubscriptionPlanManager;
 import com.dancestudio.erp.repository.SubscriptionPlanRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +21,12 @@ import java.util.Objects;
 public class SubscriptionPlanManagerImpl implements SubscriptionPlanManager {
     private final SubscriptionPlanRepository subscriptionPlanRepository;
 
-    private final ObjectMapper objectMapper;
+    @Autowired
+    private StudioManager studioManager;
 
     @Autowired
     public SubscriptionPlanManagerImpl(SubscriptionPlanRepository subscriptionPlanRepository) {
         this.subscriptionPlanRepository = subscriptionPlanRepository;
-        this.objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -58,11 +60,14 @@ public class SubscriptionPlanManagerImpl implements SubscriptionPlanManager {
         return convertToEntry(subscriptionPlan);
     }
 
-    private SubscriptionPlanEntry convertToEntry(SubscriptionPlan subscriptionPlan) {
+    private SubscriptionPlanEntry convertToEntry(SubscriptionPlan subscriptionPlan) throws EntityNotFoundException {
 
         SubscriptionPlanEntry subscriptionPlanEntry = new SubscriptionPlanEntry();
         subscriptionPlanEntry.setPlanId(subscriptionPlan.getId());
-        subscriptionPlanEntry.setStudioId(subscriptionPlan.getStudioId());
+
+        StudioEntry entry = studioManager.getStudioById(subscriptionPlan.getStudio().getId());
+        subscriptionPlanEntry.setStudioId(entry.getStudioId());
+
         subscriptionPlanEntry.setSubscriptionPlan(SubscriptionType.valueOf(subscriptionPlan.getSubscriptionPlan()));
         subscriptionPlanEntry.setStartDate(subscriptionPlan.getStartDate());
         subscriptionPlanEntry.setEndDate(subscriptionPlan.getEndDate());
@@ -80,7 +85,8 @@ public class SubscriptionPlanManagerImpl implements SubscriptionPlanManager {
             subscriptionPlan.setId(subscriptionPlanEntry.getPlanId());
         }
         if (Objects.nonNull(subscriptionPlanEntry.getStudioId())) {
-            subscriptionPlan.setStudioId(subscriptionPlanEntry.getStudioId());
+            StudioEntry entry = studioManager.getStudioById(subscriptionPlanEntry.getStudioId());
+            subscriptionPlan.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
         }
         if (Objects.nonNull(subscriptionPlanEntry.getSubscriptionPlan())) {
             subscriptionPlan.setSubscriptionPlan(String.valueOf(subscriptionPlanEntry.getSubscriptionPlan()));

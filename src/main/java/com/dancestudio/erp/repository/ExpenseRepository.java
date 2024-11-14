@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
-    @Query("SELECT s FROM Expense s WHERE s.studioId = :studioId and month(s.expenseDate) >= :startMonth and month(s.expenseDate) <= :endMonth")
+    @Query("SELECT s FROM Expense s WHERE s.studio.id = :studioId and month(s.expenseDate) >= :startMonth and month(s.expenseDate) <= :endMonth")
     List<Expense> findAllByStudioId(@Param("studioId") Long studioId, @Param("startMonth") Long startMonth, @Param("endMonth") Long endMonth);
 
 }

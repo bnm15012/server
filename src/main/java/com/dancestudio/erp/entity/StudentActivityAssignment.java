@@ -11,8 +11,9 @@ import java.time.LocalDate;
 @Entity
 public class StudentActivityAssignment extends BaseEntity {
 
-    @Column(name = "activity_id", nullable = false)
-    private Long activityId;
+    @ManyToOne
+    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_saa_activity_id"))
+    private Activity activity;
 
     @Column(name = "registration_date", nullable = false)
     private LocalDate registrationDate;

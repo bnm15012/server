@@ -15,5 +15,5 @@ public interface ActivityManager {
 
     ActivityEntry getActivityById(Long activityId) throws EntityNotFoundException;
 
-    List<ActivityEntry> getAllActivities(Long studioId);
+    List<ActivityEntry> getAllActivities(Long studioId) throws EntityNotFoundException;
 }

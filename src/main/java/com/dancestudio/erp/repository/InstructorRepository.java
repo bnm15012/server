@@ -14,7 +14,7 @@ public interface InstructorRepository extends JpaRepository<Instructor, Long> {
 
     Optional<Instructor> findByNameAndEmail(String name, String email);
 
-    @Query("SELECT s FROM Instructor s WHERE s.studioId = :studioId AND (:membershipStatus IS NULL OR s.status = :membershipStatus)")
+    @Query("SELECT s FROM Instructor s WHERE s.studio.id = :studioId AND (:membershipStatus IS NULL OR s.status = :membershipStatus)")
     List<Instructor> findAllByStudioId(@Param("studioId") Long studioId, @Param("membershipStatus") MembershipStatus membershipStatus);
 }
 

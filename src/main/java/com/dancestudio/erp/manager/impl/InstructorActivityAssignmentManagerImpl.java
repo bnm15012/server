@@ -11,6 +11,7 @@ import com.dancestudio.erp.manager.ActivityManager;
 import com.dancestudio.erp.manager.InstructorActivityAssignmentManager;
 import com.dancestudio.erp.repository.InstructorActivityAssignmentRepository;
 import com.dancestudio.erp.repository.InstructorRepository;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,8 +90,8 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         instructorActivityAssignmentEntry.setEndDate(instructorActivityAssignment.getEndDate());
         instructorActivityAssignmentEntry.setMembershipStatus(MembershipStatus.valueOf(instructorActivityAssignment.getStatus()));
 
-        if (Objects.nonNull(instructorActivityAssignment.getActivityId())) {
-            ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignment.getActivityId());
+        if (Objects.nonNull(instructorActivityAssignment.getActivity())) {
+            ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignment.getActivity().getId());
             instructorActivityAssignmentEntry.setActivity(activityEntry);
         }
         return instructorActivityAssignmentEntry;
@@ -122,7 +123,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
 
         if (Objects.nonNull(instructorActivityAssignmentEntry.getActivity()) && Objects.nonNull(instructorActivityAssignmentEntry.getActivity().getActivityId())) {
             ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignmentEntry.getActivity().getActivityId());
-            instructorActivityAssignment.setActivityId(activityEntry.getActivityId());
+            instructorActivityAssignment.setActivity(ConvertToEntryUtil.convertToEntity(activityEntry, null));
         }
 
         return instructorActivityAssignment;

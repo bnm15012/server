@@ -1,9 +1,6 @@
 package com.dancestudio.erp.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -29,6 +26,7 @@ public class Student extends BaseEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @Column(name = "studio_id", nullable = false)
-    private Long studioId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "studio_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_studio_id"))
+    private Studio studio;
 }

@@ -1,8 +1,7 @@
 package com.dancestudio.erp.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,8 +13,9 @@ import java.time.LocalDate;
 @Data
 public class Payment extends BaseEntity {
 
-    @Column(name = "studio_id")
-    private Long studioId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "studio_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_payment_studio_id"))
+    private Studio studio;
 
     @Column(name = "payee_type", nullable = false)
     private String payeeType;

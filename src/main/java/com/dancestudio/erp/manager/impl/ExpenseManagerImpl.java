@@ -3,10 +3,13 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Expense;
 import com.dancestudio.erp.entry.ExpenseEntry;
+import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.enums.ExpenseCategory;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ExpenseManager;
+import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.ExpenseRepository;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,9 @@ import java.util.Objects;
 @Service
 public class ExpenseManagerImpl implements ExpenseManager {
     private final ExpenseRepository expenseRepository;
+
+    @Autowired
+    private StudioManager studioManager;
 
     @Autowired
     public ExpenseManagerImpl(ExpenseRepository expenseRepository) {
@@ -55,7 +61,7 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public List<ExpenseEntry> getAllExpenses(Long studioId, Long startMonth, Long endMonth) {
+    public List<ExpenseEntry> getAllExpenses(Long studioId, Long startMonth, Long endMonth) throws EntityNotFoundException {
         List<Expense> entries = expenseRepository.findAllByStudioId(studioId, startMonth, endMonth);
 
         List<ExpenseEntry> expenseEntries = new ArrayList<>();
@@ -67,13 +73,16 @@ public class ExpenseManagerImpl implements ExpenseManager {
         return expenseEntries;
     }
 
-    private ExpenseEntry convertToEntry(Expense expense) {
+    private ExpenseEntry convertToEntry(Expense expense) throws EntityNotFoundException {
 
         ExpenseEntry expenseEntry = new ExpenseEntry();
         expenseEntry.setExpenseId(expense.getId());
         expenseEntry.setAmount(expense.getAmount());
         expenseEntry.setDescription(expense.getDescription());
-        expenseEntry.setStudioId(expense.getStudioId());
+
+        StudioEntry studioEntry = studioManager.getStudioById(expense.getStudio().getId());
+        expenseEntry.setStudioId(studioEntry.getStudioId());
+
         expenseEntry.setExpenseDate(expense.getExpenseDate());
         expenseEntry.setExpenseCategory(ExpenseCategory.valueOf(expense.getExpenseCategory()));
 
@@ -93,7 +102,8 @@ public class ExpenseManagerImpl implements ExpenseManager {
             expense.setDescription(expenseEntry.getDescription());
         }
         if (Objects.nonNull(expenseEntry.getStudioId())) {
-            expense.setStudioId(expenseEntry.getStudioId());
+            StudioEntry studioEntry = studioManager.getStudioById(expenseEntry.getStudioId());
+            expense.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
         }
         if (Objects.nonNull(expenseEntry.getExpenseDate())) {
             expense.setExpenseDate(expenseEntry.getExpenseDate());

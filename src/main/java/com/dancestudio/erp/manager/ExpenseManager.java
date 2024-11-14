@@ -15,5 +15,5 @@ public interface ExpenseManager {
 
     ExpenseEntry getExpenseById(Long expenseId) throws EntityNotFoundException;
 
-    List<ExpenseEntry> getAllExpenses(Long studioId, Long startMonth, Long endMonth);
+    List<ExpenseEntry> getAllExpenses(Long studioId, Long startMonth, Long endMonth) throws EntityNotFoundException;
 }

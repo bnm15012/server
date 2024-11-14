@@ -10,6 +10,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.repository.StudentRepository;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -169,12 +170,18 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setEmail(student.getEmail());
         studentEntry.setImageUrl(student.getProfileImage());
         studentEntry.setMembershipStatus(MembershipStatus.valueOf(student.getStatus()));
-        studentEntry.setStudioId(student.getStudioId());
+
+        try {
+            StudioEntry entry = studioManager.getStudioById(student.getStudio().getId());
+            studentEntry.setStudioId(entry.getStudioId());
+        } catch (Exception ex) {
+            studentEntry.setStudioId(null);
+        }
 
         return studentEntry;
     }
 
-    private Student convertToEntity(StudentEntry studentEntry, Student existingStudent) {
+    private Student convertToEntity(StudentEntry studentEntry, Student existingStudent) throws EntityNotFoundException {
         Student student = (existingStudent != null) ? existingStudent : new Student();
 
         if (Objects.nonNull(studentEntry.getStudentId())) {
@@ -196,7 +203,8 @@ public class StudentManagerImpl implements StudentManager {
             student.setStatus(studentEntry.getMembershipStatus().name());
         }
         if (Objects.nonNull(studentEntry.getStudioId())) {
-            student.setStudioId(studentEntry.getStudioId());
+            StudioEntry entry = studioManager.getStudioById(studentEntry.getStudioId());
+            student.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
         }
 
         return student;
