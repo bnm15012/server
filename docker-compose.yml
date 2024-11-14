@@ -1,0 +1,9 @@
+version: '1.0'
+services:
+  studio_backend:
+    image: studio-backend   # Use the image you built
+    build: .                # Build from the current directory (Dockerfile)
+    ports:
+      - "7000:7000"         # Expose port 7000
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod  # Add any environment variables here if needed
