@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name = "user", uniqueConstraints = {
-        @UniqueConstraint(name = "name_email_key", columnNames = {"name", "email"})
+        @UniqueConstraint(name = "name_key", columnNames = {"name"})
 })
 public class User extends BaseEntity {
 

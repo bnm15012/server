@@ -12,4 +12,5 @@ public interface SubscriptionPlanManager {
     void deleteSubscriptionPlan(Long subscriptionPlanId) throws EntityNotFoundException;
 
     SubscriptionPlanEntry getSubscriptionPlanById(Long subscriptionPlanId) throws EntityNotFoundException;
+
 }
