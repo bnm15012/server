@@ -12,11 +12,8 @@ import java.time.LocalDate;
 public class StudentActivityAssignment extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "student_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_id"))
-    private Student student;
-
-    @Column(name = "activity_id", nullable = false)
-    private Long activityId;
+    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_saa_activity_id"))
+    private Activity activity;
 
     @Column(name = "registration_date", nullable = false)
     private LocalDate registrationDate;
@@ -32,4 +29,8 @@ public class StudentActivityAssignment extends BaseEntity {
 
     @Column(name = "membership_type", nullable = false)
     private String membershipType;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_id"))
+    private Student student;
 }

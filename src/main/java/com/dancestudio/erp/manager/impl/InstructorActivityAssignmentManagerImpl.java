@@ -11,9 +11,12 @@ import com.dancestudio.erp.manager.ActivityManager;
 import com.dancestudio.erp.manager.InstructorActivityAssignmentManager;
 import com.dancestudio.erp.repository.InstructorActivityAssignmentRepository;
 import com.dancestudio.erp.repository.InstructorRepository;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -33,10 +36,12 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
 
     @Override
     public InstructorActivityAssignmentEntry addInstructorActivityAssignment(InstructorActivityAssignmentEntry instructorActivityAssignmentEntry) throws EntityNotFoundException {
+        instructorRepository.findById(instructorActivityAssignmentEntry.getInstructorId())
+                .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
+
         InstructorActivityAssignment instructorActivityAssignment = convertToEntity(instructorActivityAssignmentEntry, null);
         instructorActivityAssignment = instructorActivityAssignmentRepository.save(instructorActivityAssignment);
 
-        addAssignmentToInstructor(instructorActivityAssignmentEntry.getInstructorId(), instructorActivityAssignment.getId());
         return convertToEntry(instructorActivityAssignment);
     }
 
@@ -48,7 +53,6 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         InstructorActivityAssignment updatedInstructorActivityAssignment = convertToEntity(instructorActivityAssignmentEntry, existingInstructorActivityAssignment);
         updatedInstructorActivityAssignment = instructorActivityAssignmentRepository.save(updatedInstructorActivityAssignment);
 
-        addAssignmentToInstructor(instructorActivityAssignmentEntry.getInstructorId(), updatedInstructorActivityAssignment.getId());
         return convertToEntry(instructorActivityAssignmentRepository.save(updatedInstructorActivityAssignment));
     }
 
@@ -74,12 +78,15 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         return convertToEntry(assignment);
     }
 
-    private void addAssignmentToInstructor(Long instructorId, Long assignmentId) throws EntityNotFoundException {
-        Instructor instructor = instructorRepository.findById(instructorId)
-                .orElseThrow(() -> new EntityNotFoundException("Student not found"));
+    @Override
+    public List<InstructorActivityAssignmentEntry> getInstructorAssignmentsByInstructorId(Long instructorId) throws EntityNotFoundException {
+        List<InstructorActivityAssignment> assignments = instructorActivityAssignmentRepository.findByInstructorId(instructorId);
+        List<InstructorActivityAssignmentEntry> entries = new ArrayList<>();
 
-        instructor.addEnrolledActivityId(assignmentId);
-        instructorRepository.save(instructor);
+        for (InstructorActivityAssignment assignment : assignments) {
+            entries.add(convertToEntry(assignment));
+        }
+        return entries;
     }
 
     private InstructorActivityAssignmentEntry convertToEntry(InstructorActivityAssignment instructorActivityAssignment) throws EntityNotFoundException {
@@ -96,8 +103,8 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         instructorActivityAssignmentEntry.setEndDate(instructorActivityAssignment.getEndDate());
         instructorActivityAssignmentEntry.setMembershipStatus(MembershipStatus.valueOf(instructorActivityAssignment.getStatus()));
 
-        if (Objects.nonNull(instructorActivityAssignment.getActivityId())) {
-            ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignment.getActivityId());
+        if (Objects.nonNull(instructorActivityAssignment.getActivity())) {
+            ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignment.getActivity().getId());
             instructorActivityAssignmentEntry.setActivity(activityEntry);
         }
         return instructorActivityAssignmentEntry;
@@ -129,7 +136,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
 
         if (Objects.nonNull(instructorActivityAssignmentEntry.getActivity()) && Objects.nonNull(instructorActivityAssignmentEntry.getActivity().getActivityId())) {
             ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignmentEntry.getActivity().getActivityId());
-            instructorActivityAssignment.setActivityId(activityEntry.getActivityId());
+            instructorActivityAssignment.setActivity(ConvertToEntryUtil.convertToEntity(activityEntry, null));
         }
 
         return instructorActivityAssignment;

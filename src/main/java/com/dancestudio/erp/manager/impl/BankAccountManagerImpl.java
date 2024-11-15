@@ -6,10 +6,9 @@ import com.dancestudio.erp.entry.BankAccountEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BankAccountManager;
 import com.dancestudio.erp.repository.BankAccountRepository;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 public class BankAccountManagerImpl implements BankAccountManager {
@@ -23,8 +22,8 @@ public class BankAccountManagerImpl implements BankAccountManager {
 
     @Override
     public BankAccountEntry addBankAccount(BankAccountEntry bankAccountEntry) throws EntityNotFoundException {
-        BankAccount bankAccount = convertToEntity(bankAccountEntry, null);
-        return convertToEntry(bankAccountRepository.save(bankAccount));
+        BankAccount bankAccount = ConvertToEntryUtil.convertToEntity(bankAccountEntry, null);
+        return ConvertToEntryUtil.convertToEntry(bankAccountRepository.save(bankAccount));
     }
 
     @Override
@@ -32,8 +31,8 @@ public class BankAccountManagerImpl implements BankAccountManager {
         BankAccount existingBankAccount = bankAccountRepository.findById(bankAccountId)
                 .orElseThrow(() -> new EntityNotFoundException("Bank Account not found"));
 
-        BankAccount updatedBankAccount = convertToEntity(bankAccountEntry, existingBankAccount);
-        return convertToEntry(bankAccountRepository.save(updatedBankAccount));
+        BankAccount updatedBankAccount = ConvertToEntryUtil.convertToEntity(bankAccountEntry, existingBankAccount);
+        return ConvertToEntryUtil.convertToEntry(bankAccountRepository.save(updatedBankAccount));
     }
 
     @Override
@@ -49,43 +48,7 @@ public class BankAccountManagerImpl implements BankAccountManager {
         BankAccount bankAccount = bankAccountRepository.findById(bankAccountId)
                 .orElseThrow(() -> new EntityNotFoundException("Bank Account not found"));
 
-        return convertToEntry(bankAccount);
-    }
-
-    private BankAccountEntry convertToEntry(BankAccount bankAccount) {
-
-        BankAccountEntry bankAccountEntry = new BankAccountEntry();
-        bankAccountEntry.setBankAccountId(bankAccount.getId());
-        bankAccountEntry.setBankName(bankAccount.getBankName());
-        bankAccountEntry.setAccountNumber(bankAccount.getAccountNumber());
-        bankAccountEntry.setBranchName(bankAccount.getBranchName());
-        bankAccountEntry.setIfscCode(bankAccount.getIfscCode());
-        bankAccountEntry.setUpiId(bankAccount.getUpiId());
-        return bankAccountEntry;
-    }
-
-    private BankAccount convertToEntity(BankAccountEntry bankAccountEntry, BankAccount existingBankAccount) throws EntityNotFoundException {
-        BankAccount bankAccount = (existingBankAccount != null) ? existingBankAccount : new BankAccount();
-
-        if (Objects.nonNull(bankAccountEntry.getBankAccountId())) {
-            bankAccount.setId(bankAccountEntry.getBankAccountId());
-        }
-        if (Objects.nonNull(bankAccountEntry.getAccountNumber())) {
-            bankAccount.setAccountNumber(bankAccountEntry.getAccountNumber());
-        }
-        if (Objects.nonNull(bankAccountEntry.getBankName())) {
-            bankAccount.setBankName(bankAccountEntry.getBankName());
-        }
-        if (Objects.nonNull(bankAccountEntry.getBranchName())) {
-            bankAccount.setBranchName(bankAccountEntry.getBranchName());
-        }
-        if (Objects.nonNull(bankAccountEntry.getIfscCode())) {
-            bankAccount.setIfscCode(bankAccountEntry.getIfscCode());
-        }
-        if (Objects.nonNull(bankAccountEntry.getUpiId())) {
-            bankAccount.setUpiId(bankAccountEntry.getUpiId());
-        }
-        return bankAccount;
+        return ConvertToEntryUtil.convertToEntry(bankAccount);
     }
 
 }

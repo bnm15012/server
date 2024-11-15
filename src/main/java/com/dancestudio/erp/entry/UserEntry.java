@@ -3,6 +3,8 @@ package com.dancestudio.erp.entry;
 import com.dancestudio.erp.enums.UserType;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class UserEntry {
 
@@ -15,6 +17,7 @@ public class UserEntry {
     private Boolean enabled;
     private StudioEntry studioEntry;
 
+    private Date membershipEndDate;
     private String token;
 
 }

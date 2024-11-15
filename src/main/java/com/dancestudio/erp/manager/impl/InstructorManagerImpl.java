@@ -10,13 +10,17 @@ import com.dancestudio.erp.manager.InstructorActivityAssignmentManager;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,10 +31,10 @@ public class InstructorManagerImpl implements InstructorManager {
     private StudioManager studioManager;
 
     @Autowired
-    private BankAccountManager bankAccountManager;
+    private InstructorActivityAssignmentManager instructorActivityAssignmentManager;
 
     @Autowired
-    private InstructorActivityAssignmentManager instructorActivityAssignmentManager;
+    private BankAccountManager bankAccountManager;
 
     @Autowired
     public InstructorManagerImpl(InstructorRepository instructorRepository) {
@@ -44,9 +48,9 @@ public class InstructorManagerImpl implements InstructorManager {
         }
 
         Instructor instructor = convertToEntity(instructorEntry, null);
-        if(Objects.nonNull(instructorEntry.getBankAccountDetails())) {
+        if (Objects.nonNull(instructorEntry.getBankAccountDetails())) {
             BankAccountEntry bankAccountEntry = bankAccountManager.addBankAccount(instructorEntry.getBankAccountDetails());
-            instructor.setBankAccountId(bankAccountEntry.getBankAccountId());
+            instructor.setBankAccount(ConvertToEntryUtil.convertToEntity(bankAccountEntry, null));
         }
 
         instructor = instructorRepository.save(instructor);
@@ -64,7 +68,7 @@ public class InstructorManagerImpl implements InstructorManager {
 
     @Override
     public void deleteInstructor(Long instructorId) throws EntityNotFoundException {
-        Instructor instructor = instructorRepository.findById(instructorId)
+        instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
         instructorRepository.deleteById(instructorId);
@@ -79,54 +83,53 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus) throws EntityNotFoundException {
-        List<Instructor> entries = instructorRepository.findAllByStudioId(studioId, membershipStatus);
-
-        List<InstructorEntry> instructorEntries = new ArrayList<>();
-        for (Instructor entry : entries) {
-            InstructorEntry instructorEntry = convertToEntry(entry);
-            instructorEntries.add(instructorEntry);
+    public List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus, int page, int size) {
+        if (size == -1) {
+            List<Instructor> entries = instructorRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, null, membershipStatus);
+            return entries.stream()
+                    .map(this::convertToEntry)
+                    .collect(Collectors.toList());
+        } else {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Instructor> studentPage = instructorRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, null, membershipStatus, pageable);
+            return studentPage.getContent().stream()
+                    .map(this::convertToEntry)
+                    .collect(Collectors.toList());
         }
-
-        return instructorEntries;
     }
 
-    private InstructorEntry convertToEntry(Instructor instructor) throws EntityNotFoundException {
+    private InstructorEntry convertToEntry(Instructor instructor) {
         InstructorEntry instructorEntry = new InstructorEntry();
         instructorEntry.setInstructorId(instructor.getId());
         instructorEntry.setName(instructor.getName());
         instructorEntry.setEmail(instructor.getEmail());
         instructorEntry.setPhone(instructor.getPhone());
         instructorEntry.setImageUrl(instructor.getProfileImage());
-
-        // Handle optional Studio
-        if (instructor.getStudioId() != null) {
-            StudioEntry studioEntry = studioManager.getStudioById(instructor.getStudioId());
-            instructorEntry.setStudioEntry(studioEntry);
-        }
-
         instructorEntry.setInstructorStatus(MembershipStatus.valueOf(instructor.getStatus()));
 
-        // Convert Bank Account details if available
-        if (instructor.getBankAccountId() != null) {
-            BankAccountEntry bankAccountEntry = bankAccountManager.getBankAccountById(instructor.getBankAccountId());
-            instructorEntry.setBankAccountDetails(bankAccountEntry);
+        try {
+            if (instructor.getStudio() != null) {
+                StudioEntry studioEntry = studioManager.getStudioById(instructor.getStudio().getId());
+                instructorEntry.setStudioEntry(studioEntry);
+            }
+        } catch (Exception ex) {
+            instructorEntry.setStudioEntry(null);
         }
 
-        if (Objects.nonNull(instructor.getEnrolledActivityIdList())) {
-            List<Long> activityIds = instructor.getEnrolledActivityIdList();
-            List<InstructorActivityAssignmentEntry> activityAssignmentEntries = new ArrayList<>();
+        try {
+            List<InstructorActivityAssignmentEntry> entries = instructorActivityAssignmentManager.getInstructorAssignmentsByInstructorId(instructor.getId());
+            instructorEntry.setAssignments(entries);
+        } catch (Exception ex) {
+            instructorEntry.setAssignments(null);
+        }
 
-            try {
-                for (Long id : activityIds) {
-                    InstructorActivityAssignmentEntry instructorActivityAssignmentEntry = instructorActivityAssignmentManager.getInstructorActivityAssignmentById(id);
-                    activityAssignmentEntries.add(instructorActivityAssignmentEntry);
-                }
-                instructorEntry.setAssignments(activityAssignmentEntries);
-            } catch (EntityNotFoundException ex) {
-                log.info("No Instructor Activity Assignment Entry found for given instructor");
-                instructorEntry.setAssignments(null);
+        try {
+            if (instructor.getBankAccount() != null) {
+                BankAccountEntry bankAccountEntry = bankAccountManager.getBankAccountById(instructor.getBankAccount().getId());
+                instructorEntry.setBankAccountDetails(bankAccountEntry);
             }
+        } catch (Exception ex) {
+            instructorEntry.setBankAccountDetails(null);
         }
 
         return instructorEntry;
@@ -156,12 +159,14 @@ public class InstructorManagerImpl implements InstructorManager {
 
         // Bank account details
         if (Objects.nonNull(instructorEntry.getBankAccountDetails()) && Objects.nonNull(instructorEntry.getBankAccountDetails().getBankAccountId())) {
-            instructor.setBankAccountId(instructorEntry.getBankAccountDetails().getBankAccountId());
+            BankAccountEntry entry = bankAccountManager.getBankAccountById(instructorEntry.getBankAccountDetails().getBankAccountId());
+            instructor.setBankAccount(ConvertToEntryUtil.convertToEntity(entry, null));
         }
 
         // Studio details
         if (instructorEntry.getStudioEntry() != null && instructorEntry.getStudioEntry().getStudioId() != null) {
-            instructor.setStudioId(instructorEntry.getStudioEntry().getStudioId());
+            StudioEntry entry = studioManager.getStudioById(instructorEntry.getStudioEntry().getStudioId());
+            instructor.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
         }
 
         return instructor;

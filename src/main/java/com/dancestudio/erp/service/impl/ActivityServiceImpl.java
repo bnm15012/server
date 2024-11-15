@@ -30,7 +30,7 @@ public class ActivityServiceImpl implements ActivityService {
             ActivityEntry entry = activityManager.addActivity(activityEntry);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Activity added successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
@@ -46,7 +46,7 @@ public class ActivityServiceImpl implements ActivityService {
             ActivityEntry entry = activityManager.updateActivity(activityId, activityEntry);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Activity updated successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
@@ -77,7 +77,7 @@ public class ActivityServiceImpl implements ActivityService {
             ActivityEntry entry = activityManager.getActivityById(activityId);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Activity retrieved successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
             response.setData(Collections.emptyList());
@@ -97,7 +97,7 @@ public class ActivityServiceImpl implements ActivityService {
             List<ActivityEntry> entries = activityManager.getAllActivities(studioId);
 
             response.setData(entries);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, entries.size()));
+            response.setStatus(new StatusResponse(1, "Activities retrieved successfully", StatusResponse.Type.SUCCESS, entries.size()));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));

@@ -15,5 +15,5 @@ public interface InstructorService {
 
     ResponseEntity<InstructorResponse> getInstructorById(Long instructorId);
 
-    ResponseEntity<InstructorResponse> getAllInstructors(Long studioId, MembershipStatus membershipStatus);
+    ResponseEntity<InstructorResponse> getAllInstructors(Long studioId, MembershipStatus membershipStatus, int page, int size);
 }

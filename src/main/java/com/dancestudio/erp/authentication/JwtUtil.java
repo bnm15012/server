@@ -1,11 +1,13 @@
 package com.dancestudio.erp.authentication;
 
 import com.dancestudio.erp.enums.AuthType;
+import com.dancestudio.erp.exception.MembershipExpiredException;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Random;
 
 @Service
@@ -29,7 +31,7 @@ public class JwtUtil {
         return String.valueOf(otp);
     }
 
-    public String generateToken(String email, String otp, AuthType authType) {
+    public String generateToken(String email, Date membershipEndDate, String otp, AuthType authType) {
         Date now = new Date();
         Date expiryDate;
 
@@ -49,11 +51,15 @@ public class JwtUtil {
             tokenBuilder.claim("otp", otp);
         }
 
+        if(Objects.nonNull(membershipEndDate)) {
+            tokenBuilder.claim("membershipEndDate", membershipEndDate);
+        }
+
         return tokenBuilder.compact();
     }
 
-    public String generateAuthToken(String email) {
-        return generateToken(email, null, AuthType.AUTH);
+    public String generateAuthToken(String email, Date membershipEndDate) {
+        return generateToken(email, membershipEndDate, null, AuthType.AUTH);
     }
 
     public String generateAccessToken(String email) {
@@ -85,6 +91,11 @@ public class JwtUtil {
 
         if (claims.getExpiration().before(new Date())) {
             throw new JwtException("Token expired");
+        }
+
+        Date membershipEndDate = claims.get("membershipEndDate", Date.class);
+        if (membershipEndDate != null && membershipEndDate.before(new Date())) {
+            throw new MembershipExpiredException("Membership is expired");
         }
 
         return claims;

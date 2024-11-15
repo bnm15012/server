@@ -29,7 +29,7 @@ public class DashboardManagerImpl implements DashboardManager {
         List<StudentEntry> studentEntryList = studentManager.getAllStudentsByStudio(studioId, null, null, 0, -1);
         entry.setTotalStudents((long) studentEntryList.size());
 
-        List<InstructorEntry> instructorEntryList = instructorManager.getAllInstructorsByStudio(studioId, null);
+        List<InstructorEntry> instructorEntryList = instructorManager.getAllInstructorsByStudio(studioId, null, 0, -1);
         entry.setTotalInstructors((long) instructorEntryList.size());
 
         studentEntryList = studentManager.getStudentByActivityIdAndStudioIdAndStatus(null, studioId, MembershipStatus.ACTIVE.name());

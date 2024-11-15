@@ -1,5 +1,6 @@
 package com.dancestudio.erp.authentication;
 
+import com.dancestudio.erp.exception.MembershipExpiredException;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -49,6 +50,9 @@ public class AuthenticationHandler extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(email, null, List.of())
             );
 
+        } catch (MembershipExpiredException e) {
+            response.sendError(HttpServletResponse.SC_PAYMENT_REQUIRED, "Membership is expired");
+            return;
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
             return;

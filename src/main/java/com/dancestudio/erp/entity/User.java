@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name = "user", uniqueConstraints = {
-        @UniqueConstraint(name = "name_email_key", columnNames = {"name", "email"})
+        @UniqueConstraint(name = "name_key", columnNames = {"name"})
 })
 public class User extends BaseEntity {
 
@@ -25,7 +25,7 @@ public class User extends BaseEntity {
     private String phone;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "studio_id", nullable = true)
+    @JoinColumn(name = "studio_id", nullable = true, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_studio_id"))
     private Studio studio;
 
     @Column(name = "enabled", nullable = false)

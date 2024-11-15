@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Setter(onMethod = @__({@Autowired}))
 @Component
@@ -92,13 +93,14 @@ public class InstructorServiceImpl implements InstructorService {
     }
 
     @Override
-    public ResponseEntity<InstructorResponse> getAllInstructors(Long studioId, MembershipStatus membershipStatus) {
+    public ResponseEntity<InstructorResponse> getAllInstructors(Long studioId, MembershipStatus membershipStatus, int page, int size) {
         InstructorResponse response = new InstructorResponse();
 
         try {
-            List<InstructorEntry> entry = instructorManager.getAllInstructorsByStudio(studioId, membershipStatus);
-            response.setData(entry);
-            response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS));
+            List<InstructorEntry> entries = instructorManager.getAllInstructorsByStudio(studioId, membershipStatus, page, size);
+            int totalSize = instructorManager.getAllInstructorsByStudio(studioId, membershipStatus, page, -1).size();
+            response.setData(entries);
+            response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : totalSize));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));

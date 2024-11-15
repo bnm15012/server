@@ -4,10 +4,9 @@ import com.dancestudio.erp.enums.MembershipType;
 import lombok.Data;
 
 @Data
-public class MembershipFeeEntry {
+public class MembershipPlanEntry {
 
-    private Long memberShipId;
-    private Long studioId;
     private MembershipType membershipType;
     private Double amount;
+
 }

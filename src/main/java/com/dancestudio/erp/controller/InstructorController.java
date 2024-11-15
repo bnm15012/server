@@ -37,7 +37,9 @@ public class InstructorController {
 
     @GetMapping("/getAllInstructors/{studioId}")
     public ResponseEntity<InstructorResponse> getAllInstructors(@PathVariable Long studioId,
-                                                @RequestParam(required = false) MembershipStatus membershipStatus) {
-        return instructorService.getAllInstructors(studioId, membershipStatus);
+                                                @RequestParam(required = false) MembershipStatus membershipStatus,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "-1") int size) {
+        return instructorService.getAllInstructors(studioId, membershipStatus, page, size);
     }
 }
