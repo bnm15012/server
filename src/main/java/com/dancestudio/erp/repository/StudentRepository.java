@@ -15,20 +15,14 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     Optional<Student> findByNameAndEmail(String name, String email);
 
-    @Query("SELECT s FROM Student s " +
-            "WHERE s.studio.id = :studioId " +
-            "AND (:activityId IS NULL OR s.id IN " +
-            "(SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activity.id = :activityId)) " +
-            "AND (:membershipStatus IS NULL OR s.status = :membershipStatus)")
+    @Query("SELECT s FROM Student s WHERE s.studio.id = :studioId AND (:activityId IS NULL OR s.id IN " +
+            "(SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activity.id = :activityId and sa.status = :membershipStatus))")
     List<Student> findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(@Param("studioId") Long studioId,
                                                          @Param("activityId") Long activityId,
                                                          @Param("membershipStatus") MembershipStatus membershipStatus);
 
-    @Query("SELECT s FROM Student s " +
-            "WHERE s.studio.id = :studioId " +
-            "AND (:activityId IS NULL OR s.id IN " +
-            "(SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activity.id = :activityId)) " +
-            "AND (:membershipStatus IS NULL OR s.status = :membershipStatus)")
+    @Query("SELECT s FROM Student s WHERE s.studio.id = :studioId AND (:activityId IS NULL OR s.id IN " +
+            "(SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activity.id = :activityId and sa.status = :membershipStatus))")
     Page<Student> findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(@Param("studioId") Long studioId, @Param("activityId") Long activityId,
             @Param("membershipStatus") MembershipStatus membershipStatus, Pageable pageable);
 

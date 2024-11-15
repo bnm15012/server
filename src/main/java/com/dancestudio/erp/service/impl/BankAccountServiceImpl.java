@@ -29,7 +29,7 @@ public class BankAccountServiceImpl implements BankAccountService {
             BankAccountEntry entry = bankAccountManager.addBankAccount(bankAccountEntry);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Bank Account added successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
@@ -45,7 +45,7 @@ public class BankAccountServiceImpl implements BankAccountService {
             BankAccountEntry entry = bankAccountManager.updateBankAccount(bankAccountId, bankAccountEntry);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Bank Account updated successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
@@ -76,7 +76,7 @@ public class BankAccountServiceImpl implements BankAccountService {
             BankAccountEntry entry = bankAccountManager.getBankAccountById(bankAccountId);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Bank Account retrieved successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
             response.setData(Collections.emptyList());

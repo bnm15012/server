@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_STUDIO_EMAIL;
-import static com.dancestudio.erp.constants.TemplateName.UPDATE_STUDIO_EMAIL;
 import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntity;
 import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 
@@ -64,17 +63,16 @@ public class StudioManagerImpl implements StudioManager {
         Studio updatedStudio = convertToEntity(studioEntry, existingStudio);
         updatedStudio = studioRepository.save(updatedStudio);
 
-        TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_STUDIO_EMAIL);
-        templateEntry.setTemplateBody(templateEntry.getTemplateBody()
-                .replace("{studio_name}", updatedStudio.getName()));
-
-        emailManager.sendEmail(studioEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
-        return convertToEntry(studioRepository.save(updatedStudio));
+//        TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_STUDIO_EMAIL);
+//        templateEntry.setTemplateBody(templateEntry.getTemplateBody()
+//                .replace("{studio_name}", updatedStudio.getName()));
+//
+//        emailManager.sendEmail(studioEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
+        return convertToEntry(updatedStudio);
     }
 
     @Override
     public Boolean deleteStudio(Long studioId) throws EntityNotFoundException {
-
         studioRepository.findById(studioId)
                 .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
 

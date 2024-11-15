@@ -23,9 +23,6 @@ public class Student extends BaseEntity {
 
     private String profileImage;
 
-    @Column(name = "status", nullable = false)
-    private String status;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "studio_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_studio_id"))
     private Studio studio;

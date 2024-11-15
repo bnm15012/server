@@ -30,7 +30,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             ExpenseEntry entry = expenseManager.addExpense(expenseEntry);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Expense added successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
@@ -46,7 +46,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             ExpenseEntry entry = expenseManager.updateExpense(expenseId, expenseEntry);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Expense updated successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
@@ -77,7 +77,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             ExpenseEntry entry = expenseManager.getExpenseById(expenseId);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Expense retrieved successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
             response.setData(Collections.emptyList());
@@ -97,7 +97,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             List<ExpenseEntry> entries = expenseManager.getAllExpenses(studioId, startMonth, endMonth);
 
             response.setData(entries);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, entries.size()));
+            response.setStatus(new StatusResponse(1, "Expenses retrieved successfully", StatusResponse.Type.SUCCESS, entries.size()));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));

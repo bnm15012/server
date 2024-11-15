@@ -1,5 +1,5 @@
 # Base image with Maven and OpenJDK for building the app
-FROM maven:3.9.8-openjdk-17-jdk-alpine AS build
+FROM maven:3.9.9-amazoncorretto-17 AS build
 
 WORKDIR /studio_backend
 
@@ -16,7 +16,7 @@ FROM openjdk:17-slim-bullseye
 WORKDIR /studio_backend
 
 # Copy the built JAR from the 'build' stage
-COPY --from=build /studio_backend/target/*.jar app.jar
+COPY --from=build /studio_backend/target/studio_backend-0.0.1-SNAPSHOT.jar studio_backend.jar
 
 # Expose the port the app will run on
 EXPOSE 7000

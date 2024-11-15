@@ -8,6 +8,7 @@ import com.dancestudio.erp.response.StringResponse;
 import com.dancestudio.erp.service.ImageService;
 import com.dancestudio.erp.service.PasswordService;
 import com.dancestudio.erp.service.ReportService;
+import com.dancestudio.erp.service.WhatsAppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,9 @@ public class MiscellaneousController {
 
     @Autowired
     private PasswordService passwordService;
+
+    @Autowired
+    private WhatsAppService whatsappService;
 
     @PostMapping("uploadImage/{entityType}")
     public ResponseEntity<StringResponse> uploadImage(@PathVariable("entityType") String entityType,
@@ -50,6 +54,12 @@ public class MiscellaneousController {
     @PostMapping("password/refreshToken")
     public ResponseEntity<StringResponse> refreshToken(@RequestBody UserEntry userEntry) {
         return passwordService.refreshToken(userEntry);
+    }
+
+    @PostMapping("/whatsapp/sendMessage")
+    public String sendWhatsAppMessage(@RequestParam String to, @RequestParam String message) {
+        whatsappService.sendWhatsAppMessage(to, message);
+        return "Message sent successfully!";
     }
 
 }

@@ -25,7 +25,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_STUDENT_EMAIL;
-import static com.dancestudio.erp.constants.TemplateName.UPDATE_STUDENT_EMAIL;
 
 @Service
 @Slf4j
@@ -62,7 +61,11 @@ public class StudentManagerImpl implements StudentManager {
         student = studentRepository.save(student);
 
         TemplateEntry templateEntry = templateManager.getTemplateDetails(ADD_NEW_STUDENT_EMAIL);
-        emailManager.sendEmail(student.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
+
+        StudioEntry studioEntry = studioManager.getStudioById(student.getStudio().getId());
+        String updatedBody = formatEmailBody(studioEntry, templateEntry, student);
+
+        emailManager.sendEmail(student.getEmail(), templateEntry.getSubject(), updatedBody);
         return convertToEntry(student);
     }
 
@@ -71,13 +74,13 @@ public class StudentManagerImpl implements StudentManager {
         Student existingStudent = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-        Student updatedStudentEntry = convertToEntity(studentEntry, existingStudent);
-        updatedStudentEntry = studentRepository.save(updatedStudentEntry);
+        Student updatedStudent = convertToEntity(studentEntry, existingStudent);
+        updatedStudent = studentRepository.save(updatedStudent);
 
-        TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_STUDENT_EMAIL);
-        emailManager.sendEmail(updatedStudentEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
+//        TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_STUDENT_EMAIL);
+//        emailManager.sendEmail(updatedStudentEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
 
-        return convertToEntry(updatedStudentEntry);
+        return convertToEntry(updatedStudent);
     }
 
     @Override
@@ -136,7 +139,7 @@ public class StudentManagerImpl implements StudentManager {
         StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.getStudentAssignmentsByStudentAndActivityId(studentId, activityId);
 
         if (Objects.isNull(entry)) {
-            throw new EntityNotFoundException("No such entries found");
+            throw new EntityNotFoundException("No active subscription found");
         }
 
         StudioEntry studioEntry = studioManager.getStudioById(entry.getActivity().getStudioId());
@@ -157,6 +160,12 @@ public class StudentManagerImpl implements StudentManager {
         return studentEntries;
     }
 
+    private String formatEmailBody(StudioEntry studioEntry, TemplateEntry templateEntry, Student student) {
+        return templateEntry.getTemplateBody()
+                .replace("{student_name}", student.getName())
+                .replace("{studio_name}", studioEntry.getStudioName());
+    }
+
     public Boolean checkIfStudentExistsinStudio(Long studioId) {
         return studentRepository.studentsExistsByStudioId(studioId);
     }
@@ -169,7 +178,6 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setPhone(student.getPhone());
         studentEntry.setEmail(student.getEmail());
         studentEntry.setImageUrl(student.getProfileImage());
-        studentEntry.setMembershipStatus(MembershipStatus.valueOf(student.getStatus()));
 
         try {
             StudioEntry entry = studioManager.getStudioById(student.getStudio().getId());
@@ -198,9 +206,6 @@ public class StudentManagerImpl implements StudentManager {
         }
         if (Objects.nonNull(studentEntry.getImageUrl())) {
             student.setProfileImage(studentEntry.getImageUrl());
-        }
-        if (Objects.nonNull(studentEntry.getMembershipStatus())) {
-            student.setStatus(studentEntry.getMembershipStatus().name());
         }
         if (Objects.nonNull(studentEntry.getStudioId())) {
             StudioEntry entry = studioManager.getStudioById(studentEntry.getStudioId());
