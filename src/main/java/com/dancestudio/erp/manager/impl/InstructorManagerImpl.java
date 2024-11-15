@@ -2,12 +2,11 @@ package com.dancestudio.erp.manager.impl;
 
 
 import com.dancestudio.erp.entity.Instructor;
-import com.dancestudio.erp.entry.BankAccountEntry;
-import com.dancestudio.erp.entry.InstructorEntry;
-import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BankAccountManager;
+import com.dancestudio.erp.manager.InstructorActivityAssignmentManager;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
@@ -30,6 +29,9 @@ public class InstructorManagerImpl implements InstructorManager {
 
     @Autowired
     private StudioManager studioManager;
+
+    @Autowired
+    private InstructorActivityAssignmentManager instructorActivityAssignmentManager;
 
     @Autowired
     private BankAccountManager bankAccountManager;
@@ -112,6 +114,13 @@ public class InstructorManagerImpl implements InstructorManager {
             }
         } catch (Exception ex) {
             instructorEntry.setStudioEntry(null);
+        }
+
+        try {
+            List<InstructorActivityAssignmentEntry> entries = instructorActivityAssignmentManager.getInstructorAssignmentsByInstructorId(instructor.getId());
+            instructorEntry.setAssignments(entries);
+        } catch (Exception ex) {
+            instructorEntry.setAssignments(null);
         }
 
         try {

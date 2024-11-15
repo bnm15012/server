@@ -16,6 +16,8 @@ import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -75,6 +77,18 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId) throws EntityNotFoundException {
         StudentActivityAssignment assignment = studentActivityAssignmentRepository.findByStudentIdAndActivityId(studentId, activityId);
         return convertToEntry(assignment);
+    }
+
+    @Override
+    public List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId) throws EntityNotFoundException {
+        List<StudentActivityAssignment> enrollments = studentActivityAssignmentRepository.findByStudentId(studentId);
+        List<StudentActivityAssignmentEntry> entries = new ArrayList<>();
+
+        for (StudentActivityAssignment enrollment : enrollments) {
+            entries.add(convertToEntry(enrollment));
+        }
+
+        return entries;
     }
 
     private StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment) throws EntityNotFoundException {

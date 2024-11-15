@@ -186,6 +186,13 @@ public class StudentManagerImpl implements StudentManager {
             studentEntry.setStudioId(null);
         }
 
+        try {
+            List<StudentActivityAssignmentEntry> entries = studentActivityAssignmentManager.getStudentAssignmentsByStudentId(student.getId());
+            studentEntry.setEnrolledActivities(entries);
+        } catch (Exception ex) {
+            studentEntry.setEnrolledActivities(null);
+        }
+
         return studentEntry;
     }
 
