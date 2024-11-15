@@ -16,10 +16,10 @@ FROM openjdk:17-slim-bullseye
 WORKDIR /studio_backend
 
 # Copy the built JAR from the 'build' stage
-COPY --from=build /studio_backend/target/studio_backend-0.0.1-SNAPSHOT.jar studio_backend.jar
+COPY --from=build /studio_backend/target/studio_backend-0.0.1-SNAPSHOT.jar .
 
 # Expose the port the app will run on
 EXPOSE 7000
 
 # Define the command to run the app
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/studio_backend/studio_backend-0.0.1-SNAPSHOT.jar"]
