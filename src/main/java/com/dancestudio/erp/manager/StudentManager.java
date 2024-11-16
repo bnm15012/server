@@ -23,6 +23,4 @@ public interface StudentManager {
 
     boolean sendSubscriptionRenewalReminder(Long studentId, Long activityId) throws EntityNotFoundException;
 
-    List<StudentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) throws EntityNotFoundException;
-
 }

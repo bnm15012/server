@@ -19,6 +19,7 @@ public class StudentEntry {
     private String imageUrl;
     private MembershipStatus membershipStatus;
     private Long studioId;
+    private Long activeMembershipCount;
     private List<StudentActivityAssignmentEntry> enrolledActivities;
 
     @JsonIgnore

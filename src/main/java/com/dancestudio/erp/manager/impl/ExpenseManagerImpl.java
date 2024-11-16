@@ -62,7 +62,12 @@ public class ExpenseManagerImpl implements ExpenseManager {
 
     @Override
     public List<ExpenseEntry> getAllExpenses(Long studioId, Long startMonth, Long endMonth) throws EntityNotFoundException {
-        List<Expense> entries = expenseRepository.findAllByStudioId(studioId, startMonth, endMonth);
+        List<Expense> entries;
+        if (startMonth.equals(0L) || endMonth.equals(0L)) {
+            entries = expenseRepository.findAllByStudioId(studioId);
+        } else {
+            entries = expenseRepository.findAllByStudioId(studioId, startMonth, endMonth);
+        }
 
         List<ExpenseEntry> expenseEntries = new ArrayList<>();
         for (Expense entry : entries) {

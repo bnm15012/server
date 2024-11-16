@@ -147,19 +147,6 @@ public class StudentManagerImpl implements StudentManager {
         return true;
     }
 
-    @Override
-    public List<StudentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) {
-        List<Student> entries = studentActivityAssignmentRepository.findByOptionalActivityIdAndStudioIdAndStatus(activityId, studioId, status);
-
-        List<StudentEntry> studentEntries = new ArrayList<>();
-        for (Student entry : entries) {
-            StudentEntry studentEntry = convertToEntry(entry);
-            studentEntries.add(studentEntry);
-        }
-
-        return studentEntries;
-    }
-
     private String formatEmailBody(StudioEntry studioEntry, TemplateEntry templateEntry, Student student) {
         return templateEntry.getTemplateBody()
                 .replace("{student_name}", student.getName())

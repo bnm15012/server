@@ -91,6 +91,17 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         return entries;
     }
 
+    @Override
+    public List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) throws EntityNotFoundException {
+        List<StudentActivityAssignment> entries = studentActivityAssignmentRepository.findStudentsWithActiveMemberships(activityId, studioId, status);
+
+        List<StudentActivityAssignmentEntry> assignmentEntries = new ArrayList<>();
+        for (StudentActivityAssignment enrollment : entries) {
+            assignmentEntries.add(convertToEntry(enrollment));
+        }
+        return assignmentEntries;
+    }
+
     private StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment) throws EntityNotFoundException {
 
         if (Objects.isNull(studentActivityAssignment)) {
