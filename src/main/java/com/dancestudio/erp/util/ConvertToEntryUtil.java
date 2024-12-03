@@ -41,6 +41,7 @@ public class ConvertToEntryUtil {
         userEntry.setUserName(user.getName());
         userEntry.setEmail(user.getEmail());
         userEntry.setPhone(user.getPhone());
+        userEntry.setImageUrl(user.getProfileImage());
         userEntry.setEnabled(user.isEnabled());
         userEntry.setRole(UserType.valueOf(user.getRole()));
 
@@ -70,6 +71,9 @@ public class ConvertToEntryUtil {
         }
         if (Objects.nonNull(userEntry.getPhone())) {
             user.setPhone(userEntry.getPhone());
+        }
+        if (Objects.nonNull(userEntry.getImageUrl())) {
+            user.setProfileImage(userEntry.getImageUrl());
         }
         if (Objects.nonNull(userEntry.getEmail())) {
             user.setEmail(userEntry.getEmail());

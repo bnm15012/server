@@ -24,6 +24,8 @@ public class User extends BaseEntity {
     @Column(name = "phone", nullable = false, length = 10)
     private String phone;
 
+    private String profileImage;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "studio_id", nullable = true, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_studio_id"))
     private Studio studio;

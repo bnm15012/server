@@ -13,6 +13,7 @@ public class UserEntry {
     private String password;
     private String email;
     private String phone;
+    private String imageUrl;
     private UserType role;
     private Boolean enabled;
     private StudioEntry studioEntry;
