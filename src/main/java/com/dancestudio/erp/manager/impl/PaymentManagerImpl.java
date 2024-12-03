@@ -1,6 +1,5 @@
 package com.dancestudio.erp.manager.impl;
 
-
 import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.ReportEntry;
@@ -8,16 +7,26 @@ import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.repository.PaymentRepository;
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class PaymentManagerImpl implements PaymentManager {
 
     private final PaymentRepository paymentRepository;
+
+    @Autowired
+    private RazorpayClient razorpayClient;
 
     @Autowired
     public PaymentManagerImpl(PaymentRepository paymentRepository) {
@@ -75,7 +84,7 @@ public class PaymentManagerImpl implements PaymentManager {
 
     @Override
     public List<ReportEntry> calculateTotalIncome(Long year) {
-       return paymentRepository.calculateTotalIncomeByYear(Math.toIntExact(year));
+        return paymentRepository.calculateTotalIncomeByYear(Math.toIntExact(year));
     }
 
     private PaymentEntry convertToEntry(Payment payment) {
@@ -102,5 +111,56 @@ public class PaymentManagerImpl implements PaymentManager {
         payment.setPaymentType(paymentEntry.getPaymentType().name());
 
         return payment;
+    }
+
+    @Override
+    public PaymentEntry createOrder(int amount) {
+        try {
+            PaymentEntry entry = new PaymentEntry();
+
+            JSONObject options = new JSONObject();
+            options.put("amount", amount * 100);
+            options.put("currency", "INR");
+            options.put("receipt", "receipt#1");
+
+            Order order = razorpayClient.Orders.create(options);
+
+            entry.setMessage(order.toString());
+            return entry;
+        } catch (Exception e) {
+            log.error("Error creating order", e);
+            throw new RuntimeException("Order not created");
+        }
+    }
+
+    @Override
+    public PaymentEntry verifyPayment(String orderId, String paymentId, String signature) throws Exception {
+        try {
+            PaymentEntry entry = new PaymentEntry();
+
+            String generatedSignature = orderId + "|" + paymentId;
+            boolean isVerified = verifySignature(generatedSignature, signature);
+
+            if (isVerified) {
+                entry.setMessage("Payment verified successfully !");
+                return entry;
+            } else {
+                entry.setMessage("Payment verification failed: Invalid signature");
+                return entry;
+            }
+        } catch (Exception e) {
+            log.error("Payment verification failed : {}", e.getMessage());
+            throw new Exception("Payment verification failed");
+        }
+    }
+
+    private boolean verifySignature(String generatedSignature, String providedSignature) {
+        try {
+            return com.razorpay.Utils.verifyPaymentSignature((JSONObject) JSONObject.wrap(generatedSignature),
+                    providedSignature);
+        } catch (Exception e) {
+            log.error("Error verifying signature : ", e);
+            return false;
+        }
     }
 }
