@@ -51,8 +51,11 @@ public class PaymentController {
     }
 
     @PostMapping("/verifyPayment")
-    public ResponseEntity<PaymentResponse> verifyPayment(@RequestParam String orderId, @RequestParam String paymentId,
-            @RequestParam String signature) {
-        return paymentService.verifyPayment(orderId, paymentId, signature);
+    public ResponseEntity<PaymentResponse> verifyPayment(@RequestBody PaymentRequest paymentRequest) {
+        return paymentService.verifyPayment(
+                paymentRequest.getOrderId(),
+                paymentRequest.getPaymentId(),
+                paymentRequest.getSignature());
     }
+
 }

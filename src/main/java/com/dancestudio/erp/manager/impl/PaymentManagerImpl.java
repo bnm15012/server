@@ -140,7 +140,7 @@ public class PaymentManagerImpl implements PaymentManager {
 
             String generatedSignature = orderId + "|" + paymentId;
             boolean isVerified = verifySignature(generatedSignature, signature);
-
+            System.err.println(orderId + " " + paymentId + " " + signature);
             if (isVerified) {
                 entry.setMessage("Payment verified successfully !");
                 return entry;
@@ -149,7 +149,7 @@ public class PaymentManagerImpl implements PaymentManager {
                 return entry;
             }
         } catch (Exception e) {
-            log.error("Payment verification failed : {}", e.getMessage());
+            // log.error("Payment verification failed : {}", e.getMessage());
             throw new Exception("Payment verification failed");
         }
     }
