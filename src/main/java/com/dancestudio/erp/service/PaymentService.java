@@ -1,5 +1,7 @@
 package com.dancestudio.erp.service;
 
+import org.springframework.http.ResponseEntity;
+
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.response.PaymentResponse;
@@ -17,4 +19,8 @@ public interface PaymentService {
     PaymentResponse getPaymentById(Long paymentId);
 
     PaymentResponse getAllPayments(Long studioId);
+
+    ResponseEntity<PaymentResponse> createOrder(int amount);
+
+    ResponseEntity<PaymentResponse> verifyPayment(String orderId, String paymentId, String signature);
 }

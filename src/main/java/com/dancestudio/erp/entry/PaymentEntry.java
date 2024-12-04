@@ -17,4 +17,5 @@ public class PaymentEntry {
     private LocalDate paymentDate;
     private PaymentStatus status;
     private PaymentType paymentType;
+    private String message;
 }

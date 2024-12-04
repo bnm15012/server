@@ -21,4 +21,8 @@ public interface PaymentManager {
     List<PaymentEntry> getAllPaymentsByStudio(Long studioId);
 
     List<ReportEntry> calculateTotalIncome(Long year);
+
+    PaymentEntry createOrder(int amount);
+
+    PaymentEntry verifyPayment(String orderId, String paymentId, String signature) throws Exception;
 }

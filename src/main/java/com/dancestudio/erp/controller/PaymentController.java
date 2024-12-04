@@ -5,6 +5,7 @@ import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.response.PaymentResponse;
 import com.dancestudio.erp.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,4 +44,18 @@ public class PaymentController {
     public PaymentResponse getAllPayments(@PathVariable Long studioId) {
         return paymentService.getAllPayments(studioId);
     }
+
+    @PostMapping("/createOrder")
+    public ResponseEntity<PaymentResponse> createOrder(@RequestParam int amount) {
+        return paymentService.createOrder(amount);
+    }
+
+    @PostMapping("/verifyPayment")
+    public ResponseEntity<PaymentResponse> verifyPayment(@RequestBody PaymentRequest paymentRequest) {
+        return paymentService.verifyPayment(
+                paymentRequest.getOrderId(),
+                paymentRequest.getPaymentId(),
+                paymentRequest.getSignature());
+    }
+
 }

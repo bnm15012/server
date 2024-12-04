@@ -63,7 +63,15 @@ public class InstructorManagerImpl implements InstructorManager {
                 .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
         Instructor updatedInstructor = convertToEntity(instructorEntry, existingInstructor);
-        return convertToEntry(instructorRepository.save(updatedInstructor));
+
+        Instructor instructor = convertToEntity(instructorEntry, null);
+        if (Objects.nonNull(instructorEntry.getBankAccountDetails())) {
+            BankAccountEntry bankAccountEntry = bankAccountManager.updateBankAccount(instructorEntry.getBankAccountDetails().getBankAccountId(), instructorEntry.getBankAccountDetails());
+            instructor.setBankAccount(ConvertToEntryUtil.convertToEntity(bankAccountEntry, null));
+        }
+
+        updatedInstructor = instructorRepository.save(updatedInstructor);
+        return convertToEntry(updatedInstructor);
     }
 
     @Override
