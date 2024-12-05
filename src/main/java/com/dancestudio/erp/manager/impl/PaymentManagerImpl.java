@@ -1,5 +1,6 @@
 package com.dancestudio.erp.manager.impl;
 
+import org.springframework.beans.factory.annotation.Value;
 import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.ReportEntry;
@@ -138,29 +139,37 @@ public class PaymentManagerImpl implements PaymentManager {
         try {
             PaymentEntry entry = new PaymentEntry();
 
-            String generatedSignature = orderId + "|" + paymentId;
-            boolean isVerified = verifySignature(generatedSignature, signature);
-            System.err.println(orderId + " " + paymentId + " " + signature);
+            boolean isVerified = verifySignature(orderId, paymentId, signature);
+            log.info("Order ID: {}, Payment ID: {}, Signature: {}", orderId, paymentId, signature);
+
             if (isVerified) {
-                entry.setMessage("Payment verified successfully !");
+                entry.setMessage("Payment verified successfully!");
                 return entry;
             } else {
                 entry.setMessage("Payment verification failed: Invalid signature");
                 return entry;
             }
         } catch (Exception e) {
-            // log.error("Payment verification failed : {}", e.getMessage());
-            throw new Exception("Payment verification failed");
+            log.error("Payment verification failed: {}", e.getMessage(), e);
+            throw new Exception("Payment verification failed: " + e.getMessage(), e);
         }
     }
 
-    private boolean verifySignature(String generatedSignature, String providedSignature) {
+    @Value("${razorpay.api_secret}")
+    private String razorpaySecret;
+
+    private boolean verifySignature(String orderId, String paymentId, String providedSignature) {
         try {
-            return com.razorpay.Utils.verifyPaymentSignature((JSONObject) JSONObject.wrap(generatedSignature),
-                    providedSignature);
+            JSONObject options = new JSONObject();
+            options.put("razorpay_order_id", orderId);
+            options.put("razorpay_payment_id", paymentId);
+            options.put("razorpay_signature", providedSignature);
+
+            return com.razorpay.Utils.verifyPaymentSignature(options, razorpaySecret);
         } catch (Exception e) {
-            log.error("Error verifying signature : ", e);
+            log.error("Error verifying signature: ", e);
             return false;
         }
     }
+
 }
