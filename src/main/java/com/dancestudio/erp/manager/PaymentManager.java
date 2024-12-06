@@ -22,7 +22,7 @@ public interface PaymentManager {
 
     List<ReportEntry> calculateTotalIncome(Long year);
 
-    PaymentEntry createOrder(int amount);
+    PaymentEntry createOrder(PaymentEntry paymentEntry);
 
     PaymentEntry verifyPayment(String orderId, String paymentId, String signature) throws Exception;
 }

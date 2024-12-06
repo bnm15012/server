@@ -18,4 +18,7 @@ public class PaymentEntry {
     private PaymentStatus status;
     private PaymentType paymentType;
     private String message;
+    private String orderId;
+    private String signature;
+
 }

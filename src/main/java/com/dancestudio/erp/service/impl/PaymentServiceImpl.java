@@ -85,12 +85,12 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ResponseEntity<PaymentResponse> createOrder(int amount) {
+    public ResponseEntity<PaymentResponse> createOrder(PaymentEntry paymentEntry) {
 
         PaymentResponse response = new PaymentResponse();
 
         try {
-            PaymentEntry entry = paymentManager.createOrder(amount);
+            PaymentEntry entry = paymentManager.createOrder(paymentEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

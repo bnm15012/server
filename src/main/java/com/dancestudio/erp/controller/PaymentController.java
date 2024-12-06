@@ -46,16 +46,13 @@ public class PaymentController {
     }
 
     @PostMapping("/createOrder")
-    public ResponseEntity<PaymentResponse> createOrder(@RequestParam int amount) {
-        return paymentService.createOrder(amount);
+    public ResponseEntity<PaymentResponse> createOrder(@RequestBody PaymentEntry paymentEntry) {
+        return paymentService.createOrder(paymentEntry);
     }
 
     @PostMapping("/verifyPayment")
-    public ResponseEntity<PaymentResponse> verifyPayment(@RequestBody PaymentRequest paymentRequest) {
-        return paymentService.verifyPayment(
-                paymentRequest.getOrderId(),
-                paymentRequest.getPaymentId(),
-                paymentRequest.getSignature());
+    public ResponseEntity<PaymentResponse> verifyPayment(@RequestBody PaymentEntry paymentEntry) {
+        return paymentService.verifyPayment(paymentEntry.getOrderId(), paymentEntry.getPaymentId().toString(), paymentEntry.getSignature());
     }
 
 }

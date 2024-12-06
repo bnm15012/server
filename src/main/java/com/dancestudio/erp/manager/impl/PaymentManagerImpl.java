@@ -26,6 +26,9 @@ public class PaymentManagerImpl implements PaymentManager {
 
     private final PaymentRepository paymentRepository;
 
+    @Value("${razorpay.api_secret}")
+    private String razorpaySecret;
+    
     @Autowired
     private RazorpayClient razorpayClient;
 
@@ -115,12 +118,12 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public PaymentEntry createOrder(int amount) {
+    public PaymentEntry createOrder(PaymentEntry paymentEntry) {
         try {
             PaymentEntry entry = new PaymentEntry();
 
             JSONObject options = new JSONObject();
-            options.put("amount", amount * 100);
+            options.put("amount", paymentEntry.getAmount() * 100);
             options.put("currency", "INR");
             options.put("receipt", "receipt#1");
 
@@ -154,9 +157,6 @@ public class PaymentManagerImpl implements PaymentManager {
             throw new Exception("Payment verification failed: " + e.getMessage(), e);
         }
     }
-
-    @Value("${razorpay.api_secret}")
-    private String razorpaySecret;
 
     private boolean verifySignature(String orderId, String paymentId, String providedSignature) {
         try {

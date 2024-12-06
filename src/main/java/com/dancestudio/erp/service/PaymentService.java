@@ -20,7 +20,7 @@ public interface PaymentService {
 
     PaymentResponse getAllPayments(Long studioId);
 
-    ResponseEntity<PaymentResponse> createOrder(int amount);
+    ResponseEntity<PaymentResponse> createOrder(PaymentEntry paymentEntry);
 
     ResponseEntity<PaymentResponse> verifyPayment(String orderId, String paymentId, String signature);
 }
