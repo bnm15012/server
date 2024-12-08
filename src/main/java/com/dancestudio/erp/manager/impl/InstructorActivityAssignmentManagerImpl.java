@@ -15,6 +15,7 @@ import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -101,7 +102,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         instructorActivityAssignmentEntry.setAssignedDate(instructorActivityAssignment.getAssignedDate());
         instructorActivityAssignmentEntry.setStartDate(instructorActivityAssignment.getStartDate());
         instructorActivityAssignmentEntry.setEndDate(instructorActivityAssignment.getEndDate());
-        instructorActivityAssignmentEntry.setMembershipStatus(MembershipStatus.valueOf(instructorActivityAssignment.getStatus()));
+        instructorActivityAssignmentEntry.setMembershipStatus(instructorActivityAssignment.getEndDate().isAfter(LocalDate.now()) ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
 
         if (Objects.nonNull(instructorActivityAssignment.getActivity())) {
             ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignment.getActivity().getId());
@@ -124,9 +125,6 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         }
         if (Objects.nonNull(instructorActivityAssignmentEntry.getEndDate())) {
             instructorActivityAssignment.setEndDate(instructorActivityAssignmentEntry.getEndDate());
-        }
-        if (Objects.nonNull(instructorActivityAssignmentEntry.getMembershipStatus())) {
-            instructorActivityAssignment.setStatus(instructorActivityAssignmentEntry.getMembershipStatus().name());
         }
         if (Objects.nonNull(instructorActivityAssignmentEntry.getInstructorId())) {
             Instructor instructor = instructorRepository.findById(instructorActivityAssignmentEntry.getInstructorId())

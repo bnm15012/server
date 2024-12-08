@@ -24,9 +24,6 @@ public class Instructor extends BaseEntity {
 
     private String profileImage;
 
-    @Column(name = "status", nullable = false)
-    private String status;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_account_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_instructor_bank_account_id"))
     private BankAccount bankAccount;

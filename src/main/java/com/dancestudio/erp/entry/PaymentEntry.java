@@ -20,5 +20,5 @@ public class PaymentEntry {
     private String message;
     private String orderId;
     private String signature;
-
+    private Long studioId;
 }

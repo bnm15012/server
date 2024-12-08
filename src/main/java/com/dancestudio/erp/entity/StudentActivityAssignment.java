@@ -24,9 +24,6 @@ public class StudentActivityAssignment extends BaseEntity {
     @Column(name = "membership_end_date", nullable = false)
     private LocalDate membershipEndDate;
 
-    @Column(name = "status", nullable = false)
-    private String status;
-
     @Column(name = "membership_type", nullable = false)
     private String membershipType;
 

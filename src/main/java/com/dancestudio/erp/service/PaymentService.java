@@ -8,17 +8,17 @@ import com.dancestudio.erp.response.PaymentResponse;
 
 public interface PaymentService {
 
-    PaymentResponse addPayment(PaymentEntry paymentEntry);
+    ResponseEntity<PaymentResponse> addPayment(PaymentEntry paymentEntry);
 
-    PaymentResponse updatePaymentStatus(Long paymentId, PaymentStatus status);
+    ResponseEntity<PaymentResponse> updatePaymentStatus(Long paymentId, PaymentStatus status);
 
-    PaymentResponse updatePayment(Long paymentId, PaymentEntry paymentEntry);
+    ResponseEntity<PaymentResponse> updatePayment(Long paymentId, PaymentEntry paymentEntry);
 
     void deletePayment(Long paymentId);
 
-    PaymentResponse getPaymentById(Long paymentId);
+    ResponseEntity<PaymentResponse> getPaymentById(Long paymentId);
 
-    PaymentResponse getAllPayments(Long studioId);
+    ResponseEntity<PaymentResponse> getAllPayments(Long studioId);
 
     ResponseEntity<PaymentResponse> createOrder(PaymentEntry paymentEntry);
 

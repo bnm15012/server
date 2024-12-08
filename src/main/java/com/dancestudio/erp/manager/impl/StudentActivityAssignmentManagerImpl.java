@@ -1,6 +1,5 @@
 package com.dancestudio.erp.manager.impl;
 
-
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.ActivityEntry;
@@ -16,6 +15,7 @@ import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,27 +31,34 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     private StudentRepository studentRepository;
 
     @Autowired
-    public StudentActivityAssignmentManagerImpl(StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
+    public StudentActivityAssignmentManagerImpl(
+            StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
         this.studentActivityAssignmentRepository = studentActivityAssignmentRepository;
     }
 
     @Override
-    public StudentActivityAssignmentEntry addStudentActivityAssignment(StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException {
+    public StudentActivityAssignmentEntry addStudentActivityAssignment(
+            StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException {
         studentRepository.findById(studentActivityAssignmentEntry.getStudentId())
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-        StudentActivityAssignment studentStudentActivityAssignmentAssignment = convertToEntity(studentActivityAssignmentEntry, null);
-        studentStudentActivityAssignmentAssignment = studentActivityAssignmentRepository.save(studentStudentActivityAssignmentAssignment);
+        StudentActivityAssignment studentStudentActivityAssignmentAssignment = convertToEntity(
+                studentActivityAssignmentEntry, null);
+        studentStudentActivityAssignmentAssignment = studentActivityAssignmentRepository
+                .save(studentStudentActivityAssignmentAssignment);
 
         return convertToEntry(studentStudentActivityAssignmentAssignment);
     }
 
     @Override
-    public StudentActivityAssignmentEntry updateStudentActivityAssignment(Long studentActivityAssignmentId, StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException {
-        StudentActivityAssignment existingStudentActivityAssignment = studentActivityAssignmentRepository.findById(studentActivityAssignmentId)
+    public StudentActivityAssignmentEntry updateStudentActivityAssignment(Long studentActivityAssignmentId,
+            StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException {
+        StudentActivityAssignment existingStudentActivityAssignment = studentActivityAssignmentRepository
+                .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
-        StudentActivityAssignment updatedStudentActivityAssignment = convertToEntity(studentActivityAssignmentEntry, existingStudentActivityAssignment);
+        StudentActivityAssignment updatedStudentActivityAssignment = convertToEntity(studentActivityAssignmentEntry,
+                existingStudentActivityAssignment);
         updatedStudentActivityAssignment = studentActivityAssignmentRepository.save(updatedStudentActivityAssignment);
 
         return convertToEntry(studentActivityAssignmentRepository.save(updatedStudentActivityAssignment));
@@ -66,21 +73,26 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry getStudentActivityAssignmentById(Long studentActivityAssignmentId) throws EntityNotFoundException {
-        StudentActivityAssignment studentActivityAssignment = studentActivityAssignmentRepository.findById(studentActivityAssignmentId)
+    public StudentActivityAssignmentEntry getStudentActivityAssignmentById(Long studentActivityAssignmentId)
+            throws EntityNotFoundException {
+        StudentActivityAssignment studentActivityAssignment = studentActivityAssignmentRepository
+                .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
         return convertToEntry(studentActivityAssignment);
     }
 
     @Override
-    public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId) throws EntityNotFoundException {
-        StudentActivityAssignment assignment = studentActivityAssignmentRepository.findByStudentIdAndActivityId(studentId, activityId);
+    public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId)
+            throws EntityNotFoundException {
+        StudentActivityAssignment assignment = studentActivityAssignmentRepository
+                .findByStudentIdAndActivityId(studentId, activityId);
         return convertToEntry(assignment);
     }
 
     @Override
-    public List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId) throws EntityNotFoundException {
+    public List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId)
+            throws EntityNotFoundException {
         List<StudentActivityAssignment> enrollments = studentActivityAssignmentRepository.findByStudentId(studentId);
         List<StudentActivityAssignmentEntry> entries = new ArrayList<>();
 
@@ -92,17 +104,24 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) throws EntityNotFoundException {
-        List<StudentActivityAssignment> entries = studentActivityAssignmentRepository.findStudentsWithActiveMemberships(activityId, studioId, status);
+    public List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId,
+            Long studioId, String status) throws EntityNotFoundException {
 
+        List<StudentActivityAssignment> entries = studentActivityAssignmentRepository
+                .findStudentsWithActiveMemberships(activityId, studioId);
         List<StudentActivityAssignmentEntry> assignmentEntries = new ArrayList<>();
-        for (StudentActivityAssignment enrollment : entries) {
-            assignmentEntries.add(convertToEntry(enrollment));
+
+        for (StudentActivityAssignment entry : entries) {
+            boolean isActive = entry.getMembershipEndDate().isAfter(LocalDate.now());
+            if ((status.equalsIgnoreCase("ACTIVE") && isActive) || (status.equalsIgnoreCase("INACTIVE") && !isActive)) {
+                assignmentEntries.add(convertToEntry(entry));
+            }
         }
         return assignmentEntries;
     }
 
-    private StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment) throws EntityNotFoundException {
+    private StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment)
+            throws EntityNotFoundException {
 
         if (Objects.isNull(studentActivityAssignment)) {
             return null;
@@ -114,7 +133,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         studentActivityAssignmentEntry.setRegistrationDate(studentActivityAssignment.getRegistrationDate());
         studentActivityAssignmentEntry.setMembershipStartDate(studentActivityAssignment.getMembershipStartDate());
         studentActivityAssignmentEntry.setMembershipEndDate(studentActivityAssignment.getMembershipEndDate());
-        studentActivityAssignmentEntry.setMembershipStatus(MembershipStatus.valueOf(studentActivityAssignment.getStatus()));
+        studentActivityAssignmentEntry.setMembershipStatus(studentActivityAssignment.getMembershipEndDate().isAfter(LocalDate.now()) ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
         studentActivityAssignmentEntry.setMembershipType(MembershipType.valueOf(studentActivityAssignment.getMembershipType()));
 
         if (Objects.nonNull(studentActivityAssignment.getActivity())) {
@@ -124,8 +143,11 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         return studentActivityAssignmentEntry;
     }
 
-    private StudentActivityAssignment convertToEntity(StudentActivityAssignmentEntry studentActivityAssignmentEntry, StudentActivityAssignment existingStudentActivityAssignment) throws EntityNotFoundException {
-        StudentActivityAssignment studentActivityAssignment = (existingStudentActivityAssignment != null) ? existingStudentActivityAssignment : new StudentActivityAssignment();
+    private StudentActivityAssignment convertToEntity(StudentActivityAssignmentEntry studentActivityAssignmentEntry,
+            StudentActivityAssignment existingStudentActivityAssignment) throws EntityNotFoundException {
+        StudentActivityAssignment studentActivityAssignment = (existingStudentActivityAssignment != null)
+                ? existingStudentActivityAssignment
+                : new StudentActivityAssignment();
 
         if (Objects.nonNull(studentActivityAssignmentEntry.getAssignmentId())) {
             studentActivityAssignment.setId(studentActivityAssignmentEntry.getAssignmentId());
@@ -139,9 +161,6 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         if (Objects.nonNull(studentActivityAssignmentEntry.getMembershipEndDate())) {
             studentActivityAssignment.setMembershipEndDate(studentActivityAssignmentEntry.getMembershipEndDate());
         }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getMembershipStatus())) {
-            studentActivityAssignment.setStatus(studentActivityAssignmentEntry.getMembershipStatus().name());
-        }
         if (Objects.nonNull(studentActivityAssignmentEntry.getMembershipType())) {
             studentActivityAssignment.setMembershipType(studentActivityAssignmentEntry.getMembershipType().name());
         }
@@ -151,8 +170,10 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
             studentActivityAssignment.setStudent(student);
         }
 
-        if (Objects.nonNull(studentActivityAssignmentEntry.getActivity()) && Objects.nonNull(studentActivityAssignmentEntry.getActivity().getActivityId())) {
-            ActivityEntry activityEntry = activityManager.getActivityById(studentActivityAssignmentEntry.getActivity().getActivityId());
+        if (Objects.nonNull(studentActivityAssignmentEntry.getActivity())
+                && Objects.nonNull(studentActivityAssignmentEntry.getActivity().getActivityId())) {
+            ActivityEntry activityEntry = activityManager
+                    .getActivityById(studentActivityAssignmentEntry.getActivity().getActivityId());
             studentActivityAssignment.setActivity(ConvertToEntryUtil.convertToEntity(activityEntry, null));
         }
 

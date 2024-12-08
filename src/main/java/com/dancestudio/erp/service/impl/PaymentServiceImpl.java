@@ -23,48 +23,64 @@ public class PaymentServiceImpl implements PaymentService {
     private PaymentManager paymentManager;
 
     @Override
-    public PaymentResponse addPayment(PaymentEntry paymentEntry) {
+    public ResponseEntity<PaymentResponse> addPayment(PaymentEntry paymentEntry) {
         PaymentResponse response = new PaymentResponse();
-
-        PaymentEntry entry = paymentManager.addPayment(paymentEntry);
-        response.setData(Collections.singletonList(entry));
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
-
-        return response;
-
+        try {
+            PaymentEntry entry = paymentManager.addPayment(paymentEntry);
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, "Payment Added successfully", StatusResponse.Type.SUCCESS,
+                    Objects.isNull(entry) ? 0 : 1));
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Override
-    public PaymentResponse updatePaymentStatus(Long paymentId, PaymentStatus status) {
+    public ResponseEntity<PaymentResponse> updatePaymentStatus(Long paymentId, PaymentStatus status) {
         PaymentResponse response = new PaymentResponse();
-
-        PaymentEntry entry = paymentManager.updatePaymentStatus(paymentId, status);
-        response.setData(Collections.singletonList(entry));
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
-
-        return response;
+        try {
+            PaymentEntry entry = paymentManager.updatePaymentStatus(paymentId, status);
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, "Payment updated successfully", StatusResponse.Type.SUCCESS,
+                    Objects.isNull(entry) ? 0 : 1));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Override
-    public PaymentResponse getPaymentById(Long paymentId) {
+    public ResponseEntity<PaymentResponse> getPaymentById(Long paymentId) {
         PaymentResponse response = new PaymentResponse();
-
-        PaymentEntry entry = paymentManager.getPaymentById(paymentId);
-        response.setData(Collections.singletonList(entry));
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
-
-        return response;
+        try {
+            PaymentEntry entry = paymentManager.getPaymentById(paymentId);
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, "Payment retrived successfully", StatusResponse.Type.SUCCESS,
+                    Objects.isNull(entry) ? 0 : 1));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Override
-    public PaymentResponse updatePayment(Long paymentId, PaymentEntry paymentEntry) {
+    public ResponseEntity<PaymentResponse> updatePayment(Long paymentId, PaymentEntry paymentEntry) {
         PaymentResponse response = new PaymentResponse();
 
-        PaymentEntry entry = paymentManager.updatePayment(paymentId, paymentEntry);
-        response.setData(Collections.singletonList(entry));
-        response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
-
-        return response;
+        try {
+            PaymentEntry entry = paymentManager.updatePayment(paymentId, paymentEntry);
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, "Payment updated successfully", StatusResponse.Type.SUCCESS,
+                    Objects.isNull(entry) ? 0 : 1));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Override
@@ -73,26 +89,29 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentResponse getAllPayments(Long studioId) {
+    public ResponseEntity<PaymentResponse> getAllPayments(Long studioId) {
         PaymentResponse response = new PaymentResponse();
-
-        List<PaymentEntry> entry = paymentManager.getAllPaymentsByStudio(studioId);
-        response.setData(entry);
-        response.setStatus(
-                new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : entry.size()));
-
-        return response;
+        try {
+            List<PaymentEntry> entry = paymentManager.getAllPaymentsByStudio(studioId);
+            response.setData(entry);
+            response.setStatus(
+                    new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : entry.size()));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Override
     public ResponseEntity<PaymentResponse> createOrder(PaymentEntry paymentEntry) {
 
         PaymentResponse response = new PaymentResponse();
-
         try {
             PaymentEntry entry = paymentManager.createOrder(paymentEntry);
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
+            response.setStatus(new StatusResponse(1, "Order created successfully", StatusResponse.Type.SUCCESS,
+                    Objects.isNull(entry) ? 0 : 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
@@ -103,11 +122,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public ResponseEntity<PaymentResponse> verifyPayment(String orderId, String paymentId, String signature) {
         PaymentResponse response = new PaymentResponse();
-
         try {
             PaymentEntry entry = paymentManager.verifyPayment(orderId, paymentId, signature);
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
+            response.setStatus(new StatusResponse(1, "Payment verified successfully", StatusResponse.Type.SUCCESS,
+                    Objects.isNull(entry) ? 0 : 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));

@@ -46,7 +46,8 @@ public class StudentManagerImpl implements StudentManager {
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
 
     @Autowired
-    public StudentManagerImpl(StudentRepository studentRepository, StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
+    public StudentManagerImpl(StudentRepository studentRepository,
+            StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
         this.studentRepository = studentRepository;
         this.studentActivityAssignmentRepository = studentActivityAssignmentRepository;
     }
@@ -77,8 +78,10 @@ public class StudentManagerImpl implements StudentManager {
         Student updatedStudent = convertToEntity(studentEntry, existingStudent);
         updatedStudent = studentRepository.save(updatedStudent);
 
-//        TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_STUDENT_EMAIL);
-//        emailManager.sendEmail(updatedStudentEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
+        // TemplateEntry templateEntry =
+        // templateManager.getTemplateDetails(UPDATE_STUDENT_EMAIL);
+        // emailManager.sendEmail(updatedStudentEntry.getEmail(),
+        // templateEntry.getSubject(), templateEntry.getTemplateBody());
 
         return convertToEntry(updatedStudent);
     }
@@ -100,15 +103,17 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size) {
+    public List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus,
+            int page, int size) {
         if (size == -1) {
-            List<Student> entries = studentRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, activityId, membershipStatus);
+            List<Student> entries = studentRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId,
+                    activityId, null);
             return entries.stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         } else {
             Pageable pageable = PageRequest.of(page, size);
-            Page<Student> studentPage = studentRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, activityId, membershipStatus, pageable);
+            Page<Student> studentPage = studentRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, activityId, membershipStatus.name(), pageable);
             return studentPage.getContent().stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
@@ -117,7 +122,8 @@ public class StudentManagerImpl implements StudentManager {
 
     @Override
     public List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate) {
-        List<Long> studentIds = studentActivityAssignmentRepository.findStudentIdsWithMembershipEndingOnDate(reminderDate);
+        List<Long> studentIds = studentActivityAssignmentRepository
+                .findStudentIdsWithMembershipEndingOnDate(reminderDate);
 
         List<StudentEntry> studentEntries = new ArrayList<>();
         for (Long studentId : studentIds) {
@@ -136,7 +142,8 @@ public class StudentManagerImpl implements StudentManager {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-        StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.getStudentAssignmentsByStudentAndActivityId(studentId, activityId);
+        StudentActivityAssignmentEntry entry = studentActivityAssignmentManager
+                .getStudentAssignmentsByStudentAndActivityId(studentId, activityId);
 
         if (Objects.isNull(entry)) {
             throw new EntityNotFoundException("No active subscription found");
@@ -165,21 +172,21 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setPhone(student.getPhone());
         studentEntry.setEmail(student.getEmail());
         studentEntry.setImageUrl(student.getProfileImage());
-
         try {
-            StudioEntry entry = studioManager.getStudioById(student.getStudio().getId());
-            studentEntry.setStudioId(entry.getStudioId());
-        } catch (Exception ex) {
-            studentEntry.setStudioId(null);
-        }
-
-        try {
-            List<StudentActivityAssignmentEntry> entries = studentActivityAssignmentManager.getStudentAssignmentsByStudentId(student.getId());
+            List<StudentActivityAssignmentEntry> entries = studentActivityAssignmentManager
+                    .getStudentAssignmentsByStudentId(student.getId());
+            boolean isActive = false;
+            for (StudentActivityAssignmentEntry entry : entries) {
+                if (entry.getMembershipEndDate().isAfter(LocalDate.now())) {
+                    isActive = true;
+                    break;
+                }
+            }
+            studentEntry.setMembershipStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
             studentEntry.setEnrolledActivities(entries);
         } catch (Exception ex) {
             studentEntry.setEnrolledActivities(null);
         }
-
         return studentEntry;
     }
 

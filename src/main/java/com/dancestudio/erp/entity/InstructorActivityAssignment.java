@@ -25,7 +25,4 @@ public class InstructorActivityAssignment extends BaseEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "status", nullable = false)
-    private String status;
-
 }

@@ -16,17 +16,19 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/add")
-    public PaymentResponse addPayment(@RequestBody PaymentEntry paymentEntry) {
+    public ResponseEntity<PaymentResponse> addPayment(@RequestBody PaymentEntry paymentEntry) {
         return paymentService.addPayment(paymentEntry);
     }
 
     @PutMapping("/update/{paymentId}")
-    public PaymentResponse updatePayment(@PathVariable Long paymentId, @RequestBody PaymentEntry paymentEntry) {
+    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable Long paymentId,
+            @RequestBody PaymentEntry paymentEntry) {
         return paymentService.updatePayment(paymentId, paymentEntry);
     }
 
     @PutMapping("/updateStatus/{paymentId}")
-    public PaymentResponse updatePaymentStatus(@PathVariable Long paymentId, @PathVariable PaymentStatus status) {
+    public ResponseEntity<PaymentResponse> updatePaymentStatus(@PathVariable Long paymentId,
+            @PathVariable PaymentStatus status) {
         return paymentService.updatePaymentStatus(paymentId, status);
     }
 
@@ -36,12 +38,12 @@ public class PaymentController {
     }
 
     @GetMapping("/get/{paymentId}")
-    public PaymentResponse getPaymentById(@PathVariable Long paymentId) {
+    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable Long paymentId) {
         return paymentService.getPaymentById(paymentId);
     }
 
     @GetMapping("/getAllPayments/{studioId}")
-    public PaymentResponse getAllPayments(@PathVariable Long studioId) {
+    public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long studioId) {
         return paymentService.getAllPayments(studioId);
     }
 
@@ -52,7 +54,7 @@ public class PaymentController {
 
     @PostMapping("/verifyPayment")
     public ResponseEntity<PaymentResponse> verifyPayment(@RequestBody PaymentEntry paymentEntry) {
-        return paymentService.verifyPayment(paymentEntry.getOrderId(), paymentEntry.getPaymentId().toString(), paymentEntry.getSignature());
+        return paymentService.verifyPayment(paymentEntry.getOrderId(), paymentEntry.getPaymentId().toString(),
+                paymentEntry.getSignature());
     }
-
 }

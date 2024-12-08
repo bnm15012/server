@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface PaymentManager {
 
-    PaymentEntry addPayment(PaymentEntry paymentEntry);
+    PaymentEntry addPayment(PaymentEntry paymentEntry) throws Exception;
 
     PaymentEntry updatePaymentStatus(Long paymentId, PaymentStatus status);
 
-    PaymentEntry updatePayment(Long paymentId, PaymentEntry paymentEntry);
+    PaymentEntry updatePayment(Long paymentId, PaymentEntry paymentEntry) throws Exception;
 
     void deletePayment(Long paymentId);
 

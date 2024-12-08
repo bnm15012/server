@@ -1,5 +1,10 @@
 package com.dancestudio.erp.manager.impl;
 
+import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.StudioManager;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entry.PaymentEntry;
@@ -28,9 +33,12 @@ public class PaymentManagerImpl implements PaymentManager {
 
     @Value("${razorpay.api_secret}")
     private String razorpaySecret;
-    
+
     @Autowired
     private RazorpayClient razorpayClient;
+
+    @Autowired
+    private StudioManager studioManager;
 
     @Autowired
     public PaymentManagerImpl(PaymentRepository paymentRepository) {
@@ -38,7 +46,7 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public PaymentEntry addPayment(PaymentEntry paymentEntry) {
+    public PaymentEntry addPayment(PaymentEntry paymentEntry) throws Exception {
         Payment payment = convertToEntity(paymentEntry);
         return convertToEntry(paymentRepository.save(payment));
     }
@@ -60,7 +68,7 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public PaymentEntry updatePayment(Long paymentId, PaymentEntry paymentEntry) {
+    public PaymentEntry updatePayment(Long paymentId, PaymentEntry paymentEntry) throws Exception {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
@@ -100,7 +108,7 @@ public class PaymentManagerImpl implements PaymentManager {
         paymentEntry.setPaymentDate(payment.getPaymentDate());
         paymentEntry.setStatus(PaymentStatus.valueOf(payment.getStatus()));
         paymentEntry.setPaymentType(PaymentType.valueOf(payment.getPaymentType()));
-
+        paymentEntry.setStudioId(payment.getStudio().getId());
         return paymentEntry;
     }
 
@@ -158,6 +166,39 @@ public class PaymentManagerImpl implements PaymentManager {
         }
     }
 
+   private Payment convertToEntity(PaymentEntry paymentEntry) throws EntityNotFoundException {
+ 
+         Payment payment = new Payment();
+ 
+         if(Objects.nonNull(paymentEntry.getPaymentId())) {
+             payment.setId(Long.valueOf(paymentEntry.getPaymentId()));
+         }
+         if(Objects.nonNull(paymentEntry.getPayeeId())) {
+             payment.setPayeeId(paymentEntry.getPayeeId());
+         }
+         if(Objects.nonNull(paymentEntry.getAmount())) {
+             payment.setAmount(paymentEntry.getAmount());
+         }
+         if(Objects.nonNull(paymentEntry.getPayeeType())) {
+             payment.setPayeeType(paymentEntry.getPayeeType().name());
+         }
+         if(Objects.nonNull(paymentEntry.getPaymentDate())) {
+             payment.setPaymentDate(paymentEntry.getPaymentDate());
+         }
+         if(Objects.nonNull(paymentEntry.getStatus())) {
+             payment.setStatus(paymentEntry.getStatus().name());
+         }
+         if(Objects.nonNull(paymentEntry.getPaymentType())) {
+             payment.setPaymentType(paymentEntry.getPaymentType().name());
+         }
+         if (Objects.nonNull(paymentEntry.getStudioId())) {
+             StudioEntry entry = studioManager.getStudioById(paymentEntry.getStudioId());
+             payment.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
+         }
+ 
+         return payment;
+     }
+
     private boolean verifySignature(String orderId, String paymentId, String providedSignature) {
         try {
             JSONObject options = new JSONObject();
@@ -171,5 +212,4 @@ public class PaymentManagerImpl implements PaymentManager {
             return false;
         }
     }
-
 }

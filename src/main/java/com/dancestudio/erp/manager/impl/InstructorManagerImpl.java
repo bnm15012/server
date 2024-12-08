@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -93,17 +94,18 @@ public class InstructorManagerImpl implements InstructorManager {
     @Override
     public List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus, int page, int size) {
         if (size == -1) {
-            List<Instructor> entries = instructorRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, null, membershipStatus);
+            List<Instructor> entries = instructorRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, null, null);
             return entries.stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         } else {
             Pageable pageable = PageRequest.of(page, size);
-            Page<Instructor> studentPage = instructorRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, null, membershipStatus, pageable);
-            return studentPage.getContent().stream()
+            Page<Instructor> instructorPage = instructorRepository.findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(studioId, null, membershipStatus.name(), pageable);
+            return instructorPage.getContent().stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         }
+        return new ArrayList<>();
     }
 
     private InstructorEntry convertToEntry(Instructor instructor) {
@@ -125,7 +127,16 @@ public class InstructorManagerImpl implements InstructorManager {
         }
 
         try {
-            List<InstructorActivityAssignmentEntry> entries = instructorActivityAssignmentManager.getInstructorAssignmentsByInstructorId(instructor.getId());
+             List<Instructor> entries = instructorRepository.getInstructorAssignmentByInstructorId(instructor.getId());
+             boolean isActive = false;
+             for (InstructorActivityAssignmentEntry entry : entries) {
+                 if (entry.getEndDate().isAfter(LocalDate.now())) {
+                     isActive = true;
+                     break;
+                 }
+             }
+ 
+            instructorEntry.setInstructorStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
             instructorEntry.setAssignments(entries);
         } catch (Exception ex) {
             instructorEntry.setAssignments(null);
@@ -160,9 +171,6 @@ public class InstructorManagerImpl implements InstructorManager {
         }
         if (Objects.nonNull(instructorEntry.getImageUrl())) {
             instructor.setProfileImage(instructorEntry.getImageUrl());
-        }
-        if (Objects.nonNull(instructorEntry.getInstructorStatus())) {
-            instructor.setStatus(instructorEntry.getInstructorStatus().name());
         }
 
         // Bank account details
