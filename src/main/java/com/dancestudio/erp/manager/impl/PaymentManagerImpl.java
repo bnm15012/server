@@ -112,19 +112,6 @@ public class PaymentManagerImpl implements PaymentManager {
         return paymentEntry;
     }
 
-    private Payment convertToEntity(PaymentEntry paymentEntry) {
-
-        Payment payment = new Payment();
-        payment.setId(Long.valueOf(paymentEntry.getPaymentId()));
-        payment.setPayeeId(paymentEntry.getPayeeId());
-        payment.setAmount(paymentEntry.getAmount());
-        payment.setPaymentDate(paymentEntry.getPaymentDate());
-        payment.setStatus(paymentEntry.getStatus().name());
-        payment.setPaymentType(paymentEntry.getPaymentType().name());
-
-        return payment;
-    }
-
     @Override
     public PaymentEntry createOrder(PaymentEntry paymentEntry) {
         try {
