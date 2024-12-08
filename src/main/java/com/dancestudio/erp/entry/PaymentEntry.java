@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Data
 public class PaymentEntry {
 
-    private Long paymentId;
+    private String paymentId;
     private PayeeType payeeType;
     private Long payeeId;
     private Double amount;

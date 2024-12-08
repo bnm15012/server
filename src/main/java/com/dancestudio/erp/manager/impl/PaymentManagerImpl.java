@@ -94,7 +94,7 @@ public class PaymentManagerImpl implements PaymentManager {
     private PaymentEntry convertToEntry(Payment payment) {
 
         PaymentEntry paymentEntry = new PaymentEntry();
-        paymentEntry.setPaymentId(payment.getId());
+        paymentEntry.setPaymentId(String.valueOf(payment.getId()));
         paymentEntry.setPayeeId(payment.getPayeeId());
         paymentEntry.setAmount(payment.getAmount());
         paymentEntry.setPaymentDate(payment.getPaymentDate());
@@ -107,7 +107,7 @@ public class PaymentManagerImpl implements PaymentManager {
     private Payment convertToEntity(PaymentEntry paymentEntry) {
 
         Payment payment = new Payment();
-        payment.setId(paymentEntry.getPaymentId());
+        payment.setId(Long.valueOf(paymentEntry.getPaymentId()));
         payment.setPayeeId(paymentEntry.getPayeeId());
         payment.setAmount(paymentEntry.getAmount());
         payment.setPaymentDate(paymentEntry.getPaymentDate());
