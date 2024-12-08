@@ -11,6 +11,7 @@ import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
+import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -105,7 +106,6 @@ public class InstructorManagerImpl implements InstructorManager {
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         }
-        return new ArrayList<>();
     }
 
     private InstructorEntry convertToEntry(Instructor instructor) {
@@ -115,7 +115,6 @@ public class InstructorManagerImpl implements InstructorManager {
         instructorEntry.setEmail(instructor.getEmail());
         instructorEntry.setPhone(instructor.getPhone());
         instructorEntry.setImageUrl(instructor.getProfileImage());
-        instructorEntry.setInstructorStatus(MembershipStatus.valueOf(instructor.getStatus()));
 
         try {
             if (instructor.getStudio() != null) {
@@ -127,7 +126,7 @@ public class InstructorManagerImpl implements InstructorManager {
         }
 
         try {
-             List<Instructor> entries = instructorRepository.getInstructorAssignmentByInstructorId(instructor.getId());
+             List<InstructorActivityAssignmentEntry> entries = instructorActivityAssignmentManager.getInstructorAssignmentsByInstructorId(instructor.getId());
              boolean isActive = false;
              for (InstructorActivityAssignmentEntry entry : entries) {
                  if (entry.getEndDate().isAfter(LocalDate.now())) {
