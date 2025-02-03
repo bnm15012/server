@@ -8,14 +8,15 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./db-data:/var/lib/mysql
-      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./demo/studio.sql:/docker-entrypoint-initdb.d/studio.sql
+      - ./db-data/mysql-db-data:/var/lib/mysql
+      - ./data/data.sql:/docker-entrypoint-initdb.d/data.sql
+      # - ./scripts:/scripts
     healthcheck:
       test: ["CMD-SHELL", "mysql -uroot -prootpassword -e 'use studio;'"]
       interval: 10s
       timeout: 5s
       retries: 5
+    # entrypoint: ["/bin/bash", "/scripts/startup.sh"]
 
   studio-backend:
     image: dhruv4023/studio-backend-1.0
@@ -40,5 +41,7 @@ services:
       - studio-backend
     ports:
       - "3000:80"
+      - "3000:80"
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_PROFILES_ACTIVE=prod
