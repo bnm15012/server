@@ -4,39 +4,33 @@ import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
-import java.util.Objects;
-import org.springframework.beans.factory.annotation.Value;
+
 import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.ReportEntry;
+import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.repository.PaymentRepository;
-import com.razorpay.Order;
-import com.razorpay.RazorpayClient;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class PaymentManagerImpl implements PaymentManager {
 
     private final PaymentRepository paymentRepository;
-
-    @Value("${razorpay.api_secret}")
-    private String razorpaySecret;
-
-    @Autowired
-    private RazorpayClient razorpayClient;
-
     @Autowired
     private StudioManager studioManager;
 
@@ -80,18 +74,21 @@ public class PaymentManagerImpl implements PaymentManager {
     public void deletePayment(Long paymentId) {
         paymentRepository.deleteById(paymentId);
     }
-
+    
     @Override
-    public List<PaymentEntry> getAllPaymentsByStudio(Long studioId) {
-        List<Payment> entries = paymentRepository.findAllByStudioId(studioId);
-
-        List<PaymentEntry> paymentEntries = new ArrayList<>();
-        for (Payment entry : entries) {
-            PaymentEntry paymentEntry = convertToEntry(entry);
-            paymentEntries.add(paymentEntry);
+    public List<PaymentEntry> getAllPaymentsByStudio(Long studioId, int page, int size) {
+        if (size == -1) {
+            List<Payment> entries = paymentRepository.findAllByStudioId(studioId);
+            return entries.stream()
+                    .map(this::convertToEntry)
+                    .collect(Collectors.toList());
+        } else {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Payment> paymentPage = paymentRepository.findByStudioId(studioId, pageable);
+            return paymentPage.getContent().stream()
+                    .map(this::convertToEntry)
+                    .collect(Collectors.toList());
         }
-
-        return paymentEntries;
     }
 
     @Override
@@ -104,53 +101,13 @@ public class PaymentManagerImpl implements PaymentManager {
         PaymentEntry paymentEntry = new PaymentEntry();
         paymentEntry.setPaymentId(String.valueOf(payment.getId()));
         paymentEntry.setPayeeId(payment.getPayeeId());
+        paymentEntry.setPayeeType(PayeeType.valueOf(payment.getPayeeType()));
         paymentEntry.setAmount(payment.getAmount());
         paymentEntry.setPaymentDate(payment.getPaymentDate());
         paymentEntry.setStatus(PaymentStatus.valueOf(payment.getStatus()));
         paymentEntry.setPaymentType(PaymentType.valueOf(payment.getPaymentType()));
         paymentEntry.setStudioId(payment.getStudio().getId());
         return paymentEntry;
-    }
-
-    @Override
-    public PaymentEntry createOrder(PaymentEntry paymentEntry) {
-        try {
-            PaymentEntry entry = new PaymentEntry();
-
-            JSONObject options = new JSONObject();
-            options.put("amount", paymentEntry.getAmount() * 100);
-            options.put("currency", "INR");
-            options.put("receipt", "receipt#1");
-
-            Order order = razorpayClient.Orders.create(options);
-
-            entry.setMessage(order.toString());
-            return entry;
-        } catch (Exception e) {
-            log.error("Error creating order", e);
-            throw new RuntimeException("Order not created");
-        }
-    }
-
-    @Override
-    public PaymentEntry verifyPayment(String orderId, String paymentId, String signature) throws Exception {
-        try {
-            PaymentEntry entry = new PaymentEntry();
-
-            boolean isVerified = verifySignature(orderId, paymentId, signature);
-            log.info("Order ID: {}, Payment ID: {}, Signature: {}", orderId, paymentId, signature);
-
-            if (isVerified) {
-                entry.setMessage("Payment verified successfully!");
-                return entry;
-            } else {
-                entry.setMessage("Payment verification failed: Invalid signature");
-                return entry;
-            }
-        } catch (Exception e) {
-            log.error("Payment verification failed: {}", e.getMessage(), e);
-            throw new Exception("Payment verification failed: " + e.getMessage(), e);
-        }
     }
 
    private Payment convertToEntity(PaymentEntry paymentEntry) throws EntityNotFoundException {
@@ -186,17 +143,8 @@ public class PaymentManagerImpl implements PaymentManager {
          return payment;
      }
 
-    private boolean verifySignature(String orderId, String paymentId, String providedSignature) {
-        try {
-            JSONObject options = new JSONObject();
-            options.put("razorpay_order_id", orderId);
-            options.put("razorpay_payment_id", paymentId);
-            options.put("razorpay_signature", providedSignature);
-
-            return com.razorpay.Utils.verifyPaymentSignature(options, razorpaySecret);
-        } catch (Exception e) {
-            log.error("Error verifying signature: ", e);
-            return false;
-        }
+    @Override
+    public Long getPaymentCountByStudioId(Long studioId) {
+        return paymentRepository.getPaymentCountByStudioId(studioId);
     }
 }

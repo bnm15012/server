@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,13 +16,13 @@ public class StudentActivityAssignment extends BaseEntity {
     private Activity activity;
 
     @Column(name = "registration_date", nullable = false)
-    private LocalDate registrationDate;
+    private Date registrationDate;
 
     @Column(name = "membership_start_date", nullable = false)
-    private LocalDate membershipStartDate;
+    private Date membershipStartDate;
 
     @Column(name = "membership_end_date", nullable = false)
-    private LocalDate membershipEndDate;
+    private Date membershipEndDate;
 
     @Column(name = "membership_type", nullable = false)
     private String membershipType;

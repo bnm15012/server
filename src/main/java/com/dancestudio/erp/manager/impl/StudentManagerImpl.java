@@ -11,6 +11,8 @@ import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.repository.StudentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
+import com.dancestudio.erp.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,8 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -121,7 +123,7 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate) {
+    public List<StudentEntry> findByMembershipEndDate(Date reminderDate) {
         List<Long> studentIds = studentActivityAssignmentRepository
                 .findStudentIdsWithMembershipEndingOnDate(reminderDate);
 
@@ -177,7 +179,7 @@ public class StudentManagerImpl implements StudentManager {
                     .getStudentAssignmentsByStudentId(student.getId());
             boolean isActive = false;
             for (StudentActivityAssignmentEntry entry : entries) {
-                if (entry.getMembershipEndDate().isAfter(LocalDate.now())) {
+                if (entry.getMembershipEndDate().after(DateUtil.getCurrentDateUTC())) {
                     isActive = true;
                     break;
                 }
@@ -214,5 +216,10 @@ public class StudentManagerImpl implements StudentManager {
         }
 
         return student;
+    }
+
+    @Override
+    public Long getAllStudentsCountByStudio(Long studioId) {
+        return studentRepository.totalStudentsByStudioId(studioId);
     }
 }

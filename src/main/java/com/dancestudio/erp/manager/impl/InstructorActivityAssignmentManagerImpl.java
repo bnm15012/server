@@ -12,10 +12,11 @@ import com.dancestudio.erp.manager.InstructorActivityAssignmentManager;
 import com.dancestudio.erp.repository.InstructorActivityAssignmentRepository;
 import com.dancestudio.erp.repository.InstructorRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
+import com.dancestudio.erp.util.DateUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -102,7 +103,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         instructorActivityAssignmentEntry.setAssignedDate(instructorActivityAssignment.getAssignedDate());
         instructorActivityAssignmentEntry.setStartDate(instructorActivityAssignment.getStartDate());
         instructorActivityAssignmentEntry.setEndDate(instructorActivityAssignment.getEndDate());
-        instructorActivityAssignmentEntry.setMembershipStatus(instructorActivityAssignment.getEndDate().isAfter(LocalDate.now()) ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
+        instructorActivityAssignmentEntry.setMembershipStatus(instructorActivityAssignment.getEndDate().after(DateUtil.getCurrentDateUTC()) ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
 
         if (Objects.nonNull(instructorActivityAssignment.getActivity())) {
             ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignment.getActivity().getId());

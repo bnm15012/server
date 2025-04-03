@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
+import com.dancestudio.erp.util.DateUtil;
+
 import java.util.Date;
 
 @MappedSuperclass
@@ -50,13 +52,13 @@ public abstract class BaseEntity {
 
     @PrePersist
     protected void onCreate() {
-        this.lastModifiedOn = this.createdOn = this.createdOn == null ? new Date() : this.createdOn;
+        this.lastModifiedOn = this.createdOn = this.createdOn == null ? DateUtil.getCurrentDateUTC() : this.createdOn;
         this.createdBy = this.createdBy != null && !this.createdBy.equals("") ? this.createdBy : "system";
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.lastModifiedOn = new Date();
+        this.lastModifiedOn = DateUtil.getCurrentDateUTC();
     }
 
     public String toString() {

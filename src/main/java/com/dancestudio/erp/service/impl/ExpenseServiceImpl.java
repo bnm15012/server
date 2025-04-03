@@ -1,6 +1,5 @@
 package com.dancestudio.erp.service.impl;
 
-
 import com.dancestudio.erp.entry.ExpenseEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ExpenseManager;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.List;
 
-@Setter(onMethod = @__({@Autowired}))
+@Setter(onMethod = @__({ @Autowired }))
 @Component
 public class ExpenseServiceImpl implements ExpenseService {
 
@@ -90,14 +89,17 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ResponseEntity<ExpenseResponse> getAllExpenses(Long studioId, Long startMonth, Long endMonth) {
+    public ResponseEntity<ExpenseResponse> getAllExpenses(Long studioId, int page, int size, Long startMonth, Long endMonth) {
         ExpenseResponse response = new ExpenseResponse();
 
         try {
-            List<ExpenseEntry> entries = expenseManager.getAllExpenses(studioId, startMonth, endMonth);
+            List<ExpenseEntry> entries = expenseManager.getAllExpenses(studioId, page, size, startMonth, endMonth);
 
+            long expenseCount = (startMonth.equals(0L) || endMonth.equals(0L))
+                    ? expenseManager.countExpensesByStudioId(studioId)
+                    : expenseManager.countExpensesByStudioIdAndMonth(studioId, startMonth, endMonth);
             response.setData(entries);
-            response.setStatus(new StatusResponse(1, "Expenses retrieved successfully", StatusResponse.Type.SUCCESS, entries.size()));
+            response.setStatus(new StatusResponse(1, "Expenses retrieved successfully", StatusResponse.Type.SUCCESS, (int) expenseCount));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));

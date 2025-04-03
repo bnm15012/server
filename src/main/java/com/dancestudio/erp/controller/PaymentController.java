@@ -43,18 +43,9 @@ public class PaymentController {
     }
 
     @GetMapping("/getAllPayments/{studioId}")
-    public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long studioId) {
-        return paymentService.getAllPayments(studioId);
-    }
-
-    @PostMapping("/createOrder")
-    public ResponseEntity<PaymentResponse> createOrder(@RequestBody PaymentEntry paymentEntry) {
-        return paymentService.createOrder(paymentEntry);
-    }
-
-    @PostMapping("/verifyPayment")
-    public ResponseEntity<PaymentResponse> verifyPayment(@RequestBody PaymentEntry paymentEntry) {
-        return paymentService.verifyPayment(paymentEntry.getOrderId(), paymentEntry.getPaymentId().toString(),
-                paymentEntry.getSignature());
+    public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long studioId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "-1") int size) {
+        return paymentService.getAllPayments(studioId, page, size);
     }
 }

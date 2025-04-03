@@ -11,7 +11,8 @@ import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.InstructorRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
-import java.time.LocalDate;
+import com.dancestudio.erp.util.DateUtil;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -129,7 +129,7 @@ public class InstructorManagerImpl implements InstructorManager {
              List<InstructorActivityAssignmentEntry> entries = instructorActivityAssignmentManager.getInstructorAssignmentsByInstructorId(instructor.getId());
              boolean isActive = false;
              for (InstructorActivityAssignmentEntry entry : entries) {
-                 if (entry.getEndDate().isAfter(LocalDate.now())) {
+                 if (entry.getEndDate().after(DateUtil.getCurrentDateUTC())) {
                      isActive = true;
                      break;
                  }
@@ -187,4 +187,8 @@ public class InstructorManagerImpl implements InstructorManager {
         return instructor;
     }
 
+    @Override
+    public Long getCountInstructorByStrudioId(Long studioId) {
+        return instructorRepository.totalInstructorsByStudioId(studioId);
+    }
 }

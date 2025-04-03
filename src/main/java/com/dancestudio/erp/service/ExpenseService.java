@@ -14,5 +14,5 @@ public interface ExpenseService {
 
     ResponseEntity<ExpenseResponse> getExpenseById(Long expenseId);
 
-    ResponseEntity<ExpenseResponse> getAllExpenses(Long studioId, Long startMonth, Long endMonth);
+    ResponseEntity<ExpenseResponse> getAllExpenses(Long studioId, int page, int size, Long startMonth, Long endMonth);
 }

@@ -2,7 +2,6 @@ package com.dancestudio.erp.repository;
  
  
  import com.dancestudio.erp.entity.Instructor;
- import com.dancestudio.erp.enums.MembershipStatus;
  import org.springframework.data.domain.Page;
  import org.springframework.data.domain.Pageable;
  import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,5 +26,7 @@ package com.dancestudio.erp.repository;
        "((:status = 'ACTIVE' AND sa.endDate >= CURRENT_DATE) OR (:status = 'INACTIVE' AND sa.endDate < CURRENT_DATE))))")
      Page<Instructor> findAllByStudioIdAndOptionalActivityIdAndOptionalStatus(@Param("studioId") Long studioId, @Param("activityId") Long activityId,
                                                                              @Param("status") String membershipStatus, Pageable pageable);
- 
+
+     @Query("SELECT COUNT(s) FROM Instructor s WHERE s.studio.id = :studioId")
+     long totalInstructorsByStudioId(@Param("studioId") Long studioId);
  }

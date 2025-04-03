@@ -18,9 +18,5 @@ public interface PaymentService {
 
     ResponseEntity<PaymentResponse> getPaymentById(Long paymentId);
 
-    ResponseEntity<PaymentResponse> getAllPayments(Long studioId);
-
-    ResponseEntity<PaymentResponse> createOrder(PaymentEntry paymentEntry);
-
-    ResponseEntity<PaymentResponse> verifyPayment(String orderId, String paymentId, String signature);
+    ResponseEntity<PaymentResponse> getAllPayments(Long studioId, int page, int size);
 }

@@ -98,9 +98,9 @@ public class InstructorServiceImpl implements InstructorService {
 
         try {
             List<InstructorEntry> entries = instructorManager.getAllInstructorsByStudio(studioId, membershipStatus, page, size);
-            int totalSize = instructorManager.getAllInstructorsByStudio(studioId, membershipStatus, page, -1).size();
+            long totalSize = instructorManager.getCountInstructorByStrudioId(studioId);
             response.setData(entries);
-            response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : totalSize));
+            response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));

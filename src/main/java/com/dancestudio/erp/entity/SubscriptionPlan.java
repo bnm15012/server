@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.dancestudio.erp.util.DateUtil;
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
@@ -33,11 +35,17 @@ public class SubscriptionPlan extends BaseEntity {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
+    @Column(name = "order_id", nullable = false)
+    private String orderId;
+    
+    @Column(name = "payment_id")
+    private String paymentId;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "renewal_date", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date renewalDate;
     
     public boolean isExpired() {
-        return new Date().after(this.endDate);
+        return DateUtil.getCurrentDateUTC().after(this.endDate);
     }
 }

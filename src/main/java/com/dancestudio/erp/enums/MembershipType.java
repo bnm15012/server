@@ -2,7 +2,7 @@ package com.dancestudio.erp.enums;
 
 public enum MembershipType {
     MONTHLY,
-    QUARTELY,
+    QUARTERLY,
     HALF_YEARLY,
     YEARLY
 }

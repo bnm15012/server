@@ -18,7 +18,7 @@ public class UserEntry {
     private Boolean enabled;
     private StudioEntry studioEntry;
 
-    private Date membershipEndDate;
+    private SubscriptionPlanEntry subscriptionPlanEntry;
     private String token;
 
 }

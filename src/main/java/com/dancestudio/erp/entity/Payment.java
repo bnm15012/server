@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 
 @EqualsAndHashCode(callSuper = true)
@@ -24,7 +24,7 @@ public class Payment extends BaseEntity {
 
     private Double amount;
 
-    private LocalDate paymentDate;
+    private Date paymentDate;
 
     @Column(name = "status", nullable = false)
     private String status;

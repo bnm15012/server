@@ -1,7 +1,6 @@
 package com.dancestudio.erp.repository;
  
  import com.dancestudio.erp.entity.Student;
- import com.dancestudio.erp.enums.MembershipStatus;
  import org.springframework.data.domain.Page;
  import org.springframework.data.domain.Pageable;
  import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +27,6 @@ package com.dancestudio.erp.repository;
      @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.studio.id = :studioId")
      boolean studentsExistsByStudioId(@Param("studioId") Long studioId);
 
+     @Query("SELECT COUNT(s) FROM Student s WHERE s.studio.id = :studioId")
+     long totalStudentsByStudioId(@Param("studioId") Long studioId);
 }

@@ -2,10 +2,21 @@ package com.dancestudio.erp.authentication;
 
 import com.dancestudio.erp.enums.AuthType;
 import com.dancestudio.erp.exception.MembershipExpiredException;
-import io.jsonwebtoken.*;
+import com.dancestudio.erp.util.DateUtil;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Random;
@@ -32,7 +43,7 @@ public class JwtUtil {
     }
 
     public String generateToken(String email, Date membershipEndDate, String otp, AuthType authType) {
-        Date now = new Date();
+        Date now = DateUtil.getCurrentDateUTC();
         Date expiryDate;
 
         if (authType == AuthType.OTP) {
@@ -45,7 +56,7 @@ public class JwtUtil {
                 .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret);
+                .signWith(getSignKey(), SignatureAlgorithm.HS256);
 
         if (authType == AuthType.OTP) {
             tokenBuilder.claim("otp", otp);
@@ -63,38 +74,50 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(String email) {
-        Date now = new Date();
+        Date now = DateUtil.getCurrentDateUTC();
         Date expiryDate = new Date(now.getTime() + jwtRefreshTokenExpirationTime);
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    private Key getSignKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public boolean validateOtpToken(String token, String otp) {
         try {
-            Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+            Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
             String tokenOtp = claims.get("otp", String.class);
-            return otp.equals(tokenOtp) && !claims.getExpiration().before(new Date());
+            return otp.equals(tokenOtp) && !claims.getExpiration().before(DateUtil.getCurrentDateUTC());
         } catch (JwtException e) {
             return false;
         }
     }
 
     public Claims validateAndParseClaims(String token) throws JwtException {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        if (claims.getExpiration().before(new Date())) {
+        if (claims.getExpiration().before(DateUtil.getCurrentDateUTC())) {
             throw new JwtException("Token expired");
         }
 
         Date membershipEndDate = claims.get("membershipEndDate", Date.class);
-        if (membershipEndDate != null && membershipEndDate.before(new Date())) {
+        if (membershipEndDate != null && membershipEndDate.before(DateUtil.getCurrentDateUTC())) {
             throw new MembershipExpiredException("Membership is expired");
         }
 
@@ -104,10 +127,12 @@ public class JwtUtil {
     public boolean validateRefreshToken(String token, String email) {
 
         try {
-            Jwts.parser()
-                    .setSigningKey(jwtSecret)
-                    .parseClaimsJws(token)
-                    .getBody();
+            Jwts
+                .parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
             return true;
         } catch (ExpiredJwtException e) {
             return e.getClaims().getSubject().equals(email);

@@ -8,7 +8,6 @@ import java.util.Date;
 
 @Data
 public class SubscriptionPlanEntry {
-
     private Long planId;
     private Long studioId;
     private SubscriptionType subscriptionPlan; // e.g., "Monthly", "Yearly", "Half-Yearly"
@@ -17,5 +16,8 @@ public class SubscriptionPlanEntry {
     private SubscriptionStatus status; // e.g., "ACTIVE", "EXPIRED", "CANCELLED"
     private Double price;
     private Date renewalDate;
-
+    private String orderId;
+    private String paymentId;
+    private String signature;
+    private String message;
 }

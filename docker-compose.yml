@@ -1,9 +1,44 @@
-version: '1.0'
 services:
-  studio_backend:
-    image: studio-backend   # Use the image you built
-    build: .                # Build from the current directory (Dockerfile)
-    ports:
-      - "7000:7000"         # Expose port 7000
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
     environment:
-      - SPRING_PROFILES_ACTIVE=prod  # Add any environment variables here if needed
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: studio
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db-data:/var/lib/mysql
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./demo/studio.sql:/docker-entrypoint-initdb.d/studio.sql
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -uroot -prootpassword -e 'use studio;'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  studio-backend:
+    image: dhruv4023/studio-backend-1.0
+    build: ./
+    container_name: studio-backend-1.0
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    ports:
+      - "7000:7000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/studio?autoreconnect=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+
+  studio-app:
+    image: dhruv4023/studio-app-1.0
+    build: ../studioapp/
+    depends_on:
+      - studio-backend
+    ports:
+      - "3000:80"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod

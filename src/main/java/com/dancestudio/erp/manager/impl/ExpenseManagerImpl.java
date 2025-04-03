@@ -1,6 +1,5 @@
 package com.dancestudio.erp.manager.impl;
 
-
 import com.dancestudio.erp.entity.Expense;
 import com.dancestudio.erp.entry.ExpenseEntry;
 import com.dancestudio.erp.entry.StudioEntry;
@@ -11,6 +10,9 @@ import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.ExpenseRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -61,12 +63,13 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public List<ExpenseEntry> getAllExpenses(Long studioId, Long startMonth, Long endMonth) throws EntityNotFoundException {
-        List<Expense> entries;
+    public List<ExpenseEntry> getAllExpenses(Long studioId, int page, int size, Long startMonth, Long endMonth) throws EntityNotFoundException {
+        Page<Expense> entries;
+        Pageable pageable = PageRequest.of(page, size);
         if (startMonth.equals(0L) || endMonth.equals(0L)) {
-            entries = expenseRepository.findAllByStudioId(studioId);
+            entries = expenseRepository.findExpensesByStudioId(studioId, pageable);
         } else {
-            entries = expenseRepository.findAllByStudioId(studioId, startMonth, endMonth);
+            entries = expenseRepository.findAllByStudioId(studioId, startMonth, endMonth, pageable);
         }
 
         List<ExpenseEntry> expenseEntries = new ArrayList<>();
@@ -118,5 +121,15 @@ public class ExpenseManagerImpl implements ExpenseManager {
         }
 
         return expense;
+    }
+
+    @Override
+    public Long countExpensesByStudioId(Long studioId) {
+        return expenseRepository.countExpensesByStudioId(studioId);
+    }
+
+    @Override
+    public Long countExpensesByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth) {
+        return expenseRepository.countExpensesByStudioIdAndMonthLong(studioId, startMonth, endMonth);
     }
 }

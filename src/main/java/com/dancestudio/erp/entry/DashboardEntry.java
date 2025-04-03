@@ -9,8 +9,15 @@ public class DashboardEntry {
     private Long totalInstructors;
     private Long totalActiveMemberships;
 
-    private Long lastWeekIncome;
-    private Long lastMonthIncome;
+    private Long totalLastMonthExpenseCount;
+    private double totalLastMonthExpenseAmount;
+    
+    private Long totalCurrentMonthExpenseCount;
+    private double totalCurrentMonthExpenseAmount;
 
-    private Long totalExpenseCount;
+    private Long totalLastMonthPaymentCount;
+    private double totalLastMonthPaymentAmount;
+    
+    private Long totalCurrentMonthPaymentCount;
+    private double totalCurrentMonthPaymentAmount;
 }

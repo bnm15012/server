@@ -4,7 +4,7 @@ import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface StudentManager {
@@ -19,8 +19,10 @@ public interface StudentManager {
 
     List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size);
 
-    List<StudentEntry> findByMembershipEndDate(LocalDate reminderDate) throws EntityNotFoundException;
+    List<StudentEntry> findByMembershipEndDate(Date reminderDate) throws EntityNotFoundException;
 
     boolean sendSubscriptionRenewalReminder(Long studentId, Long activityId) throws EntityNotFoundException;
+
+    Long getAllStudentsCountByStudio(Long studioId);
 
 }

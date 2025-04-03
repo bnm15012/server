@@ -12,10 +12,11 @@ import com.dancestudio.erp.manager.StudentActivityAssignmentManager;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.repository.StudentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
+import com.dancestudio.erp.util.DateUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -112,7 +113,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         List<StudentActivityAssignmentEntry> assignmentEntries = new ArrayList<>();
 
         for (StudentActivityAssignment entry : entries) {
-            boolean isActive = entry.getMembershipEndDate().isAfter(LocalDate.now());
+            boolean isActive = entry.getMembershipEndDate().after(DateUtil.getCurrentDateUTC());
             if ((status.equalsIgnoreCase("ACTIVE") && isActive) || (status.equalsIgnoreCase("INACTIVE") && !isActive)) {
                 assignmentEntries.add(convertToEntry(entry));
             }
@@ -133,7 +134,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         studentActivityAssignmentEntry.setRegistrationDate(studentActivityAssignment.getRegistrationDate());
         studentActivityAssignmentEntry.setMembershipStartDate(studentActivityAssignment.getMembershipStartDate());
         studentActivityAssignmentEntry.setMembershipEndDate(studentActivityAssignment.getMembershipEndDate());
-        studentActivityAssignmentEntry.setMembershipStatus(studentActivityAssignment.getMembershipEndDate().isAfter(LocalDate.now()) ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
+        studentActivityAssignmentEntry.setMembershipStatus(studentActivityAssignment.getMembershipEndDate().after(DateUtil.getCurrentDateUTC()) ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
         studentActivityAssignmentEntry.setMembershipType(MembershipType.valueOf(studentActivityAssignment.getMembershipType()));
 
         if (Objects.nonNull(studentActivityAssignment.getActivity())) {

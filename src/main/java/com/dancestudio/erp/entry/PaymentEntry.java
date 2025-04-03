@@ -5,7 +5,7 @@ import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 public class PaymentEntry {
@@ -14,11 +14,9 @@ public class PaymentEntry {
     private PayeeType payeeType;
     private Long payeeId;
     private Double amount;
-    private LocalDate paymentDate;
+    private Date paymentDate;
     private PaymentStatus status;
     private PaymentType paymentType;
     private String message;
-    private String orderId;
-    private String signature;
     private Long studioId;
 }

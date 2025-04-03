@@ -3,17 +3,17 @@ package com.dancestudio.erp.entry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 public class InstructorActivityAssignmentEntry {
 
     private Long assignmentId;
     private ActivityEntry activity;
-    private LocalDate assignedDate;
+    private Date assignedDate;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private Date startDate;
+    private Date endDate;
     private MembershipStatus membershipStatus = MembershipStatus.INACTIVE;
 
     private Long instructorId;

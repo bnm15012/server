@@ -17,3 +17,8 @@ node_modules/
 
 # Ignore target folder
 target/
+
+
+.vscode
+db-data
+init

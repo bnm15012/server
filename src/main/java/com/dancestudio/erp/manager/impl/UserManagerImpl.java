@@ -6,14 +6,12 @@ import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.exception.InvalidCredentialsException;
 import com.dancestudio.erp.manager.UserManager;
-import com.dancestudio.erp.repository.SubscriptionPlanRepository;
 import com.dancestudio.erp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.Objects;
 
 import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntity;
@@ -23,9 +21,6 @@ import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 public class UserManagerImpl implements UserManager {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    private SubscriptionPlanRepository subscriptionPlanRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -67,11 +62,9 @@ public class UserManagerImpl implements UserManager {
 
         UserEntry entry = convertToEntry(user);
 
-        Date membershipEndDate = subscriptionPlanRepository.findMaxEndDateByStudioId(entry.getStudioEntry().getStudioId());
+        String token = jwtUtil.generateAuthToken(user.getEmail(),(entry.getSubscriptionPlanEntry() != null) ? entry.getSubscriptionPlanEntry().getEndDate() : null);
 
-        String token = jwtUtil.generateAuthToken(user.getEmail(), membershipEndDate);
         entry.setToken(token);
-        entry.setMembershipEndDate(membershipEndDate);
         return entry;
     }
 
@@ -80,7 +73,7 @@ public class UserManagerImpl implements UserManager {
         User existingUser = userRepository.findById(studioId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if(Objects.nonNull(userEntry.getPassword())) {
+        if (Objects.nonNull(userEntry.getPassword())) {
             userEntry.setPassword(hashPassword(userEntry.getPassword()));
         }
         User updatedUser = convertToEntity(userEntry, existingUser);
@@ -112,7 +105,6 @@ public class UserManagerImpl implements UserManager {
 
         return convertToEntry(user);
     }
-
 
     public String hashPassword(String password) {
         return passwordEncoder.encode(password);

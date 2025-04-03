@@ -6,11 +6,13 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EmailManager;
 import com.dancestudio.erp.manager.StudentManager;
 import com.dancestudio.erp.manager.TemplateManager;
+import com.dancestudio.erp.util.DateUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import static com.dancestudio.erp.constants.TemplateName.SUBSCRIPTION_RENEWAL_REMINDER;
@@ -29,8 +31,7 @@ public class MembershipManagerImpl {
 
     @Scheduled(cron = "0 0 12 * * ?")
     public void sendMembershipRenewalReminders() throws EntityNotFoundException {
-        LocalDate today = LocalDate.now();
-        LocalDate reminderDate = today.plusDays(5);
+        Date reminderDate = DateUtil.addDays(DateUtil.getCurrentDateUTC(), 5);
 
         TemplateEntry templateEntry = templateManager.getTemplateDetails(SUBSCRIPTION_RENEWAL_REMINDER);
 
@@ -39,6 +40,4 @@ public class MembershipManagerImpl {
             emailManager.sendEmail(studentEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
         }
     }
-
-
 }
