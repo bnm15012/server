@@ -38,12 +38,17 @@ public class DashboardManagerImpl implements DashboardManager {
         entry.setTotalStudents(studentRepository.totalStudentsByStudioId(studioId));
         entry.setTotalInstructors(instructorRepository.totalInstructorsByStudioId(studioId));
         entry.setTotalActiveMemberships(activityAssignmentRepository.totalStudentActiveMembershipByStudioId(studioId));
-        entry.setMonthlyReportEntries(studentActivityAssignmentManager.calculateSalesReport((long) LocalDate.now().getYear(), studioId));
 
-        int currentMonth = LocalDate.now().getMonthValue();
+        List<MonthlyReportEntry> monthlyReportEntries = studentActivityAssignmentManager.calculateSalesReport((long) LocalDate.now().getYear(), studioId);
+        int lastMonth = LocalDate.now().minusMonths(1).getMonthValue();
 
-        processAmountCountEntries(entry, currentMonth, expenseRepository.countAndSumExpensesForCurrentAndLastMonth(studioId), true);
-        processAmountCountEntries(entry, currentMonth, paymentRepository.countAndSumPaymentsForCurrentAndLastMonth(studioId), false);
+        monthlyReportEntries.stream()
+                .filter(reportEntry -> reportEntry.getMonth() == lastMonth)
+                .findFirst()
+                .ifPresent(reportEntry -> entry.setLastMonthRevenue(reportEntry.getRevenue()));
+
+        processAmountCountEntries(entry, LocalDate.now().getMonthValue(), expenseRepository.countAndSumExpensesForCurrentAndLastMonth(studioId), true);
+        processAmountCountEntries(entry, LocalDate.now().getMonthValue(), paymentRepository.countAndSumPaymentsForCurrentAndLastMonth(studioId), false);
 
         return entry;
     }

@@ -11,7 +11,7 @@ public class DashboardEntry {
     private Long totalInstructors;
     private Long totalActiveMemberships;
 
-    private List<MonthlyReportEntry> monthlyReportEntries;
+    private double lastMonthRevenue;
 
     private Long totalLastMonthExpenseCount;
     private double totalLastMonthExpenseAmount;

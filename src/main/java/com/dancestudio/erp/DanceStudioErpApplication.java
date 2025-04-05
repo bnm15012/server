@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableCaching
-@EnableScheduling
+//@EnableScheduling
 public class DanceStudioErpApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {

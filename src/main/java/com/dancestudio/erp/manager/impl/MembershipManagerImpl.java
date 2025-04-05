@@ -29,15 +29,15 @@ public class MembershipManagerImpl {
     @Autowired
     private TemplateManager templateManager;
 
-    @Scheduled(cron = "0 0 12 * * ?")
-    public void sendMembershipRenewalReminders() throws EntityNotFoundException {
-        Date reminderDate = DateUtil.addDays(DateUtil.getCurrentDateUTC(), 5);
-
-        TemplateEntry templateEntry = templateManager.getTemplateDetails(SUBSCRIPTION_RENEWAL_REMINDER);
-
-        List<StudentEntry> studentsToRemind = studentManager.findByMembershipEndDate(reminderDate);
-        for (StudentEntry studentEntry: studentsToRemind) {
-            emailManager.sendEmail(studentEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
-        }
-    }
+//    @Scheduled(cron = "0 0 12 * * ?")
+//    public void sendMembershipRenewalReminders() throws EntityNotFoundException {
+//        Date reminderDate = DateUtil.addDays(DateUtil.getCurrentDateUTC(), 5);
+//
+//        TemplateEntry templateEntry = templateManager.getTemplateDetails(SUBSCRIPTION_RENEWAL_REMINDER);
+//
+//        List<StudentEntry> studentsToRemind = studentManager.findByMembershipEndDate(reminderDate);
+//        for (StudentEntry studentEntry: studentsToRemind) {
+//            emailManager.sendEmail(studentEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody());
+//        }
+//    }
 }
