@@ -1,5 +1,7 @@
 package com.dancestudio.erp.manager;
 
+import com.dancestudio.erp.entry.MonthlyReportEntry;
+import com.dancestudio.erp.entry.ReportEntry;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 
@@ -20,4 +22,6 @@ public interface StudentActivityAssignmentManager {
     List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId) throws EntityNotFoundException;
 
     List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) throws EntityNotFoundException;
+
+    List<MonthlyReportEntry> calculateSalesReport(Long year, Long studioId);
 }

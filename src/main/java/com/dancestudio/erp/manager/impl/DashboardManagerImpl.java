@@ -26,6 +26,9 @@ public class DashboardManagerImpl implements DashboardManager {
     private PaymentRepository paymentRepository;
 
     @Autowired
+    private StudentActivityAssignmentManager studentActivityAssignmentManager;
+
+    @Autowired
     private StudentActivityAssignmentRepository activityAssignmentRepository;
 
     @Override
@@ -35,6 +38,7 @@ public class DashboardManagerImpl implements DashboardManager {
         entry.setTotalStudents(studentRepository.totalStudentsByStudioId(studioId));
         entry.setTotalInstructors(instructorRepository.totalInstructorsByStudioId(studioId));
         entry.setTotalActiveMemberships(activityAssignmentRepository.totalStudentActiveMembershipByStudioId(studioId));
+        entry.setMonthlyReportEntries(studentActivityAssignmentManager.calculateSalesReport((long) LocalDate.now().getYear(), studioId));
 
         int currentMonth = LocalDate.now().getMonthValue();
 

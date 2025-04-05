@@ -32,4 +32,5 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     "GROUP BY MONTH(s.expenseDate)")
     List<Object[]> countAndSumExpensesForCurrentAndLastMonth(@Param("studioId") Long studioId);
 
-}
+    @Query("SELECT e.expenseCategory, SUM(e.amount) FROM Expense e WHERE e.studio.id = :studioId AND MONTH(e.expenseDate) = :month AND YEAR(e.expenseDate) = :year GROUP BY e.expenseCategory")
+    List<Object[]> findCategoryWiseSumOfExpensesByMonthAndYearAndStudioId(@Param("month") int month, @Param("year") int year, @Param("studioId") Long studioId);}

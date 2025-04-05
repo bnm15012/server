@@ -22,11 +22,12 @@ public class Expense extends BaseEntity {
     @Column(name = "amount", nullable = false)
     private Double amount;
 
+    @Column(name = "expense_category", nullable = false)
+    private String expenseCategory;
+
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     @Column(name = "expense_date", nullable = false, updatable = false, insertable = true, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date expenseDate;
-
-    private String expenseCategory;
 
 }

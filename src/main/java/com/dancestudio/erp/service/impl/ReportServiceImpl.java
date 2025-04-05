@@ -1,5 +1,6 @@
 package com.dancestudio.erp.service.impl;
 
+import com.dancestudio.erp.entry.MonthlyReportEntry;
 import com.dancestudio.erp.entry.ReportEntry;
 import com.dancestudio.erp.manager.ReportManager;
 import com.dancestudio.erp.response.ReportResponse;
@@ -21,10 +22,10 @@ public class ReportServiceImpl implements ReportService {
     private ReportManager reportManager;
 
     @Override
-    public ResponseEntity<ReportResponse> generateIncomeReport(Long year) {
+    public ResponseEntity<ReportResponse> generateSalesReport(Long year, Long studioId) {
         ReportResponse response = new ReportResponse();
         try {
-            List<ReportEntry> reportEntries = reportManager.generateIncomeReport(year);
+            List<MonthlyReportEntry> reportEntries = reportManager.generateSalesReport(year, studioId);
             response.setData(reportEntries);
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(reportEntries) ? 0 : reportEntries.size()));
 

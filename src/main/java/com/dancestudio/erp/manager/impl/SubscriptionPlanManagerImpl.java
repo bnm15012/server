@@ -70,6 +70,9 @@ public class SubscriptionPlanManagerImpl implements SubscriptionPlanManager {
     public SubscriptionPlanEntry getSubscriptionPlanByStudioId(Long studioId) throws EntityNotFoundException {
         SubscriptionPlan subscriptionPlan = subscriptionPlanRepository.findLatestSubscriptionByStudioId(studioId)
                 .orElse(null);
+        if (Objects.isNull(subscriptionPlan)) {
+            return null;
+        }
         return convertToEntry(subscriptionPlan);
     }
 

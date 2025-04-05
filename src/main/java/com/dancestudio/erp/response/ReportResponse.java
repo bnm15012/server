@@ -1,5 +1,6 @@
 package com.dancestudio.erp.response;
 
+import com.dancestudio.erp.entry.MonthlyReportEntry;
 import com.dancestudio.erp.entry.ReportEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,5 +14,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReportResponse extends AbstractResponse {
-    private List<ReportEntry> data;
+    private List<MonthlyReportEntry> data;
 }

@@ -27,6 +27,9 @@ public class StudentActivityAssignment extends BaseEntity {
     @Column(name = "membership_type", nullable = false)
     private String membershipType;
 
+    @Column(name = "activity_amount", nullable = false)
+    private Double activityAmount;
+
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_id"))
     private Student student;

@@ -24,7 +24,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("SELECT s FROM Payment s WHERE s.studio.id = :studioId")
     Page<Payment> findByStudioId(@Param("studioId") Long studioId, Pageable pageable);
-    
+
     @Query("SELECT MONTH(s.paymentDate), COUNT(s), SUM(s.amount) FROM Payment s " +
     "WHERE s.studio.id = :studioId AND " +
     "((YEAR(s.paymentDate) = YEAR(CURRENT_DATE) AND MONTH(s.paymentDate) = MONTH(CURRENT_DATE)) " +
@@ -33,4 +33,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     "GROUP BY MONTH(s.paymentDate)")
     List<Object[]> countAndSumPaymentsForCurrentAndLastMonth(@Param("studioId") Long studioId);
 
+    @Query("SELECT p.payeeType, SUM(p.amount) FROM Payment p WHERE p.studio.id = :studioId AND MONTH(p.paymentDate) = :month AND YEAR(p.paymentDate) = :year GROUP BY p.payeeType")
+    List<Object[]> findCategoryWiseSumOfPaymentsByMonthAndYearAndStudioId(@Param("month") int month, @Param("year") int year, @Param("studioId") Long studioId);
 }

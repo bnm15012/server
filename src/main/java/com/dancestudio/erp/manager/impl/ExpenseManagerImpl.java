@@ -81,7 +81,7 @@ public class ExpenseManagerImpl implements ExpenseManager {
         return expenseEntries;
     }
 
-    private ExpenseEntry convertToEntry(Expense expense) throws EntityNotFoundException {
+    public ExpenseEntry convertToEntry(Expense expense) throws EntityNotFoundException {
 
         ExpenseEntry expenseEntry = new ExpenseEntry();
         expenseEntry.setExpenseId(expense.getId());

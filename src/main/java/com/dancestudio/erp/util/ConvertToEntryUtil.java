@@ -1,12 +1,8 @@
 package com.dancestudio.erp.util;
 
-import com.dancestudio.erp.entity.Activity;
-import com.dancestudio.erp.entity.BankAccount;
-import com.dancestudio.erp.entity.Studio;
-import com.dancestudio.erp.entity.User;
+import com.dancestudio.erp.entity.*;
 import com.dancestudio.erp.entry.*;
-import com.dancestudio.erp.enums.ActivityType;
-import com.dancestudio.erp.enums.UserType;
+import com.dancestudio.erp.enums.*;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.impl.StudioManagerImpl;
 import com.dancestudio.erp.manager.impl.SubscriptionPlanManagerImpl;
@@ -53,6 +49,7 @@ public class ConvertToEntryUtil {
 
             SubscriptionPlanManagerImpl subscriptionPlanManagerImpl = applicationContext.getBean(SubscriptionPlanManagerImpl.class);
             SubscriptionPlanEntry subscriptionPlanEntry = subscriptionPlanManagerImpl.getSubscriptionPlanByStudioId(user.getStudio().getId());
+
             userEntry.setSubscriptionPlanEntry(subscriptionPlanEntry);
         }
         return userEntry;
@@ -227,4 +224,36 @@ public class ConvertToEntryUtil {
 
         return activity;
     }
+
+    public static ExpenseEntry convertToEntry(Expense expense) throws EntityNotFoundException {
+
+        ExpenseEntry expenseEntry = new ExpenseEntry();
+        expenseEntry.setExpenseId(expense.getId());
+        expenseEntry.setAmount(expense.getAmount());
+        expenseEntry.setDescription(expense.getDescription());
+
+        StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
+        StudioEntry studioEntry = studioManagerImpl.getStudioById(expense.getStudio().getId());
+
+        expenseEntry.setStudioId(studioEntry.getStudioId());
+        expenseEntry.setExpenseDate(expense.getExpenseDate());
+        expenseEntry.setExpenseCategory(ExpenseCategory.valueOf(expense.getExpenseCategory()));
+
+        return expenseEntry;
+    }
+
+    public static PaymentEntry convertToEntry(Payment payment) {
+
+        PaymentEntry paymentEntry = new PaymentEntry();
+        paymentEntry.setPaymentId(String.valueOf(payment.getId()));
+        paymentEntry.setPayeeId(payment.getPayeeId());
+        paymentEntry.setPayeeType(PayeeType.valueOf(payment.getPayeeType()));
+        paymentEntry.setAmount(payment.getAmount());
+        paymentEntry.setPaymentDate(payment.getPaymentDate());
+        paymentEntry.setStatus(PaymentStatus.valueOf(payment.getStatus()));
+        paymentEntry.setPaymentType(PaymentType.valueOf(payment.getPaymentType()));
+        paymentEntry.setStudioId(payment.getStudio().getId());
+        return paymentEntry;
+    }
+
 }
