@@ -1,8 +1,12 @@
 package com.dancestudio.erp.service.impl;
 
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.entry.SubscriptionPlanEntry;
+import com.dancestudio.erp.enums.SubscriptionStatus;
+import com.dancestudio.erp.enums.SubscriptionType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.StudioManager;
+import com.dancestudio.erp.manager.SubscriptionPlanManager;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.response.StudioResponse;
 import com.dancestudio.erp.service.StudioService;
@@ -14,12 +18,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
+
+import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 
 @Setter(onMethod = @__({@Autowired}))
 @Component
 public class StudioServiceImpl implements StudioService {
 
     private StudioManager studioManager;
+    private SubscriptionPlanManager subscriptionPlanManager;
 
     @Override
     public ResponseEntity<StudioResponse> addStudio(StudioEntry studioEntry) {
@@ -27,6 +35,8 @@ public class StudioServiceImpl implements StudioService {
 
         try {
             StudioEntry entry = studioManager.addStudio(studioEntry);
+            SubscriptionPlanEntry subscriptionPlanEntry = createTrialSubscriptionPlan(entry.getStudioId());
+            entry.setSubscriptionPlanEntry(subscriptionPlanEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Studio added successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -97,6 +107,17 @@ public class StudioServiceImpl implements StudioService {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    private SubscriptionPlanEntry createTrialSubscriptionPlan(Long studioId) throws EntityNotFoundException {
+        SubscriptionPlanEntry trialPlan = new SubscriptionPlanEntry();
+        trialPlan.setSubscriptionPlan(SubscriptionType.TRIAL);
+        trialPlan.setStudioId(studioId);
+        trialPlan.setStatus(SubscriptionStatus.ACTIVE);
+        trialPlan.setOrderId("TRIAL-" + UUID.randomUUID());
+        trialPlan.setPrice(0.0);
+
+        return subscriptionPlanManager.addSubscriptionPlan(trialPlan);
     }
 
 }

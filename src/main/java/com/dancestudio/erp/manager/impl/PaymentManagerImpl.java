@@ -41,7 +41,7 @@ public class PaymentManagerImpl implements PaymentManager {
 
     @Override
     public PaymentEntry addPayment(PaymentEntry paymentEntry) throws Exception {
-        Payment payment = convertToEntity(paymentEntry);
+        Payment payment = convertToEntity(paymentEntry, null);
         return convertToEntry(paymentRepository.save(payment));
     }
 
@@ -63,10 +63,10 @@ public class PaymentManagerImpl implements PaymentManager {
 
     @Override
     public PaymentEntry updatePayment(Long paymentId, PaymentEntry paymentEntry) throws Exception {
-        Payment payment = paymentRepository.findById(paymentId)
+        Payment existingPayment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
-        Payment newPaymentEntry = convertToEntity(paymentEntry);
+        Payment newPaymentEntry = convertToEntity(paymentEntry, existingPayment);
         return convertToEntry(paymentRepository.save(newPaymentEntry));
     }
 
@@ -110,38 +110,38 @@ public class PaymentManagerImpl implements PaymentManager {
         return paymentEntry;
     }
 
-   private Payment convertToEntity(PaymentEntry paymentEntry) throws EntityNotFoundException {
- 
-         Payment payment = new Payment();
- 
-         if(Objects.nonNull(paymentEntry.getPaymentId())) {
-             payment.setId(Long.valueOf(paymentEntry.getPaymentId()));
-         }
-         if(Objects.nonNull(paymentEntry.getPayeeId())) {
-             payment.setPayeeId(paymentEntry.getPayeeId());
-         }
-         if(Objects.nonNull(paymentEntry.getAmount())) {
-             payment.setAmount(paymentEntry.getAmount());
-         }
-         if(Objects.nonNull(paymentEntry.getPayeeType())) {
-             payment.setPayeeType(paymentEntry.getPayeeType().name());
-         }
-         if(Objects.nonNull(paymentEntry.getPaymentDate())) {
-             payment.setPaymentDate(paymentEntry.getPaymentDate());
-         }
-         if(Objects.nonNull(paymentEntry.getStatus())) {
-             payment.setStatus(paymentEntry.getStatus().name());
-         }
-         if(Objects.nonNull(paymentEntry.getPaymentType())) {
-             payment.setPaymentType(paymentEntry.getPaymentType().name());
-         }
-         if (Objects.nonNull(paymentEntry.getStudioId())) {
-             StudioEntry entry = studioManager.getStudioById(paymentEntry.getStudioId());
-             payment.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
-         }
- 
-         return payment;
-     }
+    private Payment convertToEntity(PaymentEntry paymentEntry, Payment existingPayment) throws EntityNotFoundException {
+
+        Payment payment = (existingPayment != null) ? existingPayment : new Payment();
+
+        if (Objects.nonNull(paymentEntry.getPaymentId())) {
+            payment.setId(Long.valueOf(paymentEntry.getPaymentId()));
+        }
+        if (Objects.nonNull(paymentEntry.getPayeeId())) {
+            payment.setPayeeId(paymentEntry.getPayeeId());
+        }
+        if (Objects.nonNull(paymentEntry.getAmount())) {
+            payment.setAmount(paymentEntry.getAmount());
+        }
+        if (Objects.nonNull(paymentEntry.getPayeeType())) {
+            payment.setPayeeType(paymentEntry.getPayeeType().name());
+        }
+        if (Objects.nonNull(paymentEntry.getPaymentDate())) {
+            payment.setPaymentDate(paymentEntry.getPaymentDate());
+        }
+        if (Objects.nonNull(paymentEntry.getStatus())) {
+            payment.setStatus(paymentEntry.getStatus().name());
+        }
+        if (Objects.nonNull(paymentEntry.getPaymentType())) {
+            payment.setPaymentType(paymentEntry.getPaymentType().name());
+        }
+        if (Objects.nonNull(paymentEntry.getStudioId())) {
+            StudioEntry entry = studioManager.getStudioById(paymentEntry.getStudioId());
+            payment.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
+        }
+
+        return payment;
+    }
 
     @Override
     public Long getPaymentCountByStudioId(Long studioId) {

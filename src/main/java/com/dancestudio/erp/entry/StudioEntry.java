@@ -13,4 +13,6 @@ public class StudioEntry {
     private String logo;
     private Boolean enabled;
     private String contactDetails;
+
+    private SubscriptionPlanEntry subscriptionPlanEntry;
 }
