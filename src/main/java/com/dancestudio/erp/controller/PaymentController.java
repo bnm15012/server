@@ -21,14 +21,12 @@ public class PaymentController {
     }
 
     @PutMapping("/update/{paymentId}")
-    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable Long paymentId,
-            @RequestBody PaymentEntry paymentEntry) {
+    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable Long paymentId, @RequestBody PaymentEntry paymentEntry) {
         return paymentService.updatePayment(paymentId, paymentEntry);
     }
 
     @PutMapping("/updateStatus/{paymentId}")
-    public ResponseEntity<PaymentResponse> updatePaymentStatus(@PathVariable Long paymentId,
-            @PathVariable PaymentStatus status) {
+    public ResponseEntity<PaymentResponse> updatePaymentStatus(@PathVariable Long paymentId, @PathVariable PaymentStatus status) {
         return paymentService.updatePaymentStatus(paymentId, status);
     }
 
@@ -43,9 +41,7 @@ public class PaymentController {
     }
 
     @GetMapping("/getAllPayments/{studioId}")
-    public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long studioId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "-1") int size) {
+    public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long studioId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "-1") int size) {
         return paymentService.getAllPayments(studioId, page, size);
     }
 }
