@@ -14,8 +14,13 @@ import com.dancestudio.erp.repository.BookingRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -68,6 +73,35 @@ public class BookingManagerImpl implements BookingManager {
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
         return convertToEntry(booking);
+    }
+
+    @Override
+    public Long countBookingsByStudioId(Long studioId) {
+        return bookingRepository.countBookingsByStudioId(studioId);
+    }
+
+    @Override
+    public Long countBookingsByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth) {
+        return bookingRepository.countBookingsByStudioIdAndMonthLong(studioId, startMonth, endMonth);
+    }
+
+    @Override
+    public List<BookingEntry> getAllBookings(Long studioId, int page, int size, Long startMonth, Long endMonth) throws EntityNotFoundException {
+        Page<Booking> entries;
+        Pageable pageable = PageRequest.of(page, size);
+        if (startMonth.equals(0L) || endMonth.equals(0L)) {
+            entries = bookingRepository.findBookingsByStudioId(studioId, pageable);
+        } else {
+            entries = bookingRepository.findAllByStudioId(studioId, startMonth, endMonth, pageable);
+        }
+
+        List<BookingEntry> bookingEntries = new ArrayList<>();
+        for (Booking entry : entries) {
+            BookingEntry bookingEntry = convertToEntry(entry);
+            bookingEntries.add(bookingEntry);
+        }
+
+        return bookingEntries;
     }
 
     public BookingEntry convertToEntry(Booking booking) throws EntityNotFoundException {

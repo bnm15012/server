@@ -14,4 +14,6 @@ public interface ClientService {
 
     ResponseEntity<ClientResponse> getClientById(Long clientId);
 
+    ResponseEntity<ClientResponse> getAllClients(Long studioId, int page, int size, Long startMonth, Long endMonth);
+
 }

@@ -14,4 +14,6 @@ public interface BookingService {
 
     ResponseEntity<BookingResponse> getBookingById(Long bookingId);
 
+    ResponseEntity<BookingResponse> getAllBookings(Long studioId, int page, int size, Long startMonth, Long endMonth);
+
 }

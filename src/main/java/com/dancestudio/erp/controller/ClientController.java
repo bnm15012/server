@@ -34,4 +34,14 @@ public class ClientController {
         return clientService.getClientById(clientId);
     }
 
+    @GetMapping("/getAllClients/{studioId}/{startMonth}/{endMonth}")
+    public ResponseEntity<ClientResponse> getAllClients(
+            @PathVariable Long studioId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @PathVariable Long startMonth,
+            @PathVariable Long endMonth) {
+        return clientService.getAllClients(studioId, page, size, startMonth, endMonth);
+    }
+
 }

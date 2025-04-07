@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
-
 @Setter(onMethod = @__({@Autowired}))
 @Component
 public class StudioServiceImpl implements StudioService {
@@ -114,7 +112,7 @@ public class StudioServiceImpl implements StudioService {
         trialPlan.setSubscriptionPlan(SubscriptionType.TRIAL);
         trialPlan.setStudioId(studioId);
         trialPlan.setStatus(SubscriptionStatus.ACTIVE);
-        trialPlan.setOrderId("TRIAL-" + UUID.randomUUID());
+        trialPlan.setOrderId("TRIAL-" + UUID.randomUUID().toString().replaceAll("-", "").substring(0, 6));
         trialPlan.setPrice(0.0);
 
         return subscriptionPlanManager.addSubscriptionPlan(trialPlan);

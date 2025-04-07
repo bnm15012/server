@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
 
 @Setter(onMethod = @__({@Autowired}))
 @Component
@@ -83,6 +84,25 @@ public class ClientServiceImpl implements ClientService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ClientResponse> getAllClients(Long studioId, int page, int size, Long startMonth, Long endMonth) {
+        ClientResponse response = new ClientResponse();
+
+        try {
+            List<ClientEntry> entries = clientManager.getAllClients(studioId, page, size, startMonth, endMonth);
+
+            long clientCount = (startMonth.equals(0L) || endMonth.equals(0L))
+                    ? clientManager.countClientsByStudioId(studioId)
+                    : clientManager.countClientsByStudioIdAndMonth(studioId, startMonth, endMonth);
+            response.setData(entries);
+            response.setStatus(new StatusResponse(1, "Clients retrieved successfully", StatusResponse.Type.SUCCESS, (int) clientCount));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

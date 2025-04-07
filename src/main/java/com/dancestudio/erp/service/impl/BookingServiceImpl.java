@@ -1,8 +1,10 @@
 package com.dancestudio.erp.service.impl;
 
 import com.dancestudio.erp.entry.BookingEntry;
+import com.dancestudio.erp.entry.BookingEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BookingManager;
+import com.dancestudio.erp.response.BookingResponse;
 import com.dancestudio.erp.response.BookingResponse;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.service.BookingService;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
 
 @Setter(onMethod = @__({@Autowired}))
 @Component
@@ -83,6 +86,25 @@ public class BookingServiceImpl implements BookingService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
+    public ResponseEntity<BookingResponse> getAllBookings(Long studioId, int page, int size, Long startMonth, Long endMonth) {
+        BookingResponse response = new BookingResponse();
+
+        try {
+            List<BookingEntry> entries = bookingManager.getAllBookings(studioId, page, size, startMonth, endMonth);
+
+            long bookingCount = (startMonth.equals(0L) || endMonth.equals(0L))
+                    ? bookingManager.countBookingsByStudioId(studioId)
+                    : bookingManager.countBookingsByStudioIdAndMonth(studioId, startMonth, endMonth);
+            response.setData(entries);
+            response.setStatus(new StatusResponse(1, "Bookings retrieved successfully", StatusResponse.Type.SUCCESS, (int) bookingCount));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

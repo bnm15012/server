@@ -11,8 +11,13 @@ import com.dancestudio.erp.repository.ClientRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -64,6 +69,35 @@ public class ClientManagerImpl implements ClientManager {
                 .orElseThrow(() -> new EntityNotFoundException("Client not found"));
 
         return convertToEntry(client);
+    }
+
+    @Override
+    public Long countClientsByStudioId(Long studioId) {
+        return clientRepository.countClientsByStudioId(studioId);
+    }
+
+    @Override
+    public Long countClientsByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth) {
+        return clientRepository.countClientsByStudioIdAndMonthLong(studioId, startMonth, endMonth);
+    }
+
+    @Override
+    public List<ClientEntry> getAllClients(Long studioId, int page, int size, Long startMonth, Long endMonth) throws EntityNotFoundException {
+        Page<Client> entries;
+        Pageable pageable = PageRequest.of(page, size);
+        if (startMonth.equals(0L) || endMonth.equals(0L)) {
+            entries = clientRepository.findClientsByStudioId(studioId, pageable);
+        } else {
+            entries = clientRepository.findAllByStudioId(studioId, startMonth, endMonth, pageable);
+        }
+
+        List<ClientEntry> clientEntries = new ArrayList<>();
+        for (Client entry : entries) {
+            ClientEntry clientEntry = convertToEntry(entry);
+            clientEntries.add(clientEntry);
+        }
+
+        return clientEntries;
     }
 
     public ClientEntry convertToEntry(Client client) throws EntityNotFoundException {
