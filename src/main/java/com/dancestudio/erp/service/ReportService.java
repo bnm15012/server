@@ -5,5 +5,8 @@ import org.springframework.http.ResponseEntity;
 
 public interface ReportService {
 
-    ResponseEntity<ReportResponse> generateSalesReport(Long year, Long studioId);
+    ResponseEntity<ReportResponse> getAnalysisReport(Long year, Long studioId);
+
+    ResponseEntity<ReportResponse> getReports(String startDate, String endDate);
+
 }

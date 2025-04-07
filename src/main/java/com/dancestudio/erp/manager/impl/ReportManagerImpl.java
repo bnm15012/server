@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -23,7 +24,13 @@ public class ReportManagerImpl implements ReportManager {
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
 
 
-    public List<MonthlyReportEntry> generateSalesReport(Long year, Long studioId) {
-        return studentActivityAssignmentManager.calculateSalesReport(year, studioId);
+    public List<MonthlyReportEntry> getAnalysisReport(Long year, Long studioId) {
+        return studentActivityAssignmentManager.getAnalysisReport(year, studioId);
+    }
+
+    @Override
+    public List<ReportEntry> getReports(LocalDate startDate, LocalDate endDate) {
+//        return reportRepository.findReportsByDateRange(startDate, endDate);
+        return null;
     }
 }

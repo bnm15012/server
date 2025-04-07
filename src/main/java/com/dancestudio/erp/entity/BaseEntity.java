@@ -19,7 +19,7 @@ public abstract class BaseEntity {
     @Column(name = "id", updatable = false)
     protected Long id;
 
-    @Column(name = "created_by", updatable = false, length = 50)
+    @Column(name = "created_by", updatable = false, columnDefinition = "VARCHAR(50) DEFAULT 'system'", length = 50)
     protected String createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)

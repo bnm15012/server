@@ -17,3 +17,7 @@ VALUES
 ('system', '2024-11-10 01:04:39', '2024-11-10 01:04:39', '0', 'Hi {studio_name},\n\nYour details have been updated. Please check the dashboard to view the changes.\n\nBest regards,\nBook & Manage Team', 'UPDATE_STUDIO_EMAIL', 'Updated Studio Details', 'EMAIL'),
 ('system', '2024-11-10 02:23:35', '2024-11-10 02:23:35', '0', 'Dear {student_name},\n\nYour registration has been completed! We are thrilled to welcome you to {studio_name}.\n\nIf you have any questions or need assistance, please don’t hesitate to reach out to us. We’re here to help!\n\nLooking forward to seeing you in our classes!\n\nBest regards,\n{studio_name} Team', 'NEW_STUDENT_EMAIL', 'Welcome to Book & Manage !!', 'EMAIL'),
 ('system', '2024-11-14 02:22:10', '2024-11-14 02:22:10', '0', 'Dear {student_name},\n\nThis is a gentle reminder that your subscription is due for renewal. Please renew your {activity_type} membership to continue enjoying our services.\n\nBest regards,\n{studio_name} Team', 'SUBSCRIPTION_RENEWAL_REMINDER', 'Subscription Renewal Reminder', 'EMAIL');
+
+
+wget https://book-and-manage.s3.ap-south-1.amazonaws.com/studio_backend-0.0.1-SNAPSHOT.jar
+nohup java -jar studio_backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > app.log &

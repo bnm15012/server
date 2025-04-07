@@ -128,6 +128,34 @@ public class ConvertToEntryUtil {
         return studio;
     }
 
+    public static Client convertToEntity(ClientEntry clientEntry, Client existingClient) {
+        Client client = (existingClient != null) ? existingClient : new Client();
+
+        if (Objects.nonNull(clientEntry.getId())) {
+            client.setId(clientEntry.getId());
+        }
+        if (Objects.nonNull(clientEntry.getGroupName())) {
+            client.setGroupName(clientEntry.getGroupName());
+        }
+        if (Objects.nonNull(clientEntry.getPocName())) {
+            client.setPocName(clientEntry.getPocName());
+        }
+        if (Objects.nonNull(clientEntry.getPocPhone())) {
+            client.setPocPhone(clientEntry.getPocPhone());
+        }
+        if (Objects.nonNull(clientEntry.getPocEmail())) {
+            client.setPocEmail(clientEntry.getPocEmail());
+        }
+        if (Objects.nonNull(clientEntry.getClientType())) {
+            client.setClientType(clientEntry.getClientType().name());
+        }
+        if (Objects.nonNull(clientEntry.getNotes())) {
+            client.setNotes(clientEntry.getNotes());
+        }
+
+        return client;
+    }
+
     public static BankAccountEntry convertToEntry(BankAccount bankAccount) {
 
         BankAccountEntry bankAccountEntry = new BankAccountEntry();

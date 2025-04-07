@@ -138,8 +138,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     @SneakyThrows
     @Override
-    public List<MonthlyReportEntry> calculateSalesReport(Long year, Long studioId) {
-        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository.calculateSalesReport(Math.toIntExact(year), studioId);
+    public List<MonthlyReportEntry> getAnalysisReport(Long year, Long studioId) {
+        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository.getAnalysisReport(Math.toIntExact(year), studioId);
         for (int month = 1; month <= 12; month++) {
             processMonthlyReport(reportEntries, month, year, studioId);
         }

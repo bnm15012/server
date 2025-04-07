@@ -30,6 +30,6 @@ public interface StudentActivityAssignmentRepository extends JpaRepository<Stude
 
     @Query("SELECT new com.dancestudio.erp.entry.MonthlyReportEntry(MONTH(s.registrationDate), SUM(s.activityAmount)) FROM StudentActivityAssignment s " +
           "WHERE YEAR(s.registrationDate) = :year AND s.student.studio.id = :studioId GROUP BY MONTH(s.registrationDate)")
-    List<MonthlyReportEntry> calculateSalesReport(@Param("year") int year, @Param("studioId") Long studioId);
+    List<MonthlyReportEntry> getAnalysisReport(@Param("year") int year, @Param("studioId") Long studioId);
 
 }
