@@ -23,5 +23,5 @@ public interface StudentActivityAssignmentManager {
 
     List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) throws EntityNotFoundException;
 
-    List<MonthlyReportEntry> calculateSalesReport(Long year, Long studioId);
+    List<MonthlyReportEntry> getAnalysisReport(Long year, Long studioId);
 }

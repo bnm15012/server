@@ -36,9 +36,14 @@ public class MiscellaneousController {
         return imageService.uploadImage(entityType, file);
     }
 
-    @GetMapping("reports/{year}/{studioId}")
-    public ResponseEntity<ReportResponse> generateSalesReport(@PathVariable Long year, @PathVariable Long studioId) {
-        return reportService.generateSalesReport(year, studioId);
+    @GetMapping("analysis/{year}/{studioId}")
+    public ResponseEntity<ReportResponse> getAnalysisReport(@PathVariable Long year, @PathVariable Long studioId) {
+        return reportService.getAnalysisReport(year, studioId);
+    }
+
+    @GetMapping("reports")
+    public ResponseEntity<ReportResponse> getReports(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
+        return reportService.getReports(startDate, endDate);
     }
 
     @PostMapping("password/reset")

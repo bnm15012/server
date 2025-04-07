@@ -97,6 +97,16 @@ public class ExpenseManagerImpl implements ExpenseManager {
         return expenseEntry;
     }
 
+    @Override
+    public Long countExpensesByStudioId(Long studioId) {
+        return expenseRepository.countExpensesByStudioId(studioId);
+    }
+
+    @Override
+    public Long countExpensesByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth) {
+        return expenseRepository.countExpensesByStudioIdAndMonthLong(studioId, startMonth, endMonth);
+    }
+
     private Expense convertToEntity(ExpenseEntry expenseEntry, Expense existingExpense) throws EntityNotFoundException {
         Expense expense = (existingExpense != null) ? existingExpense : new Expense();
 
@@ -121,15 +131,5 @@ public class ExpenseManagerImpl implements ExpenseManager {
         }
 
         return expense;
-    }
-
-    @Override
-    public Long countExpensesByStudioId(Long studioId) {
-        return expenseRepository.countExpensesByStudioId(studioId);
-    }
-
-    @Override
-    public Long countExpensesByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth) {
-        return expenseRepository.countExpensesByStudioIdAndMonthLong(studioId, startMonth, endMonth);
     }
 }

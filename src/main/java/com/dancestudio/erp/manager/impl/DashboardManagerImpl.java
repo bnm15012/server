@@ -39,7 +39,7 @@ public class DashboardManagerImpl implements DashboardManager {
         entry.setTotalInstructors(instructorRepository.totalInstructorsByStudioId(studioId));
         entry.setTotalActiveMemberships(activityAssignmentRepository.totalStudentActiveMembershipByStudioId(studioId));
 
-        List<MonthlyReportEntry> monthlyReportEntries = studentActivityAssignmentManager.calculateSalesReport((long) LocalDate.now().getYear(), studioId);
+        List<MonthlyReportEntry> monthlyReportEntries = studentActivityAssignmentManager.getAnalysisReport((long) LocalDate.now().getYear(), studioId);
         int lastMonth = LocalDate.now().minusMonths(1).getMonthValue();
 
         monthlyReportEntries.stream()
