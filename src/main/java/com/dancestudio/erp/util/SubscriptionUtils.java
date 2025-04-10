@@ -1,14 +1,14 @@
 package com.dancestudio.erp.util;
 
+import com.dancestudio.erp.entity.Subscription;
+import com.dancestudio.erp.enums.SubscriptionType;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-import com.dancestudio.erp.entity.SubscriptionPlan;
-import com.dancestudio.erp.enums.SubscriptionType;
-
 public class SubscriptionUtils {
-    public static void setSubscriptionDates(SubscriptionPlan subscriptionPlan, SubscriptionType subscriptionType) {
+    public static void setSubscriptionDates(Subscription subscription, SubscriptionType subscriptionType) {
         LocalDate startLocalDate = LocalDate.now();  // Current date
         LocalDate endLocalDate;
 
@@ -37,7 +37,7 @@ public class SubscriptionUtils {
         Date endDate = Date.from(endLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
         // Set the values in the subscription plan
-        subscriptionPlan.setStartDate(startDate);
-        subscriptionPlan.setEndDate(endDate);
+        subscription.setStartDate(startDate);
+        subscription.setEndDate(endDate);
     }
 }

@@ -1,7 +1,5 @@
 package com.dancestudio.erp.manager.impl;
 
-import com.dancestudio.erp.entity.Expense;
-import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entity.Student;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.*;
@@ -11,6 +9,7 @@ import com.dancestudio.erp.enums.MembershipType;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
+import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.manager.StudentActivityAssignmentManager;
 import com.dancestudio.erp.repository.ExpenseRepository;
 import com.dancestudio.erp.repository.PaymentRepository;
@@ -18,10 +17,7 @@ import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.repository.StudentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
-
 import lombok.SneakyThrows;
-import com.dancestudio.erp.util.DateUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +32,9 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     @Autowired
     private ActivityManager activityManager;
+
+    @Autowired
+    private PaymentManager paymentManager;
 
     @Autowired
     private StudentRepository studentRepository;
@@ -53,8 +52,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry addStudentActivityAssignment(
-            StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException {
+    public StudentActivityAssignmentEntry addStudentActivityAssignment(StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException {
         studentRepository.findById(studentActivityAssignmentEntry.getStudentId())
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
@@ -63,6 +61,11 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         studentStudentActivityAssignmentAssignment = studentActivityAssignmentRepository
                 .save(studentStudentActivityAssignmentAssignment);
 
+        try {
+            paymentManager.addPayment(studentActivityAssignmentEntry.getPaymentEntry());
+        } catch (Exception ex) {
+            throw new EntityNotFoundException("Failed to add payment details");
+        }
         return convertToEntry(studentStudentActivityAssignmentAssignment);
     }
 

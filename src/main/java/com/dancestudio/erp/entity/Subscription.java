@@ -1,5 +1,6 @@
 package com.dancestudio.erp.entity;
 
+import com.dancestudio.erp.util.DateUtil;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -7,12 +8,10 @@ import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.dancestudio.erp.util.DateUtil;
-
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class SubscriptionPlan extends BaseEntity {
+public class Subscription extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "studio_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_subscription_studio_id"))

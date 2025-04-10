@@ -20,4 +20,7 @@ public interface ClientManager {
     Long countClientsByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth);
 
     List<ClientEntry> getAllClients(Long studioId, int page, int size, Long startMonth, Long endMonth) throws EntityNotFoundException;
+
+    List<ClientEntry> searchClientsByName(String clientName) throws EntityNotFoundException;
+
 }

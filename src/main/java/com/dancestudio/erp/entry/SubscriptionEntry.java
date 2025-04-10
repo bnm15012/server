@@ -7,7 +7,8 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class SubscriptionPlanEntry {
+public class SubscriptionEntry {
+
     private Long planId;
     private Long studioId;
     private SubscriptionType subscriptionPlan; // e.g., "Monthly", "Yearly", "Half-Yearly"

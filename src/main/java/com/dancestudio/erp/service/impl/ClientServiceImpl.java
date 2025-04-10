@@ -106,4 +106,22 @@ public class ClientServiceImpl implements ClientService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @Override
+    public ResponseEntity<ClientResponse> searchClientsByName(String clientName) {
+        ClientResponse response = new ClientResponse();
+        try {
+            List<ClientEntry> clients = clientManager.searchClientsByName(clientName);
+            response.setData(clients);
+            response.setStatus(new StatusResponse(1, "Client retrieved successfully", StatusResponse.Type.SUCCESS, 1));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (EntityNotFoundException e) {
+            response.setData(Collections.emptyList());
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

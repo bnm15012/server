@@ -14,5 +14,5 @@ public class StudioEntry {
     private Boolean enabled;
     private String contactDetails;
 
-    private SubscriptionPlanEntry subscriptionPlanEntry;
+    private SubscriptionEntry subscriptionEntry;
 }

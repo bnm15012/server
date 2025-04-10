@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
     @Query("SELECT s FROM Client s WHERE s.studio.id = :studioId and month(s.createdOn) >= :startMonth and month(s.createdOn) <= :endMonth")
@@ -21,5 +23,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     @Query("SELECT COUNT(s) FROM Client s WHERE s.studio.id = :studioId and month(s.createdOn) >= :startMonth and month(s.createdOn) <= :endMonth")
     Long countClientsByStudioIdAndMonthLong(@Param("studioId") Long studioId, @Param("startMonth") Long startMonth, @Param("endMonth") Long endMonth);
 
+    List<Client> findByGroupNameContainingIgnoreCase(String groupName);
 
 }

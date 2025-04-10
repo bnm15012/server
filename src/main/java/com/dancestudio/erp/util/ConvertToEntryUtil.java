@@ -5,7 +5,7 @@ import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.*;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.impl.StudioManagerImpl;
-import com.dancestudio.erp.manager.impl.SubscriptionPlanManagerImpl;
+import com.dancestudio.erp.manager.impl.SubscriptionManagerImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,10 +47,10 @@ public class ConvertToEntryUtil {
             StudioEntry studioEntry = studioManagerImpl.getStudioById(user.getStudio().getId());
             userEntry.setStudioEntry(studioEntry);
 
-            SubscriptionPlanManagerImpl subscriptionPlanManagerImpl = applicationContext.getBean(SubscriptionPlanManagerImpl.class);
-            SubscriptionPlanEntry subscriptionPlanEntry = subscriptionPlanManagerImpl.getSubscriptionPlanByStudioId(user.getStudio().getId());
+            SubscriptionManagerImpl subscriptionManagerImpl = applicationContext.getBean(SubscriptionManagerImpl.class);
+            SubscriptionEntry subscriptionEntry = subscriptionManagerImpl.getSubscriptionPlanByStudioId(user.getStudio().getId());
 
-            userEntry.setSubscriptionPlanEntry(subscriptionPlanEntry);
+            userEntry.setSubscriptionEntry(subscriptionEntry);
         }
         return userEntry;
     }

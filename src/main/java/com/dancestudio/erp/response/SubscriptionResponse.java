@@ -1,6 +1,6 @@
 package com.dancestudio.erp.response;
 
-import com.dancestudio.erp.entry.SubscriptionPlanEntry;
+import com.dancestudio.erp.entry.SubscriptionEntry;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +13,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SubscriptionPlanResponse extends AbstractResponse {
-    private List<SubscriptionPlanEntry> data;
+public class SubscriptionResponse extends AbstractResponse {
+    private List<SubscriptionEntry> data;
 }

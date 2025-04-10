@@ -16,4 +16,6 @@ public interface ClientService {
 
     ResponseEntity<ClientResponse> getAllClients(Long studioId, int page, int size, Long startMonth, Long endMonth);
 
+    ResponseEntity<ClientResponse> searchClientsByName(String clientName);
+
 }

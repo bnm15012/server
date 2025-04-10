@@ -1,6 +1,5 @@
 package com.dancestudio.erp.entry;
 
-import com.dancestudio.erp.enums.ActivityType;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.enums.MembershipType;
 import lombok.Data;
@@ -19,5 +18,6 @@ public class StudentActivityAssignmentEntry {
     private Double activityAmount;
     private MembershipStatus membershipStatus = MembershipStatus.INACTIVE;
 
+    private PaymentEntry paymentEntry;
     private Long studentId;
 }

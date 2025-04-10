@@ -1,7 +1,7 @@
 package com.dancestudio.erp.response;
 
-import com.dancestudio.erp.entry.StudioEntry;
-import com.dancestudio.erp.entry.SubscriptionEntry;
+
+import com.dancestudio.erp.entry.PlanEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,9 +13,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudioResponse extends AbstractResponse {
-
-    private List<StudioEntry> data;
-    private SubscriptionEntry subscriptionEntry;
-
+public class PlanResponse extends AbstractResponse {
+    private List<PlanEntry> data;
 }

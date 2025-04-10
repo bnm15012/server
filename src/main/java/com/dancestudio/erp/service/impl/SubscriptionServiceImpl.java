@@ -1,33 +1,31 @@
 package com.dancestudio.erp.service.impl;
 
-import java.util.Collections;
-import java.util.Objects;
-
+import com.dancestudio.erp.entry.SubscriptionEntry;
+import com.dancestudio.erp.manager.SubscriptionManager;
+import com.dancestudio.erp.response.StatusResponse;
+import com.dancestudio.erp.response.SubscriptionResponse;
+import com.dancestudio.erp.service.SubscriptionService;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.dancestudio.erp.entry.SubscriptionPlanEntry;
-import com.dancestudio.erp.manager.SubscriptionPlanManager;
-import com.dancestudio.erp.response.SubscriptionPlanResponse;
-import com.dancestudio.erp.response.StatusResponse;
-import com.dancestudio.erp.service.SubscriptionPlanService;
-
-import lombok.Setter;
+import java.util.Collections;
+import java.util.Objects;
 
 @Setter(onMethod = @__({ @Autowired }))
 @Component
-public class SubscriptionPlanServiceImpl implements SubscriptionPlanService {
+public class SubscriptionServiceImpl implements SubscriptionService {
 
-    private SubscriptionPlanManager subscriptionPlanManager;
+    private SubscriptionManager subscriptionManager;
 
     @Override
-    public ResponseEntity<SubscriptionPlanResponse> createOrder(SubscriptionPlanEntry SubscriptionPlanEntry) {
+    public ResponseEntity<SubscriptionResponse> createOrder(SubscriptionEntry subscriptionEntry) {
 
-        SubscriptionPlanResponse response = new SubscriptionPlanResponse();
+        SubscriptionResponse response = new SubscriptionResponse();
         try {
-            SubscriptionPlanEntry entry = subscriptionPlanManager.createOrder(SubscriptionPlanEntry);
+            SubscriptionEntry entry = subscriptionManager.createOrder(subscriptionEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Order created successfully", StatusResponse.Type.SUCCESS,
                     Objects.isNull(entry) ? 0 : 1));
@@ -39,10 +37,10 @@ public class SubscriptionPlanServiceImpl implements SubscriptionPlanService {
     }
 
     @Override
-    public ResponseEntity<SubscriptionPlanResponse> verifyPayment(String orderId, String paymentId, String signature) {
-        SubscriptionPlanResponse response = new SubscriptionPlanResponse();
+    public ResponseEntity<SubscriptionResponse> verifyPayment(String orderId, String paymentId, String signature) {
+        SubscriptionResponse response = new SubscriptionResponse();
         try {
-            SubscriptionPlanEntry entry = subscriptionPlanManager.verifyPayment(orderId, paymentId, signature);
+            SubscriptionEntry entry = subscriptionManager.verifyPayment(orderId, paymentId, signature);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Payment verified successfully", StatusResponse.Type.SUCCESS,
                     Objects.isNull(entry) ? 0 : 1));

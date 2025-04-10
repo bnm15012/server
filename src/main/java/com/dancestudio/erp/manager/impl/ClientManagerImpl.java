@@ -100,6 +100,16 @@ public class ClientManagerImpl implements ClientManager {
         return clientEntries;
     }
 
+    @Override
+    public List<ClientEntry> searchClientsByName(String clientName) throws EntityNotFoundException {
+        List<Client> clients = clientRepository.findByGroupNameContainingIgnoreCase(clientName);
+        List<ClientEntry> clientEntries = new ArrayList<>();
+        for (Client client : clients) {
+            clientEntries.add(convertToEntry(client));
+        }
+        return clientEntries;
+    }
+
     public ClientEntry convertToEntry(Client client) throws EntityNotFoundException {
         ClientEntry clientEntry = new ClientEntry();
 

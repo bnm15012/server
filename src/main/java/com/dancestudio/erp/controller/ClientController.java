@@ -44,4 +44,8 @@ public class ClientController {
         return clientService.getAllClients(studioId, page, size, startMonth, endMonth);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ClientResponse> searchClientsByName(@RequestParam String clientName) {
+        return clientService.searchClientsByName(clientName);
+    }
 }

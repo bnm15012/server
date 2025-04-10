@@ -62,7 +62,7 @@ public class UserManagerImpl implements UserManager {
 
         UserEntry entry = convertToEntry(user);
 
-        String token = jwtUtil.generateAuthToken(user.getEmail(),(entry.getSubscriptionPlanEntry() != null) ? entry.getSubscriptionPlanEntry().getEndDate() : null);
+        String token = jwtUtil.generateAuthToken(user.getEmail(),(entry.getSubscriptionEntry() != null) ? entry.getSubscriptionEntry().getEndDate() : null);
 
         entry.setToken(token);
         return entry;
