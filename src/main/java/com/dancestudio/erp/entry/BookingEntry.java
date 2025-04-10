@@ -4,7 +4,6 @@ import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
 import lombok.Data;
 
-import java.sql.Time;
 import java.util.Date;
 
 @Data
@@ -21,8 +20,8 @@ public class BookingEntry {
     private String notes;
     private Date bookingDate;
 
-    private Time startTime;
-    private Time endTime;
+    private Date startTime;
+    private Date endTime;
 
     private Date advanceDate;
 

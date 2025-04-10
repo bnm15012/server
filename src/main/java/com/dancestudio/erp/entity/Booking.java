@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.sql.Time;
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
@@ -43,10 +42,10 @@ public class Booking extends BaseEntity {
     private Date bookingDate;
 
     @Column(name = "start_time", nullable = false)
-    private Time startTime;
+    private Date startTime;
 
     @Column(name = "end_time", nullable = false)
-    private Time endTime;
+    private Date endTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "advance_date", nullable = false)

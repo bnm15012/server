@@ -20,4 +20,4 @@ VALUES
 
 
 wget https://book-and-manage.s3.ap-south-1.amazonaws.com/studio_backend-0.0.1-SNAPSHOT.jar
-nohup java -jar studio_backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > app.log &
+nohup java -Xms128m -Xmx256m -XX:+UseG1GC -Dspring.profiles.active=prod -jar studio_backend-0.0.1-SNAPSHOT.jar > app.log &
