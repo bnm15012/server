@@ -6,6 +6,7 @@ import com.dancestudio.erp.manager.PlanManager;
 import com.dancestudio.erp.response.PlanResponse;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.service.PlanService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class PlanServiceImpl implements PlanService {
             response.setStatus(new StatusResponse(1, "Plan added successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -89,11 +90,11 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public ResponseEntity<PlanResponse> getAllPlans() {
+    public ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request) {
         PlanResponse response = new PlanResponse();
 
         try {
-            List<PlanEntry> entries = planManager.getAllPlans();
+            List<PlanEntry> entries = planManager.getAllPlans(request);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Plans retrieved successfully", StatusResponse.Type.SUCCESS, (int) entries.size()));
             return ResponseEntity.status(HttpStatus.OK).body(response);

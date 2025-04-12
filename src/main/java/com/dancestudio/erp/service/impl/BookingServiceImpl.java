@@ -1,10 +1,8 @@
 package com.dancestudio.erp.service.impl;
 
 import com.dancestudio.erp.entry.BookingEntry;
-import com.dancestudio.erp.entry.BookingEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BookingManager;
-import com.dancestudio.erp.response.BookingResponse;
 import com.dancestudio.erp.response.BookingResponse;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.service.BookingService;
@@ -34,7 +32,7 @@ public class BookingServiceImpl implements BookingService {
             response.setStatus(new StatusResponse(1, "Booking added successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

@@ -29,7 +29,7 @@ public class StudentActivityAssignmentServiceImpl implements StudentActivityAssi
             StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.addStudentActivityAssignment(studentStudentActivityAssignmentAssignmentEntry);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Student Activity Added successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
@@ -45,7 +45,7 @@ public class StudentActivityAssignmentServiceImpl implements StudentActivityAssi
             StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.updateStudentActivityAssignment(studentStudentActivityAssignmentAssignmentId, studentStudentActivityAssignmentAssignmentEntry);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Student Activity Updated successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
@@ -76,7 +76,7 @@ public class StudentActivityAssignmentServiceImpl implements StudentActivityAssi
             StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.getStudentActivityAssignmentById(studentStudentActivityAssignmentAssignmentId);
 
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Fetched Student Activity successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
             response.setData(Collections.emptyList());

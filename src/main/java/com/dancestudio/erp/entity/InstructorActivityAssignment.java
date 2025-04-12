@@ -24,7 +24,7 @@ public class InstructorActivityAssignment extends BaseEntity {
     @Column(name = "start_date", nullable = false)
     private Date startDate;
 
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date")
     private Date endDate;
 
 }

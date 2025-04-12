@@ -7,6 +7,8 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.PlanManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.PlanRepository;
+import com.dancestudio.erp.util.GeoLocationUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +19,15 @@ import java.util.Objects;
 @Service
 public class PlanManagerImpl implements PlanManager {
     private final PlanRepository planRepository;
+    private final GeoLocationUtil geoLocationUtil;
 
     @Autowired
     private StudioManager studioManager;
 
     @Autowired
-    public PlanManagerImpl(PlanRepository planRepository) {
+    public PlanManagerImpl(PlanRepository planRepository, GeoLocationUtil geoLocationUtil) {
         this.planRepository = planRepository;
+        this.geoLocationUtil = geoLocationUtil;
     }
 
     @Override
@@ -58,8 +62,12 @@ public class PlanManagerImpl implements PlanManager {
     }
 
     @Override
-    public List<PlanEntry> getAllPlans() throws EntityNotFoundException {
-        List<Plan> plans = planRepository.findAll();
+    public List<PlanEntry> getAllPlans(HttpServletRequest request) throws EntityNotFoundException {
+
+        String ip = geoLocationUtil.extractClientIp(request);
+        String countryCode = geoLocationUtil.getCountryCode(ip);
+
+        List<Plan> plans = planRepository.findByCountryCode(countryCode);
         List<PlanEntry> planEntries = new ArrayList<>();
 
         for (Plan plan : plans) {
@@ -74,7 +82,17 @@ public class PlanManagerImpl implements PlanManager {
         PlanEntry planEntry = new PlanEntry();
         planEntry.setId(plan.getId());
         planEntry.setAmount(plan.getAmount());
-        planEntry.setDescription(plan.getDescription());
+        if (Objects.nonNull(plan.getEnabledFeatures()) && !plan.getEnabledFeatures().isEmpty()) {
+            planEntry.setEnabledFeatures(new ArrayList<>(List.of(plan.getEnabledFeatures().split(","))));
+        } else {
+            planEntry.setEnabledFeatures(new ArrayList<>());
+        }
+
+        if (Objects.nonNull(plan.getDisabledFeatures()) && !plan.getDisabledFeatures().isEmpty()) {
+            planEntry.setDisabledFeatures(new ArrayList<>(List.of(plan.getDisabledFeatures().split(","))));
+        } else {
+            planEntry.setDisabledFeatures(new ArrayList<>());
+        }
         planEntry.setPlanType(MembershipType.valueOf(plan.getPlanType()));
         return planEntry;
     }
@@ -88,11 +106,17 @@ public class PlanManagerImpl implements PlanManager {
         if (Objects.nonNull(planEntry.getAmount())) {
             plan.setAmount(planEntry.getAmount());
         }
-        if (Objects.nonNull(planEntry.getDescription())) {
-            plan.setDescription(planEntry.getDescription());
+        if (Objects.nonNull(planEntry.getEnabledFeatures())) {
+            plan.setEnabledFeatures(String.join(",", planEntry.getEnabledFeatures()));
+        }
+        if (Objects.nonNull(planEntry.getDisabledFeatures())) {
+            plan.setDisabledFeatures(String.join(",", planEntry.getDisabledFeatures()));
         }
         if (Objects.nonNull(planEntry.getPlanType())) {
             plan.setPlanType(planEntry.getPlanType().name());
+        }
+        if (Objects.nonNull(planEntry.getCountryCode())) {
+            plan.setCountryCode(planEntry.getCountryCode());
         }
 
         return plan;

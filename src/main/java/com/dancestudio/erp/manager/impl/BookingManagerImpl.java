@@ -9,6 +9,7 @@ import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BookingManager;
 import com.dancestudio.erp.manager.ClientManager;
+import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.BookingRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
@@ -37,17 +38,43 @@ public class BookingManagerImpl implements BookingManager {
     private ClientManager clientManager;
 
     @Autowired
+    private PaymentManager paymentManager;
+
+
+    @Autowired
     public BookingManagerImpl(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
 
     @Override
     public BookingEntry addBooking(BookingEntry bookingEntry) throws EntityNotFoundException {
+        validateRequest(bookingEntry);
         studioManager.getStudioById(bookingEntry.getStudioId());
         clientManager.getClientById(bookingEntry.getClientId());
 
         Booking booking = convertToEntity(bookingEntry, null);
+
+        try {
+            paymentManager.addPayment(bookingEntry.getPaymentEntry());
+        } catch (Exception ex) {
+            throw new EntityNotFoundException("Failed to add payment details");
+        }
         return convertToEntry(bookingRepository.save(booking));
+    }
+
+    private void validateRequest(BookingEntry bookingEntry) {
+        if(Objects.isNull(bookingEntry.getBalanceAmount())) {
+            if (Objects.isNull(bookingEntry.getTotalAmount()) || bookingEntry.getTotalAmount() <= 0) {
+                throw new IllegalArgumentException("Total amount must be greater than zero");
+            }
+            if (Objects.isNull(bookingEntry.getAdvanceAmount()) || bookingEntry.getAdvanceAmount() <= 0) {
+                throw new IllegalArgumentException("Advance amount must be greater than zero");
+            }
+            if (!bookingEntry.getTotalAmount().equals(bookingEntry.getAdvanceAmount())) {
+                throw new IllegalArgumentException("Advance amount should be equal to total amount");
+            }
+
+        }
     }
 
     @Override

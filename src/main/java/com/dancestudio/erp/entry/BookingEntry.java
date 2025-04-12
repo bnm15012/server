@@ -30,4 +30,5 @@ public class BookingEntry {
     private Date finalPaymentDate;
     private PaymentType paymentMode;
 
+    private PaymentEntry paymentEntry;
 }

@@ -31,7 +31,7 @@ public class Booking extends BaseEntity {
     @Column(name = "advance_amount", nullable = false)
     private Double advanceAmount;
 
-    @Column(name = "balance_amount", nullable = false)
+    @Column(name = "balance_amount")
     private Double balanceAmount;
 
     @Column(name = "notes", columnDefinition = "TEXT")

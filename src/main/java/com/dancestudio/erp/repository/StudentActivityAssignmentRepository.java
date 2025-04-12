@@ -2,7 +2,6 @@ package com.dancestudio.erp.repository;
 
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.MonthlyReportEntry;
-import com.dancestudio.erp.entry.ReportEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,7 +24,7 @@ public interface StudentActivityAssignmentRepository extends JpaRepository<Stude
     @Query("SELECT a.student FROM StudentActivityAssignment a WHERE a.membershipEndDate <= :reminderDate")
     List<Long> findStudentIdsWithMembershipEndingOnDate(@Param("reminderDate") Date reminderDate);
 
-    @Query("SELECT COUNT(s) FROM StudentActivityAssignment s WHERE s.student.studio.id = :studioId AND CURRENT_DATE BETWEEN s.membershipStartDate AND s.membershipEndDate")
+    @Query("SELECT COUNT(s) FROM StudentActivityAssignment s WHERE s.student.studio.id = :studioId AND CURRENT_DATE >= DATE(s.membershipStartDate) AND CURRENT_DATE <= DATE(s.membershipEndDate)")
     long totalStudentActiveMembershipByStudioId(@Param("studioId") Long studioId);
 
     @Query("SELECT new com.dancestudio.erp.entry.MonthlyReportEntry(MONTH(s.registrationDate), SUM(s.activityAmount)) FROM StudentActivityAssignment s " +

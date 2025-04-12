@@ -2,6 +2,7 @@ package com.dancestudio.erp.service;
 
 import com.dancestudio.erp.entry.PlanEntry;
 import com.dancestudio.erp.response.PlanResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface PlanService {
@@ -14,5 +15,5 @@ public interface PlanService {
 
     ResponseEntity<PlanResponse> getPlanById(Long planId);
 
-    ResponseEntity<PlanResponse> getAllPlans();
+    ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request);
 }

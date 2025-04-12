@@ -103,7 +103,11 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         instructorActivityAssignmentEntry.setAssignedDate(instructorActivityAssignment.getAssignedDate());
         instructorActivityAssignmentEntry.setStartDate(instructorActivityAssignment.getStartDate());
         instructorActivityAssignmentEntry.setEndDate(instructorActivityAssignment.getEndDate());
-        instructorActivityAssignmentEntry.setMembershipStatus(instructorActivityAssignment.getEndDate().after(DateUtil.getCurrentDateUTC()) ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
+
+        instructorActivityAssignmentEntry.setMembershipStatus(
+                (instructorActivityAssignment.getEndDate() == null || instructorActivityAssignment.getEndDate().after(DateUtil.getCurrentDateUTC()))
+                        ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE
+        );
 
         if (Objects.nonNull(instructorActivityAssignment.getActivity())) {
             ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignment.getActivity().getId());

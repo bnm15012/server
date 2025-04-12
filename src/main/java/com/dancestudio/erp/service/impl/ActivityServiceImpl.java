@@ -33,7 +33,7 @@ public class ActivityServiceImpl implements ActivityService {
             response.setStatus(new StatusResponse(1, "Activity added successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

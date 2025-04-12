@@ -29,7 +29,7 @@ public class DashboardManagerImpl implements DashboardManager {
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
 
     @Autowired
-    private StudentActivityAssignmentRepository activityAssignmentRepository;
+    private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
 
     @Override
     public DashboardEntry getDashboardDetails(Long studioId, Long startMonth, Long endMonth) throws EntityNotFoundException {
@@ -37,7 +37,7 @@ public class DashboardManagerImpl implements DashboardManager {
 
         entry.setTotalStudents(studentRepository.totalStudentsByStudioId(studioId));
         entry.setTotalInstructors(instructorRepository.totalInstructorsByStudioId(studioId));
-        entry.setTotalActiveMemberships(activityAssignmentRepository.totalStudentActiveMembershipByStudioId(studioId));
+        entry.setTotalActiveMemberships(studentActivityAssignmentRepository.totalStudentActiveMembershipByStudioId(studioId));
 
         List<MonthlyReportEntry> monthlyReportEntries = studentActivityAssignmentManager.getAnalysisReport((long) LocalDate.now().getYear(), studioId);
         int lastMonth = LocalDate.now().minusMonths(1).getMonthValue();

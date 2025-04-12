@@ -31,6 +31,11 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     public ActivityEntry addActivity(ActivityEntry activityEntry) throws EntityNotFoundException {
+        activityRepository.findByActivityTypeAndStudioId(activityEntry.getActivityType().name(), activityEntry.getStudioId())
+                .ifPresent(existingActivity -> {
+                    throw new IllegalArgumentException("Given activity already exists in the studio.");
+                });
+
         Activity activity = ConvertToEntryUtil.convertToEntity(activityEntry, null);
         return ConvertToEntryUtil.convertToEntry(activityRepository.save(activity));
     }

@@ -3,6 +3,7 @@ package com.dancestudio.erp.controller;
 import com.dancestudio.erp.entry.PlanEntry;
 import com.dancestudio.erp.response.PlanResponse;
 import com.dancestudio.erp.service.PlanService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class PlanController {
     }
 
     @GetMapping("/getAllPlans")
-    public ResponseEntity<PlanResponse> getAllPlans() {
-        return planService.getAllPlans();
+    public ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request) {
+        return planService.getAllPlans(request);
     }
 }
