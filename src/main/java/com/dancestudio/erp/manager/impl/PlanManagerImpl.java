@@ -11,6 +11,7 @@ import com.dancestudio.erp.util.GeoLocationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,8 +69,11 @@ public class PlanManagerImpl implements PlanManager {
         String countryCode = geoLocationUtil.getCountryCode(ip);
 
         List<Plan> plans = planRepository.findByCountryCode(countryCode);
-        List<PlanEntry> planEntries = new ArrayList<>();
+        if(CollectionUtils.isEmpty(plans)) {
+            plans = planRepository.findByCountryCode("US");
+        }
 
+        List<PlanEntry> planEntries = new ArrayList<>();
         for (Plan plan : plans) {
             PlanEntry planEntry = convertToEntry(plan);
             planEntries.add(planEntry);

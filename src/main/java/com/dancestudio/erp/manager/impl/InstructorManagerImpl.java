@@ -128,17 +128,18 @@ public class InstructorManagerImpl implements InstructorManager {
         try {
              List<InstructorActivityAssignmentEntry> entries = instructorActivityAssignmentManager.getInstructorAssignmentsByInstructorId(instructor.getId());
              boolean isActive = false;
-             for (InstructorActivityAssignmentEntry entry : entries) {
-                 if (entry.getEndDate().after(DateUtil.getCurrentDateUTC())) {
+
+            instructorEntry.setAssignments(entries);
+            for (InstructorActivityAssignmentEntry entry : entries) {
+                 if (entry.getEndDate() == null || entry.getEndDate().after(DateUtil.getCurrentDateUTC())) {
                      isActive = true;
                      break;
                  }
              }
  
             instructorEntry.setInstructorStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
-            instructorEntry.setAssignments(entries);
         } catch (Exception ex) {
-            instructorEntry.setAssignments(null);
+            instructorEntry.setInstructorStatus(null);
         }
 
         try {

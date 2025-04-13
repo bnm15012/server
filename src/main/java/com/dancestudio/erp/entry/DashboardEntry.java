@@ -2,8 +2,6 @@ package com.dancestudio.erp.entry;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class DashboardEntry {
 
@@ -12,6 +10,7 @@ public class DashboardEntry {
     private Long totalActiveMemberships;
 
     private double lastMonthRevenue;
+    private double currentMonthRevenue;
 
     private Long totalLastMonthExpenseCount;
     private double totalLastMonthExpenseAmount;

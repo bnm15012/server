@@ -27,6 +27,7 @@ public class GeoLocationUtil {
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
                 String response = reader.readLine();
+                LOGGER.info("Get CountryCode Response : {}", response);
                 return (response == null || UNKNOWN_IP.equalsIgnoreCase(response)) ? DEFAULT_COUNTRY_CODE : response;
             }
         } catch (Exception e) {
@@ -38,8 +39,10 @@ public class GeoLocationUtil {
     public String extractClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.isEmpty() || UNKNOWN_IP.equalsIgnoreCase(ip)) {
+            LOGGER.info("Remote address : {}", request.getRemoteAddr());
             return request.getRemoteAddr();
         }
+        LOGGER.info("IP address : {}", ip);
         return ip.split(",")[0].trim();
     }
 }

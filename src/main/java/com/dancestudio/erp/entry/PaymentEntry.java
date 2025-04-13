@@ -19,4 +19,9 @@ public class PaymentEntry {
     private PaymentType paymentType;
     private String message;
     private Long studioId;
+
+    private StudentEntry studentEntry;
+    private ClientEntry clientEntry;
+    private InstructorEntry instructorEntry;
+
 }

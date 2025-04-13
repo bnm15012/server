@@ -1,21 +1,18 @@
 package com.dancestudio.erp.manager.impl;
 
-import com.dancestudio.erp.entry.StudioEntry;
-import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.StudioManager;
-import com.dancestudio.erp.util.ConvertToEntryUtil;
-
 import com.dancestudio.erp.entity.Payment;
-import com.dancestudio.erp.entry.PaymentEntry;
-import com.dancestudio.erp.entry.ReportEntry;
+import com.dancestudio.erp.entity.Student;
+import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
-import com.dancestudio.erp.manager.PaymentManager;
+import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.PaymentRepository;
-
+import com.dancestudio.erp.repository.StudentRepository;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,6 +31,12 @@ public class PaymentManagerImpl implements PaymentManager {
     private final PaymentRepository paymentRepository;
     @Autowired
     private StudioManager studioManager;
+    @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
+    private ClientManager clientManager;
+    @Autowired
+    private InstructorManager instructorManager;
 
     @Autowired
     public PaymentManagerImpl(PaymentRepository paymentRepository) {
@@ -46,7 +50,7 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public PaymentEntry updatePaymentStatus(Long paymentId, PaymentStatus status) {
+    public PaymentEntry updatePaymentStatus(Long paymentId, PaymentStatus status) throws EntityNotFoundException {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
@@ -55,7 +59,7 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public PaymentEntry getPaymentById(Long paymentId) {
+    public PaymentEntry getPaymentById(Long paymentId) throws EntityNotFoundException {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
         return convertToEntry(payment);
@@ -75,6 +79,7 @@ public class PaymentManagerImpl implements PaymentManager {
         paymentRepository.deleteById(paymentId);
     }
     
+    @SneakyThrows
     @Override
     public List<PaymentEntry> getAllPaymentsByStudio(Long studioId, int page, int size) {
         if (size == -1) {
@@ -97,9 +102,22 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     private PaymentEntry convertToEntry(Payment payment) {
-
         PaymentEntry paymentEntry = new PaymentEntry();
         paymentEntry.setPaymentId(String.valueOf(payment.getId()));
+
+        try {
+            if(PayeeType.STUDENT.name().equals(payment.getPayeeType())) {
+                Optional<Student> studentOptional = studentRepository.findById(payment.getPayeeId());
+                studentOptional.ifPresent(student -> paymentEntry.setStudentEntry(ConvertToEntryUtil.convertToEntry(student)));
+            } else if(PayeeType.CLIENT.name().equals(payment.getPayeeType())) {
+                paymentEntry.setClientEntry(clientManager.getClientById(payment.getPayeeId()));
+            } else if(PayeeType.INSTRUCTOR.name().equals(payment.getPayeeType())) {
+                paymentEntry.setInstructorEntry(instructorManager.getInstructorById(payment.getPayeeId()));
+            }
+        } catch (Exception ex) {
+            log.error("Error converting payment entry: {}", ex.getMessage());
+        }
+
         paymentEntry.setPayeeId(payment.getPayeeId());
         paymentEntry.setPayeeType(PayeeType.valueOf(payment.getPayeeType()));
         paymentEntry.setAmount(payment.getAmount());
@@ -117,9 +135,15 @@ public class PaymentManagerImpl implements PaymentManager {
         if (Objects.nonNull(paymentEntry.getPaymentId())) {
             payment.setId(Long.valueOf(paymentEntry.getPaymentId()));
         }
-        if (Objects.nonNull(paymentEntry.getPayeeId())) {
-            payment.setPayeeId(paymentEntry.getPayeeId());
+
+        if (Objects.nonNull(paymentEntry.getStudentEntry()) && Objects.nonNull(paymentEntry.getStudentEntry().getStudentId())) {
+            payment.setPayeeId(paymentEntry.getStudentEntry().getStudentId());
+        } else if (Objects.nonNull(paymentEntry.getClientEntry()) && Objects.nonNull(paymentEntry.getClientEntry().getId())) {
+            payment.setPayeeId(paymentEntry.getClientEntry().getId());
+        } else if (Objects.nonNull(paymentEntry.getInstructorEntry()) && Objects.nonNull(paymentEntry.getInstructorEntry().getInstructorId())) {
+            payment.setPayeeId(paymentEntry.getInstructorEntry().getInstructorId());
         }
+
         if (Objects.nonNull(paymentEntry.getAmount())) {
             payment.setAmount(paymentEntry.getAmount());
         }

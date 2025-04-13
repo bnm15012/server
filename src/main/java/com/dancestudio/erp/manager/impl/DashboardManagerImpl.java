@@ -47,6 +47,12 @@ public class DashboardManagerImpl implements DashboardManager {
                 .findFirst()
                 .ifPresent(reportEntry -> entry.setLastMonthRevenue(reportEntry.getRevenue()));
 
+        int currentMonth = LocalDate.now().getMonthValue();
+        monthlyReportEntries.stream()
+                .filter(reportEntry -> reportEntry.getMonth() == currentMonth)
+                .findFirst()
+                .ifPresent(reportEntry -> entry.setCurrentMonthRevenue(reportEntry.getRevenue()));
+
         processAmountCountEntries(entry, LocalDate.now().getMonthValue(), expenseRepository.countAndSumExpensesForCurrentAndLastMonth(studioId), true);
         processAmountCountEntries(entry, LocalDate.now().getMonthValue(), paymentRepository.countAndSumPaymentsForCurrentAndLastMonth(studioId), false);
 

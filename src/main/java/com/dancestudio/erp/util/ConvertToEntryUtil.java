@@ -284,4 +284,16 @@ public class ConvertToEntryUtil {
         return paymentEntry;
     }
 
+    public static StudentEntry convertToEntry(Student student) {
+
+        StudentEntry studentEntry = new StudentEntry();
+        studentEntry.setStudentId(student.getId());
+        studentEntry.setName(student.getName());
+        studentEntry.setPhone(student.getPhone());
+        studentEntry.setEmail(student.getEmail());
+        studentEntry.setImageUrl(student.getProfileImage());
+
+        return studentEntry;
+    }
+
 }

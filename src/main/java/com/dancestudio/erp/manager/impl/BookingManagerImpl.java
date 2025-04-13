@@ -50,7 +50,7 @@ public class BookingManagerImpl implements BookingManager {
     public BookingEntry addBooking(BookingEntry bookingEntry) throws EntityNotFoundException {
         validateRequest(bookingEntry);
         studioManager.getStudioById(bookingEntry.getStudioId());
-        clientManager.getClientById(bookingEntry.getClientId());
+        clientManager.getClientById(bookingEntry.getClientEntry().getId());
 
         Booking booking = convertToEntity(bookingEntry, null);
 
@@ -136,7 +136,6 @@ public class BookingManagerImpl implements BookingManager {
 
         bookingEntry.setId(booking.getId());
         bookingEntry.setStudioId(booking.getStudio().getId());
-        bookingEntry.setClientId(booking.getClient().getId());
         bookingEntry.setPurpose(booking.getPurpose());
         bookingEntry.setTotalAmount(booking.getTotalAmount());
         bookingEntry.setPaymentStatus(PaymentStatus.valueOf(booking.getPaymentStatus()));
@@ -151,6 +150,9 @@ public class BookingManagerImpl implements BookingManager {
         bookingEntry.setFinalPaymentDate(booking.getFinalPaymentDate());
         bookingEntry.setPaymentMode(PaymentType.valueOf(booking.getPaymentMode()));
 
+        ClientEntry clientEntry = clientManager.getClientById(booking.getClient().getId());
+        bookingEntry.setClientEntry(clientEntry);
+
         return bookingEntry;
     }
 
@@ -161,8 +163,8 @@ public class BookingManagerImpl implements BookingManager {
             StudioEntry studioEntry = studioManager.getStudioById(bookingEntry.getStudioId());
             booking.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
         }
-        if (Objects.nonNull(bookingEntry.getClientId())) {
-            ClientEntry clientEntry = clientManager.getClientById(bookingEntry.getClientId());
+        if (Objects.nonNull(bookingEntry.getClientEntry().getId())) {
+            ClientEntry clientEntry = clientManager.getClientById(bookingEntry.getClientEntry().getId());
             booking.setClient(ConvertToEntryUtil.convertToEntity(clientEntry, null));
         }
 
