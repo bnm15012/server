@@ -57,11 +57,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserResponse> updateUser(Long userId, UserEntry userEntry) {
+    public ResponseEntity<UserResponse> add(UserEntry userEntry) {
         UserResponse response = new UserResponse();
 
         try {
-            UserEntry entry = userManager.updateUser(userId, userEntry);
+            UserEntry entry = userManager.add(userEntry);
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, "User added successfully", StatusResponse.Type.SUCCESS, 1));
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
+    public ResponseEntity<UserResponse> update(Long userId, UserEntry userEntry) {
+        UserResponse response = new UserResponse();
+
+        try {
+            UserEntry entry = userManager.update(userId, userEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "User updated successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);
@@ -75,29 +90,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserResponse> deleteUser(Long userId) {
-        UserResponse response = new UserResponse();
+    public ResponseEntity<Void> delete(Long userId) {
         try {
-            Boolean isDeleted = userManager.deleteUser(userId);
-            if (isDeleted) {
-                response.setStatus(new StatusResponse(1, "User removed successfully", StatusResponse.Type.SUCCESS));
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
-            } else {
-                response.setStatus(new StatusResponse(0, "User not found", StatusResponse.Type.ERROR));
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-        } catch (Exception ex) {
-            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            userManager.delete(userId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @Override
-    public ResponseEntity<UserResponse> getUserById(Long userId) {
+    public ResponseEntity<UserResponse> get(Long userId) {
         UserResponse response = new UserResponse();
 
         try {
-            UserEntry entry = userManager.getUserById(userId);
+            UserEntry entry = userManager.getById(userId);
             if (entry != null) {
                 response.setData(Collections.singletonList(entry));
                 response.setStatus(new StatusResponse(1, "User fetched successfully", StatusResponse.Type.SUCCESS));

@@ -23,11 +23,11 @@ public class ActivityServiceImpl implements ActivityService {
     private ActivityManager activityManager;
 
     @Override
-    public ResponseEntity<ActivityResponse> addActivity(ActivityEntry activityEntry) {
+    public ResponseEntity<ActivityResponse> add(ActivityEntry activityEntry) {
         ActivityResponse response = new ActivityResponse();
 
         try {
-            ActivityEntry entry = activityManager.addActivity(activityEntry);
+            ActivityEntry entry = activityManager.add(activityEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Activity added successfully", StatusResponse.Type.SUCCESS, 1));
@@ -39,11 +39,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ResponseEntity<ActivityResponse> updateActivity(Long activityId, ActivityEntry activityEntry) {
+    public ResponseEntity<ActivityResponse> update(Long activityId, ActivityEntry activityEntry) {
         ActivityResponse response = new ActivityResponse();
 
         try {
-            ActivityEntry entry = activityManager.updateActivity(activityId, activityEntry);
+            ActivityEntry entry = activityManager.update(activityId, activityEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Activity updated successfully", StatusResponse.Type.SUCCESS, 1));
@@ -58,9 +58,9 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteActivity(Long activityId) {
+    public ResponseEntity<Void> delete(Long activityId) {
         try {
-            activityManager.deleteActivity(activityId);
+            activityManager.delete(activityId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -70,11 +70,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ResponseEntity<ActivityResponse> getActivityById(Long activityId) {
+    public ResponseEntity<ActivityResponse> get(Long activityId) {
         ActivityResponse response = new ActivityResponse();
 
         try {
-            ActivityEntry entry = activityManager.getActivityById(activityId);
+            ActivityEntry entry = activityManager.getById(activityId);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Activity retrieved successfully", StatusResponse.Type.SUCCESS, 1));

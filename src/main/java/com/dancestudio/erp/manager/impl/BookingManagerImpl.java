@@ -3,7 +3,9 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Booking;
 import com.dancestudio.erp.entry.BookingEntry;
 import com.dancestudio.erp.entry.ClientEntry;
+import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
@@ -47,38 +49,46 @@ public class BookingManagerImpl implements BookingManager {
     }
 
     @Override
-    public BookingEntry addBooking(BookingEntry bookingEntry) throws EntityNotFoundException {
+    public BookingEntry add(BookingEntry bookingEntry) throws Exception {
         validateRequest(bookingEntry);
-        studioManager.getStudioById(bookingEntry.getStudioId());
-        clientManager.getClientById(bookingEntry.getClientEntry().getId());
+        studioManager.getById(bookingEntry.getStudioId());
+        clientManager.getById(bookingEntry.getClientEntry().getClientId());
 
         Booking booking = convertToEntity(bookingEntry, null);
-
+        booking = bookingRepository.save(booking);
         try {
-            paymentManager.addPayment(bookingEntry.getPaymentEntry());
+            Long payeeId = booking.getId();
+            bookingEntry.getPaymentEntry().setPayeeId(payeeId);
+            paymentManager.add(bookingEntry.getPaymentEntry());
         } catch (Exception ex) {
             throw new EntityNotFoundException("Failed to add payment details");
         }
-        return convertToEntry(bookingRepository.save(booking));
+        return convertToEntry(booking);
     }
 
     private void validateRequest(BookingEntry bookingEntry) {
-        if(Objects.isNull(bookingEntry.getBalanceAmount())) {
-            if (Objects.isNull(bookingEntry.getTotalAmount()) || bookingEntry.getTotalAmount() <= 0) {
-                throw new IllegalArgumentException("Total amount must be greater than zero");
-            }
-            if (Objects.isNull(bookingEntry.getAdvanceAmount()) || bookingEntry.getAdvanceAmount() <= 0) {
-                throw new IllegalArgumentException("Advance amount must be greater than zero");
-            }
-            if (!bookingEntry.getTotalAmount().equals(bookingEntry.getAdvanceAmount())) {
+        if (Objects.isNull(bookingEntry.getTotalAmount()) || bookingEntry.getTotalAmount() <= 0) {
+            throw new IllegalArgumentException("Total amount must be greater than zero");
+        }
+        if (Objects.isNull(bookingEntry.getAdvanceAmount()) || bookingEntry.getAdvanceAmount() <= 0) {
+            throw new IllegalArgumentException("Advance amount must be greater than zero");
+        }
+        if (Objects.isNull(bookingEntry.getBalanceAmount())) {
+            if (bookingEntry.getTotalAmount().equals(bookingEntry.getAdvanceAmount())) {
                 throw new IllegalArgumentException("Advance amount should be equal to total amount");
             }
-
+        }
+        if (bookingEntry.getBalanceAmount() < 0) {
+            throw new IllegalArgumentException("Balance amount cannot be negative");
+        }
+        if (bookingEntry.getAdvanceAmount() + bookingEntry.getBalanceAmount() != bookingEntry.getTotalAmount()) {
+            throw new IllegalArgumentException("Advance amount + Balance amount should be equal to Total amount");
         }
     }
 
     @Override
-    public BookingEntry updateBooking(Long bookingId, BookingEntry bookingEntry) throws EntityNotFoundException {
+    public BookingEntry update(Long bookingId, BookingEntry bookingEntry) throws Exception {
+        validateRequest(bookingEntry);
         Booking existingBooking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
@@ -87,15 +97,21 @@ public class BookingManagerImpl implements BookingManager {
     }
 
     @Override
-    public void deleteBooking(Long bookingId) throws EntityNotFoundException {
+    public void delete(Long bookingId) throws EntityNotFoundException {
         bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
+        PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(bookingId, PayeeType.BOOKING);
+        try {
+            paymentManager.delete(Long.valueOf(paymentEntry.getPaymentId()));
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Failed to delete payment details");
+        }
         bookingRepository.deleteById(bookingId);
     }
 
     @Override
-    public BookingEntry getBookingById(Long bookingId) throws EntityNotFoundException {
+    public BookingEntry getById(Long bookingId) throws Exception {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
@@ -113,7 +129,7 @@ public class BookingManagerImpl implements BookingManager {
     }
 
     @Override
-    public List<BookingEntry> getAllBookings(Long studioId, int page, int size, Long startMonth, Long endMonth) throws EntityNotFoundException {
+    public List<BookingEntry> getAllBookings(Long studioId, int page, int size, Long startMonth, Long endMonth) throws Exception {
         Page<Booking> entries;
         Pageable pageable = PageRequest.of(page, size);
         if (startMonth.equals(0L) || endMonth.equals(0L)) {
@@ -131,7 +147,7 @@ public class BookingManagerImpl implements BookingManager {
         return bookingEntries;
     }
 
-    public BookingEntry convertToEntry(Booking booking) throws EntityNotFoundException {
+    public BookingEntry convertToEntry(Booking booking) throws Exception {
         BookingEntry bookingEntry = new BookingEntry();
 
         bookingEntry.setId(booking.getId());
@@ -150,21 +166,22 @@ public class BookingManagerImpl implements BookingManager {
         bookingEntry.setFinalPaymentDate(booking.getFinalPaymentDate());
         bookingEntry.setPaymentMode(PaymentType.valueOf(booking.getPaymentMode()));
 
-        ClientEntry clientEntry = clientManager.getClientById(booking.getClient().getId());
-        bookingEntry.setClientEntry(clientEntry);
-
+        if (Objects.nonNull(booking.getClient())) {
+            ClientEntry clientEntry = clientManager.getById(booking.getClient().getId());
+            bookingEntry.setClientEntry(clientEntry);
+        }
         return bookingEntry;
     }
 
-    private Booking convertToEntity(BookingEntry bookingEntry, Booking existingBooking) throws EntityNotFoundException {
+    private Booking convertToEntity(BookingEntry bookingEntry, Booking existingBooking) throws Exception {
         Booking booking = (existingBooking != null) ? existingBooking : new Booking();
 
         if (Objects.nonNull(bookingEntry.getStudioId())) {
-            StudioEntry studioEntry = studioManager.getStudioById(bookingEntry.getStudioId());
+            StudioEntry studioEntry = studioManager.getById(bookingEntry.getStudioId());
             booking.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
         }
-        if (Objects.nonNull(bookingEntry.getClientEntry().getId())) {
-            ClientEntry clientEntry = clientManager.getClientById(bookingEntry.getClientEntry().getId());
+        if (Objects.nonNull(bookingEntry.getClientEntry())) {
+            ClientEntry clientEntry = clientManager.getById(bookingEntry.getClientEntry().getClientId());
             booking.setClient(ConvertToEntryUtil.convertToEntity(clientEntry, null));
         }
 

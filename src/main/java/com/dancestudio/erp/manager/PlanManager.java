@@ -6,15 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
-public interface PlanManager {
-
-    PlanEntry addPlan(PlanEntry planEntry) throws EntityNotFoundException;
-
-    PlanEntry updatePlan(Long planId, PlanEntry planEntry) throws EntityNotFoundException;
-
-    void deletePlan(Long planId) throws EntityNotFoundException;
-
-    PlanEntry getPlanById(Long planId) throws EntityNotFoundException;
+public interface PlanManager extends BaseManager<PlanEntry, Long> {
 
     List<PlanEntry> getAllPlans(HttpServletRequest request) throws EntityNotFoundException;
 }

@@ -9,38 +9,36 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/clients")
-public class ClientController {
+public class ClientController extends BaseController<ClientEntry, ClientResponse, Long> {
 
     @Autowired
     private ClientService clientService;
 
-    @PostMapping("/add")
-    public ResponseEntity<ClientResponse> addClient(@RequestBody ClientEntry clientEntry) {
-        return clientService.addClient(clientEntry);
+    @Override
+    public ResponseEntity<ClientResponse> add(@RequestBody ClientEntry clientEntry) {
+        return clientService.add(clientEntry);
     }
 
-    @PutMapping("/update/{clientId}")
-    public ResponseEntity<ClientResponse> updateClient(@PathVariable Long clientId, @RequestBody ClientEntry clientEntry) {
-        return clientService.updateClient(clientId, clientEntry);
+    @Override
+    public ResponseEntity<ClientResponse> update(@PathVariable Long id, @RequestBody ClientEntry clientEntry) {
+        return clientService.update(id, clientEntry);
     }
 
-    @DeleteMapping("/delete/{clientId}")
-    public ResponseEntity<Void> deleteClient(@PathVariable Long clientId) {
-        return clientService.deleteClient(clientId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return clientService.delete(id);
     }
 
-    @GetMapping("/get/{clientId}")
-    public ResponseEntity<ClientResponse> getClientById(@PathVariable Long clientId) {
-        return clientService.getClientById(clientId);
+    @Override
+    public ResponseEntity<ClientResponse> get(@PathVariable Long id) {
+        return clientService.get(id);
     }
 
     @GetMapping("/getAllClients/{studioId}/{startMonth}/{endMonth}")
-    public ResponseEntity<ClientResponse> getAllClients(
-            @PathVariable Long studioId,
+    public ResponseEntity<ClientResponse> getAllClients(@PathVariable Long studioId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @PathVariable Long startMonth,
-            @PathVariable Long endMonth) {
+            @PathVariable Long startMonth, @PathVariable Long endMonth) {
         return clientService.getAllClients(studioId, page, size, startMonth, endMonth);
     }
 

@@ -61,13 +61,6 @@
             <version>9.1.22</version>
         </dependency>
 
-        <!-- Azure depdendency-->
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-storage-blob</artifactId>
-            <version>12.23.0</version>
-        </dependency>
-
         <!-- Cloudinery -->
         <dependency>
             <groupId>com.cloudinary</groupId>

@@ -51,7 +51,7 @@ public class PasswordServiceImpl implements PasswordService {
             if (entry.isValid()) {
                 UserEntry userEntry = userManager.getUserByEmail(passwordEntry.getUserEntry().getEmail());
                 userEntry.setPassword(passwordEntry.getUserEntry().getPassword());
-                userManager.updateUser(userEntry.getUserId(), userEntry);
+                userManager.update(userEntry.getUserId(), userEntry);
                 response.setStatus(new StatusResponse(1, "OTP veriried, Password changed successfully", StatusResponse.Type.SUCCESS));
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {

@@ -22,11 +22,11 @@ public class ClientServiceImpl implements ClientService {
     private ClientManager clientManager;
 
     @Override
-    public ResponseEntity<ClientResponse> addClient(ClientEntry clientEntry) {
+    public ResponseEntity<ClientResponse> add(ClientEntry clientEntry) {
         ClientResponse response = new ClientResponse();
 
         try {
-            ClientEntry entry = clientManager.addClient(clientEntry);
+            ClientEntry entry = clientManager.add(clientEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Client added successfully", StatusResponse.Type.SUCCESS, 1));
@@ -38,11 +38,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ResponseEntity<ClientResponse> updateClient(Long clientId, ClientEntry clientEntry) {
+    public ResponseEntity<ClientResponse> update(Long clientId, ClientEntry clientEntry) {
         ClientResponse response = new ClientResponse();
 
         try {
-            ClientEntry entry = clientManager.updateClient(clientId, clientEntry);
+            ClientEntry entry = clientManager.update(clientId, clientEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Client updated successfully", StatusResponse.Type.SUCCESS, 1));
@@ -57,9 +57,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteClient(Long clientId) {
+    public ResponseEntity<Void> delete(Long clientId) {
         try {
-            clientManager.deleteClient(clientId);
+            clientManager.delete(clientId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -69,11 +69,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ResponseEntity<ClientResponse> getClientById(Long clientId) {
+    public ResponseEntity<ClientResponse> get(Long clientId) {
         ClientResponse response = new ClientResponse();
 
         try {
-            ClientEntry entry = clientManager.getClientById(clientId);
+            ClientEntry entry = clientManager.getById(clientId);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Client retrieved successfully", StatusResponse.Type.SUCCESS, 1));

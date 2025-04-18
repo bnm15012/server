@@ -9,33 +9,33 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/activities")
-public class ActivityController {
+public class ActivityController extends BaseController<ActivityEntry, ActivityResponse, Long> {
 
     @Autowired
     private ActivityService activityService;
 
-    @PostMapping("/add")
-    public ResponseEntity<ActivityResponse> addActivity(@RequestBody ActivityEntry activityEntry) {
-        return activityService.addActivity(activityEntry);
+    @Override
+    public ResponseEntity<ActivityResponse> add(@RequestBody ActivityEntry activityEntry) {
+        return activityService.add(activityEntry);
     }
 
-    @PutMapping("/update/{activityId}")
-    public ResponseEntity<ActivityResponse> updateActivity(@PathVariable Long activityId, @RequestBody ActivityEntry activityEntry) {
-        return activityService.updateActivity(activityId, activityEntry);
+    @Override
+    public ResponseEntity<ActivityResponse> update(@PathVariable Long id, @RequestBody ActivityEntry activityEntry) {
+        return activityService.update(id, activityEntry);
     }
 
-    @DeleteMapping("/delete/{activityId}")
-    public ResponseEntity<Void> deleteActivity(@PathVariable Long activityId) {
-        return activityService.deleteActivity(activityId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return activityService.delete(id);
     }
 
-    @GetMapping("/get/{activityId}")
-    public ResponseEntity<ActivityResponse> getActivityById(@PathVariable Long activityId) {
-        return activityService.getActivityById(activityId);
+    @Override
+    public ResponseEntity<ActivityResponse> get(@PathVariable Long id) {
+        return activityService.get(id);
     }
 
     @GetMapping("/getAllActivities/{studioId}")
-    public ResponseEntity<ActivityResponse> getAllActivities(@PathVariable Long studioId) {
+    public ResponseEntity<ActivityResponse> getAll(@PathVariable Long studioId) {
         return activityService.getAllActivities(studioId);
     }
 }

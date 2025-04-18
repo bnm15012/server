@@ -9,10 +9,30 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController extends BaseController<UserEntry, UserResponse, Long> {
 
     @Autowired
     private UserService userService;
+
+    @Override
+    public ResponseEntity<UserResponse> add(@RequestBody UserEntry userEntry) {
+        return userService.registerUser(userEntry);
+    }
+
+    @Override
+    public ResponseEntity<UserResponse> update(@PathVariable Long id, @RequestBody UserEntry userEntry) {
+        return userService.update(id, userEntry);
+    }
+
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return userService.delete(id);
+    }
+
+    @Override
+    public ResponseEntity<UserResponse> get(@PathVariable Long id) {
+        return userService.get(id);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@RequestBody UserEntry userEntry) {
@@ -23,20 +43,4 @@ public class UserController {
     public ResponseEntity<UserResponse> login(@RequestBody UserEntry userEntry) {
         return userService.loginUser(userEntry.getUserName(), userEntry.getPassword());
     }
-
-    @PutMapping("/update/{userId}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @RequestBody UserEntry userEntry) {
-        return userService.updateUser(userId, userEntry);
-    }
-
-    @DeleteMapping("/delete/{userId}")
-    public ResponseEntity<UserResponse> deleteSUser(@PathVariable Long userId) {
-        return userService.deleteUser(userId);
-    }
-
-    @GetMapping("/get/{userId}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
-        return userService.getUserById(userId);
-    }
-
 }

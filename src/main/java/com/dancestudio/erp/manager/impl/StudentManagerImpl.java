@@ -55,7 +55,7 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public StudentEntry addStudent(StudentEntry studentEntry) throws Exception {
+    public StudentEntry add(StudentEntry studentEntry) throws Exception {
         if (studentRepository.findByNameAndEmail(studentEntry.getName(), studentEntry.getEmail()).isPresent()) {
             throw new Exception("Student already exists");
         }
@@ -65,7 +65,7 @@ public class StudentManagerImpl implements StudentManager {
 
         TemplateEntry templateEntry = templateManager.getTemplateDetails(ADD_NEW_STUDENT_EMAIL);
 
-        StudioEntry studioEntry = studioManager.getStudioById(student.getStudio().getId());
+        StudioEntry studioEntry = studioManager.getById(student.getStudio().getId());
         String updatedBody = formatEmailBody(studioEntry, templateEntry, student);
 
         emailManager.sendEmail(student.getEmail(), templateEntry.getSubject(), updatedBody);
@@ -73,7 +73,7 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public StudentEntry updateStudent(Long studentId, StudentEntry studentEntry) throws EntityNotFoundException {
+    public StudentEntry update(Long studentId, StudentEntry studentEntry) throws Exception {
         Student existingStudent = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
@@ -89,7 +89,7 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public void deleteStudent(Long studentId) throws EntityNotFoundException {
+    public void delete(Long studentId) throws EntityNotFoundException {
         studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
@@ -97,7 +97,7 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public StudentEntry getStudentById(Long studentId) throws EntityNotFoundException {
+    public StudentEntry getById(Long studentId) throws EntityNotFoundException {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
@@ -130,7 +130,7 @@ public class StudentManagerImpl implements StudentManager {
         List<StudentEntry> studentEntries = new ArrayList<>();
         for (Long studentId : studentIds) {
             try {
-                StudentEntry studentEntry = getStudentById(studentId);
+                StudentEntry studentEntry = getById(studentId);
                 studentEntries.add(studentEntry);
             } catch (EntityNotFoundException ex) {
                 log.error("Entity not found : {}", ex.getMessage());
@@ -140,7 +140,7 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public boolean sendSubscriptionRenewalReminder(Long studentId, Long activityId) throws EntityNotFoundException {
+    public boolean sendSubscriptionRenewalReminder(Long studentId, Long activityId) throws Exception {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
@@ -151,7 +151,7 @@ public class StudentManagerImpl implements StudentManager {
             throw new EntityNotFoundException("No active subscription found");
         }
 
-        StudioEntry studioEntry = studioManager.getStudioById(entry.getActivity().getStudioId());
+        StudioEntry studioEntry = studioManager.getById(entry.getActivity().getStudioId());
         emailManager.sendSubscriptionRenewalEmail(student, entry, studioEntry.getStudioName());
         return true;
     }
@@ -192,7 +192,7 @@ public class StudentManagerImpl implements StudentManager {
         return studentEntry;
     }
 
-    private Student convertToEntity(StudentEntry studentEntry, Student existingStudent) throws EntityNotFoundException {
+    private Student convertToEntity(StudentEntry studentEntry, Student existingStudent) throws Exception {
         Student student = (existingStudent != null) ? existingStudent : new Student();
 
         if (Objects.nonNull(studentEntry.getStudentId())) {
@@ -211,7 +211,7 @@ public class StudentManagerImpl implements StudentManager {
             student.setProfileImage(studentEntry.getImageUrl());
         }
         if (Objects.nonNull(studentEntry.getStudioId())) {
-            StudioEntry entry = studioManager.getStudioById(studentEntry.getStudioId());
+            StudioEntry entry = studioManager.getById(studentEntry.getStudioId());
             student.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
         }
 

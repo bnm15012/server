@@ -31,7 +31,7 @@ public class ConvertToEntryUtil {
         applicationContext = context;
     }
 
-    public static UserEntry convertToEntry(User user) throws EntityNotFoundException {
+    public static UserEntry convertToEntry(User user) throws Exception {
 
         UserEntry userEntry = new UserEntry();
         userEntry.setUserId(user.getId());
@@ -44,7 +44,7 @@ public class ConvertToEntryUtil {
 
         if (Objects.nonNull(user.getStudio().getId())) {
             StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
-            StudioEntry studioEntry = studioManagerImpl.getStudioById(user.getStudio().getId());
+            StudioEntry studioEntry = studioManagerImpl.getById(user.getStudio().getId());
             userEntry.setStudioEntry(studioEntry);
 
             SubscriptionManagerImpl subscriptionManagerImpl = applicationContext.getBean(SubscriptionManagerImpl.class);
@@ -88,7 +88,7 @@ public class ConvertToEntryUtil {
             Long studioId = userEntry.getStudioEntry().getStudioId();
 
             StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
-            StudioEntry studioEntry = studioManagerImpl.getStudioById(studioId);
+            StudioEntry studioEntry = studioManagerImpl.getById(studioId);
             user.setStudio(convertToEntity(studioEntry, null));
         }
 
@@ -101,6 +101,7 @@ public class ConvertToEntryUtil {
         studioEntry.setStudioId(studio.getId());
         studioEntry.setStudioName(studio.getName());
         studioEntry.setLocation(studio.getLocation());
+        studioEntry.setLogo(studio.getLogo());
         studioEntry.setContactDetails(studio.getContactDetails());
 
         return studioEntry;
@@ -131,8 +132,8 @@ public class ConvertToEntryUtil {
     public static Client convertToEntity(ClientEntry clientEntry, Client existingClient) {
         Client client = (existingClient != null) ? existingClient : new Client();
 
-        if (Objects.nonNull(clientEntry.getId())) {
-            client.setId(clientEntry.getId());
+        if (Objects.nonNull(clientEntry.getClientId())) {
+            client.setId(clientEntry.getClientId());
         }
         if (Objects.nonNull(clientEntry.getGroupName())) {
             client.setGroupName(clientEntry.getGroupName());
@@ -200,7 +201,7 @@ public class ConvertToEntryUtil {
         activityEntry.setDescription(activity.getDescription());
 
         StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
-        StudioEntry studioEntry = studioManagerImpl.getStudioById(activity.getStudio().getId());
+        StudioEntry studioEntry = studioManagerImpl.getById(activity.getStudio().getId());
         activityEntry.setStudioId(studioEntry.getStudioId());
 
         if (activity.getMembershipPlans() != null) {
@@ -235,7 +236,7 @@ public class ConvertToEntryUtil {
 
         if (Objects.nonNull(activityEntry.getStudioId())) {
             StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
-            StudioEntry studioEntry = studioManagerImpl.getStudioById(activityEntry.getStudioId());
+            StudioEntry studioEntry = studioManagerImpl.getById(activityEntry.getStudioId());
 
             activity.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
         }
@@ -261,7 +262,7 @@ public class ConvertToEntryUtil {
         expenseEntry.setDescription(expense.getDescription());
 
         StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
-        StudioEntry studioEntry = studioManagerImpl.getStudioById(expense.getStudio().getId());
+        StudioEntry studioEntry = studioManagerImpl.getById(expense.getStudio().getId());
 
         expenseEntry.setStudioId(studioEntry.getStudioId());
         expenseEntry.setExpenseDate(expense.getExpenseDate());

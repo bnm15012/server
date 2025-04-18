@@ -2,6 +2,7 @@ package com.dancestudio.erp.service.impl;
 
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.enums.PaymentStatus;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.response.PaymentResponse;
 import com.dancestudio.erp.response.StatusResponse;
@@ -23,10 +24,10 @@ public class PaymentServiceImpl implements PaymentService {
     private PaymentManager paymentManager;
 
     @Override
-    public ResponseEntity<PaymentResponse> addPayment(PaymentEntry paymentEntry) {
+    public ResponseEntity<PaymentResponse> add(PaymentEntry paymentEntry) {
         PaymentResponse response = new PaymentResponse();
         try {
-            PaymentEntry entry = paymentManager.addPayment(paymentEntry);
+            PaymentEntry entry = paymentManager.add(paymentEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Payment Added successfully", StatusResponse.Type.SUCCESS,
                     Objects.isNull(entry) ? 0 : 1));
@@ -53,10 +54,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ResponseEntity<PaymentResponse> getPaymentById(Long paymentId) {
+    public ResponseEntity<PaymentResponse> get(Long paymentId) {
         PaymentResponse response = new PaymentResponse();
         try {
-            PaymentEntry entry = paymentManager.getPaymentById(paymentId);
+            PaymentEntry entry = paymentManager.getById(paymentId);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Payment retrived successfully", StatusResponse.Type.SUCCESS,
                     Objects.isNull(entry) ? 0 : 1));
@@ -68,11 +69,11 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ResponseEntity<PaymentResponse> updatePayment(Long paymentId, PaymentEntry paymentEntry) {
+    public ResponseEntity<PaymentResponse> update(Long paymentId, PaymentEntry paymentEntry) {
         PaymentResponse response = new PaymentResponse();
 
         try {
-            PaymentEntry entry = paymentManager.updatePayment(paymentId, paymentEntry);
+            PaymentEntry entry = paymentManager.update(paymentId, paymentEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Payment updated successfully", StatusResponse.Type.SUCCESS,
                     Objects.isNull(entry) ? 0 : 1));
@@ -84,8 +85,15 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void deletePayment(Long paymentId) {
-        paymentManager.deletePayment(paymentId);
+    public ResponseEntity<Void> delete(Long paymentId) {
+        try {
+            paymentManager.delete(paymentId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Override
@@ -95,8 +103,7 @@ public class PaymentServiceImpl implements PaymentService {
             List<PaymentEntry> entry = paymentManager.getAllPaymentsByStudio(studioId, size, page);
             long totalCount = paymentManager.getPaymentCountByStudioId(studioId); 
             response.setData(entry);
-            response.setStatus(
-                    new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : (int) totalCount ));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : (int) totalCount ));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));

@@ -5,32 +5,35 @@ import com.dancestudio.erp.response.BankAccountResponse;
 import com.dancestudio.erp.service.BankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/bankAccount")
-public class BankAccountController {
+public class BankAccountController extends BaseController<BankAccountEntry, BankAccountResponse, Long> {
 
     @Autowired
     private BankAccountService bankAccountService;
 
-    @PostMapping("/add")
-    public ResponseEntity<BankAccountResponse> addBankAccount(@RequestBody BankAccountEntry bankAccountEntry) {
-        return bankAccountService.addBankAccount(bankAccountEntry);
+    @Override
+    public ResponseEntity<BankAccountResponse> add(@RequestBody BankAccountEntry bankAccountEntry) {
+        return bankAccountService.add(bankAccountEntry);
     }
 
-    @PutMapping("/update/{bankAccountId}")
-    public ResponseEntity<BankAccountResponse> updateBankAccount(@PathVariable Long bankAccountId, @RequestBody BankAccountEntry bankAccountEntry) {
-        return bankAccountService.updateBankAccount(bankAccountId, bankAccountEntry);
+    @Override
+    public ResponseEntity<BankAccountResponse> update(@PathVariable Long id, @RequestBody BankAccountEntry bankAccountEntry) {
+        return bankAccountService.update(id, bankAccountEntry);
     }
 
-    @DeleteMapping("/delete/{bankAccountId}")
-    public ResponseEntity<Void> deleteBankAccount(@PathVariable Long bankAccountId) {
-        return bankAccountService.deleteBankAccount(bankAccountId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return bankAccountService.delete(id);
     }
 
-    @GetMapping("/get/{bankAccountId}")
-    public ResponseEntity<BankAccountResponse> getBankAccountById(@PathVariable Long bankAccountId) {
-        return bankAccountService.getBankAccountById(bankAccountId);
+    @Override
+    public ResponseEntity<BankAccountResponse> get(@PathVariable Long id) {
+        return bankAccountService.get(id);
     }
 }

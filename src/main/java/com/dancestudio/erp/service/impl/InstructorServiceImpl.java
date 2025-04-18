@@ -25,11 +25,11 @@ public class InstructorServiceImpl implements InstructorService {
     private InstructorManager instructorManager;
 
     @Override
-    public ResponseEntity<InstructorResponse> addInstructor(InstructorEntry instructorEntry) {
+    public ResponseEntity<InstructorResponse> add(InstructorEntry instructorEntry) {
         InstructorResponse response = new InstructorResponse();
 
         try {
-            InstructorEntry entry = instructorManager.addInstructor(instructorEntry);
+            InstructorEntry entry = instructorManager.add(instructorEntry);
             if (entry != null) {
                 response.setData(Collections.singletonList(entry));
                 response.setStatus(new StatusResponse(1, "Instructor added successfully", StatusResponse.Type.SUCCESS));
@@ -45,11 +45,11 @@ public class InstructorServiceImpl implements InstructorService {
     }
 
     @Override
-    public ResponseEntity<InstructorResponse> updateInstructor(Long instructorId, InstructorEntry instructorEntry) {
+    public ResponseEntity<InstructorResponse> update(Long instructorId, InstructorEntry instructorEntry) {
         InstructorResponse response = new InstructorResponse();
 
         try {
-            InstructorEntry entry = instructorManager.updateInstructor(instructorId, instructorEntry);
+            InstructorEntry entry = instructorManager.update(instructorId, instructorEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Instructor updated successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);
@@ -63,9 +63,9 @@ public class InstructorServiceImpl implements InstructorService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteInstructor(Long instructorId) {
+    public ResponseEntity<Void> delete(Long instructorId) {
         try {
-            instructorManager.deleteInstructor(instructorId);
+            instructorManager.delete(instructorId);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -75,11 +75,11 @@ public class InstructorServiceImpl implements InstructorService {
     }
 
     @Override
-    public ResponseEntity<InstructorResponse> getInstructorById(Long instructorId) {
+    public ResponseEntity<InstructorResponse> get(Long instructorId) {
         InstructorResponse response = new InstructorResponse();
 
         try {
-            InstructorEntry entry = instructorManager.getInstructorById(instructorId);
+            InstructorEntry entry = instructorManager.getById(instructorId);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Instructor found", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);

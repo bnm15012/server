@@ -5,15 +5,7 @@ import com.dancestudio.erp.response.PlanResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
-public interface PlanService {
-
-    ResponseEntity<PlanResponse> addPlan(PlanEntry planEntry);
-
-    ResponseEntity<PlanResponse> updatePlan(Long planId, PlanEntry planEntry);
-
-    ResponseEntity<Void> deletePlan(Long planId);
-
-    ResponseEntity<PlanResponse> getPlanById(Long planId);
+public interface PlanService extends BaseService<PlanEntry, PlanResponse, Long> {
 
     ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request);
 }

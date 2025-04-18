@@ -5,15 +5,7 @@ import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.response.StudentResponse;
 import org.springframework.http.ResponseEntity;
 
-public interface StudentService {
-
-    ResponseEntity<StudentResponse> addStudent(StudentEntry studentEntry);
-
-    ResponseEntity<StudentResponse> updateStudent(Long studentId, StudentEntry studentEntry);
-
-    ResponseEntity<Void> deleteStudent(Long studentId);
-
-    ResponseEntity<StudentResponse> getStudentById(Long studentId);
+public interface StudentService extends BaseService<StudentEntry, StudentResponse, Long> {
 
     ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size);
 

@@ -44,14 +44,14 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public InstructorEntry addInstructor(InstructorEntry instructorEntry) throws Exception {
+    public InstructorEntry add(InstructorEntry instructorEntry) throws Exception {
         if (instructorRepository.findByNameAndEmail(instructorEntry.getName(), instructorEntry.getEmail()).isPresent()) {
             throw new Exception("Instructor already exists");
         }
 
         Instructor instructor = convertToEntity(instructorEntry, null);
         if (Objects.nonNull(instructorEntry.getBankAccountDetails())) {
-            BankAccountEntry bankAccountEntry = bankAccountManager.addBankAccount(instructorEntry.getBankAccountDetails());
+            BankAccountEntry bankAccountEntry = bankAccountManager.add(instructorEntry.getBankAccountDetails());
             instructor.setBankAccount(ConvertToEntryUtil.convertToEntity(bankAccountEntry, null));
         }
 
@@ -60,7 +60,7 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public InstructorEntry updateInstructor(Long instructorId, InstructorEntry instructorEntry) throws EntityNotFoundException {
+    public InstructorEntry update(Long instructorId, InstructorEntry instructorEntry) throws Exception {
         Instructor existingInstructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
@@ -68,7 +68,7 @@ public class InstructorManagerImpl implements InstructorManager {
 
         Instructor instructor = convertToEntity(instructorEntry, null);
         if (Objects.nonNull(instructorEntry.getBankAccountDetails())) {
-            BankAccountEntry bankAccountEntry = bankAccountManager.updateBankAccount(instructorEntry.getBankAccountDetails().getBankAccountId(), instructorEntry.getBankAccountDetails());
+            BankAccountEntry bankAccountEntry = bankAccountManager.update(instructorEntry.getBankAccountDetails().getBankAccountId(), instructorEntry.getBankAccountDetails());
             instructor.setBankAccount(ConvertToEntryUtil.convertToEntity(bankAccountEntry, null));
         }
 
@@ -77,7 +77,7 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public void deleteInstructor(Long instructorId) throws EntityNotFoundException {
+    public void delete(Long instructorId) throws EntityNotFoundException {
         instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
@@ -85,7 +85,7 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public InstructorEntry getInstructorById(Long instructorId) throws EntityNotFoundException {
+    public InstructorEntry getById(Long instructorId) throws EntityNotFoundException {
         Instructor instructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
@@ -118,7 +118,7 @@ public class InstructorManagerImpl implements InstructorManager {
 
         try {
             if (instructor.getStudio() != null) {
-                StudioEntry studioEntry = studioManager.getStudioById(instructor.getStudio().getId());
+                StudioEntry studioEntry = studioManager.getById(instructor.getStudio().getId());
                 instructorEntry.setStudioEntry(studioEntry);
             }
         } catch (Exception ex) {
@@ -144,7 +144,7 @@ public class InstructorManagerImpl implements InstructorManager {
 
         try {
             if (instructor.getBankAccount() != null) {
-                BankAccountEntry bankAccountEntry = bankAccountManager.getBankAccountById(instructor.getBankAccount().getId());
+                BankAccountEntry bankAccountEntry = bankAccountManager.getById(instructor.getBankAccount().getId());
                 instructorEntry.setBankAccountDetails(bankAccountEntry);
             }
         } catch (Exception ex) {
@@ -154,7 +154,7 @@ public class InstructorManagerImpl implements InstructorManager {
         return instructorEntry;
     }
 
-    private Instructor convertToEntity(InstructorEntry instructorEntry, Instructor existingInstructor) throws EntityNotFoundException {
+    private Instructor convertToEntity(InstructorEntry instructorEntry, Instructor existingInstructor) throws Exception {
         Instructor instructor = (existingInstructor != null) ? existingInstructor : new Instructor();
 
         if (Objects.nonNull(instructorEntry.getInstructorId())) {
@@ -175,13 +175,13 @@ public class InstructorManagerImpl implements InstructorManager {
 
         // Bank account details
         if (Objects.nonNull(instructorEntry.getBankAccountDetails()) && Objects.nonNull(instructorEntry.getBankAccountDetails().getBankAccountId())) {
-            BankAccountEntry entry = bankAccountManager.getBankAccountById(instructorEntry.getBankAccountDetails().getBankAccountId());
+            BankAccountEntry entry = bankAccountManager.getById(instructorEntry.getBankAccountDetails().getBankAccountId());
             instructor.setBankAccount(ConvertToEntryUtil.convertToEntity(entry, null));
         }
 
         // Studio details
         if (instructorEntry.getStudioEntry() != null && instructorEntry.getStudioEntry().getStudioId() != null) {
-            StudioEntry entry = studioManager.getStudioById(instructorEntry.getStudioEntry().getStudioId());
+            StudioEntry entry = studioManager.getById(instructorEntry.getStudioEntry().getStudioId());
             instructor.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
         }
 

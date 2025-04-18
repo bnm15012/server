@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class ClientEntry {
 
-    private Long id;
+    private Long clientId;
     private String groupName;
     private String pocName;
     private String pocPhone;

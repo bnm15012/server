@@ -30,7 +30,7 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     @Override
-    public ActivityEntry addActivity(ActivityEntry activityEntry) throws EntityNotFoundException {
+    public ActivityEntry add(ActivityEntry activityEntry) throws EntityNotFoundException {
         activityRepository.findByActivityTypeAndStudioId(activityEntry.getActivityType().name(), activityEntry.getStudioId())
                 .ifPresent(existingActivity -> {
                     throw new IllegalArgumentException("Given activity already exists in the studio.");
@@ -41,7 +41,7 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     @Override
-    public ActivityEntry updateActivity(Long activityId, ActivityEntry activityEntry) throws EntityNotFoundException {
+    public ActivityEntry update(Long activityId, ActivityEntry activityEntry) throws EntityNotFoundException {
         Activity existingActivity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 
@@ -50,7 +50,7 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     @Override
-    public void deleteActivity(Long activityId) throws EntityNotFoundException {
+    public void delete(Long activityId) throws EntityNotFoundException {
         activityRepository.findById(activityId)
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 
@@ -58,7 +58,7 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     @Override
-    public ActivityEntry getActivityById(Long activityId) throws EntityNotFoundException {
+    public ActivityEntry getById(Long activityId) throws EntityNotFoundException {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 

@@ -10,29 +10,29 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/students")
-public class StudentController {
+public class StudentController extends BaseController<StudentEntry, StudentResponse, Long> {
 
     @Autowired
     private StudentService studentService;
 
-    @PostMapping("/add")
-    public ResponseEntity<StudentResponse> addStudent(@RequestBody StudentEntry studentEntry) {
-        return studentService.addStudent(studentEntry);
+    @Override
+    public ResponseEntity<StudentResponse> add(@RequestBody StudentEntry studentEntry) {
+        return studentService.add(studentEntry);
     }
 
-    @PutMapping("/update/{studentId}")
-    public ResponseEntity<StudentResponse> updateStudent(@PathVariable Long studentId, @RequestBody StudentEntry studentEntry) {
-        return studentService.updateStudent(studentId, studentEntry);
+    @Override
+    public ResponseEntity<StudentResponse> update(@PathVariable Long id, @RequestBody StudentEntry studentEntry) {
+        return studentService.update(id, studentEntry);
     }
 
-    @DeleteMapping("/delete/{studentId}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable Long studentId) {
-        return studentService.deleteStudent(studentId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return studentService.delete(id);
     }
 
-    @GetMapping("/get/{studentId}")
-    public ResponseEntity<StudentResponse> getStudentById(@PathVariable Long studentId) {
-        return studentService.getStudentById(studentId);
+    @Override
+    public ResponseEntity<StudentResponse> get(@PathVariable Long id) {
+        return studentService.get(id);
     }
 
     @GetMapping("/getAllStudents/{studioId}")

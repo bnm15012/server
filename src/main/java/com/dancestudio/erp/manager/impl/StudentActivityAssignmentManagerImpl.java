@@ -52,7 +52,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry addStudentActivityAssignment(StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException {
+    public StudentActivityAssignmentEntry add(StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws Exception {
         studentRepository.findById(studentActivityAssignmentEntry.getStudentId())
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
@@ -62,7 +62,10 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                 .save(studentStudentActivityAssignmentAssignment);
 
         try {
-            paymentManager.addPayment(studentActivityAssignmentEntry.getPaymentEntry());
+            Long payeeId = studentStudentActivityAssignmentAssignment.getId();
+            studentActivityAssignmentEntry.getPaymentEntry().setPayeeId(payeeId);
+
+            paymentManager.add(studentActivityAssignmentEntry.getPaymentEntry());
         } catch (Exception ex) {
             throw new EntityNotFoundException("Failed to add payment details");
         }
@@ -70,8 +73,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry updateStudentActivityAssignment(Long studentActivityAssignmentId,
-            StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException {
+    public StudentActivityAssignmentEntry update(Long studentActivityAssignmentId, StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws Exception {
         StudentActivityAssignment existingStudentActivityAssignment = studentActivityAssignmentRepository
                 .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
@@ -84,16 +86,22 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public void deleteStudentActivityAssignment(Long studentActivityAssignmentId) throws EntityNotFoundException {
+    public void delete(Long studentActivityAssignmentId) throws EntityNotFoundException {
         studentActivityAssignmentRepository.findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
+
+        PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(studentActivityAssignmentId, PayeeType.STUDENT);
+        try {
+            paymentManager.delete(Long.valueOf(paymentEntry.getPaymentId()));
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Failed to delete payment details");
+        }
 
         studentActivityAssignmentRepository.deleteById(studentActivityAssignmentId);
     }
 
     @Override
-    public StudentActivityAssignmentEntry getStudentActivityAssignmentById(Long studentActivityAssignmentId)
-            throws EntityNotFoundException {
+    public StudentActivityAssignmentEntry getById(Long studentActivityAssignmentId) throws Exception {
         StudentActivityAssignment studentActivityAssignment = studentActivityAssignmentRepository
                 .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
@@ -102,16 +110,14 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId)
-            throws EntityNotFoundException {
+    public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId) throws Exception {
         StudentActivityAssignment assignment = studentActivityAssignmentRepository
                 .findByStudentIdAndActivityId(studentId, activityId);
         return convertToEntry(assignment);
     }
 
     @Override
-    public List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId)
-            throws EntityNotFoundException {
+    public List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId) throws Exception {
         List<StudentActivityAssignment> enrollments = studentActivityAssignmentRepository.findByStudentId(studentId);
         List<StudentActivityAssignmentEntry> entries = new ArrayList<>();
 
@@ -124,7 +130,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     @Override
     public List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId,
-            Long studioId, String status) throws EntityNotFoundException {
+            Long studioId, String status) throws Exception {
 
         List<StudentActivityAssignment> entries = studentActivityAssignmentRepository
                 .findStudentsWithActiveMemberships(activityId, studioId);
@@ -208,7 +214,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     private StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment)
-            throws EntityNotFoundException {
+            throws Exception {
 
         if (Objects.isNull(studentActivityAssignment)) {
             return null;
@@ -225,14 +231,14 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         studentActivityAssignmentEntry.setActivityAmount(studentActivityAssignment.getActivityAmount());
 
         if (Objects.nonNull(studentActivityAssignment.getActivity())) {
-            ActivityEntry activityEntry = activityManager.getActivityById(studentActivityAssignment.getActivity().getId());
+            ActivityEntry activityEntry = activityManager.getById(studentActivityAssignment.getActivity().getId());
             studentActivityAssignmentEntry.setActivity(activityEntry);
         }
         return studentActivityAssignmentEntry;
     }
 
     private StudentActivityAssignment convertToEntity(StudentActivityAssignmentEntry studentActivityAssignmentEntry,
-            StudentActivityAssignment existingStudentActivityAssignment) throws EntityNotFoundException {
+            StudentActivityAssignment existingStudentActivityAssignment) throws Exception {
         StudentActivityAssignment studentActivityAssignment = (existingStudentActivityAssignment != null)
                 ? existingStudentActivityAssignment
                 : new StudentActivityAssignment();
@@ -264,7 +270,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         if (Objects.nonNull(studentActivityAssignmentEntry.getActivity())
                 && Objects.nonNull(studentActivityAssignmentEntry.getActivity().getActivityId())) {
             ActivityEntry activityEntry = activityManager
-                    .getActivityById(studentActivityAssignmentEntry.getActivity().getActivityId());
+                    .getById(studentActivityAssignmentEntry.getActivity().getActivityId());
             studentActivityAssignment.setActivity(ConvertToEntryUtil.convertToEntity(activityEntry, null));
         }
 

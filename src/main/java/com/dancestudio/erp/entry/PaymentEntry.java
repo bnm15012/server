@@ -22,6 +22,5 @@ public class PaymentEntry {
 
     private StudentEntry studentEntry;
     private ClientEntry clientEntry;
-    private InstructorEntry instructorEntry;
 
 }

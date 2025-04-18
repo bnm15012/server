@@ -1,22 +1,13 @@
 package com.dancestudio.erp.manager;
 
 import com.dancestudio.erp.entry.InstructorActivityAssignmentEntry;
-import com.dancestudio.erp.exception.EntityNotFoundException;
 
 import java.util.List;
 
-public interface InstructorActivityAssignmentManager {
+public interface InstructorActivityAssignmentManager extends BaseManager<InstructorActivityAssignmentEntry, Long> {
 
-    InstructorActivityAssignmentEntry addInstructorActivityAssignment(InstructorActivityAssignmentEntry instructorActivityAssignmentEntry) throws EntityNotFoundException;
+    InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, Long activityId) throws Exception;
 
-    InstructorActivityAssignmentEntry updateInstructorActivityAssignment(Long instructorActivityAssignmentId, InstructorActivityAssignmentEntry instructorActivityAssignmentEntry) throws EntityNotFoundException;
-
-    void deleteInstructorActivityAssignment(Long instructorActivityAssignmentId) throws EntityNotFoundException;
-
-    InstructorActivityAssignmentEntry getInstructorActivityAssignmentById(Long instructorActivityAssignmentId) throws EntityNotFoundException;
-
-    InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, Long activityId) throws EntityNotFoundException;
-
-    List<InstructorActivityAssignmentEntry> getInstructorAssignmentsByInstructorId(Long instructorId) throws EntityNotFoundException;
+    List<InstructorActivityAssignmentEntry> getInstructorAssignmentsByInstructorId(Long instructorId) throws Exception;
 
 }

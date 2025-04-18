@@ -23,11 +23,11 @@ public class PlanServiceImpl implements PlanService {
     private PlanManager planManager;
 
     @Override
-    public ResponseEntity<PlanResponse> addPlan(PlanEntry planEntry) {
+    public ResponseEntity<PlanResponse> add(PlanEntry planEntry) {
         PlanResponse response = new PlanResponse();
 
         try {
-            PlanEntry entry = planManager.addPlan(planEntry);
+            PlanEntry entry = planManager.add(planEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Plan added successfully", StatusResponse.Type.SUCCESS, 1));
@@ -39,11 +39,11 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public ResponseEntity<PlanResponse> updatePlan(Long planId, PlanEntry planEntry) {
+    public ResponseEntity<PlanResponse> update(Long planId, PlanEntry planEntry) {
         PlanResponse response = new PlanResponse();
 
         try {
-            PlanEntry entry = planManager.updatePlan(planId, planEntry);
+            PlanEntry entry = planManager.update(planId, planEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Plan updated successfully", StatusResponse.Type.SUCCESS, 1));
@@ -58,9 +58,9 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public ResponseEntity<Void> deletePlan(Long planId) {
+    public ResponseEntity<Void> delete(Long planId) {
         try {
-            planManager.deletePlan(planId);
+            planManager.delete(planId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -70,11 +70,11 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public ResponseEntity<PlanResponse> getPlanById(Long planId) {
+    public ResponseEntity<PlanResponse> get(Long planId) {
         PlanResponse response = new PlanResponse();
 
         try {
-            PlanEntry entry = planManager.getPlanById(planId);
+            PlanEntry entry = planManager.getById(planId);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Plan retrieved successfully", StatusResponse.Type.SUCCESS, 1));

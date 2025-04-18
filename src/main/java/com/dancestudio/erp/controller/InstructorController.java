@@ -10,29 +10,29 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/instructors")
-public class InstructorController {
+public class InstructorController extends BaseController<InstructorEntry, InstructorResponse, Long> {
 
     @Autowired
     private InstructorService instructorService;
 
-    @PostMapping("/add")
-    public ResponseEntity<InstructorResponse> addInstructor(@RequestBody InstructorEntry instructorEntry) {
-        return instructorService.addInstructor(instructorEntry);
+    @Override
+    public ResponseEntity<InstructorResponse> add(@RequestBody InstructorEntry instructorEntry) {
+        return instructorService.add(instructorEntry);
     }
 
-    @PutMapping("/update/{instructorId}")
-    public ResponseEntity<InstructorResponse> updateInstructor(@PathVariable Long instructorId, @RequestBody InstructorEntry instructorEntry) {
-        return instructorService.updateInstructor(instructorId, instructorEntry);
+    @Override
+    public ResponseEntity<InstructorResponse> update(@PathVariable Long id, @RequestBody InstructorEntry instructorEntry) {
+        return instructorService.update(id, instructorEntry);
     }
 
-    @DeleteMapping("/delete/{instructorId}")
-    public ResponseEntity<Void> deleteInstructor(@PathVariable Long instructorId) {
-        return instructorService.deleteInstructor(instructorId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return instructorService.delete(id);
     }
 
-    @GetMapping("/get/{instructorId}")
-    public ResponseEntity<InstructorResponse> getInstructorById(@PathVariable Long instructorId) {
-        return instructorService.getInstructorById(instructorId);
+    @Override
+    public ResponseEntity<InstructorResponse> get(@PathVariable Long id) {
+        return instructorService.get(id);
     }
 
     @GetMapping("/getAllInstructors/{studioId}")

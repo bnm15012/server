@@ -5,15 +5,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 
 import java.util.List;
 
-public interface ClientManager {
-
-    ClientEntry addClient(ClientEntry clientEntry) throws EntityNotFoundException;
-
-    ClientEntry updateClient(Long clientId, ClientEntry clientEntry) throws EntityNotFoundException;
-
-    void deleteClient(Long clientId) throws EntityNotFoundException;
-
-    ClientEntry getClientById(Long clientId) throws EntityNotFoundException;
+public interface ClientManager extends BaseManager<ClientEntry, Long> {
 
     Long countClientsByStudioId(Long studioId);
 

@@ -2,7 +2,6 @@ package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.BookingEntry;
 import com.dancestudio.erp.response.BookingResponse;
-import com.dancestudio.erp.response.BookingResponse;
 import com.dancestudio.erp.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,29 +9,29 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/booking")
-public class BookingController {
+public class BookingController extends BaseController<BookingEntry, BookingResponse, Long> {
 
     @Autowired
     private BookingService bookingService;
 
-    @PostMapping("/add")
-    public ResponseEntity<BookingResponse> addBooking(@RequestBody BookingEntry bookingEntry) {
-        return bookingService.addBooking(bookingEntry);
+    @Override
+    public ResponseEntity<BookingResponse> add(@RequestBody BookingEntry bookingEntry) {
+        return bookingService.add(bookingEntry);
     }
 
-    @PutMapping("/update/{bookingId}")
-    public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long bookingId, @RequestBody BookingEntry bookingEntry) {
-        return bookingService.updateBooking(bookingId, bookingEntry);
+    @Override
+    public ResponseEntity<BookingResponse> update(@PathVariable Long id, @RequestBody BookingEntry bookingEntry) {
+        return bookingService.update(id, bookingEntry);
     }
 
-    @DeleteMapping("/delete/{bookingId}")
-    public ResponseEntity<Void> deleteBooking(@PathVariable Long bookingId) {
-        return bookingService.deleteBooking(bookingId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return bookingService.delete(id);
     }
 
-    @GetMapping("/get/{bookingId}")
-    public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long bookingId) {
-        return bookingService.getBookingById(bookingId);
+    @Override
+    public ResponseEntity<BookingResponse> get(@PathVariable Long id) {
+        return bookingService.get(id);
     }
 
     @GetMapping("/getAllBookings/{studioId}/{startMonth}/{endMonth}")

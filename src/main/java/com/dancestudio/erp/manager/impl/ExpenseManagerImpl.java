@@ -32,13 +32,13 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public ExpenseEntry addExpense(ExpenseEntry expenseEntry) throws EntityNotFoundException {
+    public ExpenseEntry add(ExpenseEntry expenseEntry) throws Exception {
         Expense expense = convertToEntity(expenseEntry, null);
         return convertToEntry(expenseRepository.save(expense));
     }
 
     @Override
-    public ExpenseEntry updateExpense(Long expenseId, ExpenseEntry expenseEntry) throws EntityNotFoundException {
+    public ExpenseEntry update(Long expenseId, ExpenseEntry expenseEntry) throws Exception {
         Expense existingExpense = expenseRepository.findById(expenseId)
                 .orElseThrow(() -> new EntityNotFoundException("Expense not found"));
 
@@ -47,7 +47,7 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public void deleteExpense(Long expenseId) throws EntityNotFoundException {
+    public void delete(Long expenseId) throws EntityNotFoundException {
         expenseRepository.findById(expenseId)
                 .orElseThrow(() -> new EntityNotFoundException("Expense not found"));
 
@@ -55,7 +55,7 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public ExpenseEntry getExpenseById(Long expenseId) throws EntityNotFoundException {
+    public ExpenseEntry getById(Long expenseId) throws Exception {
         Expense expense = expenseRepository.findById(expenseId)
                 .orElseThrow(() -> new EntityNotFoundException("Expense not found"));
 
@@ -63,7 +63,7 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public List<ExpenseEntry> getAllExpenses(Long studioId, int page, int size, Long startMonth, Long endMonth) throws EntityNotFoundException {
+    public List<ExpenseEntry> getAllExpenses(Long studioId, int page, int size, Long startMonth, Long endMonth) throws Exception {
         Page<Expense> entries;
         Pageable pageable = PageRequest.of(page, size);
         if (startMonth.equals(0L) || endMonth.equals(0L)) {
@@ -81,14 +81,14 @@ public class ExpenseManagerImpl implements ExpenseManager {
         return expenseEntries;
     }
 
-    public ExpenseEntry convertToEntry(Expense expense) throws EntityNotFoundException {
+    public ExpenseEntry convertToEntry(Expense expense) throws Exception {
 
         ExpenseEntry expenseEntry = new ExpenseEntry();
         expenseEntry.setExpenseId(expense.getId());
         expenseEntry.setAmount(expense.getAmount());
         expenseEntry.setDescription(expense.getDescription());
 
-        StudioEntry studioEntry = studioManager.getStudioById(expense.getStudio().getId());
+        StudioEntry studioEntry = studioManager.getById(expense.getStudio().getId());
         expenseEntry.setStudioId(studioEntry.getStudioId());
 
         expenseEntry.setExpenseDate(expense.getExpenseDate());
@@ -107,7 +107,7 @@ public class ExpenseManagerImpl implements ExpenseManager {
         return expenseRepository.countExpensesByStudioIdAndMonthLong(studioId, startMonth, endMonth);
     }
 
-    private Expense convertToEntity(ExpenseEntry expenseEntry, Expense existingExpense) throws EntityNotFoundException {
+    private Expense convertToEntity(ExpenseEntry expenseEntry, Expense existingExpense) throws Exception {
         Expense expense = (existingExpense != null) ? existingExpense : new Expense();
 
         if (Objects.nonNull(expenseEntry.getExpenseId())) {
@@ -120,7 +120,7 @@ public class ExpenseManagerImpl implements ExpenseManager {
             expense.setDescription(expenseEntry.getDescription());
         }
         if (Objects.nonNull(expenseEntry.getStudioId())) {
-            StudioEntry studioEntry = studioManager.getStudioById(expenseEntry.getStudioId());
+            StudioEntry studioEntry = studioManager.getById(expenseEntry.getStudioId());
             expense.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
         }
         if (Objects.nonNull(expenseEntry.getExpenseDate())) {

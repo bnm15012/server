@@ -7,21 +7,13 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
 
-public interface StudentManager {
-
-    StudentEntry addStudent(StudentEntry studentEntry) throws Exception;
-
-    StudentEntry updateStudent(Long studentId, StudentEntry studentEntry) throws EntityNotFoundException;
-
-    void deleteStudent(Long studentId) throws EntityNotFoundException;
-
-    StudentEntry getStudentById(Long studentId) throws EntityNotFoundException;
+public interface StudentManager extends BaseManager<StudentEntry, Long> {
 
     List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size);
 
     List<StudentEntry> findByMembershipEndDate(Date reminderDate) throws EntityNotFoundException;
 
-    boolean sendSubscriptionRenewalReminder(Long studentId, Long activityId) throws EntityNotFoundException;
+    boolean sendSubscriptionRenewalReminder(Long studentId, Long activityId) throws Exception;
 
     Long getAllStudentsCountByStudio(Long studioId);
 

@@ -9,29 +9,29 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/studios")
-public class StudioController {
+public class StudioController extends BaseController<StudioEntry, StudioResponse, Long> {
 
     @Autowired
     private StudioService studioService;
 
-    @PostMapping("/add")
-    public ResponseEntity<StudioResponse> addStudio(@RequestBody StudioEntry studioEntry) {
-        return studioService.addStudio(studioEntry);
+    @Override
+    public ResponseEntity<StudioResponse> add(@RequestBody StudioEntry studioEntry) {
+        return studioService.add(studioEntry);
     }
 
-    @PutMapping("/update/{studioId}")
-    public ResponseEntity<StudioResponse> updateStudio(@PathVariable Long studioId, @RequestBody StudioEntry studioEntry) {
-        return studioService.updateStudio(studioId, studioEntry);
+    @Override
+    public ResponseEntity<StudioResponse> update(@PathVariable Long id, @RequestBody StudioEntry studioEntry) {
+        return studioService.update(id, studioEntry);
     }
 
-    @DeleteMapping("/delete/{studioId}")
-    public ResponseEntity<Void> deleteStudio(@PathVariable Long studioId) {
-        return studioService.deleteStudio(studioId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return studioService.delete(id);
     }
 
-    @GetMapping("/get/{studioId}")
-    public ResponseEntity<StudioResponse> getStudioById(@PathVariable Long studioId) {
-        return studioService.getStudioById(studioId);
+    @Override
+    public ResponseEntity<StudioResponse> get(@PathVariable Long id) {
+        return studioService.get(id);
     }
 
     @GetMapping("/getAllStudios")

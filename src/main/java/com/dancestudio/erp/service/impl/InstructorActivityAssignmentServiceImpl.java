@@ -22,11 +22,11 @@ public class InstructorActivityAssignmentServiceImpl implements InstructorActivi
     private InstructorActivityAssignmentManager instructorActivityAssignmentManager;
 
     @Override
-    public ResponseEntity<InstructorActivityAssignmentResponse> addInstructorActivityAssignment(InstructorActivityAssignmentEntry studentInstructorActivityAssignmentAssignmentEntry) {
+    public ResponseEntity<InstructorActivityAssignmentResponse> add(InstructorActivityAssignmentEntry studentInstructorActivityAssignmentAssignmentEntry) {
         InstructorActivityAssignmentResponse response = new InstructorActivityAssignmentResponse();
 
         try {
-            InstructorActivityAssignmentEntry entry = instructorActivityAssignmentManager.addInstructorActivityAssignment(studentInstructorActivityAssignmentAssignmentEntry);
+            InstructorActivityAssignmentEntry entry = instructorActivityAssignmentManager.add(studentInstructorActivityAssignmentAssignmentEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
@@ -38,11 +38,11 @@ public class InstructorActivityAssignmentServiceImpl implements InstructorActivi
     }
 
     @Override
-    public ResponseEntity<InstructorActivityAssignmentResponse> updateInstructorActivityAssignment(Long studentInstructorActivityAssignmentAssignmentId, InstructorActivityAssignmentEntry studentInstructorActivityAssignmentAssignmentEntry) {
+    public ResponseEntity<InstructorActivityAssignmentResponse> update(Long studentInstructorActivityAssignmentAssignmentId, InstructorActivityAssignmentEntry studentInstructorActivityAssignmentAssignmentEntry) {
         InstructorActivityAssignmentResponse response = new InstructorActivityAssignmentResponse();
 
         try {
-            InstructorActivityAssignmentEntry entry = instructorActivityAssignmentManager.updateInstructorActivityAssignment(studentInstructorActivityAssignmentAssignmentId, studentInstructorActivityAssignmentAssignmentEntry);
+            InstructorActivityAssignmentEntry entry = instructorActivityAssignmentManager.update(studentInstructorActivityAssignmentAssignmentId, studentInstructorActivityAssignmentAssignmentEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
@@ -57,9 +57,9 @@ public class InstructorActivityAssignmentServiceImpl implements InstructorActivi
     }
 
     @Override
-    public ResponseEntity<Void> deleteInstructorActivityAssignment(Long studentInstructorActivityAssignmentAssignmentId) {
+    public ResponseEntity<Void> delete(Long studentInstructorActivityAssignmentAssignmentId) {
         try {
-            instructorActivityAssignmentManager.deleteInstructorActivityAssignment(studentInstructorActivityAssignmentAssignmentId);
+            instructorActivityAssignmentManager.delete(studentInstructorActivityAssignmentAssignmentId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -69,11 +69,11 @@ public class InstructorActivityAssignmentServiceImpl implements InstructorActivi
     }
 
     @Override
-    public ResponseEntity<InstructorActivityAssignmentResponse> getInstructorActivityAssignmentById(Long studentInstructorActivityAssignmentAssignmentId) {
+    public ResponseEntity<InstructorActivityAssignmentResponse> get(Long studentInstructorActivityAssignmentAssignmentId) {
         InstructorActivityAssignmentResponse response = new InstructorActivityAssignmentResponse();
 
         try {
-            InstructorActivityAssignmentEntry entry = instructorActivityAssignmentManager.getInstructorActivityAssignmentById(studentInstructorActivityAssignmentAssignmentId);
+            InstructorActivityAssignmentEntry entry = instructorActivityAssignmentManager.getById(studentInstructorActivityAssignmentAssignmentId);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));

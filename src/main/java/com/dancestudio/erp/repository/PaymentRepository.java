@@ -35,4 +35,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("SELECT p.payeeType, SUM(p.amount) FROM Payment p WHERE p.studio.id = :studioId AND MONTH(p.paymentDate) = :month AND YEAR(p.paymentDate) = :year GROUP BY p.payeeType")
     List<Object[]> findCategoryWiseSumOfPaymentsByMonthAndYearAndStudioId(@Param("month") int month, @Param("year") int year, @Param("studioId") Long studioId);
+
+    @Query("SELECT p FROM Payment p WHERE p.payeeId = :payeeId and p.payeeType = :payeeType")
+    Payment findByPayeeIdAndPayeeType(@Param("payeeId") Long payeeId, @Param("payeeType") String payeeType);
 }

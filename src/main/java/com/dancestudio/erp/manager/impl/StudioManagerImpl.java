@@ -43,7 +43,7 @@ public class StudioManagerImpl implements StudioManager {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public StudioEntry addStudio(StudioEntry studioEntry) throws Exception {
+    public StudioEntry add(StudioEntry studioEntry) throws Exception {
         if(studioRepository.findByName(studioEntry.getStudioName()).isPresent()) {
             throw new EntityNotFoundException("Studio already exists");
         }
@@ -56,7 +56,7 @@ public class StudioManagerImpl implements StudioManager {
     }
 
     @Override
-    public StudioEntry updateStudio(Long studioId, StudioEntry studioEntry) throws EntityNotFoundException {
+    public StudioEntry update(Long studioId, StudioEntry studioEntry) throws EntityNotFoundException {
         Studio existingStudio = studioRepository.findById(studioId)
                 .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
 
@@ -72,16 +72,15 @@ public class StudioManagerImpl implements StudioManager {
     }
 
     @Override
-    public Boolean deleteStudio(Long studioId) throws EntityNotFoundException {
+    public void delete(Long studioId) throws EntityNotFoundException {
         studioRepository.findById(studioId)
                 .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
 
         studioRepository.deleteById(studioId);
-        return Boolean.TRUE;
     }
 
     @Override
-    public StudioEntry getStudioById(Long studioId) throws EntityNotFoundException {
+    public StudioEntry getById(Long studioId) throws EntityNotFoundException {
         Studio studio = studioRepository.findById(studioId)
                 .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
 

@@ -21,13 +21,13 @@ public class BankAccountManagerImpl implements BankAccountManager {
     }
 
     @Override
-    public BankAccountEntry addBankAccount(BankAccountEntry bankAccountEntry) throws EntityNotFoundException {
+    public BankAccountEntry add(BankAccountEntry bankAccountEntry) throws EntityNotFoundException {
         BankAccount bankAccount = ConvertToEntryUtil.convertToEntity(bankAccountEntry, null);
         return ConvertToEntryUtil.convertToEntry(bankAccountRepository.save(bankAccount));
     }
 
     @Override
-    public BankAccountEntry updateBankAccount(Long bankAccountId, BankAccountEntry bankAccountEntry) throws EntityNotFoundException {
+    public BankAccountEntry update(Long bankAccountId, BankAccountEntry bankAccountEntry) throws EntityNotFoundException {
         BankAccount existingBankAccount = bankAccountRepository.findById(bankAccountId)
                 .orElseThrow(() -> new EntityNotFoundException("Bank Account not found"));
 
@@ -36,7 +36,7 @@ public class BankAccountManagerImpl implements BankAccountManager {
     }
 
     @Override
-    public void deleteBankAccount(Long bankAccountId) throws EntityNotFoundException {
+    public void delete(Long bankAccountId) throws EntityNotFoundException {
         bankAccountRepository.findById(bankAccountId)
                 .orElseThrow(() -> new EntityNotFoundException("Bank Account not found"));
 
@@ -44,7 +44,7 @@ public class BankAccountManagerImpl implements BankAccountManager {
     }
 
     @Override
-    public BankAccountEntry getBankAccountById(Long bankAccountId) throws EntityNotFoundException {
+    public BankAccountEntry getById(Long bankAccountId) throws EntityNotFoundException {
         BankAccount bankAccount = bankAccountRepository.findById(bankAccountId)
                 .orElseThrow(() -> new EntityNotFoundException("Bank Account not found"));
 

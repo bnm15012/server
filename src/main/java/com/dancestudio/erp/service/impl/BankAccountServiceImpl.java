@@ -22,11 +22,11 @@ public class BankAccountServiceImpl implements BankAccountService {
     private BankAccountManager bankAccountManager;
 
     @Override
-    public ResponseEntity<BankAccountResponse> addBankAccount(BankAccountEntry bankAccountEntry) {
+    public ResponseEntity<BankAccountResponse> add(BankAccountEntry bankAccountEntry) {
         BankAccountResponse response = new BankAccountResponse();
 
         try {
-            BankAccountEntry entry = bankAccountManager.addBankAccount(bankAccountEntry);
+            BankAccountEntry entry = bankAccountManager.add(bankAccountEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Bank Account added successfully", StatusResponse.Type.SUCCESS, 1));
@@ -38,11 +38,11 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public ResponseEntity<BankAccountResponse> updateBankAccount(Long bankAccountId, BankAccountEntry bankAccountEntry) {
+    public ResponseEntity<BankAccountResponse> update(Long bankAccountId, BankAccountEntry bankAccountEntry) {
         BankAccountResponse response = new BankAccountResponse();
 
         try {
-            BankAccountEntry entry = bankAccountManager.updateBankAccount(bankAccountId, bankAccountEntry);
+            BankAccountEntry entry = bankAccountManager.update(bankAccountId, bankAccountEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Bank Account updated successfully", StatusResponse.Type.SUCCESS, 1));
@@ -57,9 +57,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteBankAccount(Long bankAccountId) {
+    public ResponseEntity<Void> delete(Long bankAccountId) {
         try {
-            bankAccountManager.deleteBankAccount(bankAccountId);
+            bankAccountManager.delete(bankAccountId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -69,11 +69,11 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public ResponseEntity<BankAccountResponse> getBankAccountById(Long bankAccountId) {
+    public ResponseEntity<BankAccountResponse> get(Long bankAccountId) {
         BankAccountResponse response = new BankAccountResponse();
 
         try {
-            BankAccountEntry entry = bankAccountManager.getBankAccountById(bankAccountId);
+            BankAccountEntry entry = bankAccountManager.getById(bankAccountId);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Bank Account retrieved successfully", StatusResponse.Type.SUCCESS, 1));

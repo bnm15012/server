@@ -9,28 +9,28 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/studentActivities")
-public class StudentActivityAssignmentController {
+public class StudentActivityAssignmentController extends BaseController<StudentActivityAssignmentEntry, StudentActivityAssignmentResponse, Long> {
 
     @Autowired
     private StudentActivityAssignmentService studentActivityAssignmentService;
 
-    @PostMapping("/add")
-    public ResponseEntity<StudentActivityAssignmentResponse> addStudentActivityAssignment(@RequestBody StudentActivityAssignmentEntry studentActivityAssignmentEntry) {
-        return studentActivityAssignmentService.addStudentActivityAssignment(studentActivityAssignmentEntry);
+    @Override
+    public ResponseEntity<StudentActivityAssignmentResponse> add(@RequestBody StudentActivityAssignmentEntry studentActivityAssignmentEntry) {
+        return studentActivityAssignmentService.add(studentActivityAssignmentEntry);
     }
 
-    @PutMapping("/update/{studentActivityAssignmentId}")
-    public ResponseEntity<StudentActivityAssignmentResponse> updateStudentActivityAssignment(@PathVariable Long studentActivityAssignmentId, @RequestBody StudentActivityAssignmentEntry studentActivityAssignmentEntry) {
-        return studentActivityAssignmentService.updateStudentActivityAssignment(studentActivityAssignmentId, studentActivityAssignmentEntry);
+    @Override
+    public ResponseEntity<StudentActivityAssignmentResponse> update(@PathVariable Long id, @RequestBody StudentActivityAssignmentEntry studentActivityAssignmentEntry) {
+        return studentActivityAssignmentService.update(id, studentActivityAssignmentEntry);
     }
 
-    @DeleteMapping("/delete/{studentActivityAssignmentId}")
-    public ResponseEntity<Void> deleteStudentActivityAssignment(@PathVariable Long studentActivityAssignmentId) {
-        return studentActivityAssignmentService.deleteStudentActivityAssignment(studentActivityAssignmentId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return studentActivityAssignmentService.delete(id);
     }
 
-    @GetMapping("/get/{studentActivityAssignmentId}")
-    public ResponseEntity<StudentActivityAssignmentResponse> getStudentActivityAssignmentById(@PathVariable Long studentActivityAssignmentId) {
-        return studentActivityAssignmentService.getStudentActivityAssignmentById(studentActivityAssignmentId);
+    @Override
+    public ResponseEntity<StudentActivityAssignmentResponse> get(@PathVariable Long id) {
+        return studentActivityAssignmentService.get(id);
     }
 }

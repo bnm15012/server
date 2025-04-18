@@ -4,15 +4,7 @@ import com.dancestudio.erp.entry.BookingEntry;
 import com.dancestudio.erp.response.BookingResponse;
 import org.springframework.http.ResponseEntity;
 
-public interface BookingService {
-
-    ResponseEntity<BookingResponse> addBooking(BookingEntry bookingEntry);
-
-    ResponseEntity<BookingResponse> updateBooking(Long bookingId, BookingEntry bookingEntry);
-
-    ResponseEntity<Void> deleteBooking(Long bookingId);
-
-    ResponseEntity<BookingResponse> getBookingById(Long bookingId);
+public interface BookingService extends BaseService<BookingEntry, BookingResponse, Long> {
 
     ResponseEntity<BookingResponse> getAllBookings(Long studioId, int page, int size, Long startMonth, Long endMonth);
 

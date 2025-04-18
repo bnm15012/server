@@ -24,10 +24,10 @@ public class StudentServiceImpl implements StudentService {
     private StudentManager studentManager;
 
     @Override
-    public ResponseEntity<StudentResponse> addStudent(StudentEntry studentEntry) {
+    public ResponseEntity<StudentResponse> add(StudentEntry studentEntry) {
         StudentResponse response = new StudentResponse();
         try {
-            StudentEntry entry = studentManager.addStudent(studentEntry);
+            StudentEntry entry = studentManager.add(studentEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Student added successfully", StatusResponse.Type.SUCCESS));
 
@@ -39,11 +39,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<StudentResponse> updateStudent(Long studentId, StudentEntry studentEntry) {
+    public ResponseEntity<StudentResponse> update(Long studentId, StudentEntry studentEntry) {
         StudentResponse response = new StudentResponse();
 
         try {
-            StudentEntry entry = studentManager.updateStudent(studentId, studentEntry);
+            StudentEntry entry = studentManager.update(studentId, studentEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Student updated successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);
@@ -57,9 +57,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteStudent(Long studentId) {
+    public ResponseEntity<Void> delete(Long studentId) {
         try {
-            studentManager.deleteStudent(studentId);
+            studentManager.delete(studentId);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -69,11 +69,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<StudentResponse> getStudentById(Long studentId) {
+    public ResponseEntity<StudentResponse> get(Long studentId) {
         StudentResponse response = new StudentResponse();
 
         try {
-            StudentEntry entry = studentManager.getStudentById(studentId);
+            StudentEntry entry = studentManager.getById(studentId);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Student retrieved successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);

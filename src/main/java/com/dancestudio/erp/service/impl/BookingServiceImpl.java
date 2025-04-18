@@ -22,11 +22,11 @@ public class BookingServiceImpl implements BookingService {
     private BookingManager bookingManager;
 
     @Override
-    public ResponseEntity<BookingResponse> addBooking(BookingEntry bookingEntry) {
+    public ResponseEntity<BookingResponse> add(BookingEntry bookingEntry) {
         BookingResponse response = new BookingResponse();
 
         try {
-            BookingEntry entry = bookingManager.addBooking(bookingEntry);
+            BookingEntry entry = bookingManager.add(bookingEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Booking added successfully", StatusResponse.Type.SUCCESS, 1));
@@ -38,28 +38,28 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<BookingResponse> updateBooking(Long bookingId, BookingEntry bookingEntry) {
+    public ResponseEntity<BookingResponse> update(Long bookingId, BookingEntry bookingEntry) {
         BookingResponse response = new BookingResponse();
 
         try {
-            BookingEntry entry = bookingManager.updateBooking(bookingId, bookingEntry);
+            BookingEntry entry = bookingManager.update(bookingId, bookingEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Booking updated successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
-            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
-            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @Override
-    public ResponseEntity<Void> deleteBooking(Long bookingId) {
+    public ResponseEntity<Void> delete(Long bookingId) {
         try {
-            bookingManager.deleteBooking(bookingId);
+            bookingManager.delete(bookingId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -69,11 +69,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<BookingResponse> getBookingById(Long bookingId) {
+    public ResponseEntity<BookingResponse> get(Long bookingId) {
         BookingResponse response = new BookingResponse();
 
         try {
-            BookingEntry entry = bookingManager.getBookingById(bookingId);
+            BookingEntry entry = bookingManager.getById(bookingId);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Booking retrieved successfully", StatusResponse.Type.SUCCESS, 1));

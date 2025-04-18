@@ -22,11 +22,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     private ExpenseManager expenseManager;
 
     @Override
-    public ResponseEntity<ExpenseResponse> addExpense(ExpenseEntry expenseEntry) {
+    public ResponseEntity<ExpenseResponse> add(ExpenseEntry expenseEntry) {
         ExpenseResponse response = new ExpenseResponse();
 
         try {
-            ExpenseEntry entry = expenseManager.addExpense(expenseEntry);
+            ExpenseEntry entry = expenseManager.add(expenseEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Expense added successfully", StatusResponse.Type.SUCCESS, 1));
@@ -38,11 +38,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ResponseEntity<ExpenseResponse> updateExpense(Long expenseId, ExpenseEntry expenseEntry) {
+    public ResponseEntity<ExpenseResponse> update(Long expenseId, ExpenseEntry expenseEntry) {
         ExpenseResponse response = new ExpenseResponse();
 
         try {
-            ExpenseEntry entry = expenseManager.updateExpense(expenseId, expenseEntry);
+            ExpenseEntry entry = expenseManager.update(expenseId, expenseEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Expense updated successfully", StatusResponse.Type.SUCCESS, 1));
@@ -57,9 +57,9 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteExpense(Long expenseId) {
+    public ResponseEntity<Void> delete(Long expenseId) {
         try {
-            expenseManager.deleteExpense(expenseId);
+            expenseManager.delete(expenseId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -69,11 +69,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ResponseEntity<ExpenseResponse> getExpenseById(Long expenseId) {
+    public ResponseEntity<ExpenseResponse> get(Long expenseId) {
         ExpenseResponse response = new ExpenseResponse();
 
         try {
-            ExpenseEntry entry = expenseManager.getExpenseById(expenseId);
+            ExpenseEntry entry = expenseManager.getById(expenseId);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Expense retrieved successfully", StatusResponse.Type.SUCCESS, 1));

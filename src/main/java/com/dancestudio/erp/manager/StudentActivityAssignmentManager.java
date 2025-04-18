@@ -1,27 +1,17 @@
 package com.dancestudio.erp.manager;
 
 import com.dancestudio.erp.entry.MonthlyReportEntry;
-import com.dancestudio.erp.entry.ReportEntry;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
-import com.dancestudio.erp.exception.EntityNotFoundException;
 
 import java.util.List;
 
-public interface StudentActivityAssignmentManager {
+public interface StudentActivityAssignmentManager extends BaseManager<StudentActivityAssignmentEntry, Long> {
 
-    StudentActivityAssignmentEntry addStudentActivityAssignment(StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException;
+    StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId) throws Exception;
 
-    StudentActivityAssignmentEntry updateStudentActivityAssignment(Long studentActivityAssignmentId, StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws EntityNotFoundException;
+    List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId) throws Exception;
 
-    void deleteStudentActivityAssignment(Long studentActivityAssignmentId) throws EntityNotFoundException;
-
-    StudentActivityAssignmentEntry getStudentActivityAssignmentById(Long studentActivityAssignmentId) throws EntityNotFoundException;
-
-    StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId) throws EntityNotFoundException;
-
-    List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId) throws EntityNotFoundException;
-
-    List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) throws EntityNotFoundException;
+    List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) throws Exception;
 
     List<MonthlyReportEntry> getAnalysisReport(Long year, Long studioId);
 }

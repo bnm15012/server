@@ -44,13 +44,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public SubscriptionEntry addSubscription(SubscriptionEntry subscriptionEntry) throws EntityNotFoundException {
+    public SubscriptionEntry add(SubscriptionEntry subscriptionEntry) throws Exception {
         Subscription subscription = convertToEntity(subscriptionEntry, null);
         return convertToEntry(subscriptionRepository.save(subscription));
     }
 
     @Override
-    public SubscriptionEntry updateSubscription(Long subscriptionId, SubscriptionEntry subscriptionEntry) throws EntityNotFoundException {
+    public SubscriptionEntry update(Long subscriptionId, SubscriptionEntry subscriptionEntry) throws Exception {
         Subscription existingSubscriptionPlan = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new EntityNotFoundException("SubscriptionPlan not found"));
 
@@ -59,7 +59,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public void deleteSubscription(Long subscriptionId) throws EntityNotFoundException {
+    public void delete(Long subscriptionId) throws EntityNotFoundException {
         subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new EntityNotFoundException("SubscriptionPlan not found"));
 
@@ -67,7 +67,14 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public SubscriptionEntry getSubscriptionPlanByStudioId(Long studioId) throws EntityNotFoundException {
+    public SubscriptionEntry getById(Long subscriptionId) throws Exception {
+        Subscription subscription = subscriptionRepository.findById(subscriptionId)
+                .orElseThrow(() -> new EntityNotFoundException("SubscriptionPlan not found"));
+        return convertToEntry(subscription);
+    }
+
+    @Override
+    public SubscriptionEntry getSubscriptionPlanByStudioId(Long studioId) throws Exception {
         Subscription subscription = subscriptionRepository.findLatestSubscriptionByStudioId(studioId)
                 .orElse(null);
         if (Objects.isNull(subscription)) {
@@ -76,12 +83,12 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         return convertToEntry(subscription);
     }
 
-    private SubscriptionEntry convertToEntry(Subscription subscriptionPlan) throws EntityNotFoundException {
+    private SubscriptionEntry convertToEntry(Subscription subscriptionPlan) throws Exception {
 
         SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
         subscriptionEntry.setPlanId(subscriptionPlan.getId());
 
-        StudioEntry entry = studioManager.getStudioById(subscriptionPlan.getStudio().getId());
+        StudioEntry entry = studioManager.getById(subscriptionPlan.getStudio().getId());
         subscriptionEntry.setStudioId(entry.getStudioId());
 
         subscriptionEntry.setSubscriptionPlan(SubscriptionType.valueOf(subscriptionPlan.getSubscriptionPlan()));
@@ -108,7 +115,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             Order order = razorpayClient.Orders.create(options);
             subscriptionEntry.setOrderId(order.get("id"));
             subscriptionEntry.setMessage(order.toString());
-            addSubscription(subscriptionEntry);
+            add(subscriptionEntry);
             return subscriptionEntry;
         } catch (Exception e) {
             log.error("Error creating order", e);
@@ -127,7 +134,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             if (isVerified) {
                 entry.setPaymentId(paymentId);
                 entry.setStatus(SubscriptionStatus.ACTIVE);
-                updateSubscription(entry.getPlanId(), entry);
+                update(entry.getPlanId(), entry);
                 entry.setMessage("Payment verified successfully!");
                 return entry;
             } else {
@@ -141,7 +148,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     private Subscription convertToEntity(SubscriptionEntry subscriptionEntry,
-                                         Subscription existingSubscriptionPlan) throws EntityNotFoundException {
+                                         Subscription existingSubscriptionPlan) throws Exception {
         Subscription subscription = (existingSubscriptionPlan != null) ? existingSubscriptionPlan
                 : new Subscription();
 
@@ -149,7 +156,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             subscription.setId(subscriptionEntry.getPlanId());
         }
         if (Objects.nonNull(subscriptionEntry.getStudioId())) {
-            StudioEntry entry = studioManager.getStudioById(subscriptionEntry.getStudioId());
+            StudioEntry entry = studioManager.getById(subscriptionEntry.getStudioId());
             subscription.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
         }
         if (Objects.nonNull(subscriptionEntry.getSubscriptionPlan())) {

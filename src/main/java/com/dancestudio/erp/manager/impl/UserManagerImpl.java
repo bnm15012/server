@@ -7,6 +7,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.exception.InvalidCredentialsException;
 import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.repository.UserRepository;
+import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -52,7 +53,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public UserEntry loginUser(String username, String password) throws EntityNotFoundException, InvalidCredentialsException {
+    public UserEntry loginUser(String username, String password) throws Exception {
         User user = userRepository.findByName(username)
                 .orElseThrow(() -> new EntityNotFoundException("UserName not found"));
 
@@ -69,7 +70,17 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public UserEntry updateUser(Long studioId, UserEntry userEntry) throws Exception {
+    public UserEntry add(UserEntry userEntry) throws Exception {
+        if (userRepository.findByName(userEntry.getUserName()).isPresent()) {
+            throw new IllegalArgumentException("UserName already exists");
+        }
+
+        User user = ConvertToEntryUtil.convertToEntity(userEntry, null);
+        return ConvertToEntryUtil.convertToEntry(userRepository.save(user));
+    }
+
+    @Override
+    public UserEntry update(Long studioId, UserEntry userEntry) throws Exception {
         User existingUser = userRepository.findById(studioId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -81,17 +92,19 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public Boolean deleteUser(Long userId) {
+    public void delete(Long userId) throws EntityNotFoundException {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
         try {
             userRepository.deleteById(userId);
-            return Boolean.TRUE;
         } catch (DataIntegrityViolationException e) {
             throw new RuntimeException("Cannot delete user, It has some dependency ", e);
         }
     }
 
     @Override
-    public UserEntry getUserById(Long userId) throws EntityNotFoundException {
+    public UserEntry getById(Long userId) throws Exception {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -99,7 +112,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public UserEntry getUserByEmail(String email) throws EntityNotFoundException {
+    public UserEntry getUserByEmail(String email) throws Exception {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

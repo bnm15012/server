@@ -35,19 +35,19 @@ public class ClientManagerImpl implements ClientManager {
     }
 
     @Override
-    public ClientEntry addClient(ClientEntry clientEntry) throws EntityNotFoundException {
+    public ClientEntry add(ClientEntry clientEntry) throws Exception {
 
         if (Objects.isNull(clientEntry.getStudioId())) {
             throw new EntityNotFoundException("StudioId cannot be null");
         }
 
-        studioManager.getStudioById(clientEntry.getStudioId());
+        studioManager.getById(clientEntry.getStudioId());
         Client client = convertToEntity(clientEntry, null);
         return convertToEntry(clientRepository.save(client));
     }
 
     @Override
-    public ClientEntry updateClient(Long clientId, ClientEntry clientEntry) throws EntityNotFoundException {
+    public ClientEntry update(Long clientId, ClientEntry clientEntry) throws Exception {
         Client existingClient = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Client not found"));
 
@@ -56,7 +56,7 @@ public class ClientManagerImpl implements ClientManager {
     }
 
     @Override
-    public void deleteClient(Long clientId) throws EntityNotFoundException {
+    public void delete(Long clientId) throws EntityNotFoundException {
         clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Client not found"));
 
@@ -64,7 +64,7 @@ public class ClientManagerImpl implements ClientManager {
     }
 
     @Override
-    public ClientEntry getClientById(Long clientId) throws EntityNotFoundException {
+    public ClientEntry getById(Long clientId) throws EntityNotFoundException {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Client not found"));
 
@@ -113,7 +113,7 @@ public class ClientManagerImpl implements ClientManager {
     public ClientEntry convertToEntry(Client client) throws EntityNotFoundException {
         ClientEntry clientEntry = new ClientEntry();
 
-        clientEntry.setId(client.getId());
+        clientEntry.setClientId(client.getId());
         clientEntry.setGroupName(client.getGroupName());
         clientEntry.setPocName(client.getPocName());
         clientEntry.setPocPhone(client.getPocPhone());
@@ -125,7 +125,7 @@ public class ClientManagerImpl implements ClientManager {
         return clientEntry;
     }
 
-    private Client convertToEntity(ClientEntry clientEntry, Client existingClient) throws EntityNotFoundException {
+    private Client convertToEntity(ClientEntry clientEntry, Client existingClient) throws Exception {
         Client client = (existingClient != null) ? existingClient : new Client();
 
         if (Objects.nonNull(clientEntry.getGroupName())) {
@@ -147,7 +147,7 @@ public class ClientManagerImpl implements ClientManager {
             client.setNotes(clientEntry.getNotes());
         }
         if (Objects.nonNull(clientEntry.getStudioId())) {
-            StudioEntry studioEntry = studioManager.getStudioById(clientEntry.getStudioId());
+            StudioEntry studioEntry = studioManager.getById(clientEntry.getStudioId());
             client.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
         }
 

@@ -22,11 +22,11 @@ public class StudentActivityAssignmentServiceImpl implements StudentActivityAssi
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
 
     @Override
-    public ResponseEntity<StudentActivityAssignmentResponse> addStudentActivityAssignment(StudentActivityAssignmentEntry studentStudentActivityAssignmentAssignmentEntry) {
+    public ResponseEntity<StudentActivityAssignmentResponse> add(StudentActivityAssignmentEntry studentStudentActivityAssignmentAssignmentEntry) {
         StudentActivityAssignmentResponse response = new StudentActivityAssignmentResponse();
 
         try {
-            StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.addStudentActivityAssignment(studentStudentActivityAssignmentAssignmentEntry);
+            StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.add(studentStudentActivityAssignmentAssignmentEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Student Activity Added successfully", StatusResponse.Type.SUCCESS, 1));
@@ -38,11 +38,11 @@ public class StudentActivityAssignmentServiceImpl implements StudentActivityAssi
     }
 
     @Override
-    public ResponseEntity<StudentActivityAssignmentResponse> updateStudentActivityAssignment(Long studentStudentActivityAssignmentAssignmentId, StudentActivityAssignmentEntry studentStudentActivityAssignmentAssignmentEntry) {
+    public ResponseEntity<StudentActivityAssignmentResponse> update(Long studentStudentActivityAssignmentAssignmentId, StudentActivityAssignmentEntry studentStudentActivityAssignmentAssignmentEntry) {
         StudentActivityAssignmentResponse response = new StudentActivityAssignmentResponse();
 
         try {
-            StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.updateStudentActivityAssignment(studentStudentActivityAssignmentAssignmentId, studentStudentActivityAssignmentAssignmentEntry);
+            StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.update(studentStudentActivityAssignmentAssignmentId, studentStudentActivityAssignmentAssignmentEntry);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Student Activity Updated successfully", StatusResponse.Type.SUCCESS, 1));
@@ -57,9 +57,9 @@ public class StudentActivityAssignmentServiceImpl implements StudentActivityAssi
     }
 
     @Override
-    public ResponseEntity<Void> deleteStudentActivityAssignment(Long studentStudentActivityAssignmentAssignmentId) {
+    public ResponseEntity<Void> delete(Long studentStudentActivityAssignmentAssignmentId) {
         try {
-            studentActivityAssignmentManager.deleteStudentActivityAssignment(studentStudentActivityAssignmentAssignmentId);
+            studentActivityAssignmentManager.delete(studentStudentActivityAssignmentAssignmentId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -69,11 +69,11 @@ public class StudentActivityAssignmentServiceImpl implements StudentActivityAssi
     }
 
     @Override
-    public ResponseEntity<StudentActivityAssignmentResponse> getStudentActivityAssignmentById(Long studentStudentActivityAssignmentAssignmentId) {
+    public ResponseEntity<StudentActivityAssignmentResponse> get(Long studentStudentActivityAssignmentAssignmentId) {
         StudentActivityAssignmentResponse response = new StudentActivityAssignmentResponse();
 
         try {
-            StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.getStudentActivityAssignmentById(studentStudentActivityAssignmentAssignmentId);
+            StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.getById(studentStudentActivityAssignmentAssignmentId);
 
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Fetched Student Activity successfully", StatusResponse.Type.SUCCESS, 1));

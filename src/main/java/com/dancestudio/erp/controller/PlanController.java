@@ -10,29 +10,29 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/plans")
-public class PlanController {
+public class PlanController extends BaseController<PlanEntry, PlanResponse, Long> {
 
     @Autowired
     private PlanService planService;
 
-    @PostMapping("/add")
-    public ResponseEntity<PlanResponse> addPlan(@RequestBody PlanEntry planEntry) {
-        return planService.addPlan(planEntry);
+    @Override
+    public ResponseEntity<PlanResponse> add(@RequestBody PlanEntry planEntry) {
+        return planService.add(planEntry);
     }
 
-    @PutMapping("/update/{planId}")
-    public ResponseEntity<PlanResponse> updatePlan(@PathVariable Long planId, @RequestBody PlanEntry planEntry) {
-        return planService.updatePlan(planId, planEntry);
+    @Override
+    public ResponseEntity<PlanResponse> update(@PathVariable Long id, @RequestBody PlanEntry planEntry) {
+        return planService.update(id, planEntry);
     }
 
-    @DeleteMapping("/delete/{planId}")
-    public ResponseEntity<Void> deletePlan(@PathVariable Long planId) {
-        return planService.deletePlan(planId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return planService.delete(id);
     }
 
-    @GetMapping("/get/{planId}")
-    public ResponseEntity<PlanResponse> getPlanById(@PathVariable Long planId) {
-        return planService.getPlanById(planId);
+    @Override
+    public ResponseEntity<PlanResponse> get(@PathVariable Long id) {
+        return planService.get(id);
     }
 
     @GetMapping("/getAllPlans")

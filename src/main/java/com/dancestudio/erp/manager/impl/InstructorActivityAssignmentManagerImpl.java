@@ -37,7 +37,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
     }
 
     @Override
-    public InstructorActivityAssignmentEntry addInstructorActivityAssignment(InstructorActivityAssignmentEntry instructorActivityAssignmentEntry) throws EntityNotFoundException {
+    public InstructorActivityAssignmentEntry add(InstructorActivityAssignmentEntry instructorActivityAssignmentEntry) throws Exception {
         instructorRepository.findById(instructorActivityAssignmentEntry.getInstructorId())
                 .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
@@ -48,7 +48,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
     }
 
     @Override
-    public InstructorActivityAssignmentEntry updateInstructorActivityAssignment(Long instructorActivityAssignmentId, InstructorActivityAssignmentEntry instructorActivityAssignmentEntry) throws EntityNotFoundException {
+    public InstructorActivityAssignmentEntry update(Long instructorActivityAssignmentId, InstructorActivityAssignmentEntry instructorActivityAssignmentEntry) throws Exception {
         InstructorActivityAssignment existingInstructorActivityAssignment = instructorActivityAssignmentRepository.findById(instructorActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("InstructorActivityAssignment not found"));
 
@@ -59,7 +59,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
     }
 
     @Override
-    public void deleteInstructorActivityAssignment(Long instructorActivityAssignmentId) throws EntityNotFoundException {
+    public void delete(Long instructorActivityAssignmentId) throws EntityNotFoundException {
         instructorActivityAssignmentRepository.findById(instructorActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("InstructorActivityAssignment not found"));
 
@@ -67,7 +67,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
     }
 
     @Override
-    public InstructorActivityAssignmentEntry getInstructorActivityAssignmentById(Long instructorActivityAssignmentAssignmentId) throws EntityNotFoundException {
+    public InstructorActivityAssignmentEntry getById(Long instructorActivityAssignmentAssignmentId) throws Exception {
         InstructorActivityAssignment instructorActivityAssignment = instructorActivityAssignmentRepository.findById(instructorActivityAssignmentAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("InstructorActivityAssignment not found"));
 
@@ -75,13 +75,13 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
     }
 
     @Override
-    public InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, Long activityId) throws EntityNotFoundException {
+    public InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, Long activityId) throws Exception {
         InstructorActivityAssignment assignment = instructorActivityAssignmentRepository.findByInstructorIdAndActivityId(instructorId, activityId);
         return convertToEntry(assignment);
     }
 
     @Override
-    public List<InstructorActivityAssignmentEntry> getInstructorAssignmentsByInstructorId(Long instructorId) throws EntityNotFoundException {
+    public List<InstructorActivityAssignmentEntry> getInstructorAssignmentsByInstructorId(Long instructorId) throws Exception {
         List<InstructorActivityAssignment> assignments = instructorActivityAssignmentRepository.findByInstructorId(instructorId);
         List<InstructorActivityAssignmentEntry> entries = new ArrayList<>();
 
@@ -91,7 +91,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         return entries;
     }
 
-    private InstructorActivityAssignmentEntry convertToEntry(InstructorActivityAssignment instructorActivityAssignment) throws EntityNotFoundException {
+    private InstructorActivityAssignmentEntry convertToEntry(InstructorActivityAssignment instructorActivityAssignment) throws Exception {
 
         if(Objects.isNull(instructorActivityAssignment)) {
             return null;
@@ -110,13 +110,13 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         );
 
         if (Objects.nonNull(instructorActivityAssignment.getActivity())) {
-            ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignment.getActivity().getId());
+            ActivityEntry activityEntry = activityManager.getById(instructorActivityAssignment.getActivity().getId());
             instructorActivityAssignmentEntry.setActivity(activityEntry);
         }
         return instructorActivityAssignmentEntry;
     }
 
-    private InstructorActivityAssignment convertToEntity(InstructorActivityAssignmentEntry instructorActivityAssignmentEntry, InstructorActivityAssignment existingInstructorActivityAssignment) throws EntityNotFoundException {
+    private InstructorActivityAssignment convertToEntity(InstructorActivityAssignmentEntry instructorActivityAssignmentEntry, InstructorActivityAssignment existingInstructorActivityAssignment) throws Exception {
         InstructorActivityAssignment instructorActivityAssignment = (existingInstructorActivityAssignment != null) ? existingInstructorActivityAssignment : new InstructorActivityAssignment();
 
         if (Objects.nonNull(instructorActivityAssignmentEntry.getAssignmentId())) {
@@ -138,7 +138,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         }
 
         if (Objects.nonNull(instructorActivityAssignmentEntry.getActivity()) && Objects.nonNull(instructorActivityAssignmentEntry.getActivity().getActivityId())) {
-            ActivityEntry activityEntry = activityManager.getActivityById(instructorActivityAssignmentEntry.getActivity().getActivityId());
+            ActivityEntry activityEntry = activityManager.getById(instructorActivityAssignmentEntry.getActivity().getActivityId());
             instructorActivityAssignment.setActivity(ConvertToEntryUtil.convertToEntity(activityEntry, null));
         }
 

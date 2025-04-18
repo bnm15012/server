@@ -32,13 +32,13 @@ public class PlanManagerImpl implements PlanManager {
     }
 
     @Override
-    public PlanEntry addPlan(PlanEntry planEntry) throws EntityNotFoundException {
+    public PlanEntry add(PlanEntry planEntry) throws EntityNotFoundException {
         Plan plan = convertToEntity(planEntry, null);
         return convertToEntry(planRepository.save(plan));
     }
 
     @Override
-    public PlanEntry updatePlan(Long planId, PlanEntry planEntry) throws EntityNotFoundException {
+    public PlanEntry update(Long planId, PlanEntry planEntry) throws EntityNotFoundException {
         Plan existingPlan = planRepository.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
 
@@ -47,7 +47,7 @@ public class PlanManagerImpl implements PlanManager {
     }
 
     @Override
-    public void deletePlan(Long planId) throws EntityNotFoundException {
+    public void delete(Long planId) throws EntityNotFoundException {
         planRepository.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
 
@@ -55,7 +55,7 @@ public class PlanManagerImpl implements PlanManager {
     }
 
     @Override
-    public PlanEntry getPlanById(Long planId) throws EntityNotFoundException {
+    public PlanEntry getById(Long planId) throws EntityNotFoundException {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
 

@@ -9,29 +9,29 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/expenses")
-public class ExpenseController {
+public class ExpenseController extends BaseController<ExpenseEntry, ExpenseResponse, Long> {
 
     @Autowired
     private ExpenseService expenseService;
 
-    @PostMapping("/add")
-    public ResponseEntity<ExpenseResponse> addExpense(@RequestBody ExpenseEntry expenseEntry) {
-        return expenseService.addExpense(expenseEntry);
+    @Override
+    public ResponseEntity<ExpenseResponse> add(@RequestBody ExpenseEntry expenseEntry) {
+        return expenseService.add(expenseEntry);
     }
 
-    @PutMapping("/update/{expenseId}")
-    public ResponseEntity<ExpenseResponse> updateExpense(@PathVariable Long expenseId, @RequestBody ExpenseEntry expenseEntry) {
-        return expenseService.updateExpense(expenseId, expenseEntry);
+    @Override
+    public ResponseEntity<ExpenseResponse> update(@PathVariable Long id, @RequestBody ExpenseEntry expenseEntry) {
+        return expenseService.update(id, expenseEntry);
     }
 
-    @DeleteMapping("/delete/{expenseId}")
-    public ResponseEntity<Void> deleteExpense(@PathVariable Long expenseId) {
-        return expenseService.deleteExpense(expenseId);
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return expenseService.delete(id);
     }
 
-    @GetMapping("/get/{expenseId}")
-    public ResponseEntity<ExpenseResponse> getExpenseById(@PathVariable Long expenseId) {
-        return expenseService.getExpenseById(expenseId);
+    @Override
+    public ResponseEntity<ExpenseResponse> get(@PathVariable Long id) {
+        return expenseService.get(id);
     }
 
     @GetMapping("/getAllExpenses/{studioId}/{startMonth}/{endMonth}")

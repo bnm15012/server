@@ -10,34 +10,34 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/payments")
-public class PaymentController {
+public class PaymentController extends BaseController<PaymentEntry, PaymentResponse, Long> {
 
     @Autowired
     private PaymentService paymentService;
 
-    @PostMapping("/add")
-    public ResponseEntity<PaymentResponse> addPayment(@RequestBody PaymentEntry paymentEntry) {
-        return paymentService.addPayment(paymentEntry);
+    @Override
+    public ResponseEntity<PaymentResponse> add(@RequestBody PaymentEntry paymentEntry) {
+        return paymentService.add(paymentEntry);
     }
 
-    @PutMapping("/update/{paymentId}")
-    public ResponseEntity<PaymentResponse> updatePayment(@PathVariable Long paymentId, @RequestBody PaymentEntry paymentEntry) {
-        return paymentService.updatePayment(paymentId, paymentEntry);
+    @Override
+    public ResponseEntity<PaymentResponse> update(@PathVariable Long id, @RequestBody PaymentEntry paymentEntry) {
+        return paymentService.update(id, paymentEntry);
+    }
+
+    @Override
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return paymentService.delete(id);
+    }
+
+    @Override
+    public ResponseEntity<PaymentResponse> get(@PathVariable Long id) {
+        return paymentService.get(id);
     }
 
     @PutMapping("/updateStatus/{paymentId}")
     public ResponseEntity<PaymentResponse> updatePaymentStatus(@PathVariable Long paymentId, @PathVariable PaymentStatus status) {
         return paymentService.updatePaymentStatus(paymentId, status);
-    }
-
-    @DeleteMapping("/delete/{paymentId}")
-    public void deletePayment(@PathVariable Long paymentId) {
-        paymentService.deletePayment(paymentId);
-    }
-
-    @GetMapping("/get/{paymentId}")
-    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable Long paymentId) {
-        return paymentService.getPaymentById(paymentId);
     }
 
     @GetMapping("/getAllPayments/{studioId}")

@@ -28,11 +28,11 @@ public class StudioServiceImpl implements StudioService {
     private SubscriptionManager subscriptionManager;
 
     @Override
-    public ResponseEntity<StudioResponse> addStudio(StudioEntry studioEntry) {
+    public ResponseEntity<StudioResponse> add(StudioEntry studioEntry) {
         StudioResponse response = new StudioResponse();
 
         try {
-            StudioEntry entry = studioManager.addStudio(studioEntry);
+            StudioEntry entry = studioManager.add(studioEntry);
             SubscriptionEntry subscriptionEntry = createTrialSubscriptionPlan(entry.getStudioId());
             entry.setSubscriptionEntry(subscriptionEntry);
             response.setData(Collections.singletonList(entry));
@@ -45,11 +45,11 @@ public class StudioServiceImpl implements StudioService {
     }
 
     @Override
-    public ResponseEntity<StudioResponse> updateStudio(Long studioId, StudioEntry studioEntry) {
+    public ResponseEntity<StudioResponse> update(Long studioId, StudioEntry studioEntry) {
         StudioResponse response = new StudioResponse();
 
         try {
-            StudioEntry entry = studioManager.updateStudio(studioId, studioEntry);
+            StudioEntry entry = studioManager.update(studioId, studioEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Studio updated successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);
@@ -63,9 +63,9 @@ public class StudioServiceImpl implements StudioService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteStudio(Long studioId) {
+    public ResponseEntity<Void> delete(Long studioId) {
         try {
-            boolean isDeleted = studioManager.deleteStudio(studioId);
+            studioManager.delete(studioId);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -75,11 +75,11 @@ public class StudioServiceImpl implements StudioService {
     }
 
     @Override
-    public ResponseEntity<StudioResponse> getStudioById(Long studioId) {
+    public ResponseEntity<StudioResponse> get(Long studioId) {
         StudioResponse response = new StudioResponse();
 
         try {
-            StudioEntry entry = studioManager.getStudioById(studioId);
+            StudioEntry entry = studioManager.getById(studioId);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Studio retrieved successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);
@@ -107,7 +107,7 @@ public class StudioServiceImpl implements StudioService {
         }
     }
 
-    private SubscriptionEntry createTrialSubscriptionPlan(Long studioId) throws EntityNotFoundException {
+    private SubscriptionEntry createTrialSubscriptionPlan(Long studioId) throws Exception {
         SubscriptionEntry trialPlan = new SubscriptionEntry();
         trialPlan.setSubscriptionPlan(SubscriptionType.TRIAL);
         trialPlan.setStudioId(studioId);
@@ -115,7 +115,7 @@ public class StudioServiceImpl implements StudioService {
         trialPlan.setOrderId("TRIAL-" + UUID.randomUUID().toString().replaceAll("-", "").substring(0, 6));
         trialPlan.setPrice(0.0);
 
-        return subscriptionManager.addSubscription(trialPlan);
+        return subscriptionManager.add(trialPlan);
     }
 
 }
