@@ -9,4 +9,6 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
 
     List<Plan> findByCountryCode(String countryCode);
 
+    Plan findByPlanTypeAndCountryCode(String planType, String countryCode);
+
 }

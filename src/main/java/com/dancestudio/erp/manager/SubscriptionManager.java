@@ -4,7 +4,7 @@ import com.dancestudio.erp.entry.SubscriptionEntry;
 
 public interface SubscriptionManager extends BaseManager<SubscriptionEntry, Long> {
 
-    SubscriptionEntry createOrder(SubscriptionEntry subscriptionEntry);
+    SubscriptionEntry createOrder(SubscriptionEntry subscriptionEntry, String countryCode);
 
     SubscriptionEntry verifyPayment(String orderId, String paymentId, String signature) throws Exception;
 

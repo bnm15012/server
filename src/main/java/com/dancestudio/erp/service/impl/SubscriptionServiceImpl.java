@@ -21,11 +21,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private SubscriptionManager subscriptionManager;
 
     @Override
-    public ResponseEntity<SubscriptionResponse> createOrder(SubscriptionEntry subscriptionEntry) {
+    public ResponseEntity<SubscriptionResponse> createOrder(SubscriptionEntry subscriptionEntry, String countryCode) {
 
         SubscriptionResponse response = new SubscriptionResponse();
         try {
-            SubscriptionEntry entry = subscriptionManager.createOrder(subscriptionEntry);
+            SubscriptionEntry entry = subscriptionManager.createOrder(subscriptionEntry, countryCode);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Order created successfully", StatusResponse.Type.SUCCESS,
                     Objects.isNull(entry) ? 0 : 1));

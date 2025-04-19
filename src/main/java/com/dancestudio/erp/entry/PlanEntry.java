@@ -10,7 +10,7 @@ public class PlanEntry {
 
     private Long id;
     private MembershipType planType;
-    private String amount;
+    private Double amount;
     private List<String> enabledFeatures;
     private List<String> disabledFeatures;
     private String countryCode;

@@ -1,11 +1,13 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Subscription;
-import com.dancestudio.erp.entry.SubscriptionEntry;
+import com.dancestudio.erp.entry.PlanEntry;
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.entry.SubscriptionEntry;
 import com.dancestudio.erp.enums.SubscriptionStatus;
 import com.dancestudio.erp.enums.SubscriptionType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.PlanManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.manager.SubscriptionManager;
 import com.dancestudio.erp.repository.SubscriptionRepository;
@@ -13,16 +15,16 @@ import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.SubscriptionUtils;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,6 +39,9 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
 
     @Autowired
     private StudioManager studioManager;
+
+    @Autowired
+    private PlanManager planManager;
 
     @Autowired
     public SubscriptionManagerImpl(SubscriptionRepository subscriptionRepository) {
@@ -83,38 +88,53 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         return convertToEntry(subscription);
     }
 
-    private SubscriptionEntry convertToEntry(Subscription subscriptionPlan) throws Exception {
+    private SubscriptionEntry convertToEntry(Subscription subscription) throws Exception {
 
         SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
-        subscriptionEntry.setPlanId(subscriptionPlan.getId());
+        subscriptionEntry.setPlanId(subscription.getId());
 
-        StudioEntry entry = studioManager.getById(subscriptionPlan.getStudio().getId());
+        StudioEntry entry = studioManager.getById(subscription.getStudio().getId());
         subscriptionEntry.setStudioId(entry.getStudioId());
 
-        subscriptionEntry.setSubscriptionPlan(SubscriptionType.valueOf(subscriptionPlan.getSubscriptionPlan()));
-        subscriptionEntry.setStartDate(subscriptionPlan.getStartDate());
-        subscriptionEntry.setEndDate(subscriptionPlan.getEndDate());
-        subscriptionEntry.setStatus(SubscriptionStatus.valueOf(subscriptionPlan.getStatus()));
-        subscriptionEntry.setPrice(subscriptionPlan.getPrice().doubleValue());
-        subscriptionEntry.setRenewalDate(subscriptionPlan.getRenewalDate());
-        subscriptionEntry.setOrderId(subscriptionPlan.getOrderId());
-        subscriptionEntry.setPaymentId(subscriptionPlan.getPaymentId());
+        subscriptionEntry.setSubscriptionPlan(SubscriptionType.valueOf(subscription.getSubscriptionPlan()));
+        subscriptionEntry.setStartDate(subscription.getStartDate());
+        subscriptionEntry.setEndDate(subscription.getEndDate());
+        subscriptionEntry.setStatus(SubscriptionStatus.valueOf(subscription.getStatus()));
+        subscriptionEntry.setPrice(subscription.getPrice().doubleValue());
+        subscriptionEntry.setRenewalDate(subscription.getRenewalDate());
+        subscriptionEntry.setOrderId(subscription.getOrderId());
+        subscriptionEntry.setPaymentId(subscription.getPaymentId());
 
         return subscriptionEntry;
     }
 
     @Override
-    public SubscriptionEntry createOrder(SubscriptionEntry subscriptionEntry) {
+    public SubscriptionEntry createOrder(SubscriptionEntry subscriptionEntry, String countryCode) {
         try {
+            PlanEntry planEntry = planManager.getPlansByMembershipTypeAndCountryCode(subscriptionEntry.getSubscriptionPlan().name(), countryCode);
+
             subscriptionEntry.setStatus(SubscriptionStatus.CREATED);
             JSONObject options = new JSONObject();
-            options.put("amount", subscriptionEntry.getPrice() * 100);
+            options.put("amount", planEntry.getAmount() * 100);
             options.put("currency", "INR");
             options.put("receipt", "receipt#1");
 
             Order order = razorpayClient.Orders.create(options);
             subscriptionEntry.setOrderId(order.get("id"));
             subscriptionEntry.setMessage(order.toString());
+            subscriptionEntry.setPrice(planEntry.getAmount());
+
+            // Fetch the latest ACTIVE subscription for the given studio
+            Optional<Subscription> activeSubscription = subscriptionRepository.findLatestSubscriptionByStudioId(subscriptionEntry.getStudioId());
+
+            if (activeSubscription.isPresent()) {
+                subscriptionEntry.setStartDate(activeSubscription.get().getEndDate());
+                subscriptionEntry.setEndDate(SubscriptionUtils.calculateEndDate(subscriptionEntry.getStartDate(), subscriptionEntry.getSubscriptionPlan()));
+            } else {
+                subscriptionEntry.setStartDate(new Date());
+                subscriptionEntry.setEndDate(SubscriptionUtils.calculateEndDate(subscriptionEntry.getStartDate(), subscriptionEntry.getSubscriptionPlan()));
+            }
+
             add(subscriptionEntry);
             return subscriptionEntry;
         } catch (Exception e) {
@@ -147,10 +167,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         }
     }
 
-    private Subscription convertToEntity(SubscriptionEntry subscriptionEntry,
-                                         Subscription existingSubscriptionPlan) throws Exception {
-        Subscription subscription = (existingSubscriptionPlan != null) ? existingSubscriptionPlan
-                : new Subscription();
+    private Subscription convertToEntity(SubscriptionEntry subscriptionEntry, Subscription existingSubscriptionPlan) throws Exception {
+        Subscription subscription = (existingSubscriptionPlan != null) ? existingSubscriptionPlan : new Subscription();
 
         if (Objects.nonNull(subscriptionEntry.getPlanId())) {
             subscription.setId(subscriptionEntry.getPlanId());
@@ -177,7 +195,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         if (Objects.nonNull(subscriptionEntry.getRenewalDate())) {
             subscription.setRenewalDate(subscriptionEntry.getRenewalDate());
         }
-        SubscriptionUtils.setSubscriptionDates(subscription, subscriptionEntry.getSubscriptionPlan());
+        SubscriptionUtils.setSubscriptionDates(subscription, subscriptionEntry, subscriptionEntry.getSubscriptionPlan());
         return subscription;
     }
 

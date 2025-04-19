@@ -20,7 +20,7 @@ public class Plan extends BaseEntity {
     private String disabledFeatures;
 
     @Column(name = "amount", nullable = false)
-    private String amount;
+    private double amount;
 
     @Column(name = "country_code", nullable = false)
     private String countryCode;

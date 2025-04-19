@@ -81,6 +81,15 @@ public class PlanManagerImpl implements PlanManager {
         return planEntries;
     }
 
+    @Override
+    public PlanEntry getPlansByMembershipTypeAndCountryCode(String membershipType, String countryCode) throws EntityNotFoundException {
+        Plan plan = planRepository.findByPlanTypeAndCountryCode(membershipType, countryCode);
+        if (Objects.isNull(plan)) {
+            throw new EntityNotFoundException("No plans found for the given membership type and country code");
+        }
+        return convertToEntry(plan);
+    }
+
     public PlanEntry convertToEntry(Plan plan) throws EntityNotFoundException {
 
         PlanEntry planEntry = new PlanEntry();

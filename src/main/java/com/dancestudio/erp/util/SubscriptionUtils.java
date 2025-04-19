@@ -1,16 +1,27 @@
 package com.dancestudio.erp.util;
 
 import com.dancestudio.erp.entity.Subscription;
+import com.dancestudio.erp.entry.SubscriptionEntry;
 import com.dancestudio.erp.enums.SubscriptionType;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 public class SubscriptionUtils {
-    public static void setSubscriptionDates(Subscription subscription, SubscriptionType subscriptionType) {
-        LocalDate startLocalDate = LocalDate.now();  // Current date
-        LocalDate endLocalDate;
+    public static void setSubscriptionDates(Subscription subscription, SubscriptionEntry subscriptionEntry, SubscriptionType subscriptionType) {
+
+        LocalDate startLocalDate, endLocalDate;
+        if (Objects.nonNull(subscriptionEntry.getStartDate())) {
+            startLocalDate = subscriptionEntry.getStartDate()
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        } else {
+            startLocalDate = LocalDate.now();
+        }
 
         switch (subscriptionType) {
             case TRIAL:
@@ -39,5 +50,29 @@ public class SubscriptionUtils {
         // Set the values in the subscription plan
         subscription.setStartDate(startDate);
         subscription.setEndDate(endDate);
+    }
+
+    public static Date calculateEndDate(Date startDate, SubscriptionType subscriptionType) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+
+        switch (subscriptionType) {
+            case MONTHLY:
+                calendar.add(Calendar.MONTH, 1);
+                break;
+            case QUARTERLY:
+                calendar.add(Calendar.MONTH, 3);
+                break;
+            case HALF_YEARLY:
+                calendar.add(Calendar.MONTH, 6);
+                break;
+            case YEARLY:
+                calendar.add(Calendar.YEAR, 1);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported subscription type: " + subscriptionType);
+        }
+
+        return calendar.getTime();
     }
 }

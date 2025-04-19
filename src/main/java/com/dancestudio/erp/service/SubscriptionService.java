@@ -7,7 +7,7 @@ import com.dancestudio.erp.response.SubscriptionResponse;
 
 public interface SubscriptionService {
 
-    ResponseEntity<SubscriptionResponse> createOrder(SubscriptionEntry subscriptionEntry);
+    ResponseEntity<SubscriptionResponse> createOrder(SubscriptionEntry subscriptionEntry, String countryCode);
 
     ResponseEntity<SubscriptionResponse> verifyPayment(String orderId, String paymentId, String signature);
 }

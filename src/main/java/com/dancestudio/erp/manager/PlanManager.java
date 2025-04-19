@@ -9,4 +9,6 @@ import java.util.List;
 public interface PlanManager extends BaseManager<PlanEntry, Long> {
 
     List<PlanEntry> getAllPlans(HttpServletRequest request) throws EntityNotFoundException;
+
+    PlanEntry getPlansByMembershipTypeAndCountryCode(String membershipType, String countryCode) throws EntityNotFoundException;
 }
