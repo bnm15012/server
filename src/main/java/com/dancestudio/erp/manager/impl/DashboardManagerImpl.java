@@ -14,10 +14,7 @@ import java.util.List;
 public class DashboardManagerImpl implements DashboardManager {
 
     @Autowired
-    private StudentRepository studentRepository;
-
-    @Autowired
-    private InstructorRepository instructorRepository;
+    private MemberRepository memberRepository;
 
     @Autowired
     private ExpenseRepository expenseRepository;
@@ -32,14 +29,14 @@ public class DashboardManagerImpl implements DashboardManager {
     private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
 
     @Override
-    public DashboardEntry getDashboardDetails(Long studioId, Long startMonth, Long endMonth) throws EntityNotFoundException {
+    public DashboardEntry getDashboardDetails(Long branchId, Long startMonth, Long endMonth) throws EntityNotFoundException {
         DashboardEntry entry = new DashboardEntry();
 
-        entry.setTotalStudents(studentRepository.totalStudentsByStudioId(studioId));
-        entry.setTotalInstructors(instructorRepository.totalInstructorsByStudioId(studioId));
-        entry.setTotalActiveMemberships(studentActivityAssignmentRepository.totalStudentActiveMembershipByStudioId(studioId));
+        entry.setTotalStudents(memberRepository.totalStudentsByBranchId(branchId));
+        entry.setTotalInstructors(memberRepository.totalInstructorsByBranchId(branchId));
+        entry.setTotalActiveMemberships(studentActivityAssignmentRepository.totalStudentActiveMembershipByStudioId(branchId));
 
-        List<MonthlyReportEntry> monthlyReportEntries = studentActivityAssignmentManager.getAnalysisReport((long) LocalDate.now().getYear(), studioId);
+        List<MonthlyReportEntry> monthlyReportEntries = studentActivityAssignmentManager.getAnalysisReport((long) LocalDate.now().getYear(), branchId);
         int lastMonth = LocalDate.now().minusMonths(1).getMonthValue();
 
         monthlyReportEntries.stream()
@@ -53,8 +50,8 @@ public class DashboardManagerImpl implements DashboardManager {
                 .findFirst()
                 .ifPresent(reportEntry -> entry.setCurrentMonthRevenue(reportEntry.getRevenue()));
 
-        processAmountCountEntries(entry, LocalDate.now().getMonthValue(), expenseRepository.countAndSumExpensesForCurrentAndLastMonth(studioId), true);
-        processAmountCountEntries(entry, LocalDate.now().getMonthValue(), paymentRepository.countAndSumPaymentsForCurrentAndLastMonth(studioId), false);
+        processAmountCountEntries(entry, LocalDate.now().getMonthValue(), expenseRepository.countAndSumExpensesForCurrentAndLastMonth(branchId), true);
+        processAmountCountEntries(entry, LocalDate.now().getMonthValue(), paymentRepository.countAndSumPaymentsForCurrentAndLastMonth(branchId), false);
 
         return entry;
     }

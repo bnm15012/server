@@ -10,7 +10,7 @@ import java.util.Date;
 public class BookingEntry {
 
     private Long id;
-    private Long studioId;
+    private Long branchId;
     private String purpose;
     private Double totalAmount;
     private PaymentStatus paymentStatus;

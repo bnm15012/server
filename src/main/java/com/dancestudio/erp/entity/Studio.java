@@ -24,7 +24,16 @@ public class Studio extends BaseEntity {
     @Column(name = "logo")
     private String logo;
 
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "pass_code")
+    private String passcode;
+
     @Column(name = "contact")
     private String contactDetails;
+
+    @Column(name = "configuration", columnDefinition = "json")
+    private String configuration;
 
 }

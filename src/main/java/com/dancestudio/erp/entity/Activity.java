@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @Table(name = "activity", uniqueConstraints = {
-        @UniqueConstraint(name = "activityType_studio_key", columnNames = {"activityType", "studio_id"})
+        @UniqueConstraint(name = "activityType_branch_key", columnNames = {"activityType", "branch_id"})
 })
 public class Activity extends BaseEntity {
 
@@ -18,8 +18,8 @@ public class Activity extends BaseEntity {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "studio_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_activity_studio_id"))
-    private Studio studio;
+    @JoinColumn(name = "branch_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_activity_branch_id"))
+    private Branch branch;
 
     @Column(name = "membership_plans", columnDefinition = "json")
     private String membershipPlans;

@@ -2,13 +2,8 @@ package com.dancestudio.erp.enums;
 
 public enum ActivityType {
     GYM,
+    DANCE,
     ZUMBA,
     YOGA,
-    BACHATA,
-    SAMBA,
-    SOCA,
-    HIP_HOP,
-    BELLY_DANCE,
-    BHANGRA,
     MARTIAL_ARTS
 }

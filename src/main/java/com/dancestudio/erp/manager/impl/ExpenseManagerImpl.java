@@ -1,12 +1,12 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Expense;
+import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.entry.ExpenseEntry;
-import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.enums.ExpenseCategory;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.ExpenseManager;
-import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.ExpenseRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class ExpenseManagerImpl implements ExpenseManager {
     private final ExpenseRepository expenseRepository;
 
     @Autowired
-    private StudioManager studioManager;
+    private BranchManager branchManager;
 
     @Autowired
     public ExpenseManagerImpl(ExpenseRepository expenseRepository) {
@@ -63,13 +63,13 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public List<ExpenseEntry> getAllExpenses(Long studioId, int page, int size, Long startMonth, Long endMonth) throws Exception {
+    public List<ExpenseEntry> getAllExpenses(Long branchId, int page, int size, Long startMonth, Long endMonth) throws Exception {
         Page<Expense> entries;
         Pageable pageable = PageRequest.of(page, size);
         if (startMonth.equals(0L) || endMonth.equals(0L)) {
-            entries = expenseRepository.findExpensesByStudioId(studioId, pageable);
+            entries = expenseRepository.findExpensesByBranchId(branchId, pageable);
         } else {
-            entries = expenseRepository.findAllByStudioId(studioId, startMonth, endMonth, pageable);
+            entries = expenseRepository.findAllByBranchId(branchId, startMonth, endMonth, pageable);
         }
 
         List<ExpenseEntry> expenseEntries = new ArrayList<>();
@@ -88,8 +88,8 @@ public class ExpenseManagerImpl implements ExpenseManager {
         expenseEntry.setAmount(expense.getAmount());
         expenseEntry.setDescription(expense.getDescription());
 
-        StudioEntry studioEntry = studioManager.getById(expense.getStudio().getId());
-        expenseEntry.setStudioId(studioEntry.getStudioId());
+        BranchEntry branchEntry = branchManager.getById(expense.getBranch().getId());
+        expenseEntry.setBranchId(branchEntry.getBranchId());
 
         expenseEntry.setExpenseDate(expense.getExpenseDate());
         expenseEntry.setExpenseCategory(ExpenseCategory.valueOf(expense.getExpenseCategory()));
@@ -98,13 +98,13 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public Long countExpensesByStudioId(Long studioId) {
-        return expenseRepository.countExpensesByStudioId(studioId);
+    public Long countExpensesByBranchId(Long branchId) {
+        return expenseRepository.countExpensesByBranchId(branchId);
     }
 
     @Override
-    public Long countExpensesByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth) {
-        return expenseRepository.countExpensesByStudioIdAndMonthLong(studioId, startMonth, endMonth);
+    public Long countExpensesByBranchIdAndMonth(Long branchId, Long startMonth, Long endMonth) {
+        return expenseRepository.countExpensesByBranchIdAndMonthLong(branchId, startMonth, endMonth);
     }
 
     private Expense convertToEntity(ExpenseEntry expenseEntry, Expense existingExpense) throws Exception {
@@ -119,9 +119,9 @@ public class ExpenseManagerImpl implements ExpenseManager {
         if (Objects.nonNull(expenseEntry.getDescription())) {
             expense.setDescription(expenseEntry.getDescription());
         }
-        if (Objects.nonNull(expenseEntry.getStudioId())) {
-            StudioEntry studioEntry = studioManager.getById(expenseEntry.getStudioId());
-            expense.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
+        if (Objects.nonNull(expenseEntry.getBranchId())) {
+            BranchEntry branchEntry = branchManager.getById(expenseEntry.getBranchId());
+            expense.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
         }
         if (Objects.nonNull(expenseEntry.getExpenseDate())) {
             expense.setExpenseDate(expenseEntry.getExpenseDate());

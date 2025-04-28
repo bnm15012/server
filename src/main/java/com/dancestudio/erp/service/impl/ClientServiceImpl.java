@@ -89,15 +89,15 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ResponseEntity<ClientResponse> getAllClients(Long studioId, int page, int size, Long startMonth, Long endMonth) {
+    public ResponseEntity<ClientResponse> getAllClients(Long branchId, int page, int size, Long startMonth, Long endMonth, String searchTerm) {
         ClientResponse response = new ClientResponse();
 
         try {
-            List<ClientEntry> entries = clientManager.getAllClients(studioId, page, size, startMonth, endMonth);
+            List<ClientEntry> entries = clientManager.getAllClients(branchId, page, size, startMonth, endMonth, searchTerm);
 
             long clientCount = (startMonth.equals(0L) || endMonth.equals(0L))
-                    ? clientManager.countClientsByStudioId(studioId)
-                    : clientManager.countClientsByStudioIdAndMonth(studioId, startMonth, endMonth);
+                    ? clientManager.countClientsByBranchId(branchId)
+                    : clientManager.countClientsByBranchIdAndMonth(branchId, startMonth, endMonth);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Clients retrieved successfully", StatusResponse.Type.SUCCESS, (int) clientCount));
             return ResponseEntity.status(HttpStatus.OK).body(response);

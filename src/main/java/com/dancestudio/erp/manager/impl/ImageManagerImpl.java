@@ -2,6 +2,7 @@ package com.dancestudio.erp.manager.impl;
 
 import com.cloudinary.Cloudinary;
 import com.dancestudio.erp.manager.ImageManager;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -12,6 +13,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
+@Setter
 public class ImageManagerImpl implements ImageManager {
 
     @Autowired

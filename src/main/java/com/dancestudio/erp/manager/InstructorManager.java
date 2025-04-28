@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface InstructorManager extends BaseManager<InstructorEntry, Long> {
 
-    List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus, int page, int size) throws EntityNotFoundException;
+    List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus, int page, int size, String searchTerm) throws EntityNotFoundException;
 
     Long getCountInstructorByStrudioId(Long studioId); 
 }

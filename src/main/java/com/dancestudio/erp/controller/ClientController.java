@@ -34,12 +34,10 @@ public class ClientController extends BaseController<ClientEntry, ClientResponse
         return clientService.get(id);
     }
 
-    @GetMapping("/getAllClients/{studioId}/{startMonth}/{endMonth}")
-    public ResponseEntity<ClientResponse> getAllClients(@PathVariable Long studioId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @PathVariable Long startMonth, @PathVariable Long endMonth) {
-        return clientService.getAllClients(studioId, page, size, startMonth, endMonth);
+    @GetMapping("/getAllClients/{branchId}/{startMonth}/{endMonth}")
+    public ResponseEntity<ClientResponse> getAllClients(@PathVariable Long branchId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @PathVariable Long startMonth, @PathVariable Long endMonth,
+            @RequestParam(required = false) String searchTerm) {
+        return clientService.getAllClients(branchId, page, size, startMonth, endMonth, searchTerm);
     }
 
     @GetMapping("/search")

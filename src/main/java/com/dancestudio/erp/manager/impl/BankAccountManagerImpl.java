@@ -51,4 +51,12 @@ public class BankAccountManagerImpl implements BankAccountManager {
         return ConvertToEntryUtil.convertToEntry(bankAccount);
     }
 
+    @Override
+    public BankAccountEntry getByInstructorId(Long instructorId) throws EntityNotFoundException {
+        BankAccount bankAccount = bankAccountRepository.findByInstructorId(instructorId)
+                .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
+
+        return ConvertToEntryUtil.convertToEntry(bankAccount);
+    }
+
 }

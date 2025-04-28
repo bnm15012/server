@@ -31,7 +31,7 @@ public class Client extends BaseEntity {
     private String notes;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "studio_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_client_studio_id"))
-    private Studio studio;
+    @JoinColumn(name = "branch_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_client_branch_id"))
+    private Branch branch;
 
 }

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ActivityManager extends BaseManager<ActivityEntry, Long> {
 
-    List<ActivityEntry> getAllActivities(Long studioId) throws EntityNotFoundException;
+    List<ActivityEntry> getAllActivities(Long studioId) throws Exception;
 }

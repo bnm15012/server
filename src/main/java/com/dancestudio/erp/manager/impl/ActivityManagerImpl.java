@@ -5,10 +5,9 @@ import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entry.ActivityEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
-import com.dancestudio.erp.manager.StudioManager;
+import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.repository.ActivityRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,20 +17,18 @@ import java.util.List;
 @Service
 public class ActivityManagerImpl implements ActivityManager {
     private final ActivityRepository activityRepository;
-    private final ObjectMapper objectMapper;
 
     @Autowired
-    private StudioManager studioManager;
+    private BranchManager branchManager;
 
     @Autowired
     public ActivityManagerImpl(ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
-        this.objectMapper = new ObjectMapper();
     }
 
     @Override
-    public ActivityEntry add(ActivityEntry activityEntry) throws EntityNotFoundException {
-        activityRepository.findByActivityTypeAndStudioId(activityEntry.getActivityType().name(), activityEntry.getStudioId())
+    public ActivityEntry add(ActivityEntry activityEntry) throws Exception {
+        activityRepository.findByActivityTypeAndBranchId(activityEntry.getActivityType().name(), activityEntry.getBranchId())
                 .ifPresent(existingActivity -> {
                     throw new IllegalArgumentException("Given activity already exists in the studio.");
                 });
@@ -41,7 +38,7 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     @Override
-    public ActivityEntry update(Long activityId, ActivityEntry activityEntry) throws EntityNotFoundException {
+    public ActivityEntry update(Long activityId, ActivityEntry activityEntry) throws Exception {
         Activity existingActivity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 
@@ -58,7 +55,7 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     @Override
-    public ActivityEntry getById(Long activityId) throws EntityNotFoundException {
+    public ActivityEntry getById(Long activityId) throws Exception {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 
@@ -66,8 +63,8 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     @Override
-    public List<ActivityEntry> getAllActivities(Long studioId) throws EntityNotFoundException {
-        List<Activity> entries = activityRepository.findAllByStudioId(studioId);
+    public List<ActivityEntry> getAllActivities(Long branchId) throws Exception {
+        List<Activity> entries = activityRepository.findAllByBranchId(branchId);
 
         List<ActivityEntry> activityEntries = new ArrayList<>();
         for (Activity entry : entries) {

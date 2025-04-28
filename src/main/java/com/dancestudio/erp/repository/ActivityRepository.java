@@ -10,9 +10,9 @@ import java.util.Optional;
 
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
-    Optional<Activity> findByActivityTypeAndStudioId(String activityType, Long studioId);
+    Optional<Activity> findByActivityTypeAndBranchId(String activityType, Long branchId);
 
-    @Query("SELECT s FROM Activity s WHERE s.studio.id = :studioId")
-    List<Activity> findAllByStudioId(@Param("studioId") Long studioId);
+    @Query("SELECT s FROM Activity s WHERE s.branch.id = :branchId")
+    List<Activity> findAllByBranchId(@Param("branchId") Long branchId);
 
 }

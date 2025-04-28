@@ -11,7 +11,7 @@ public class ExpenseEntry {
     private Long expenseId;
     private Double amount;
     private String description;
-    private Long studioId;
+    private Long branchId;
     private Date expenseDate;
     private ExpenseCategory expenseCategory;
 

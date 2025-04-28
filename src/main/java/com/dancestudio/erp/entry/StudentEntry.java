@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,9 +17,10 @@ public class StudentEntry {
     private String name;
     private String email;
     private String phone;
+    private Date dob;
     private String imageUrl;
     private MembershipStatus membershipStatus;
-    private Long studioId;
+    private Long branchId;
     private Long activeMembershipCount;
     private List<StudentActivityAssignmentEntry> enrolledActivities;
 

@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface ClientManager extends BaseManager<ClientEntry, Long> {
 
-    Long countClientsByStudioId(Long studioId);
+    Long countClientsByBranchId(Long branchId);
 
-    Long countClientsByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth);
+    Long countClientsByBranchIdAndMonth(Long branchId, Long startMonth, Long endMonth);
 
-    List<ClientEntry> getAllClients(Long studioId, int page, int size, Long startMonth, Long endMonth) throws EntityNotFoundException;
+    List<ClientEntry> getAllClients(Long branchId, int page, int size, Long startMonth, Long endMonth, String searchTerm) throws EntityNotFoundException;
 
     List<ClientEntry> searchClientsByName(String clientName) throws EntityNotFoundException;
 

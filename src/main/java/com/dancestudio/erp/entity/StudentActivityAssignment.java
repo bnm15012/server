@@ -32,5 +32,5 @@ public class StudentActivityAssignment extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_id"))
-    private Student student;
+    private Member student;
 }

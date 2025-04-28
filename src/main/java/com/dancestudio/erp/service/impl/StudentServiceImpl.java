@@ -1,10 +1,12 @@
 package com.dancestudio.erp.service.impl;
 
+import com.dancestudio.erp.entry.StudentCommunicationEntry;
 import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.StudentManager;
 import com.dancestudio.erp.response.StatusResponse;
+import com.dancestudio.erp.response.StudentCommunicationResponse;
 import com.dancestudio.erp.response.StudentResponse;
 import com.dancestudio.erp.service.StudentService;
 import lombok.Setter;
@@ -87,11 +89,27 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size) {
+    public ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
         StudentResponse response = new StudentResponse();
 
         try {
-            List<StudentEntry> entries = studentManager.getAllStudentsByStudio(studioId, activityId, membershipStatus, page, size);
+            List<StudentEntry> entries = studentManager.getAllStudentsByStudio(studioId, activityId, membershipStatus, page, size, searchTerm);
+            long totalSize = studentManager.getAllStudentsCountByStudio(studioId);
+            response.setData(entries);
+            response.setStatus(new StatusResponse(1, "Students retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
+    public ResponseEntity<StudentCommunicationResponse> getAllStudentsForCommunication(Long studioId, MembershipStatus membershipStatus, int page, int size) {
+        StudentCommunicationResponse response = new StudentCommunicationResponse();
+
+        try {
+            List<StudentCommunicationEntry> entries = studentManager.getAllStudentsForCommunication(studioId, membershipStatus, page, size);
             long totalSize = studentManager.getAllStudentsCountByStudio(studioId);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Students retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));

@@ -7,5 +7,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface InstructorService extends BaseService<InstructorEntry, InstructorResponse, Long> {
 
-    ResponseEntity<InstructorResponse> getAllInstructors(Long studioId, MembershipStatus membershipStatus, int page, int size);
+    ResponseEntity<InstructorResponse> getAllInstructors(Long studioId, MembershipStatus membershipStatus, int page, int size, String searchTerm);
 }

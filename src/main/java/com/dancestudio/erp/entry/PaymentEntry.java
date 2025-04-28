@@ -18,7 +18,7 @@ public class PaymentEntry {
     private PaymentStatus status;
     private PaymentType paymentType;
     private String message;
-    private Long studioId;
+    private Long branchId;
 
     private StudentEntry studentEntry;
     private ClientEntry clientEntry;

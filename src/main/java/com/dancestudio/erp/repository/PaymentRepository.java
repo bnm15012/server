@@ -16,25 +16,23 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT new com.dancestudio.erp.entry.ReportEntry(MONTH(p.paymentDate), SUM(p.amount)) FROM Payment p WHERE YEAR(p.paymentDate) = :year GROUP BY MONTH(p.paymentDate) ORDER BY MONTH(p.paymentDate)")
     List<ReportEntry> calculateTotalIncomeByYear(@Param("year") int year);
 
-    @Query("SELECT s FROM Payment s WHERE s.studio.id = :studioId")
-    List<Payment> findAllByStudioId(@Param("studioId") Long studioId);
+    @Query("SELECT s FROM Payment s WHERE s.branch.id = :branchId")
+    List<Payment> findAllByBranchId(@Param("branchId") Long branchId);
 
-    @Query("SELECT count(s) FROM Payment s WHERE s.studio.id = :studioId")
-    Long getPaymentCountByStudioId(Long studioId);
+    @Query("SELECT count(s) FROM Payment s WHERE s.branch.id = :branchId")
+    Long getPaymentCountByBranchId(Long branchId);
 
-    @Query("SELECT s FROM Payment s WHERE s.studio.id = :studioId")
-    Page<Payment> findByStudioId(@Param("studioId") Long studioId, Pageable pageable);
+    @Query("SELECT s FROM Payment s WHERE s.branch.id = :branchId")
+    Page<Payment> findByBranchId(@Param("branchId") Long branchId, Pageable pageable);
 
-    @Query("SELECT MONTH(s.paymentDate), COUNT(s), SUM(s.amount) FROM Payment s " +
-    "WHERE s.studio.id = :studioId AND " +
+    @Query("SELECT MONTH(s.paymentDate), COUNT(s), SUM(s.amount) FROM Payment s WHERE s.branch.id = :branchId AND " +
     "((YEAR(s.paymentDate) = YEAR(CURRENT_DATE) AND MONTH(s.paymentDate) = MONTH(CURRENT_DATE)) " +
     "OR (YEAR(s.paymentDate) = CASE WHEN MONTH(CURRENT_DATE) = 1 THEN YEAR(CURRENT_DATE) - 1 ELSE YEAR(CURRENT_DATE) END " +
-    "AND MONTH(s.paymentDate) = CASE WHEN MONTH(CURRENT_DATE) = 1 THEN 12 ELSE MONTH(CURRENT_DATE) - 1 END)) " +
-    "GROUP BY MONTH(s.paymentDate)")
-    List<Object[]> countAndSumPaymentsForCurrentAndLastMonth(@Param("studioId") Long studioId);
+    "AND MONTH(s.paymentDate) = CASE WHEN MONTH(CURRENT_DATE) = 1 THEN 12 ELSE MONTH(CURRENT_DATE) - 1 END)) GROUP BY MONTH(s.paymentDate)")
+    List<Object[]> countAndSumPaymentsForCurrentAndLastMonth(@Param("branchId") Long branchId);
 
-    @Query("SELECT p.payeeType, SUM(p.amount) FROM Payment p WHERE p.studio.id = :studioId AND MONTH(p.paymentDate) = :month AND YEAR(p.paymentDate) = :year GROUP BY p.payeeType")
-    List<Object[]> findCategoryWiseSumOfPaymentsByMonthAndYearAndStudioId(@Param("month") int month, @Param("year") int year, @Param("studioId") Long studioId);
+    @Query("SELECT p.payeeType, SUM(p.amount) FROM Payment p WHERE p.branch.id = :branchId AND MONTH(p.paymentDate) = :month AND YEAR(p.paymentDate) = :year GROUP BY p.payeeType")
+    List<Object[]> findCategoryWiseSumOfPaymentsByMonthAndYearAndBranchId(@Param("month") int month, @Param("year") int year, @Param("branchId") Long branchId);
 
     @Query("SELECT p FROM Payment p WHERE p.payeeId = :payeeId and p.payeeType = :payeeType")
     Payment findByPayeeIdAndPayeeType(@Param("payeeId") Long payeeId, @Param("payeeType") String payeeType);

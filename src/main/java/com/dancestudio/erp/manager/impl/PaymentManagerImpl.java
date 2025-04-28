@@ -2,17 +2,17 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
+import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.ReportEntry;
-import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.ClientManager;
 import com.dancestudio.erp.manager.InstructorManager;
 import com.dancestudio.erp.manager.PaymentManager;
-import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.PaymentRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
@@ -34,14 +34,10 @@ import java.util.stream.Collectors;
 public class PaymentManagerImpl implements PaymentManager {
 
     private final PaymentRepository paymentRepository;
-    @Autowired
-    private StudioManager studioManager;
-    @Autowired
-    private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
-    @Autowired
-    private ClientManager clientManager;
-    @Autowired
-    private InstructorManager instructorManager;
+    @Autowired private BranchManager branchManager;
+    @Autowired private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
+    @Autowired private ClientManager clientManager;
+    @Autowired private InstructorManager instructorManager;
 
     @Autowired
     public PaymentManagerImpl(PaymentRepository paymentRepository) {
@@ -89,15 +85,15 @@ public class PaymentManagerImpl implements PaymentManager {
 
     @SneakyThrows
     @Override
-    public List<PaymentEntry> getAllPaymentsByStudio(Long studioId, int page, int size) {
+    public List<PaymentEntry> getAllPaymentsByStudio(Long branchId, int page, int size) {
         if (size == -1) {
-            List<Payment> entries = paymentRepository.findAllByStudioId(studioId);
+            List<Payment> entries = paymentRepository.findAllByBranchId(branchId);
             return entries.stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         } else {
             Pageable pageable = PageRequest.of(page, size);
-            Page<Payment> paymentPage = paymentRepository.findByStudioId(studioId, pageable);
+            Page<Payment> paymentPage = paymentRepository.findByBranchId(branchId, pageable);
             return paymentPage.getContent().stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
@@ -131,7 +127,7 @@ public class PaymentManagerImpl implements PaymentManager {
         paymentEntry.setPaymentDate(payment.getPaymentDate());
         paymentEntry.setStatus(PaymentStatus.valueOf(payment.getStatus()));
         paymentEntry.setPaymentType(PaymentType.valueOf(payment.getPaymentType()));
-        paymentEntry.setStudioId(payment.getStudio().getId());
+        paymentEntry.setBranchId(payment.getBranch().getId());
         return paymentEntry;
     }
 
@@ -167,17 +163,17 @@ public class PaymentManagerImpl implements PaymentManager {
         if (Objects.nonNull(paymentEntry.getPaymentType())) {
             payment.setPaymentType(paymentEntry.getPaymentType().name());
         }
-        if (Objects.nonNull(paymentEntry.getStudioId())) {
-            StudioEntry entry = studioManager.getById(paymentEntry.getStudioId());
-            payment.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
+        if (Objects.nonNull(paymentEntry.getBranchId())) {
+            BranchEntry entry = branchManager.getById(paymentEntry.getBranchId());
+            payment.setBranch(ConvertToEntryUtil.convertToEntity(entry, null));
         }
 
         return payment;
     }
 
     @Override
-    public Long getPaymentCountByStudioId(Long studioId) {
-        return paymentRepository.getPaymentCountByStudioId(studioId);
+    public Long getPaymentCountByStudioId(Long branchId) {
+        return paymentRepository.getPaymentCountByBranchId(branchId);
     }
 
     @Override

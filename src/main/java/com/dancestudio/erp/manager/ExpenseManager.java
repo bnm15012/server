@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface ExpenseManager extends BaseManager<ExpenseEntry, Long> {
 
-    Long countExpensesByStudioId(Long studioId);
+    Long countExpensesByBranchId(Long branchId);
 
-    Long countExpensesByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth);
+    Long countExpensesByBranchIdAndMonth(Long branchId, Long startMonth, Long endMonth);
 
-    List<ExpenseEntry> getAllExpenses(Long studioId, int page, int size, Long startMonth, Long endMonth) throws Exception;
+    List<ExpenseEntry> getAllExpenses(Long branchId, int page, int size, Long startMonth, Long endMonth) throws Exception;
 }

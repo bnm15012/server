@@ -1,6 +1,6 @@
 package com.dancestudio.erp.manager.impl;
 
-import com.dancestudio.erp.entity.Student;
+import com.dancestudio.erp.entity.Member;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.ExpenseCategory;
@@ -12,9 +12,9 @@ import com.dancestudio.erp.manager.ActivityManager;
 import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.manager.StudentActivityAssignmentManager;
 import com.dancestudio.erp.repository.ExpenseRepository;
+import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.repository.PaymentRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
-import com.dancestudio.erp.repository.StudentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
 import lombok.SneakyThrows;
@@ -37,7 +37,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     private PaymentManager paymentManager;
 
     @Autowired
-    private StudentRepository studentRepository;
+    private MemberRepository memberRepository;
 
     @Autowired
     private ExpenseRepository expenseRepository;
@@ -53,7 +53,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     @Override
     public StudentActivityAssignmentEntry add(StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws Exception {
-        studentRepository.findById(studentActivityAssignmentEntry.getStudentId())
+        memberRepository.findById(studentActivityAssignmentEntry.getStudentId())
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
         StudentActivityAssignment studentStudentActivityAssignmentAssignment = convertToEntity(
@@ -147,19 +147,19 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     @SneakyThrows
     @Override
-    public List<MonthlyReportEntry> getAnalysisReport(Long year, Long studioId) {
-        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository.getAnalysisReport(Math.toIntExact(year), studioId);
+    public List<MonthlyReportEntry> getAnalysisReport(Long year, Long branchId) {
+        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository.getAnalysisReport(Math.toIntExact(year), branchId);
         for (int month = 1; month <= 12; month++) {
-            processMonthlyReport(reportEntries, month, year, studioId);
+            processMonthlyReport(reportEntries, month, year, branchId);
         }
 
         reportEntries.sort(Comparator.comparingInt(MonthlyReportEntry::getMonth));
         return reportEntries;
     }
 
-    private void processMonthlyReport(List<MonthlyReportEntry> reportEntries, int month, Long year, Long studioId) throws EntityNotFoundException {
-        List<ExpenseEntry> expenseEntries = getExpenseEntriesForMonth(month, year, studioId);
-        List<PaymentEntry> paymentEntries = getPaymentEntriesForMonth(month, year, studioId);
+    private void processMonthlyReport(List<MonthlyReportEntry> reportEntries, int month, Long year, Long branchId) throws EntityNotFoundException {
+        List<ExpenseEntry> expenseEntries = getExpenseEntriesForMonth(month, year, branchId);
+        List<PaymentEntry> paymentEntries = getPaymentEntriesForMonth(month, year, branchId);
         double revenue = calculateRevenueForMonth(reportEntries, month);
 
         MonthlyReportEntry monthlyReportEntry = findOrCreateMonthlyReportEntry(reportEntries, month, revenue);
@@ -179,8 +179,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                 });
     }
 
-    private List<ExpenseEntry> getExpenseEntriesForMonth(int month, Long year, Long studioId) throws EntityNotFoundException {
-        List<Object[]> expenses = expenseRepository.findCategoryWiseSumOfExpensesByMonthAndYearAndStudioId(month, Math.toIntExact(year), studioId);
+    private List<ExpenseEntry> getExpenseEntriesForMonth(int month, Long year, Long branchId) throws EntityNotFoundException {
+        List<Object[]> expenses = expenseRepository.findCategoryWiseSumOfExpensesByMonthAndYearAndBranchId(month, Math.toIntExact(year), branchId);
         List<ExpenseEntry> expenseEntries = new ArrayList<>();
         for (Object[] expense : expenses) {
             ExpenseEntry expenseEntry = new ExpenseEntry();
@@ -193,7 +193,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     private List<PaymentEntry> getPaymentEntriesForMonth(int month, Long year, Long studioId) {
-        List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByMonthAndYearAndStudioId(month, Math.toIntExact(year), studioId);
+        List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByMonthAndYearAndBranchId(month, Math.toIntExact(year), studioId);
         List<PaymentEntry> paymentEntries = new ArrayList<>();
 
         for (Object[] payment : payments) {
@@ -262,7 +262,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
             studentActivityAssignment.setActivityAmount(studentActivityAssignmentEntry.getActivityAmount());
         }
         if (Objects.nonNull(studentActivityAssignmentEntry.getStudentId())) {
-            Student student = studentRepository.findById(studentActivityAssignmentEntry.getStudentId())
+            Member student = memberRepository.findById(studentActivityAssignmentEntry.getStudentId())
                     .orElseThrow(() -> new EntityNotFoundException("Student not found"));
             studentActivityAssignment.setStudent(student);
         }

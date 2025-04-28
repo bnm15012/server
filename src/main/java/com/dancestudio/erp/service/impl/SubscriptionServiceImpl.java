@@ -27,8 +27,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         try {
             SubscriptionEntry entry = subscriptionManager.createOrder(subscriptionEntry, countryCode);
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, "Order created successfully", StatusResponse.Type.SUCCESS,
-                    Objects.isNull(entry) ? 0 : 1));
+            response.setStatus(new StatusResponse(1, "Order created successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
@@ -42,8 +41,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         try {
             SubscriptionEntry entry = subscriptionManager.verifyPayment(orderId, paymentId, signature);
             response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, "Payment verified successfully", StatusResponse.Type.SUCCESS,
-                    Objects.isNull(entry) ? 0 : 1));
+            response.setStatus(new StatusResponse(1, "Payment verified successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));

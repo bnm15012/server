@@ -4,7 +4,7 @@ import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entry.PasswordEntry;
 import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.enums.AuthType;
-import com.dancestudio.erp.manager.EmailManager;
+import com.dancestudio.erp.manager.NotificationManager;
 import com.dancestudio.erp.manager.UserManager;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class PasswordManagerImpl {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private EmailManager emailManager;
+    private NotificationManager notificationManager;
 
     @Autowired
     private UserManager userManager;
@@ -37,7 +37,7 @@ public class PasswordManagerImpl {
         String otp = jwtUtil.generateOtp();
         String otpToken = jwtUtil.generateToken(email, null, otp, AuthType.OTP);
         String body = "Your OTP is: " + otp + ". It is valid for 5 minutes.";
-        emailManager.sendEmail(email, PASSWORD_CHANGE_NOTIFICATION, body);
+        notificationManager.sendEmail(email, PASSWORD_CHANGE_NOTIFICATION, body, null);
 
         PasswordEntry passwordEntry = new PasswordEntry();
         passwordEntry.setOtpToken(otpToken);

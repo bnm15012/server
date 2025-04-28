@@ -2,6 +2,8 @@ package com.dancestudio.erp.entry;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class StudioEntry {
 
@@ -11,8 +13,11 @@ public class StudioEntry {
     private String email;
     private String location;
     private String logo;
+    private String passcode;
     private Boolean enabled;
     private String contactDetails;
+    private StudioConfigurationRequest configuration;
 
     private SubscriptionEntry subscriptionEntry;
+    private List<BranchEntry> branchList;
 }

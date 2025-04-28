@@ -11,17 +11,17 @@ import java.util.List;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
-    @Query("SELECT s FROM Client s WHERE s.studio.id = :studioId and month(s.createdOn) >= :startMonth and month(s.createdOn) <= :endMonth")
-    Page<Client> findAllByStudioId(@Param("studioId") Long studioId, @Param("startMonth") Long startMonth, @Param("endMonth") Long endMonth, Pageable pageable);
+    @Query("SELECT s FROM Client s WHERE s.branch.id = :branchId AND (:startMonth = 0 OR month(s.createdOn) >= :startMonth) AND (:endMonth = 0 OR month(s.createdOn) <= :endMonth) AND (:searchTerm IS NULL OR LOWER(s.groupName) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+    Page<Client> findAllByBranchId(@Param("branchId") Long branchId, @Param("startMonth") Long startMonth, @Param("endMonth") Long endMonth, Pageable pageable, @Param("searchTerm") String searchTerm);
 
-    @Query("SELECT s FROM Client s WHERE s.studio.id = :studioId")
-    Page<Client> findClientsByStudioId(@Param("studioId") Long studioId, Pageable pageable);
+    @Query("SELECT s FROM Client s WHERE s.branch.id = :branchId AND (:searchTerm IS NULL OR LOWER(s.groupName) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+    Page<Client> findClientsByBranchId(@Param("branchId") Long branchId, Pageable pageable, @Param("searchTerm") String searchTerm);
 
-    @Query("SELECT COUNT(s) FROM Client s WHERE s.studio.id = :studioId")
-    Long countClientsByStudioId(@Param("studioId") Long studioId);
+    @Query("SELECT COUNT(s) FROM Client s WHERE s.branch.id = :branchId")
+    Long countClientsByBranchId(@Param("branchId") Long branchId);
 
-    @Query("SELECT COUNT(s) FROM Client s WHERE s.studio.id = :studioId and month(s.createdOn) >= :startMonth and month(s.createdOn) <= :endMonth")
-    Long countClientsByStudioIdAndMonthLong(@Param("studioId") Long studioId, @Param("startMonth") Long startMonth, @Param("endMonth") Long endMonth);
+    @Query("SELECT COUNT(s) FROM Client s WHERE s.branch.id = :branchId and month(s.createdOn) >= :startMonth and month(s.createdOn) <= :endMonth")
+    Long countClientsByBranchIdAndMonthLong(@Param("branchId") Long branchId, @Param("startMonth") Long startMonth, @Param("endMonth") Long endMonth);
 
     List<Client> findByGroupNameContainingIgnoreCase(String groupName);
 

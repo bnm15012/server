@@ -2,6 +2,7 @@ package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.response.StudentCommunicationResponse;
 import com.dancestudio.erp.response.StudentResponse;
 import com.dancestudio.erp.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/students")
 public class StudentController extends BaseController<StudentEntry, StudentResponse, Long> {
 
-    @Autowired
-    private StudentService studentService;
+    @Autowired private StudentService studentService;
 
     @Override
     public ResponseEntity<StudentResponse> add(@RequestBody StudentEntry studentEntry) {
@@ -41,8 +41,18 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
             @RequestParam(required = false) Long activityId,
             @RequestParam(required = false) MembershipStatus membershipStatus,
             @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "-1") int size,
+            @RequestParam(required = false) String searchTerm) {
+        return studentService.getAllStudents(studioId, activityId, membershipStatus, page, size, searchTerm);
+    }
+
+    @GetMapping("/getAllStudentsForCommunication/{studioId}")
+    public ResponseEntity<StudentCommunicationResponse> getAllStudents(
+            @PathVariable Long studioId,
+            @RequestParam(required = false) MembershipStatus membershipStatus,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "-1") int size) {
-        return studentService.getAllStudents(studioId, activityId, membershipStatus, page, size);
+        return studentService.getAllStudentsForCommunication(studioId, membershipStatus, page, size);
     }
 
     @PostMapping("/sendSubscriptionRenewalReminder/{studentId}/{activityId}")

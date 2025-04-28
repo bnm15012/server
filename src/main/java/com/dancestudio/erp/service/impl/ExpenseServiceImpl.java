@@ -89,15 +89,15 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ResponseEntity<ExpenseResponse> getAllExpenses(Long studioId, int page, int size, Long startMonth, Long endMonth) {
+    public ResponseEntity<ExpenseResponse> getAllExpenses(Long branchId, int page, int size, Long startMonth, Long endMonth) {
         ExpenseResponse response = new ExpenseResponse();
 
         try {
-            List<ExpenseEntry> entries = expenseManager.getAllExpenses(studioId, page, size, startMonth, endMonth);
+            List<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, page, size, startMonth, endMonth);
 
             long expenseCount = (startMonth.equals(0L) || endMonth.equals(0L))
-                    ? expenseManager.countExpensesByStudioId(studioId)
-                    : expenseManager.countExpensesByStudioIdAndMonth(studioId, startMonth, endMonth);
+                    ? expenseManager.countExpensesByBranchId(branchId)
+                    : expenseManager.countExpensesByBranchIdAndMonth(branchId, startMonth, endMonth);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Expenses retrieved successfully", StatusResponse.Type.SUCCESS, (int) expenseCount));
             return ResponseEntity.status(HttpStatus.OK).body(response);

@@ -1,18 +1,12 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Booking;
-import com.dancestudio.erp.entry.BookingEntry;
-import com.dancestudio.erp.entry.ClientEntry;
-import com.dancestudio.erp.entry.PaymentEntry;
-import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.BookingManager;
-import com.dancestudio.erp.manager.ClientManager;
-import com.dancestudio.erp.manager.PaymentManager;
-import com.dancestudio.erp.manager.StudioManager;
+import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.BookingRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import lombok.Setter;
@@ -34,7 +28,7 @@ public class BookingManagerImpl implements BookingManager {
     private final BookingRepository bookingRepository;
 
     @Autowired
-    private StudioManager studioManager;
+    private BranchManager branchManager;
 
     @Autowired
     private ClientManager clientManager;
@@ -51,7 +45,7 @@ public class BookingManagerImpl implements BookingManager {
     @Override
     public BookingEntry add(BookingEntry bookingEntry) throws Exception {
         validateRequest(bookingEntry);
-        studioManager.getById(bookingEntry.getStudioId());
+        branchManager.getById(bookingEntry.getBranchId());
         clientManager.getById(bookingEntry.getClientEntry().getClientId());
 
         Booking booking = convertToEntity(bookingEntry, null);
@@ -119,23 +113,23 @@ public class BookingManagerImpl implements BookingManager {
     }
 
     @Override
-    public Long countBookingsByStudioId(Long studioId) {
-        return bookingRepository.countBookingsByStudioId(studioId);
+    public Long countBookingsByBranchId(Long branchId) {
+        return bookingRepository.countBookingsByBranchId(branchId);
     }
 
     @Override
-    public Long countBookingsByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth) {
-        return bookingRepository.countBookingsByStudioIdAndMonthLong(studioId, startMonth, endMonth);
+    public Long countBookingsByBranchIdAndMonth(Long branchId, Long startMonth, Long endMonth) {
+        return bookingRepository.countBookingsByBranchIdAndMonthLong(branchId, startMonth, endMonth);
     }
 
     @Override
-    public List<BookingEntry> getAllBookings(Long studioId, int page, int size, Long startMonth, Long endMonth) throws Exception {
+    public List<BookingEntry> getAllBookings(Long branchId, int page, int size, Long startMonth, Long endMonth) throws Exception {
         Page<Booking> entries;
         Pageable pageable = PageRequest.of(page, size);
         if (startMonth.equals(0L) || endMonth.equals(0L)) {
-            entries = bookingRepository.findBookingsByStudioId(studioId, pageable);
+            entries = bookingRepository.findBookingsByBranchId(branchId, pageable);
         } else {
-            entries = bookingRepository.findAllByStudioId(studioId, startMonth, endMonth, pageable);
+            entries = bookingRepository.findAllByBranchId(branchId, startMonth, endMonth, pageable);
         }
 
         List<BookingEntry> bookingEntries = new ArrayList<>();
@@ -151,7 +145,7 @@ public class BookingManagerImpl implements BookingManager {
         BookingEntry bookingEntry = new BookingEntry();
 
         bookingEntry.setId(booking.getId());
-        bookingEntry.setStudioId(booking.getStudio().getId());
+        bookingEntry.setBranchId(booking.getBranch().getId());
         bookingEntry.setPurpose(booking.getPurpose());
         bookingEntry.setTotalAmount(booking.getTotalAmount());
         bookingEntry.setPaymentStatus(PaymentStatus.valueOf(booking.getPaymentStatus()));
@@ -176,9 +170,9 @@ public class BookingManagerImpl implements BookingManager {
     private Booking convertToEntity(BookingEntry bookingEntry, Booking existingBooking) throws Exception {
         Booking booking = (existingBooking != null) ? existingBooking : new Booking();
 
-        if (Objects.nonNull(bookingEntry.getStudioId())) {
-            StudioEntry studioEntry = studioManager.getById(bookingEntry.getStudioId());
-            booking.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
+        if (Objects.nonNull(bookingEntry.getBranchId())) {
+            BranchEntry branchEntry = branchManager.getById(bookingEntry.getBranchId());
+            booking.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
         }
         if (Objects.nonNull(bookingEntry.getClientEntry())) {
             ClientEntry clientEntry = clientManager.getById(bookingEntry.getClientEntry().getClientId());

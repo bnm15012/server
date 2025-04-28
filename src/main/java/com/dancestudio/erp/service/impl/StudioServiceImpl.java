@@ -5,6 +5,7 @@ import com.dancestudio.erp.entry.SubscriptionEntry;
 import com.dancestudio.erp.enums.SubscriptionStatus;
 import com.dancestudio.erp.enums.SubscriptionType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.manager.SubscriptionManager;
 import com.dancestudio.erp.response.StatusResponse;
@@ -26,6 +27,7 @@ public class StudioServiceImpl implements StudioService {
 
     private StudioManager studioManager;
     private SubscriptionManager subscriptionManager;
+    private BranchManager branchManager;
 
     @Override
     public ResponseEntity<StudioResponse> add(StudioEntry studioEntry) {
@@ -33,7 +35,7 @@ public class StudioServiceImpl implements StudioService {
 
         try {
             StudioEntry entry = studioManager.add(studioEntry);
-            SubscriptionEntry subscriptionEntry = createTrialSubscriptionPlan(entry.getStudioId());
+            SubscriptionEntry subscriptionEntry = createTrialSubscriptionPlan(entry.getBranchList().get(0).getBranchId());
             entry.setSubscriptionEntry(subscriptionEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Studio added successfully", StatusResponse.Type.SUCCESS));
@@ -99,7 +101,7 @@ public class StudioServiceImpl implements StudioService {
         try {
             List<StudioEntry> entry = studioManager.getAllStudios();
             response.setData(entry);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, entry.size()));
+            response.setStatus(new StatusResponse(1, "All studios fetched successfully", StatusResponse.Type.SUCCESS, entry.size()));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
@@ -107,10 +109,10 @@ public class StudioServiceImpl implements StudioService {
         }
     }
 
-    private SubscriptionEntry createTrialSubscriptionPlan(Long studioId) throws Exception {
+    private SubscriptionEntry createTrialSubscriptionPlan(Long branchId) throws Exception {
         SubscriptionEntry trialPlan = new SubscriptionEntry();
         trialPlan.setSubscriptionPlan(SubscriptionType.TRIAL);
-        trialPlan.setStudioId(studioId);
+        trialPlan.setBranchId(branchId);
         trialPlan.setStatus(SubscriptionStatus.ACTIVE);
         trialPlan.setOrderId("TRIAL-" + UUID.randomUUID().toString().replaceAll("-", "").substring(0, 6));
         trialPlan.setPrice(0.0);

@@ -17,6 +17,7 @@ public class InstructorEntry {
     private String imageUrl;
     private MembershipStatus instructorStatus;
     private BankAccountEntry bankAccountDetails;
+    private BranchEntry branchEntry;
     private StudioEntry studioEntry;
 
     private List<InstructorActivityAssignmentEntry> assignments;

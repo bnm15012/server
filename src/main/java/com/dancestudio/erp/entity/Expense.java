@@ -13,8 +13,8 @@ import java.util.Date;
 public class Expense extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "studio_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_expense_studio_id"))
-    private Studio studio;
+    @JoinColumn(name = "branch_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_expense_branch_id"))
+    private Branch branch;
 
     @Column(name = "description", nullable = false)
     private String description;

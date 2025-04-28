@@ -11,6 +11,7 @@ public class SubscriptionEntry {
 
     private Long planId;
     private Long studioId;
+    private Long branchId;
     private SubscriptionType subscriptionPlan; // e.g., "Monthly", "Yearly", "Half-Yearly"
     private Date startDate;
     private Date endDate;

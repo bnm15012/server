@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/instructors")
 public class InstructorController extends BaseController<InstructorEntry, InstructorResponse, Long> {
 
-    @Autowired
-    private InstructorService instructorService;
+    @Autowired private InstructorService instructorService;
 
     @Override
     public ResponseEntity<InstructorResponse> add(@RequestBody InstructorEntry instructorEntry) {
@@ -35,11 +34,9 @@ public class InstructorController extends BaseController<InstructorEntry, Instru
         return instructorService.get(id);
     }
 
-    @GetMapping("/getAllInstructors/{studioId}")
-    public ResponseEntity<InstructorResponse> getAllInstructors(@PathVariable Long studioId,
-                                                @RequestParam(required = false) MembershipStatus membershipStatus,
-                                                @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "-1") int size) {
-        return instructorService.getAllInstructors(studioId, membershipStatus, page, size);
+    @GetMapping("/getAllInstructors/{branchId}")
+    public ResponseEntity<InstructorResponse> getAllInstructors(@PathVariable Long branchId, @RequestParam(required = false) MembershipStatus membershipStatus,
+           @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "-1") int size, @RequestParam(required = false) String searchTerm) {
+        return instructorService.getAllInstructors(branchId, membershipStatus, page, size, searchTerm);
     }
 }

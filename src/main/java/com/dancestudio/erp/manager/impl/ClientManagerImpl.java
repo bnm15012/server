@@ -1,12 +1,12 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Client;
+import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.entry.ClientEntry;
-import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.enums.ClientType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.ClientManager;
-import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.ClientRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import lombok.Setter;
@@ -27,7 +27,7 @@ public class ClientManagerImpl implements ClientManager {
     private final ClientRepository clientRepository;
 
     @Autowired
-    private StudioManager studioManager;
+    private BranchManager branchManager;
 
     @Autowired
     public ClientManagerImpl(ClientRepository clientRepository) {
@@ -37,11 +37,11 @@ public class ClientManagerImpl implements ClientManager {
     @Override
     public ClientEntry add(ClientEntry clientEntry) throws Exception {
 
-        if (Objects.isNull(clientEntry.getStudioId())) {
-            throw new EntityNotFoundException("StudioId cannot be null");
+        if (Objects.isNull(clientEntry.getBranchId())) {
+            throw new EntityNotFoundException("BranchId cannot be null");
         }
 
-        studioManager.getById(clientEntry.getStudioId());
+        branchManager.getById(clientEntry.getBranchId());
         Client client = convertToEntity(clientEntry, null);
         return convertToEntry(clientRepository.save(client));
     }
@@ -72,23 +72,23 @@ public class ClientManagerImpl implements ClientManager {
     }
 
     @Override
-    public Long countClientsByStudioId(Long studioId) {
-        return clientRepository.countClientsByStudioId(studioId);
+    public Long countClientsByBranchId(Long branchId) {
+        return clientRepository.countClientsByBranchId(branchId);
     }
 
     @Override
-    public Long countClientsByStudioIdAndMonth(Long studioId, Long startMonth, Long endMonth) {
-        return clientRepository.countClientsByStudioIdAndMonthLong(studioId, startMonth, endMonth);
+    public Long countClientsByBranchIdAndMonth(Long branchId, Long startMonth, Long endMonth) {
+        return clientRepository.countClientsByBranchIdAndMonthLong(branchId, startMonth, endMonth);
     }
 
     @Override
-    public List<ClientEntry> getAllClients(Long studioId, int page, int size, Long startMonth, Long endMonth) throws EntityNotFoundException {
+    public List<ClientEntry> getAllClients(Long branchId, int page, int size, Long startMonth, Long endMonth, String searchTerm) throws EntityNotFoundException {
         Page<Client> entries;
         Pageable pageable = PageRequest.of(page, size);
         if (startMonth.equals(0L) || endMonth.equals(0L)) {
-            entries = clientRepository.findClientsByStudioId(studioId, pageable);
+            entries = clientRepository.findClientsByBranchId(branchId, pageable, searchTerm);
         } else {
-            entries = clientRepository.findAllByStudioId(studioId, startMonth, endMonth, pageable);
+            entries = clientRepository.findAllByBranchId(branchId, startMonth, endMonth, pageable, searchTerm);
         }
 
         List<ClientEntry> clientEntries = new ArrayList<>();
@@ -120,7 +120,7 @@ public class ClientManagerImpl implements ClientManager {
         clientEntry.setPocEmail(client.getPocEmail());
         clientEntry.setClientType(ClientType.valueOf(client.getClientType()));
         clientEntry.setNotes(client.getNotes());
-        clientEntry.setStudioId(client.getStudio().getId());
+        clientEntry.setBranchId(client.getBranch().getId());
 
         return clientEntry;
     }
@@ -146,9 +146,9 @@ public class ClientManagerImpl implements ClientManager {
         if (Objects.nonNull(clientEntry.getNotes())) {
             client.setNotes(clientEntry.getNotes());
         }
-        if (Objects.nonNull(clientEntry.getStudioId())) {
-            StudioEntry studioEntry = studioManager.getById(clientEntry.getStudioId());
-            client.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
+        if (Objects.nonNull(clientEntry.getBranchId())) {
+            BranchEntry branchEntry = branchManager.getById(clientEntry.getBranchId());
+            client.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
         }
 
         return client;

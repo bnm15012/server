@@ -93,12 +93,12 @@ public class InstructorServiceImpl implements InstructorService {
     }
 
     @Override
-    public ResponseEntity<InstructorResponse> getAllInstructors(Long studioId, MembershipStatus membershipStatus, int page, int size) {
+    public ResponseEntity<InstructorResponse> getAllInstructors(Long branchId, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
         InstructorResponse response = new InstructorResponse();
 
         try {
-            List<InstructorEntry> entries = instructorManager.getAllInstructorsByStudio(studioId, membershipStatus, page, size);
-            long totalSize = instructorManager.getCountInstructorByStrudioId(studioId);
+            List<InstructorEntry> entries = instructorManager.getAllInstructorsByStudio(branchId, membershipStatus, page, size, searchTerm);
+            long totalSize = instructorManager.getCountInstructorByStrudioId(branchId);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));
             return ResponseEntity.ok(response);

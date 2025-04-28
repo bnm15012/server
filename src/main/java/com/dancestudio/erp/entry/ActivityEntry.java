@@ -10,6 +10,7 @@ public class ActivityEntry {
     private ActivityType activityType;
     private String description;
     private Long studioId;
+    private Long branchId;
 
     private MembershipPlanRequest membershipPlanRequest;
 }

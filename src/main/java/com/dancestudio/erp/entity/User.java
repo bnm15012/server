@@ -27,7 +27,11 @@ public class User extends BaseEntity {
     private String profileImage;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "studio_id", nullable = true, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_studio_id"))
+    @JoinColumn(name = "branch_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_branch_id"))
+    private Branch branch;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "studio_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_studio_id"))
     private Studio studio;
 
     @Column(name = "enabled", nullable = false)

@@ -14,6 +14,6 @@ public class ClientEntry {
     private ClientType clientType;
     private String notes;
 
-    private Long studioId;
+    private Long branchId;
 
 }

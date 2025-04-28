@@ -4,6 +4,7 @@ import com.dancestudio.erp.entity.*;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.*;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.impl.BranchManagerImpl;
 import com.dancestudio.erp.manager.impl.StudioManagerImpl;
 import com.dancestudio.erp.manager.impl.SubscriptionManagerImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,7 +14,9 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,8 +26,7 @@ public class ConvertToEntryUtil {
     private static ApplicationContext applicationContext;
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
-    private ApplicationContext context;
+    @Autowired private ApplicationContext context;
 
     @PostConstruct
     public void init() {
@@ -48,11 +50,39 @@ public class ConvertToEntryUtil {
             userEntry.setStudioEntry(studioEntry);
 
             SubscriptionManagerImpl subscriptionManagerImpl = applicationContext.getBean(SubscriptionManagerImpl.class);
-            SubscriptionEntry subscriptionEntry = subscriptionManagerImpl.getSubscriptionPlanByStudioId(user.getStudio().getId());
+            SubscriptionEntry subscriptionEntry = subscriptionManagerImpl.getSubscriptionPlanByBranchId(user.getBranch().getId());
 
             userEntry.setSubscriptionEntry(subscriptionEntry);
         }
+
+        BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
+        if (isAdmin(user)) {
+            setBranchListForAdmin(user, userEntry, branchManagerImpl);
+        } else {
+            setBranchListForNonAdmin(user, userEntry, branchManagerImpl);
+        }
+
         return userEntry;
+    }
+
+    private static boolean isAdmin(User user) {
+        return UserType.ADMIN.name().equals(user.getRole());
+    }
+
+    private static void setBranchListForAdmin(User user, UserEntry userEntry, BranchManagerImpl branchManagerImpl) throws Exception {
+        List<BranchEntry> branchEntries = branchManagerImpl.findByStudioId(user.getStudio().getId());
+        userEntry.getStudioEntry().setBranchList(branchEntries);
+    }
+
+    private static void setBranchListForNonAdmin(User user, UserEntry userEntry, BranchManagerImpl branchManagerImpl) throws Exception {
+        if (Objects.nonNull(user.getBranch().getId())) {
+            BranchEntry branchEntry = branchManagerImpl.getById(user.getBranch().getId());
+            if (branchEntry.getIsActive()) {
+                userEntry.getStudioEntry().setBranchList(Collections.singletonList(branchEntry));
+            } else {
+                userEntry.getStudioEntry().setBranchList(null);
+            }
+        }
     }
 
     public static User convertToEntity(UserEntry userEntry, User existingUser) throws Exception {
@@ -92,17 +122,46 @@ public class ConvertToEntryUtil {
             user.setStudio(convertToEntity(studioEntry, null));
         }
 
+        if(Objects.nonNull(userEntry.getStudioEntry()) && !CollectionUtils.isEmpty(userEntry.getStudioEntry().getBranchList())) {
+            Long branchId = userEntry.getStudioEntry().getBranchList().get(0).getBranchId();
+
+            BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
+            BranchEntry branchEntry = branchManagerImpl.getById(branchId);
+            user.setBranch(convertToEntity(branchEntry, null));
+        }
+
         return user;
     }
 
-    public static StudioEntry convertToEntry(Studio studio) {
+    public static StudioEntry convertToEntry(Studio studio) throws Exception {
 
         StudioEntry studioEntry = new StudioEntry();
         studioEntry.setStudioId(studio.getId());
         studioEntry.setStudioName(studio.getName());
         studioEntry.setLocation(studio.getLocation());
         studioEntry.setLogo(studio.getLogo());
+        studioEntry.setEmail(studio.getEmail());
+        studioEntry.setPasscode(studio.getPasscode());
         studioEntry.setContactDetails(studio.getContactDetails());
+
+        if (studio.getConfiguration() != null) {
+            try {
+                List<StudioConfigurationEntry> configrationEntries = objectMapper.readValue(studio.getConfiguration(), new TypeReference<>() {});
+                StudioConfigurationRequest request = new StudioConfigurationRequest();
+                request.setConfigrationEntryList(configrationEntries);
+                studioEntry.setConfiguration(request);
+            } catch (Exception e) {
+                throw new RuntimeException("Error parsing configuration settings JSON ", e);
+            }
+        }
+
+        try {
+            BranchManagerImpl branchManager = applicationContext.getBean(BranchManagerImpl.class);
+            List<BranchEntry> branchEntries = branchManager.findByStudioId(studio.getId());
+            studioEntry.setBranchList(branchEntries);
+        } catch (Exception ex) {
+            studioEntry.setBranchList(null);
+        }
 
         return studioEntry;
     }
@@ -119,11 +178,26 @@ public class ConvertToEntryUtil {
         if (Objects.nonNull(studioEntry.getLogo())) {
             studio.setLogo(studioEntry.getLogo());
         }
+        if (Objects.nonNull(studioEntry.getEmail())) {
+            studio.setEmail(studioEntry.getEmail());
+        }
+        if (Objects.nonNull(studioEntry.getPasscode())) {
+            studio.setPasscode(studioEntry.getPasscode());
+        }
         if (Objects.nonNull(studioEntry.getLocation())) {
             studio.setLocation(studioEntry.getLocation());
         }
         if (Objects.nonNull(studioEntry.getContactDetails())) {
             studio.setContactDetails(studioEntry.getContactDetails());
+        }
+        if (Objects.nonNull(studioEntry.getConfiguration())) {
+            List<StudioConfigurationEntry> configrationEntries = studioEntry.getConfiguration().getConfigrationEntryList();
+            try {
+                String configurationJson = objectMapper.writeValueAsString(configrationEntries);
+                studio.setConfiguration(configurationJson);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Error converting configuration settings to JSON", e);
+            }
         }
 
         return studio;
@@ -166,6 +240,7 @@ public class ConvertToEntryUtil {
         bankAccountEntry.setBranchName(bankAccount.getBranchName());
         bankAccountEntry.setIfscCode(bankAccount.getIfscCode());
         bankAccountEntry.setUpiId(bankAccount.getUpiId());
+        bankAccountEntry.setInstructorId(bankAccount.getInstructorId());
         return bankAccountEntry;
     }
 
@@ -190,26 +265,27 @@ public class ConvertToEntryUtil {
         if (Objects.nonNull(bankAccountEntry.getUpiId())) {
             bankAccount.setUpiId(bankAccountEntry.getUpiId());
         }
+        if (Objects.nonNull(bankAccountEntry.getInstructorId())) {
+            bankAccount.setInstructorId(bankAccountEntry.getInstructorId());
+        }
         return bankAccount;
     }
 
-    public static ActivityEntry convertToEntry(Activity activity) throws EntityNotFoundException {
+    public static ActivityEntry convertToEntry(Activity activity) throws Exception {
 
         ActivityEntry activityEntry = new ActivityEntry();
         activityEntry.setActivityId(activity.getId());
         activityEntry.setActivityType(ActivityType.valueOf(activity.getActivityType()));
         activityEntry.setDescription(activity.getDescription());
 
-        StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
-        StudioEntry studioEntry = studioManagerImpl.getById(activity.getStudio().getId());
-        activityEntry.setStudioId(studioEntry.getStudioId());
+        BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
+        BranchEntry branchEntry = branchManagerImpl.getById(activity.getBranch().getId());
+        activityEntry.setBranchId(branchEntry.getBranchId());
+        activityEntry.setStudioId(branchEntry.getStudioId());
 
         if (activity.getMembershipPlans() != null) {
             try {
-                List<MembershipPlanEntry> membershipPlans = objectMapper.readValue(
-                        activity.getMembershipPlans(),
-                        new TypeReference<>() {}
-                );
+                List<MembershipPlanEntry> membershipPlans = objectMapper.readValue(activity.getMembershipPlans(), new TypeReference<>() {});
                 MembershipPlanRequest request = new MembershipPlanRequest();
                 request.setMembershipPlanEntryList(membershipPlans);
                 activityEntry.setMembershipPlanRequest(request);
@@ -221,7 +297,7 @@ public class ConvertToEntryUtil {
         return activityEntry;
     }
 
-    public static Activity convertToEntity(ActivityEntry activityEntry, Activity existingActivity) throws EntityNotFoundException {
+    public static Activity convertToEntity(ActivityEntry activityEntry, Activity existingActivity) throws Exception {
         Activity activity = (existingActivity != null) ? existingActivity : new Activity();
 
         if (Objects.nonNull(activityEntry.getActivityId())) {
@@ -234,11 +310,11 @@ public class ConvertToEntryUtil {
             activity.setDescription(activityEntry.getDescription());
         }
 
-        if (Objects.nonNull(activityEntry.getStudioId())) {
-            StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
-            StudioEntry studioEntry = studioManagerImpl.getById(activityEntry.getStudioId());
+        if (Objects.nonNull(activityEntry.getBranchId())) {
+            BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
+            BranchEntry branchEntry = branchManagerImpl.getById(activityEntry.getBranchId());
 
-            activity.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
+            activity.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
         }
 
         if (Objects.nonNull(activityEntry.getMembershipPlanRequest())) {
@@ -254,7 +330,7 @@ public class ConvertToEntryUtil {
         return activity;
     }
 
-    public static ExpenseEntry convertToEntry(Expense expense) throws EntityNotFoundException {
+    public static ExpenseEntry convertToEntry(Expense expense) throws Exception {
 
         ExpenseEntry expenseEntry = new ExpenseEntry();
         expenseEntry.setExpenseId(expense.getId());
@@ -262,9 +338,9 @@ public class ConvertToEntryUtil {
         expenseEntry.setDescription(expense.getDescription());
 
         StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
-        StudioEntry studioEntry = studioManagerImpl.getById(expense.getStudio().getId());
+        StudioEntry studioEntry = studioManagerImpl.getById(expense.getBranch().getId());
 
-        expenseEntry.setStudioId(studioEntry.getStudioId());
+        expenseEntry.setBranchId(studioEntry.getStudioId());
         expenseEntry.setExpenseDate(expense.getExpenseDate());
         expenseEntry.setExpenseCategory(ExpenseCategory.valueOf(expense.getExpenseCategory()));
 
@@ -281,20 +357,57 @@ public class ConvertToEntryUtil {
         paymentEntry.setPaymentDate(payment.getPaymentDate());
         paymentEntry.setStatus(PaymentStatus.valueOf(payment.getStatus()));
         paymentEntry.setPaymentType(PaymentType.valueOf(payment.getPaymentType()));
-        paymentEntry.setStudioId(payment.getStudio().getId());
+        paymentEntry.setBranchId(payment.getBranch().getId());
         return paymentEntry;
     }
 
-    public static StudentEntry convertToEntry(Student student) {
+    public static StudentEntry convertToEntry(Member student) {
 
         StudentEntry studentEntry = new StudentEntry();
         studentEntry.setStudentId(student.getId());
         studentEntry.setName(student.getName());
         studentEntry.setPhone(student.getPhone());
+        studentEntry.setDob(student.getDob());
         studentEntry.setEmail(student.getEmail());
         studentEntry.setImageUrl(student.getProfileImage());
 
         return studentEntry;
+    }
+
+    public static Branch convertToEntity(BranchEntry branchEntry, Branch existingBranch) throws Exception {
+        Branch branch = (existingBranch != null) ? existingBranch : new Branch();
+
+        if (branchEntry.getBranchId() != null) {
+            branch.setId(branchEntry.getBranchId());
+        }
+        if (branchEntry.getName() != null) {
+            branch.setName(branchEntry.getName());
+        }
+        if (branchEntry.getAddress() != null) {
+            branch.setAddress(branchEntry.getAddress());
+        }
+        if (branchEntry.getCity() != null) {
+            branch.setCity(branchEntry.getCity());
+        }
+        if (branchEntry.getState() != null) {
+            branch.setState(branchEntry.getState());
+        }
+        if (branchEntry.getPincode() != null) {
+            branch.setPincode(branchEntry.getPincode());
+        }
+        if (branchEntry.getPhone() != null) {
+            branch.setPhone(branchEntry.getPhone());
+        }
+        if (branchEntry.getIsActive() != null) {
+            branch.setIsActive(branchEntry.getIsActive());
+        }
+        if (Objects.nonNull(branchEntry.getStudioId())) {
+            StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
+            StudioEntry studioEntry = studioManagerImpl.getById(branchEntry.getStudioId());
+            branch.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
+        }
+
+        return branch;
     }
 
 }

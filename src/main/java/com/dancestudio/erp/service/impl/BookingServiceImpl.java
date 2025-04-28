@@ -89,15 +89,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<BookingResponse> getAllBookings(Long studioId, int page, int size, Long startMonth, Long endMonth) {
+    public ResponseEntity<BookingResponse> getAllBookings(Long branchId, int page, int size, Long startMonth, Long endMonth) {
         BookingResponse response = new BookingResponse();
 
         try {
-            List<BookingEntry> entries = bookingManager.getAllBookings(studioId, page, size, startMonth, endMonth);
+            List<BookingEntry> entries = bookingManager.getAllBookings(branchId, page, size, startMonth, endMonth);
 
             long bookingCount = (startMonth.equals(0L) || endMonth.equals(0L))
-                    ? bookingManager.countBookingsByStudioId(studioId)
-                    : bookingManager.countBookingsByStudioIdAndMonth(studioId, startMonth, endMonth);
+                    ? bookingManager.countBookingsByBranchId(branchId)
+                    : bookingManager.countBookingsByBranchIdAndMonth(branchId, startMonth, endMonth);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Bookings retrieved successfully", StatusResponse.Type.SUCCESS, (int) bookingCount));
             return ResponseEntity.status(HttpStatus.OK).body(response);

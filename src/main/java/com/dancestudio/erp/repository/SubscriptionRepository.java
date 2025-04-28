@@ -15,17 +15,17 @@ import java.util.Optional;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
-    @Query("SELECT s FROM Subscription s WHERE s.studio.id = :studioId")
-    List<Subscription> findByStudioId(@Param("studioId") Long studioId);
+    @Query("SELECT s FROM Subscription s WHERE s.branch.id = :branchId")
+    List<Subscription> findByBranchId(@Param("branchId") Long branchId);
 
     @Query("SELECT s FROM Subscription s WHERE s.orderId = :orderId")
     Optional<Subscription> findByOrderId(@Param("orderId") String orderId);
 
     @Query("""
-        SELECT s FROM Subscription s WHERE s.studio.id = :studioId AND s.endDate = (
-        SELECT MAX(sp.endDate) FROM Subscription sp WHERE sp.studio.id = :studioId)
+        SELECT s FROM Subscription s WHERE s.branch.id = :branchId AND s.endDate = (
+        SELECT MAX(sp.endDate) FROM Subscription sp WHERE sp.branch.id = :branchId)
         AND s.endDate > CURRENT_TIMESTAMP AND s.status = 'ACTIVE'""")
-    Optional<Subscription> findLatestSubscriptionByStudioId(@Param("studioId") Long studioId);
+    Optional<Subscription> findLatestSubscriptionByBranchId(@Param("branchId") Long branchId);
 
     @Modifying
     @Transactional
