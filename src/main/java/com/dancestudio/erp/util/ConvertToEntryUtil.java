@@ -5,6 +5,7 @@ import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.*;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.impl.BranchManagerImpl;
+import com.dancestudio.erp.manager.impl.StudentActivityAssignmentManagerImpl;
 import com.dancestudio.erp.manager.impl.StudioManagerImpl;
 import com.dancestudio.erp.manager.impl.SubscriptionManagerImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -371,6 +372,22 @@ public class ConvertToEntryUtil {
         studentEntry.setEmail(student.getEmail());
         studentEntry.setImageUrl(student.getProfileImage());
 
+        try {
+
+            StudentActivityAssignmentManagerImpl studentActivityAssignmentManagerImpl = applicationContext.getBean(StudentActivityAssignmentManagerImpl.class);
+            List<StudentActivityAssignmentEntry> entries = studentActivityAssignmentManagerImpl.getStudentAssignmentsByStudentId(student.getId());
+            boolean isActive = false;
+            for (StudentActivityAssignmentEntry entry : entries) {
+                if (entry.getMembershipEndDate().after(DateUtil.getCurrentDateUTC())) {
+                    isActive = true;
+                    break;
+                }
+            }
+            studentEntry.setMembershipStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
+            studentEntry.setEnrolledActivities(entries);
+        } catch (Exception ex) {
+            studentEntry.setEnrolledActivities(null);
+        }
         return studentEntry;
     }
 

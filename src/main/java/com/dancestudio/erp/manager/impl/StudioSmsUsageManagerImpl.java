@@ -27,6 +27,12 @@ public class StudioSmsUsageManagerImpl implements StudioSmsUsageManager {
 
     @Override
     public StudioSmsUsageEntry add(StudioSmsUsageEntry studioSmsUsageEntry) throws Exception {
+
+        StudioSmsUsage usage = studioSmsUsageRepository.findByBranchIdAndMonth(studioSmsUsageEntry.getBranchId(), studioSmsUsageEntry.getMonth()).orElse(null);
+        if (Objects.nonNull(usage)) {
+            throw new Exception("Entry already exists for given month and branchId");
+        }
+
         StudioSmsUsage studioSmsUsage = convertToEntity(studioSmsUsageEntry, null);
         return convertToEntry(studioSmsUsageRepository.save(studioSmsUsage));
     }

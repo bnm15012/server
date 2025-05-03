@@ -39,4 +39,9 @@ public class BranchController extends BaseController<BranchEntry, BranchResponse
         return branchService.getAllBranchesOfStudio(studioId);
     }
 
+    @PutMapping("/enableDisable/{branchId}/{flag}")
+    public ResponseEntity<BranchResponse> enableDisableBranch(@PathVariable Long branchId, @PathVariable boolean flag) throws Exception {
+        return branchService.enableDisableBranch(branchId, flag);
+    }
+
 }

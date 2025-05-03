@@ -1,6 +1,7 @@
 package com.dancestudio.erp.repository;
 
 import com.dancestudio.erp.entity.Expense;
+import com.dancestudio.erp.entry.PaymentExpenseSummary;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,12 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
-    @Query("SELECT s FROM Expense s WHERE s.branch.id = :branchId and month(s.expenseDate) >= :startMonth and month(s.expenseDate) <= :endMonth")
-    Page<Expense> findAllByBranchId(@Param("branchId") Long branchId, @Param("startMonth") Long startMonth, @Param("endMonth") Long endMonth, Pageable pageable);
+    @Query("SELECT s FROM Expense s WHERE s.branch.id = :branchId and year(s.expenseDate) >= :startYear and month(s.expenseDate) >= :startMonth and month(s.expenseDate) <= :endMonth and year(s.expenseDate) <= :endYear")
+    Page<Expense> findAllByBranchId(@Param("branchId") Long branchId, @Param("startMonth") Long startMonth, @Param("startYear") Long startYear, @Param("endMonth") Long endMonth, @Param("endYear") Long endYear, Pageable pageable);
 
     @Query("SELECT s FROM Expense s WHERE s.branch.id = :branchId")
     Page<Expense> findExpensesByBranchId(@Param("branchId") Long branchId, Pageable pageable);
@@ -33,4 +35,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Object[]> countAndSumExpensesForCurrentAndLastMonth(@Param("branchId") Long branchId);
 
     @Query("SELECT e.expenseCategory, SUM(e.amount) FROM Expense e WHERE e.branch.id = :branchId AND MONTH(e.expenseDate) = :month AND YEAR(e.expenseDate) = :year GROUP BY e.expenseCategory")
-    List<Object[]> findCategoryWiseSumOfExpensesByMonthAndYearAndBranchId(@Param("month") int month, @Param("year") int year, @Param("branchId") Long branchId);}
+    List<Object[]> findCategoryWiseSumOfExpensesByMonthAndYearAndBranchId(@Param("month") int month, @Param("year") int year, @Param("branchId") Long branchId);
+
+   @Query("SELECT new com.dancestudio.erp.entry.PaymentExpenseSummary(COUNT(s), COALESCE(SUM(s.amount), 0)) FROM Expense s WHERE s.branch.id = :branchId AND s.expenseDate BETWEEN :startDate AND :endDate")
+   PaymentExpenseSummary findCountAndTotalAmountByBranchAndDateRange(
+            @Param("branchId") Long branchId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
+}

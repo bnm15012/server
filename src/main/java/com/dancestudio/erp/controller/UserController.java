@@ -43,4 +43,9 @@ public class UserController extends BaseController<UserEntry, UserResponse, Long
     public ResponseEntity<UserResponse> login(@RequestBody UserEntry userEntry) {
         return userService.loginUser(userEntry.getUserName(), userEntry.getPassword());
     }
+    
+    @GetMapping("/getUsersByBranchId/{branchId}")
+    public ResponseEntity<UserResponse> getUsersByBranchId(@PathVariable Long branchId) {
+        return userService.getUsersBybranchId(branchId);
+    }
 }

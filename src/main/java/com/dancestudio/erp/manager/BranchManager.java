@@ -8,4 +8,5 @@ public interface BranchManager extends BaseManager<BranchEntry, Long> {
 
     List<BranchEntry> findByStudioId(Long studioId) throws Exception;
 
+    BranchEntry enableDisableBranch(Long branchId, boolean flag) throws Exception;
 }

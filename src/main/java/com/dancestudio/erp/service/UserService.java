@@ -10,4 +10,6 @@ public interface UserService extends BaseService<UserEntry, UserResponse, Long> 
 
     ResponseEntity<UserResponse> loginUser(String userName, String password);
 
+    ResponseEntity<UserResponse> getUsersBybranchId(Long branchId);
+
 }

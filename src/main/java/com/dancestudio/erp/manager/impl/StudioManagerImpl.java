@@ -31,6 +31,8 @@ public class StudioManagerImpl implements StudioManager {
     @Autowired private TemplateManager templateManager;
     @Autowired private BranchManager branchManager;
 
+    private static final String MAIN_BRANCH_NAME = "MAIN BRANCH";
+
     @Autowired
     public StudioManagerImpl(StudioRepository studioRepository) {
         this.studioRepository = studioRepository;
@@ -49,7 +51,7 @@ public class StudioManagerImpl implements StudioManager {
 
         BranchEntry branchEntry = studioEntry.getBranchList().get(0);
         if(Objects.nonNull(branchEntry)) {
-            branchEntry.setName("MAIN_BRANCH");
+            branchEntry.setName(MAIN_BRANCH_NAME);
             branchEntry.setStudioId(studio.getId());
             branchEntry = branchManager.add(branchEntry);
         }
@@ -72,7 +74,7 @@ public class StudioManagerImpl implements StudioManager {
         templateEntry.setTemplateBody(templateEntry.getTemplateBody()
                 .replace("{studio_name}", updatedStudio.getName()));
 
-        if(Objects.nonNull(studioEntry.getEmail())) {
+        if(Objects.nonNull(studioEntry.getEmail()) && Objects.nonNull(studioEntry.getPasscode())) {
             notificationManager.sendEmail(studioEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody(), null);
         }
         return convertToEntry(updatedStudio);

@@ -57,9 +57,11 @@ public class StudentManagerImpl implements StudentManager {
 
         BranchEntry branchEntry = branchManager.getById(member.getBranch().getId());
         StudioEntry studioEntry = studioManager.getById(branchEntry.getStudioId());
-        String updatedBody = formatEmailBody(studioEntry, templateEntry, member);
 
-        notificationManager.sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, branchEntry.getStudioId());
+        if(Objects.nonNull(studioEntry.getPasscode()) && Objects.nonNull(studioEntry.getEmail())) {
+            String updatedBody = formatEmailBody(studioEntry, templateEntry, member);
+            notificationManager.sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, branchEntry.getStudioId());
+        }
         return convertToEntry(member);
     }
 

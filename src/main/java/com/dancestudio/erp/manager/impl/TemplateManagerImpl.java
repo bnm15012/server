@@ -75,7 +75,8 @@ public class TemplateManagerImpl implements TemplateManager {
                 template.getName().equalsIgnoreCase(ADD_NEW_STUDENT_EMAIL) ||
                 template.getName().equalsIgnoreCase(ADD_NEW_STUDIO_EMAIL) ||
                 template.getName().equalsIgnoreCase(UPDATE_STUDIO_EMAIL) ||
-                template.getName().equalsIgnoreCase(SUBSCRIPTION_RENEWAL_REMINDER));
+                template.getName().equalsIgnoreCase(SUBSCRIPTION_RENEWAL_REMINDER) ||
+                template.getName().equalsIgnoreCase(ADD_NEW_USER_EMAIL));
 
         Studio studio = studioRepository.findById(studioId).get();
         StudioEntry studioEntry = ConvertToEntryUtil.convertToEntry(studio);

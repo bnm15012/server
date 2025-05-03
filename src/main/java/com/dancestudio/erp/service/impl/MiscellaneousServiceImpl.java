@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -119,17 +117,13 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
     }
 
     @Override
-    public ResponseEntity<ReportResponse> getReports(String startDate, String endDate) {
+    public ResponseEntity<IEReportResponse> getReports(Long studioId, Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yy");
-        LocalDate start = LocalDate.parse(startDate, formatter);
-        LocalDate end = LocalDate.parse(endDate, formatter);
-
-        ReportResponse response = new ReportResponse();
+        IEReportResponse response = new IEReportResponse();
         try {
-            List<ReportEntry> reportEntries = reportManager.getReports(start, end);
-            response.setData(null);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(reportEntries) ? 0 : reportEntries.size()));
+            IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startMonth, startYear, endMonth, endYear);
+            response.setData(Collections.singletonList(reportEntry));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
 
             return ResponseEntity.ok(response);
         } catch (Exception ex) {

@@ -22,10 +22,10 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Optional<Subscription> findByOrderId(@Param("orderId") String orderId);
 
     @Query("""
-        SELECT s FROM Subscription s WHERE s.branch.id = :branchId AND s.endDate = (
-        SELECT MAX(sp.endDate) FROM Subscription sp WHERE sp.branch.id = :branchId)
-        AND s.endDate > CURRENT_TIMESTAMP AND s.status = 'ACTIVE'""")
-    Optional<Subscription> findLatestSubscriptionByBranchId(@Param("branchId") Long branchId);
+    SELECT s FROM Subscription s WHERE s.branch.id = :branchId AND s.status = 'ACTIVE' AND s.endDate = (
+        SELECT MAX(sp.endDate) FROM Subscription sp WHERE sp.branch.id = :branchId AND sp.status = 'ACTIVE') 
+    AND s.endDate > CURRENT_TIMESTAMP""")
+    List<Subscription> findLatestSubscriptionByBranchId(@Param("branchId") Long branchId);
 
     @Modifying
     @Transactional

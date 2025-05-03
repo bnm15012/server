@@ -4,8 +4,10 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Branch;
 import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BranchManager;
+import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.repository.BranchRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ public class BranchManagerImpl implements BranchManager, ApplicationContextAware
 
     private final BranchRepository branchRepository;
     private static ApplicationContext applicationContext;
+
+    @Autowired private UserManager userManager;
 
     @Autowired
     public BranchManagerImpl(BranchRepository branchRepository) {
@@ -56,7 +60,7 @@ public class BranchManagerImpl implements BranchManager, ApplicationContextAware
     }
 
     @Override
-    public BranchEntry getById(Long branchId) throws EntityNotFoundException {
+    public BranchEntry getById(Long branchId) throws Exception {
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found"));
 
@@ -69,6 +73,26 @@ public class BranchManagerImpl implements BranchManager, ApplicationContextAware
         return branchList.stream()
                 .map(this::convertToEntry)
                 .toList();
+    }
+
+    @Override
+    public BranchEntry enableDisableBranch(Long branchId, boolean flag) throws Exception {
+        Branch existingBranch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found"));
+
+        if(flag) {
+            existingBranch.setIsActive(true);
+        }
+
+        else {
+            existingBranch.setIsActive(false);
+            List<UserEntry> userEntries = userManager.getUserByBranchId(branchId);
+            for (UserEntry userEntry : userEntries) {
+                userEntry.setEnabled(false);
+                userManager.update(userEntry.getUserId(), userEntry);
+            }
+        }
+        return convertToEntry(branchRepository.save(existingBranch));
     }
 
     private Branch convertToEntity(BranchEntry branchEntry, Branch existingBranch) throws Exception {

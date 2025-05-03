@@ -10,7 +10,7 @@ public interface StudentService extends BaseService<StudentEntry, StudentRespons
 
     ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size, String searchTerm);
 
-    ResponseEntity<StudentCommunicationResponse> getAllStudentsForCommunication(Long studioId, MembershipStatus membershipStatus, int page, int size);
+    ResponseEntity<StudentCommunicationResponse> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size);
 
     ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId, Long activityId);
 }

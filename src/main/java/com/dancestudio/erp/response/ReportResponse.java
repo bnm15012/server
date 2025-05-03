@@ -1,7 +1,6 @@
 package com.dancestudio.erp.response;
 
 import com.dancestudio.erp.entry.MonthlyReportEntry;
-import com.dancestudio.erp.entry.ReportEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

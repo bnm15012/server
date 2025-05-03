@@ -19,6 +19,9 @@ public class Plan extends BaseEntity {
     @Column(name = "disabled_features")
     private String disabledFeatures;
 
+    @Column(name = "sms_quota", nullable = false)
+    private double smsQuota = 0;
+
     @Column(name = "amount", nullable = false)
     private double amount;
 

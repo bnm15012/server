@@ -4,7 +4,6 @@ import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.entry.PaymentEntry;
-import com.dancestudio.erp.entry.ReportEntry;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
@@ -85,24 +84,20 @@ public class PaymentManagerImpl implements PaymentManager {
 
     @SneakyThrows
     @Override
-    public List<PaymentEntry> getAllPaymentsByStudio(Long branchId, int page, int size) {
-        if (size == -1) {
-            List<Payment> entries = paymentRepository.findAllByBranchId(branchId);
-            return entries.stream()
-                    .map(this::convertToEntry)
-                    .collect(Collectors.toList());
-        } else {
-            Pageable pageable = PageRequest.of(page, size);
+    public List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Long startMonth, Long startYear, Long endMonth, Long endYear) {
+        List<Payment> entries;
+        Pageable pageable = PageRequest.of(page, size);
+        if (size == 7) {
             Page<Payment> paymentPage = paymentRepository.findByBranchId(branchId, pageable);
             return paymentPage.getContent().stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
+        } else {
+            entries = paymentRepository.findAllByBranchId(branchId, startMonth, startYear, endMonth, endYear);
+            return entries.stream()
+                    .map(this::convertToEntry)
+                    .collect(Collectors.toList());
         }
-    }
-
-    @Override
-    public List<ReportEntry> calculateTotalIncome(Long year) {
-        return paymentRepository.calculateTotalIncomeByYear(Math.toIntExact(year));
     }
 
     private PaymentEntry convertToEntry(Payment payment) {

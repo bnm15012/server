@@ -149,7 +149,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     @Override
     public List<MonthlyReportEntry> getAnalysisReport(Long year, Long branchId) {
         List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository.getAnalysisReport(Math.toIntExact(year), branchId);
-        for (int month = 1; month <= 12; month++) {
+        for (int month = 0; month < 12; month++) {
             processMonthlyReport(reportEntries, month, year, branchId);
         }
 

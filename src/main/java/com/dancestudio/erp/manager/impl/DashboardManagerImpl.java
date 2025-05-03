@@ -4,91 +4,73 @@ import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.*;
+import com.dancestudio.erp.util.DateUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Map;
 
 @Service
 public class DashboardManagerImpl implements DashboardManager {
 
-    @Autowired
-    private MemberRepository memberRepository;
+        @Autowired
+        private MemberRepository memberRepository;
 
-    @Autowired
-    private ExpenseRepository expenseRepository;
+        @Autowired
+        private ExpenseRepository expenseRepository;
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+        @Autowired
+        private PaymentRepository paymentRepository;
 
-    @Autowired
-    private StudentActivityAssignmentManager studentActivityAssignmentManager;
+        @Autowired
+        private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
 
-    @Autowired
-    private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
+        @Override
+        public DashboardEntry getDashboardDetails(Long branchId, int currentMonth, int currentYear, String userTimeZone) throws EntityNotFoundException {
+                DashboardEntry entry = new DashboardEntry();
 
-    @Override
-    public DashboardEntry getDashboardDetails(Long branchId, Long startMonth, Long endMonth) throws EntityNotFoundException {
-        DashboardEntry entry = new DashboardEntry();
+                entry.setTotalStudents(memberRepository.totalStudentsByBranchId(branchId));
+                entry.setTotalInstructors(memberRepository.totalInstructorsByBranchId(branchId));
+                entry.setTotalActiveMemberships(
+                                studentActivityAssignmentRepository.totalStudentActiveMembershipByStudioId(branchId));
 
-        entry.setTotalStudents(memberRepository.totalStudentsByBranchId(branchId));
-        entry.setTotalInstructors(memberRepository.totalInstructorsByBranchId(branchId));
-        entry.setTotalActiveMemberships(studentActivityAssignmentRepository.totalStudentActiveMembershipByStudioId(branchId));
+                int lastMonth = (currentMonth == 1) ? 12 : currentMonth - 1;
+                int lastMonthYear = (currentMonth == 1) ? currentYear - 1 : currentYear;
 
-        List<MonthlyReportEntry> monthlyReportEntries = studentActivityAssignmentManager.getAnalysisReport((long) LocalDate.now().getYear(), branchId);
-        int lastMonth = LocalDate.now().minusMonths(1).getMonthValue();
+                Map<String, Date> currentMonthRange = DateUtil.getRange(currentMonth, currentYear, currentMonth,
+                                currentYear,
+                                ZoneId.of(userTimeZone));
 
-        monthlyReportEntries.stream()
-                .filter(reportEntry -> reportEntry.getMonth() == lastMonth)
-                .findFirst()
-                .ifPresent(reportEntry -> entry.setLastMonthRevenue(reportEntry.getRevenue()));
+                Map<String, Date> lastMonthRange = DateUtil.getRange(lastMonth, lastMonthYear, lastMonth, lastMonthYear,
+                                ZoneId.of(userTimeZone));
+                // Payment data for the current and last month
+                PaymentExpenseSummary currentPayment = paymentRepository.findCountAndTotalAmountByBranchAndDateRange(
+                                branchId, currentMonthRange.get("start"), currentMonthRange.get("end"));
+                PaymentExpenseSummary lastPayment = paymentRepository.findCountAndTotalAmountByBranchAndDateRange(
+                                branchId, lastMonthRange.get("start"), lastMonthRange.get("end"));
 
-        int currentMonth = LocalDate.now().getMonthValue();
-        monthlyReportEntries.stream()
-                .filter(reportEntry -> reportEntry.getMonth() == currentMonth)
-                .findFirst()
-                .ifPresent(reportEntry -> entry.setCurrentMonthRevenue(reportEntry.getRevenue()));
+                // // Safely handle the values
+                entry.setTotalCurrentMonthPaymentCount(currentPayment.getCount());
+                entry.setTotalCurrentMonthPaymentAmount(currentPayment.getTotalAmount());
+                entry.setTotalLastMonthPaymentCount(lastPayment.getCount());
+                entry.setTotalLastMonthPaymentAmount(lastPayment.getTotalAmount());
 
-        processAmountCountEntries(entry, LocalDate.now().getMonthValue(), expenseRepository.countAndSumExpensesForCurrentAndLastMonth(branchId), true);
-        processAmountCountEntries(entry, LocalDate.now().getMonthValue(), paymentRepository.countAndSumPaymentsForCurrentAndLastMonth(branchId), false);
+                // Expense data for the current and last month
+                PaymentExpenseSummary currentExpense = expenseRepository.findCountAndTotalAmountByBranchAndDateRange(
+                                branchId, currentMonthRange.get("start"), currentMonthRange.get("end"));
+                PaymentExpenseSummary lastExpense = expenseRepository.findCountAndTotalAmountByBranchAndDateRange(
+                                branchId, lastMonthRange.get("start"), lastMonthRange.get("end"));
 
-        return entry;
-    }
+                // Safely handle the values for expenses
+                entry.setTotalCurrentMonthExpenseCount(currentExpense.getCount());
+                entry.setTotalCurrentMonthExpenseAmount(currentExpense.getTotalAmount());
+                entry.setTotalLastMonthExpenseCount(lastExpense.getCount());
+                entry.setTotalLastMonthExpenseAmount(lastExpense.getTotalAmount());
 
-    private void processAmountCountEntries(DashboardEntry entry, int currentMonth, List<Object[]> data, boolean isExpense) {
-        int lastMonth = (currentMonth == 1) ? 12 : currentMonth - 1;
-
-        for (Object[] row : data) {
-            int month = ((Number) row[0]).intValue();
-            long count = ((Number) row[1]).longValue();
-            double totalAmount = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
-
-            if (month == currentMonth) {
-                setAmountCount(entry, count, totalAmount, isExpense, true);
-            } else if (month == lastMonth) {
-                setAmountCount(entry, count, totalAmount, isExpense, false);
-            }
+                return entry;
         }
-    }
 
-    private void setAmountCount(DashboardEntry entry, long count, double amount, boolean isExpense, boolean isCurrentMonth) {
-        if (isExpense) {
-            if (isCurrentMonth) {
-                entry.setTotalCurrentMonthExpenseCount(count);
-                entry.setTotalCurrentMonthExpenseAmount(amount);
-            } else {
-                entry.setTotalLastMonthExpenseCount(count);
-                entry.setTotalLastMonthExpenseAmount(amount);
-            }
-        } else {
-            if (isCurrentMonth) {
-                entry.setTotalCurrentMonthPaymentCount(count);
-                entry.setTotalCurrentMonthPaymentAmount(amount);
-            } else {
-                entry.setTotalLastMonthPaymentCount(count);
-                entry.setTotalLastMonthPaymentAmount(amount);
-            }
-        }
-    }
 }

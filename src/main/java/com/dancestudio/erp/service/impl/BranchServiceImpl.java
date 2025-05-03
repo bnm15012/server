@@ -107,4 +107,24 @@ public class BranchServiceImpl implements BranchService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @Override
+    public ResponseEntity<BranchResponse> enableDisableBranch(Long branchId, boolean flag) {
+        BranchResponse response = new BranchResponse();
+
+        try {
+            BranchEntry entry = branchManager.enableDisableBranch(branchId, flag);
+
+            response.setData(Collections.singletonList(entry));
+            response.setStatus(new StatusResponse(1, "Branch enabled / disabled successfully", StatusResponse.Type.SUCCESS, 1));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (EntityNotFoundException e) {
+            response.setData(Collections.emptyList());
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

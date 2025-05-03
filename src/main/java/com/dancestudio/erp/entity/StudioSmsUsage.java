@@ -19,9 +19,9 @@ public class StudioSmsUsage extends BaseEntity {
     @Column(name = "month", nullable = false)
     private Long month;
 
-    @Column(name = "total_sms_sent", nullable = false)
-    private Integer totalSmsSent = 0;
+    @Column(name = "total_sms_sent", nullable = false, columnDefinition = "bigint default 0")
+    private Long totalSmsSent;
 
-    @Column(name = "quota", nullable = false)
-    private Integer quota = 0;
+    @Column(name = "quota", nullable = false,  columnDefinition = "bigint default 0")
+    private Long quota;
 }

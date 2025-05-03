@@ -3,13 +3,14 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.*;
 import com.dancestudio.erp.entry.SendMessageRequestEntry;
 import com.dancestudio.erp.enums.MessageStatus;
-import com.dancestudio.erp.enums.MessageType;
+import com.dancestudio.erp.enums.TemplateType;
 import com.dancestudio.erp.manager.MessageManager;
 import com.dancestudio.erp.manager.NotificationManager;
 import com.dancestudio.erp.repository.*;
 import com.dancestudio.erp.response.SendMessageResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MessageManagerImpl implements MessageManager {
 
     private final MessageRepository messageRepository;
@@ -30,38 +32,61 @@ public class MessageManagerImpl implements MessageManager {
 
     @Autowired private NotificationManager notificationManager;
 
-
     @Transactional
     public SendMessageResponse sendMessage(SendMessageRequestEntry request) {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Studio not found"));
 
-        List<Member> students = (request.getStudentIds() == null || request.getStudentIds().isEmpty()) ? memberRepository.findByBranchId(branch.getId()) : memberRepository.findAllById(request.getStudentIds());
+        List<Member> students = (request.getStudentIds() == null || request.getStudentIds().isEmpty())
+                ? memberRepository.findByBranchId(branch.getId())
+                : memberRepository.findAllById(request.getStudentIds());
+
         if (students.isEmpty()) {
             throw new RuntimeException("No students found to send message.");
         }
 
-        Long currentMonth = (long) YearMonth.now().getMonthValue();
-        StudioSmsUsage usage = studioSmsUsageRepository.findByBranchIdAndMonth(branch.getId(), currentMonth).orElse(null);
+        Message message = createAndSaveMessage(request, branch);
+        int success = 0;
+        if (isSmsNotification(request)) {
+            success = handleSmsNotification(request, branch, students, message);
+            handleEmailNotification(request, branch, students);
+        } else {
+            success = handleEmailNotification(request, branch, students);
+        }
 
+        int failed = students.size() - success;
+        return new SendMessageResponse(students.size(), success, failed);
+    }
+
+    private Message createAndSaveMessage(SendMessageRequestEntry request, Branch branch) {
+        Message message = new Message();
+        message.setTitle(request.getTitle());
+        message.setContent(request.getContent());
+        message.setMessageType(request.getMessageType());
+        message.setNotiticationType(request.getNotiticationType());
+        message.setBranch(branch);
+        message.setSendToAll(request.getSentToAll());
+        return messageRepository.save(message);
+    }
+
+    private void validateSmsQuota(Branch branch, int studentCount) {
+        Long currentMonth = (long) YearMonth.now().getMonthValue();
+
+        StudioSmsUsage usage = studioSmsUsageRepository.findByBranchIdAndMonth(branch.getId(), currentMonth).orElse(null);
         if (Objects.isNull(usage)) {
             throw new RuntimeException("Not enough SMS balance. Available: " + 0);
         }
 
-        int remainingQuota = usage.getQuota() - usage.getTotalSmsSent();
-        if (students.size() > remainingQuota) {
+        long remainingQuota = usage.getQuota() - usage.getTotalSmsSent();
+        if (studentCount > remainingQuota) {
             throw new RuntimeException("Not enough SMS balance. Available: " + remainingQuota);
         }
+    }
 
-        Message message = new Message();
-        message.setTitle(request.getTitle());
-        message.setContent(request.getContent());
-        message.setType(MessageType.valueOf(request.getType()));
-        message.setBranch(branch);
-        message.setSendToAll(request.getSentToAll());
-        message = messageRepository.save(message);
 
-        int success = 0, failed = 0;
+    private int processRecipients(List<Member> students, Message message, String content) {
+
+        int success = 0;
         for (Member student : students) {
             MessageRecipient recipient = new MessageRecipient();
             recipient.setMessage(message);
@@ -70,24 +95,52 @@ public class MessageManagerImpl implements MessageManager {
             recipient.setStatus(MessageStatus.PENDING);
 
             try {
-                sendSms(student.getPhone(), request.getContent());
-//                notificationManager.sendEmail(student.getEmail(), request.getTitle(), request.getContent());
-
+                sendSms(student.getPhone(), content);
                 recipient.setStatus(MessageStatus.SENT);
                 recipient.setSentAt(new Date());
                 success++;
             } catch (Exception e) {
                 recipient.setStatus(MessageStatus.FAILED);
-                failed++;
             }
 
             recipientRepository.save(recipient);
         }
 
-        usage.setTotalSmsSent(usage.getTotalSmsSent() + success);
-        studioSmsUsageRepository.save(usage);
+        return success;
+    }
 
-        return new SendMessageResponse(students.size(), success, failed);
+    private void updateSmsUsage(Branch branch, int successCount) {
+        Long currentMonth = (long) YearMonth.now().getMonthValue();
+        StudioSmsUsage usage = studioSmsUsageRepository.findByBranchIdAndMonth(branch.getId(), currentMonth).orElse(null);
+
+        if (usage != null) {
+            usage.setTotalSmsSent(usage.getTotalSmsSent() + successCount);
+            studioSmsUsageRepository.save(usage);
+        }
+    }
+
+    private boolean isSmsNotification(SendMessageRequestEntry request) {
+        return TemplateType.SMS.name().equals(request.getNotiticationType());
+    }
+
+    private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> students, Message message) {
+        validateSmsQuota(branch, students.size());
+        int success = processRecipients(students, message, request.getContent());
+        updateSmsUsage(branch, success);
+        return success;
+    }
+
+    private int handleEmailNotification(SendMessageRequestEntry request, Branch branch, List<Member> students) {
+        int success = 0;
+        for (Member student : students) {
+            try {
+                notificationManager.sendEmail(student.getEmail(), request.getTitle(), request.getContent(), branch.getStudio().getId());
+                success++;
+            } catch (Exception e) {
+                log.error("Failed to send email to student: {}", student.getEmail(), e);
+            }
+        }
+        return success;
     }
 
     private void sendSms(String phoneNumber, String content) {

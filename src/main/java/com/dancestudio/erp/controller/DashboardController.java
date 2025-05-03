@@ -13,8 +13,7 @@ public class DashboardController {
     private DashboardService dashboardService;
 
     @GetMapping("/getDashboardDetails/{studioId}")
-    public DashboardResponse getDashboardDetails(@PathVariable Long studioId, @RequestParam(defaultValue = "0") Long startMonth,
-                                                 @RequestParam(defaultValue = "0") Long endMonth) {
-        return dashboardService.getDashboardDetails(studioId, startMonth, endMonth);
+    public DashboardResponse getDashboardDetails(@PathVariable Long studioId, @RequestParam(defaultValue = "0") int currentMonth, @RequestParam(defaultValue = "0") int currentYear, @RequestHeader("User-Timezone") String userTimeZone) {
+        return dashboardService.getDashboardDetails(studioId, currentMonth, currentYear, userTimeZone);
     }
 }

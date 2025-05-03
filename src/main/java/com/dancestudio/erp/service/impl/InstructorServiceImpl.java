@@ -1,10 +1,12 @@
 package com.dancestudio.erp.service.impl;
 
 
+import com.dancestudio.erp.entry.InstructorCommunicationEntry;
 import com.dancestudio.erp.entry.InstructorEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.InstructorManager;
+import com.dancestudio.erp.response.InstructorCommunicationResponse;
 import com.dancestudio.erp.response.InstructorResponse;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.service.InstructorService;
@@ -98,7 +100,7 @@ public class InstructorServiceImpl implements InstructorService {
 
         try {
             List<InstructorEntry> entries = instructorManager.getAllInstructorsByStudio(branchId, membershipStatus, page, size, searchTerm);
-            long totalSize = instructorManager.getCountInstructorByStrudioId(branchId);
+            long totalSize = instructorManager.getCountInstructorByBranchId(branchId);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));
             return ResponseEntity.ok(response);
@@ -107,4 +109,21 @@ public class InstructorServiceImpl implements InstructorService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @Override
+    public ResponseEntity<InstructorCommunicationResponse> getAllInstructorsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size) {
+        InstructorCommunicationResponse response = new InstructorCommunicationResponse();
+
+        try {
+            List<InstructorCommunicationEntry> entries = instructorManager.getAllInstructorsForCommunication(branchId, membershipStatus, page, size);
+            long totalSize = instructorManager.getCountInstructorByBranchId(branchId);
+            response.setData(entries);
+            response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }

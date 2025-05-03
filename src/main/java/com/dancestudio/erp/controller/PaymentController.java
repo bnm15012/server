@@ -40,8 +40,16 @@ public class PaymentController extends BaseController<PaymentEntry, PaymentRespo
         return paymentService.updatePaymentStatus(paymentId, status);
     }
 
-    @GetMapping("/getAllPayments/{studioId}")
-    public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long studioId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "-1") int size) {
-        return paymentService.getAllPayments(studioId, page, size);
+    @GetMapping("/getAllPayments/{branchId}")
+    public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long branchId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+                                                          @RequestParam(value = "startMonth", required = false) Long startMonth,
+                                                          @RequestParam(value = "startYear", required = false) Long startYear,
+                                                          @RequestParam(value = "endMonth", required = false) Long endMonth,
+                                                          @RequestParam(value = "endYear", required = false) Long endYear) {
+        if (startMonth == null || startYear == null || endMonth == null || endYear == null) {
+            startMonth = 0L; startYear = 0L; endMonth = 0L; endYear = 0L;
+        }
+
+        return paymentService.getAllPayments(branchId, page, size, startMonth, startYear, endMonth, endYear);
     }
 }

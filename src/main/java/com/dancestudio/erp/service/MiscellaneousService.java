@@ -2,10 +2,7 @@ package com.dancestudio.erp.service;
 
 import com.dancestudio.erp.entry.PasswordEntry;
 import com.dancestudio.erp.entry.UserEntry;
-import com.dancestudio.erp.response.PasswordResponse;
-import com.dancestudio.erp.response.ReportResponse;
-import com.dancestudio.erp.response.StringResponse;
-import com.dancestudio.erp.response.TemplateResponse;
+import com.dancestudio.erp.response.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +18,7 @@ public interface MiscellaneousService {
 
     ResponseEntity<ReportResponse> getAnalysisReport(Long year, Long studioId);
 
-    ResponseEntity<ReportResponse> getReports(String startDate, String endDate);
+    ResponseEntity<IEReportResponse> getReports(Long studioId, Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear);
 
     ResponseEntity<TemplateResponse> getTemplates(Long studioId);
 

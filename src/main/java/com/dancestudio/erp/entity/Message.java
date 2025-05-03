@@ -1,6 +1,5 @@
 package com.dancestudio.erp.entity;
 
-import com.dancestudio.erp.enums.MessageType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,10 +23,10 @@ public class Message extends BaseEntity {
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false, length = 30)
-    private MessageType type;
+    @Column(name = "message_type", nullable = false, length = 30)
+    private String messageType;
 
-    @Column(name = "scheduled_at")
-    private java.util.Date scheduledAt;
+    @Column(name = "notification_type", nullable = false, length = 30)
+    private String notiticationType;
+
 }

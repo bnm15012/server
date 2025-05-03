@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
 
 @Setter(onMethod = @__({@Autowired}))
 @Component
@@ -115,6 +116,21 @@ public class UserServiceImpl implements UserService {
                 response.setStatus(new StatusResponse(0, "User not found", StatusResponse.Type.ERROR));
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
+    public ResponseEntity<UserResponse> getUsersBybranchId(Long branchId) {
+        UserResponse response = new UserResponse();
+
+        try {
+            List<UserEntry> entries = userManager.getUserByBranchId(branchId);
+            response.setData(entries);
+            response.setStatus(new StatusResponse(1, "Users fetched successfully", StatusResponse.Type.SUCCESS));
+            return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

@@ -1,13 +1,13 @@
 package com.dancestudio.erp.service.impl;
 
+import com.dancestudio.erp.entry.PlanEntry;
 import com.dancestudio.erp.entry.StudioEntry;
+import com.dancestudio.erp.entry.StudioSmsUsageEntry;
 import com.dancestudio.erp.entry.SubscriptionEntry;
 import com.dancestudio.erp.enums.SubscriptionStatus;
 import com.dancestudio.erp.enums.SubscriptionType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.BranchManager;
-import com.dancestudio.erp.manager.StudioManager;
-import com.dancestudio.erp.manager.SubscriptionManager;
+import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.response.StudioResponse;
 import com.dancestudio.erp.service.StudioService;
@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.time.YearMonth;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,8 @@ public class StudioServiceImpl implements StudioService {
     private StudioManager studioManager;
     private SubscriptionManager subscriptionManager;
     private BranchManager branchManager;
+    private PlanManager planManager;
+    private StudioSmsUsageManager studioSmsUsageManager;
 
     @Override
     public ResponseEntity<StudioResponse> add(StudioEntry studioEntry) {
@@ -117,7 +120,23 @@ public class StudioServiceImpl implements StudioService {
         trialPlan.setOrderId("TRIAL-" + UUID.randomUUID().toString().replaceAll("-", "").substring(0, 6));
         trialPlan.setPrice(0.0);
 
+        PlanEntry planEntry = planManager.getPlansByMembershipTypeAndCountryCode(SubscriptionType.TRIAL.name(), "IN");
+        addStudioSmsUsageEntry(planEntry, branchId);
+
         return subscriptionManager.add(trialPlan);
+    }
+
+    private void addStudioSmsUsageEntry(PlanEntry planEntry, Long branchId) throws Exception {
+        if (planEntry == null) {
+            throw new Exception("Trial plan not found");
+        }
+        StudioSmsUsageEntry studioSmsUsageEntry = new StudioSmsUsageEntry();
+        studioSmsUsageEntry.setQuota(planEntry.getSmsQuota());
+        studioSmsUsageEntry.setBranchId(branchId);
+        studioSmsUsageEntry.setMonth(Long.parseLong(YearMonth.now().toString().replace("-", "")));
+        studioSmsUsageEntry.setTotalSmsSent(0L);
+
+        studioSmsUsageManager.add(studioSmsUsageEntry);
     }
 
 }

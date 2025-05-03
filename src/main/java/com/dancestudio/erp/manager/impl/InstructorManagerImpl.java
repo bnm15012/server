@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -85,13 +86,13 @@ public class InstructorManagerImpl implements InstructorManager {
     @Override
     public List<InstructorEntry> getAllInstructorsByStudio(Long branchId, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
         if (size == -1) {
-            List<Member> entries = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatus(branchId, null, null, searchTerm);
+            List<Member> entries = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, null, searchTerm);
             return entries.stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         } else {
             Pageable pageable = PageRequest.of(page, size);
-            Page<Member> instructorPage = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatus(branchId, null, membershipStatus.name(), pageable, searchTerm);
+            Page<Member> instructorPage = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), pageable, searchTerm);
             return instructorPage.getContent().stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
@@ -172,7 +173,28 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public Long getCountInstructorByStrudioId(Long branchId) {
+    public Long getCountInstructorByBranchId(Long branchId) {
         return memberRepository.totalInstructorsByBranchId(branchId);
+    }
+
+    @Override
+    public List<InstructorCommunicationEntry> getAllInstructorsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size) {
+        List<Member> entries;
+        if (size == -1) {
+            entries = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), null);
+        } else {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Member> instructorPage = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), pageable, null);
+            entries = instructorPage.getContent().stream().toList();
+        }
+
+        List<InstructorCommunicationEntry> instructorEntries = new ArrayList<>();
+        for (Member instructor : entries) {
+            InstructorCommunicationEntry entry = new InstructorCommunicationEntry();
+            entry.setInstructorId(instructor.getId());
+            entry.setName(instructor.getName());
+            instructorEntries.add(entry);
+        }
+        return instructorEntries;
     }
 }

@@ -12,6 +12,9 @@ import java.util.List;
 public class MonthlyReportEntry {
 
     private int month;
+    private int yearMonth;
+    private double income;
+    private double expense;
     private List<ExpenseEntry> expenseEntries;
     private List<PaymentEntry> paymentEntries;
     private double revenue;

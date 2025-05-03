@@ -2,6 +2,8 @@ package com.dancestudio.erp.entry;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class BranchEntry {
 
@@ -14,5 +16,7 @@ public class BranchEntry {
     private String pincode;
     private String phone;
     private Boolean isActive;
+
+    private List<UserEntry> userEntries;
 
 }

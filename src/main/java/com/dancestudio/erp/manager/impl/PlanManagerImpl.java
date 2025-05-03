@@ -3,6 +3,7 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Plan;
 import com.dancestudio.erp.entry.PlanEntry;
 import com.dancestudio.erp.enums.MembershipType;
+import com.dancestudio.erp.enums.SubscriptionType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.PlanManager;
 import com.dancestudio.erp.manager.StudioManager;
@@ -75,8 +76,10 @@ public class PlanManagerImpl implements PlanManager {
 
         List<PlanEntry> planEntries = new ArrayList<>();
         for (Plan plan : plans) {
-            PlanEntry planEntry = convertToEntry(plan);
-            planEntries.add(planEntry);
+            if(!plan.getPlanType().equals(SubscriptionType.TRIAL.name())) {
+                PlanEntry planEntry = convertToEntry(plan);
+                planEntries.add(planEntry);
+            }
         }
         return planEntries;
     }
@@ -106,6 +109,7 @@ public class PlanManagerImpl implements PlanManager {
         } else {
             planEntry.setDisabledFeatures(new ArrayList<>());
         }
+        planEntry.setSmsQuota((long) plan.getSmsQuota());
         planEntry.setPlanType(MembershipType.valueOf(plan.getPlanType()));
         return planEntry;
     }
@@ -124,6 +128,9 @@ public class PlanManagerImpl implements PlanManager {
         }
         if (Objects.nonNull(planEntry.getDisabledFeatures())) {
             plan.setDisabledFeatures(String.join(",", planEntry.getDisabledFeatures()));
+        }
+        if (Objects.nonNull(planEntry.getSmsQuota())) {
+            plan.setSmsQuota(planEntry.getSmsQuota());
         }
         if (Objects.nonNull(planEntry.getPlanType())) {
             plan.setPlanType(planEntry.getPlanType().name());

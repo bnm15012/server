@@ -13,5 +13,6 @@ public class PlanEntry {
     private Double amount;
     private List<String> enabledFeatures;
     private List<String> disabledFeatures;
+    private Long smsQuota;
     private String countryCode;
 }

@@ -26,11 +26,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT i FROM Member i WHERE i.branch.id = :branchId AND i.memberType = 'INSTRUCTOR' AND (:activityId IS NULL OR i.id IN (SELECT sa.instructor.id FROM InstructorActivityAssignment sa WHERE sa.activity.id = :activityId AND" +
             "((:status = 'ACTIVE' AND sa.endDate >= CURRENT_DATE) OR (:status = 'INACTIVE' AND sa.endDate < CURRENT_DATE)))) AND (:searchTerm IS NULL OR LOWER(i.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
-    List<Member> findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatus(@Param("branchId") Long branchId, @Param("activityId") Long activityId, @Param("status") String status, @Param("searchTerm") String searchTerm);
+    List<Member> findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(@Param("branchId") Long branchId, @Param("activityId") Long activityId, @Param("status") String status, @Param("searchTerm") String searchTerm);
 
     @Query("SELECT s FROM Member s WHERE s.branch.id = :branchId AND s.memberType = 'INSTRUCTOR' AND (:activityId IS NULL OR s.id IN (SELECT sa.instructor.id FROM InstructorActivityAssignment sa WHERE sa.activity.id = :activityId AND " +
             "((:status = 'ACTIVE' AND sa.endDate >= CURRENT_DATE) OR (:status = 'INACTIVE' AND sa.endDate < CURRENT_DATE)))) AND (:searchTerm IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
-    Page<Member> findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatus(@Param("branchId") Long branchId, @Param("activityId") Long activityId, @Param("status") String membershipStatus, Pageable pageable, @Param("searchTerm") String searchTerm);
+    Page<Member> findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(@Param("branchId") Long branchId, @Param("activityId") Long activityId, @Param("status") String membershipStatus, Pageable pageable, @Param("searchTerm") String searchTerm);
 
     @Query("SELECT COUNT(s) FROM Member s WHERE s.branch.id = :branchId and s.memberType = 'STUDENT'")
     long totalStudentsByBranchId(@Param("branchId") Long branchId);
@@ -40,6 +40,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT COUNT(s) FROM Member s WHERE s.branch.id = :branchId and s.memberType = 'INSTRUCTOR'")
     long totalInstructorsByBranchId(@Param("branchId") Long branchId);
-
 
 }

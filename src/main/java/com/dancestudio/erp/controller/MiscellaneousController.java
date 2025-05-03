@@ -33,9 +33,11 @@ public class MiscellaneousController {
         return miscellaneousService.getAnalysisReport(year, studioId);
     }
 
-    @GetMapping("reports")
-    public ResponseEntity<ReportResponse> getReports(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
-        return miscellaneousService.getReports(startDate, endDate);
+    @GetMapping("reports/{studioId}/{branchId}")
+    public ResponseEntity<IEReportResponse> getReports(@PathVariable("studioId") Long studioId, @PathVariable("branchId") Long branchId,
+                                                       @RequestParam("startMonth") Long startMonth, @RequestParam("startYear") Long startYear,
+                                                       @RequestParam("endMonth") Long endMonth, @RequestParam("endYear") Long endYear) {
+        return miscellaneousService.getReports(studioId, branchId, startMonth, startYear, endMonth, endYear);
     }
 
     @PostMapping("password/reset")
