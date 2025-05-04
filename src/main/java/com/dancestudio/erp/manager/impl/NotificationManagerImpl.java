@@ -15,6 +15,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Properties;
 
@@ -52,6 +53,9 @@ public class NotificationManagerImpl implements NotificationManager {
 
         if(studioId != null) {
             Studio studio = studioRepository.findById(studioId).get();
+            if(StringUtils.isEmpty(studio.getPasscode()))
+                return;
+
             mailSender.setUsername(studio.getEmail());
             mailSender.setPassword(studio.getPasscode());
         } else {

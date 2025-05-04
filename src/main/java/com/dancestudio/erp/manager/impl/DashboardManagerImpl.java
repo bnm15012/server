@@ -6,6 +6,7 @@ import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.*;
 import com.dancestudio.erp.util.DateUtil;
 
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,18 +15,12 @@ import java.util.Date;
 import java.util.Map;
 
 @Service
+@Setter(onMethod = @__({@Autowired}))
 public class DashboardManagerImpl implements DashboardManager {
 
-        @Autowired
         private MemberRepository memberRepository;
-
-        @Autowired
         private ExpenseRepository expenseRepository;
-
-        @Autowired
         private PaymentRepository paymentRepository;
-
-        @Autowired
         private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
 
         @Override
@@ -70,6 +65,8 @@ public class DashboardManagerImpl implements DashboardManager {
                 entry.setTotalLastMonthExpenseCount(lastExpense.getCount());
                 entry.setTotalLastMonthExpenseAmount(lastExpense.getTotalAmount());
 
+                entry.setCurrentMonthRevenue(entry.getTotalCurrentMonthPaymentAmount() - entry.getTotalCurrentMonthExpenseAmount());
+                entry.setLastMonthRevenue(entry.getTotalLastMonthPaymentAmount() - entry.getTotalLastMonthExpenseAmount());
                 return entry;
         }
 

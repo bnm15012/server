@@ -19,6 +19,8 @@ public class StudentEntry {
     private String phone;
     private Date dob;
     private String imageUrl;
+    private String address;
+    private String emergencyContactNumber;
     private MembershipStatus membershipStatus;
     private Long branchId;
     private Long activeMembershipCount;

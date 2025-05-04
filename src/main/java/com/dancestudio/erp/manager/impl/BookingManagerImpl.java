@@ -22,20 +22,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@Setter
+@Setter(onMethod = @__({@Autowired}))
 public class BookingManagerImpl implements BookingManager {
 
     private final BookingRepository bookingRepository;
 
-    @Autowired
     private BranchManager branchManager;
-
-    @Autowired
     private ClientManager clientManager;
-
-    @Autowired
     private PaymentManager paymentManager;
-
 
     @Autowired
     public BookingManagerImpl(BookingRepository bookingRepository) {

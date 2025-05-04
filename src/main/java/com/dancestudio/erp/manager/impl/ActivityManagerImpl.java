@@ -5,7 +5,6 @@ import com.dancestudio.erp.entity.Activity;
 import com.dancestudio.erp.entry.ActivityEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
-import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.repository.ActivityRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,6 @@ import java.util.List;
 @Service
 public class ActivityManagerImpl implements ActivityManager {
     private final ActivityRepository activityRepository;
-
-    @Autowired
-    private BranchManager branchManager;
 
     @Autowired
     public ActivityManagerImpl(ActivityRepository activityRepository) {

@@ -29,6 +29,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     @Modifying
     @Transactional
-    @Query("UPDATE Subscription s SET s.status = :status WHERE s.createdOn < :createdAt AND s.status = 'CREATED'")
-    int updateStatusByCreatedAtBefore(@Param("status") String status, @Param("createdAt") Date createdAt);
+    @Query("DELETE from Subscription s WHERE s.createdOn < :createdAt AND s.status = 'CREATED'")
+    int deleteByCreatedAtBeforeAndStatusCreated(@Param("createdAt") Date createdAt);
 }

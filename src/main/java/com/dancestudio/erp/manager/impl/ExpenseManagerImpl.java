@@ -9,6 +9,7 @@ import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.ExpenseManager;
 import com.dancestudio.erp.repository.ExpenseRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,11 +21,12 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Setter
 public class ExpenseManagerImpl implements ExpenseManager {
+
     private final ExpenseRepository expenseRepository;
 
-    @Autowired
-    private BranchManager branchManager;
+    @Autowired private BranchManager branchManager;
 
     @Autowired
     public ExpenseManagerImpl(ExpenseRepository expenseRepository) {

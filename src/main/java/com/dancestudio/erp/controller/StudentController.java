@@ -46,13 +46,14 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
         return studentService.getAllStudents(studioId, activityId, membershipStatus, page, size, searchTerm);
     }
 
-    @GetMapping("/getAllStudentsForCommunication/{studioId}")
+    @GetMapping("/getAllStudentsForCommunication/{branchId}")
     public ResponseEntity<StudentCommunicationResponse> getAllStudents(
             @PathVariable Long branchId,
             @RequestParam(required = false) MembershipStatus membershipStatus,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "-1") int size) {
-        return studentService.getAllStudentsForCommunication(branchId, membershipStatus, page, size);
+            @RequestParam(defaultValue = "-1") int size,
+            @RequestParam(defaultValue = "0") int birthday) {
+        return studentService.getAllStudentsForCommunication(branchId, membershipStatus, page, size, birthday);
     }
 
     @PostMapping("/sendSubscriptionRenewalReminder/{studentId}/{activityId}")

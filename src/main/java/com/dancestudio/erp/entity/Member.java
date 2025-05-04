@@ -3,6 +3,7 @@ package com.dancestudio.erp.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.util.Date;
 
@@ -23,11 +24,19 @@ public class Member extends BaseEntity {
     @Column(name = "phone", nullable = false, length = 10)
     private String phone;
 
-    @Column(name = "dob")
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
+    @Column(name = "dob", columnDefinition = "TIMESTAMP")
     private Date dob;
 
     @Column(name = "profile_image")
     private String profileImage;
+
+    @Column(name = "address", length = 1024)
+    private String address;
+
+    @Column(name = "emergency_contact_number", nullable = false, length = 10)
+    private String emergencyContactNumber;
 
     @Column(name = "member_type")
     private String memberType;

@@ -62,4 +62,12 @@ public class DateUtil {
 
         return result;
     }
+
+    public static boolean isToday(Date date) {
+        if (date == null)
+            return false;
+
+        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return LocalDate.now().equals(localDate);
+    }
 }

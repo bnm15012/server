@@ -26,8 +26,7 @@ public class ClientManagerImpl implements ClientManager {
 
     private final ClientRepository clientRepository;
 
-    @Autowired
-    private BranchManager branchManager;
+    @Autowired private BranchManager branchManager;
 
     @Autowired
     public ClientManagerImpl(ClientRepository clientRepository) {

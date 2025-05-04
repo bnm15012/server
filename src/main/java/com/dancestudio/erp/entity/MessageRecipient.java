@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Date;
-
 @Entity
 @Data
 @Table(name = "message_recipient")
@@ -21,6 +19,9 @@ public class MessageRecipient extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(name = "fk_recipient_member_id"))
     private Member member;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
@@ -28,9 +29,7 @@ public class MessageRecipient extends BaseEntity {
     @Column(name = "status", nullable = false)
     private MessageStatus status = MessageStatus.PENDING;
 
-    @Column(name = "sent_at")
-    private Date sentAt;
+    @Column(name = "reason")
+    private String reason;
 
-    @Column(name = "delivery_status")
-    private String deliveryStatus;
 }

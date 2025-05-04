@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BankAccountManagerImpl implements BankAccountManager {
-    private final BankAccountRepository bankAccountRepository;
 
+    private final BankAccountRepository bankAccountRepository;
 
     @Autowired
     public BankAccountManagerImpl(BankAccountRepository bankAccountRepository) {

@@ -59,7 +59,18 @@ public class InstructorManagerImpl implements InstructorManager {
                 .orElseThrow(() -> new EntityNotFoundException("Instructor not found"));
 
         if (Objects.nonNull(instructorEntry.getBankAccountDetails())) {
-            bankAccountManager.update(instructorEntry.getBankAccountDetails().getBankAccountId(), instructorEntry.getBankAccountDetails());
+            instructorEntry.getBankAccountDetails().setInstructorId(existingInstructor.getId());
+
+            BankAccountEntry bankAccountEntry = null;
+            try {
+                bankAccountEntry = bankAccountManager.getByInstructorId(existingInstructor.getId());
+            } catch (Exception ignored) {}
+
+            if(Objects.nonNull(bankAccountEntry)) {
+                bankAccountManager.update(instructorEntry.getBankAccountDetails().getBankAccountId(), instructorEntry.getBankAccountDetails());
+            } else {
+                bankAccountManager.add(instructorEntry.getBankAccountDetails());
+            }
         }
 
         Member updatedInstructor = convertToEntity(instructorEntry, existingInstructor);
@@ -104,8 +115,11 @@ public class InstructorManagerImpl implements InstructorManager {
         instructorEntry.setInstructorId(instructor.getId());
         instructorEntry.setName(instructor.getName());
         instructorEntry.setEmail(instructor.getEmail());
+        instructorEntry.setDob(instructor.getDob());
         instructorEntry.setPhone(instructor.getPhone());
         instructorEntry.setImageUrl(instructor.getProfileImage());
+        instructorEntry.setAddress(instructor.getAddress());
+        instructorEntry.setEmergencyContactNumber(instructor.getEmergencyContactNumber());
 
         try {
             if (instructor.getBranch() != null) {
@@ -160,8 +174,17 @@ public class InstructorManagerImpl implements InstructorManager {
         if (Objects.nonNull(instructorEntry.getPhone())) {
             instructor.setPhone(instructorEntry.getPhone());
         }
+        if (Objects.nonNull(instructorEntry.getDob())) {
+            instructor.setDob(instructorEntry.getDob());
+        }
         if (Objects.nonNull(instructorEntry.getImageUrl())) {
             instructor.setProfileImage(instructorEntry.getImageUrl());
+        }
+        if (Objects.nonNull(instructorEntry.getAddress())) {
+            instructor.setAddress(instructorEntry.getAddress());
+        }
+        if (Objects.nonNull(instructorEntry.getEmergencyContactNumber())) {
+            instructor.setEmergencyContactNumber(instructorEntry.getEmergencyContactNumber());
         }
 
         if (instructorEntry.getBranchEntry() != null && instructorEntry.getBranchEntry().getBranchId() != null) {

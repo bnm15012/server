@@ -2,13 +2,14 @@ package com.dancestudio.erp.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import java.text.SimpleDateFormat;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.text.SimpleDateFormat;
+
 @Configuration
 public class JacksonConfig {
+
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();

@@ -12,7 +12,7 @@ public interface StudentManager extends BaseManager<StudentEntry, Long> {
 
     List<StudentEntry> getAllStudentsByStudio(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size, String searchTerm);
 
-    List<StudentCommunicationEntry> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size);
+    List<StudentCommunicationEntry> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size, int birthday);
 
     List<StudentEntry> findByMembershipEndDate(Date reminderDate) throws EntityNotFoundException;
 

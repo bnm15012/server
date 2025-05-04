@@ -114,7 +114,7 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public List<StudentCommunicationEntry> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size) {
+    public List<StudentCommunicationEntry> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size, int birthday) {
         List<Member> entries;
         if (size == -1) {
             entries = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), null);
@@ -122,6 +122,12 @@ public class StudentManagerImpl implements StudentManager {
             Pageable pageable = PageRequest.of(page, size);
             Page<Member> studentPage = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), pageable, null);
             entries = studentPage.getContent().stream().toList();
+        }
+
+        if (birthday == 1) {
+            entries = entries.stream()
+                    .filter(student -> DateUtil.isToday(student.getDob()))
+                    .collect(Collectors.toList());
         }
 
         List<StudentCommunicationEntry> studentEntries = new ArrayList<>();
@@ -180,6 +186,8 @@ public class StudentManagerImpl implements StudentManager {
         studentEntry.setDob(student.getDob());
         studentEntry.setEmail(student.getEmail());
         studentEntry.setImageUrl(student.getProfileImage());
+        studentEntry.setAddress(student.getAddress());
+        studentEntry.setEmergencyContactNumber(student.getEmergencyContactNumber());
         try {
             List<StudentActivityAssignmentEntry> entries = studentActivityAssignmentManager.getStudentAssignmentsByStudentId(student.getId());
             boolean isActive = false;
@@ -220,6 +228,12 @@ public class StudentManagerImpl implements StudentManager {
         }
         if (Objects.nonNull(studentEntry.getImageUrl())) {
             student.setProfileImage(studentEntry.getImageUrl());
+        }
+        if (Objects.nonNull(studentEntry.getAddress())) {
+            student.setAddress(studentEntry.getAddress());
+        }
+        if (Objects.nonNull(studentEntry.getEmergencyContactNumber())) {
+            student.setEmergencyContactNumber(studentEntry.getEmergencyContactNumber());
         }
         if (Objects.nonNull(studentEntry.getBranchId())) {
             BranchEntry entry = branchManager.getById(studentEntry.getBranchId());

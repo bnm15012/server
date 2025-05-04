@@ -144,6 +144,8 @@ public class ConvertToEntryUtil {
         studioEntry.setEmail(studio.getEmail());
         studioEntry.setPasscode(studio.getPasscode());
         studioEntry.setContactDetails(studio.getContactDetails());
+        studioEntry.setInstanceId(studio.getInstanceId());
+        studioEntry.setToken(studio.getToken());
 
         if (studio.getConfiguration() != null) {
             try {
@@ -190,6 +192,12 @@ public class ConvertToEntryUtil {
         }
         if (Objects.nonNull(studioEntry.getContactDetails())) {
             studio.setContactDetails(studioEntry.getContactDetails());
+        }
+        if (Objects.nonNull(studioEntry.getInstanceId())) {
+            studio.setInstanceId(studioEntry.getInstanceId());
+        }
+        if (Objects.nonNull(studioEntry.getToken())) {
+            studio.setToken(studioEntry.getToken());
         }
         if (Objects.nonNull(studioEntry.getConfiguration())) {
             List<StudioConfigurationEntry> configrationEntries = studioEntry.getConfiguration().getConfigrationEntryList();
@@ -371,6 +379,8 @@ public class ConvertToEntryUtil {
         studentEntry.setDob(student.getDob());
         studentEntry.setEmail(student.getEmail());
         studentEntry.setImageUrl(student.getProfileImage());
+        studentEntry.setAddress(student.getAddress());
+        studentEntry.setEmergencyContactNumber(student.getEmergencyContactNumber());
 
         try {
 

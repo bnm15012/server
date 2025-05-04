@@ -105,11 +105,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<StudentCommunicationResponse> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size) {
+    public ResponseEntity<StudentCommunicationResponse> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size, int birthday) {
         StudentCommunicationResponse response = new StudentCommunicationResponse();
 
         try {
-            List<StudentCommunicationEntry> entries = studentManager.getAllStudentsForCommunication(branchId, membershipStatus, page, size);
+            List<StudentCommunicationEntry> entries = studentManager.getAllStudentsForCommunication(branchId, membershipStatus, page, size, birthday);
             long totalSize = studentManager.getAllStudentsCountByStudio(branchId);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Students retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));

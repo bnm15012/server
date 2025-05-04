@@ -17,6 +17,8 @@ public class StudioEntry {
     private Boolean enabled;
     private String contactDetails;
     private StudioConfigurationRequest configuration;
+    private String instanceId;
+    private String token;
 
     private SubscriptionEntry subscriptionEntry;
     private List<BranchEntry> branchList;
