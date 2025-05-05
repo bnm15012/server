@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    Optional<Member> findByNameAndEmail(String name, String email);
+    Optional<Member> findByNameAndMemberTypeAndEmail(String name, String memberType, String email);
 
     @Query("SELECT s FROM Member s WHERE s.branch.id = :branchId AND s.memberType = 'STUDENT' AND (:activityId IS NULL OR s.id IN (SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activity.id = :activityId AND " +
             "((:status = 'ACTIVE' AND sa.membershipEndDate >= CURRENT_DATE) OR (:status = 'INACTIVE' AND sa.membershipEndDate < CURRENT_DATE)))) " +

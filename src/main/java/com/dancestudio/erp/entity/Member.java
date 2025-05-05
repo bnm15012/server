@@ -11,7 +11,7 @@ import java.util.Date;
 @Entity
 @Data
 @Table(name = "members", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "email", "branch_id"}, name = "unique_name_email_branch")
+        @UniqueConstraint(columnNames = {"name", "email", "member_type", "branch_id"}, name = "unique_name_email_membertype_branch")
 })
 public class Member extends BaseEntity {
 

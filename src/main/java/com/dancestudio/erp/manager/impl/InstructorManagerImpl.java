@@ -38,7 +38,7 @@ public class InstructorManagerImpl implements InstructorManager {
 
     @Override
     public InstructorEntry add(InstructorEntry instructorEntry) throws Exception {
-        if (memberRepository.findByNameAndEmail(instructorEntry.getName(), instructorEntry.getEmail()).isPresent()) {
+        if (memberRepository.findByNameAndMemberTypeAndEmail(instructorEntry.getName(), MemberType.INSTRUCTOR.name() ,instructorEntry.getEmail()).isPresent()) {
             throw new Exception("Instructor already exists");
         }
 

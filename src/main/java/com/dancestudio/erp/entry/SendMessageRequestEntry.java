@@ -12,9 +12,6 @@ public class SendMessageRequestEntry {
     private String notiticationType;
     private Long branchId;
     private Boolean sentToAll = false;
-    private List<Long> studentIds;
-    private List<Long> instructorIds;
-
     private List<Long> memberIds;
 
 }

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_USER_EMAIL;
+import static com.dancestudio.erp.constants.TemplateName.UPDATE_USER_EMAIL;
 import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntity;
 import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 
@@ -118,7 +119,13 @@ public class UserManagerImpl implements UserManager {
             userEntry.setPassword(hashPassword(userEntry.getPassword()));
         }
         User updatedUser = convertToEntity(userEntry, existingUser);
-        return convertToEntry(userRepository.save(updatedUser));
+        UserEntry entry = convertToEntry(userRepository.save(updatedUser));
+
+        TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_USER_EMAIL);
+        String updatedBody = formatEmailBody(updatedUser, templateEntry, entry);
+
+        notificationManager.sendEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null);
+        return entry;
     }
 
     @Override

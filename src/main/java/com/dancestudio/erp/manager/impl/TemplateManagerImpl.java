@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.dancestudio.erp.constants.TemplateName.*;
+import static com.dancestudio.erp.constants.TemplateName.PAYMENT_REMINDER;
+import static com.dancestudio.erp.constants.TemplateName.STUDIO_CLOSED_NOTICE;
 
 @Service
 public class TemplateManagerImpl implements TemplateManager {
@@ -71,12 +72,10 @@ public class TemplateManagerImpl implements TemplateManager {
     public List<TemplateEntry> getAllTemplates(Long studioId) throws Exception {
         List<Template> templates = templateRepository.findAll();
 
-        templates.removeIf(template -> template.getName().equalsIgnoreCase(UPDATE_STUDENT_EMAIL) ||
-                template.getName().equalsIgnoreCase(ADD_NEW_STUDENT_EMAIL) ||
-                template.getName().equalsIgnoreCase(ADD_NEW_STUDIO_EMAIL) ||
-                template.getName().equalsIgnoreCase(UPDATE_STUDIO_EMAIL) ||
-                template.getName().equalsIgnoreCase(SUBSCRIPTION_RENEWAL_REMINDER) ||
-                template.getName().equalsIgnoreCase(ADD_NEW_USER_EMAIL));
+        templates = templates.stream().filter(template ->
+                        PAYMENT_REMINDER.equals(template.getName()) ||
+                        STUDIO_CLOSED_NOTICE.equals(template.getName()))
+                .toList();
 
         Studio studio = studioRepository.findById(studioId).get();
         StudioEntry studioEntry = ConvertToEntryUtil.convertToEntry(studio);

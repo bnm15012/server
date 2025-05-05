@@ -44,28 +44,24 @@ public class MessageManagerImpl implements MessageManager {
                 ? memberRepository.findByBranchId(branch.getId())
                 : memberRepository.findAllById(request.getMemberIds());
 
-        List<Member> students = (request.getStudentIds() == null || request.getStudentIds().isEmpty())
-                ? memberRepository.findByBranchId(branch.getId())
-                : memberRepository.findAllById(request.getStudentIds());
-
-        if (students.isEmpty()) {
-            throw new RuntimeException("No students found to send message.");
+        if (members.isEmpty()) {
+            throw new RuntimeException("No members found to send message.");
         }
 
         Message message = createAndSaveMessage(request, branch);
         int success = 0;
         if (isWhatsappNotification(request)) {
-            success = handleWhatsappNotification(request, branch, students, message);
-            handleEmailNotification(request, branch, students);
+            success = handleWhatsappNotification(request, branch, members, message);
+            handleEmailNotification(request, branch, members);
         } else if (isSmsNotification(request)) {
-            success = handleSmsNotification(request, branch, students, message);
-            handleEmailNotification(request, branch, students);
+            success = handleSmsNotification(request, branch, members, message);
+            handleEmailNotification(request, branch, members);
         } else {
-            success = handleEmailNotification(request, branch, students);
+            success = handleEmailNotification(request, branch, members);
         }
 
-        int failed = students.size() - success;
-        return new SendMessageResponse(students.size(), success, failed);
+        int failed = members.size() - success;
+        return new SendMessageResponse(members.size(), success, failed);
     }
 
     private Message createAndSaveMessage(SendMessageRequestEntry request, Branch branch) {
@@ -78,23 +74,24 @@ public class MessageManagerImpl implements MessageManager {
         return messageRepository.save(message);
     }
 
-    private int processRecipients(Studio studio, List<Member> students, Message message, String content) {
+    private int processRecipients(Studio studio, List<Member> members, Message message, String content) {
 
         int success = 0;
-        for (Member student : students) {
+        for (Member member : members) {
             MessageRecipient recipient = new MessageRecipient();
             recipient.setMessage(message);
-            recipient.setMember(student);
-            recipient.setName(student.getName());
-            recipient.setPhoneNumber(student.getPhone());
+            recipient.setMember(member);
+            recipient.setName(member.getName());
+            recipient.setPhoneNumber(member.getPhone());
             recipient.setStatus(MessageStatus.PENDING);
 
             try {
-                sendSms(studio, student, content);
+                sendSms(studio, member, content);
                 recipient.setStatus(MessageStatus.SENT);
                 success++;
             } catch (Exception e) {
                 recipient.setStatus(MessageStatus.FAILED);
+                recipient.setReason(e.getMessage());
             }
 
             recipientRepository.save(recipient);
@@ -111,40 +108,40 @@ public class MessageManagerImpl implements MessageManager {
         return TemplateType.SMS.name().equals(request.getNotiticationType());
     }
 
-    private int handleWhatsappNotification(SendMessageRequestEntry request, Branch branch, List<Member> students, Message message) {
+    private int handleWhatsappNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
         Studio studio = branch.getStudio();
         if(StringUtils.isEmpty(studio.getToken()) || StringUtils.isEmpty(studio.getInstanceId())) {
             throw new RuntimeException("Studio not configured for WhatsApp messaging");
         }
 
-        return processRecipients(studio, students, message, request.getContent());
+        return processRecipients(studio, members, message, request.getContent());
     }
 
-    private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> students, Message message) {
+    private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
         Studio studio = branch.getStudio();
         return 0;
     }
 
-    private int handleEmailNotification(SendMessageRequestEntry request, Branch branch, List<Member> students) {
+    private int handleEmailNotification(SendMessageRequestEntry request, Branch branch, List<Member> members) {
         int success = 0;
-        for (Member student : students) {
+        for (Member member : members) {
             try {
-                notificationManager.sendEmail(student.getEmail(), request.getTitle(), request.getContent(), branch.getStudio().getId());
+                notificationManager.sendEmail(member.getEmail(), request.getTitle(), request.getContent(), branch.getStudio().getId());
                 success++;
             } catch (Exception e) {
-                log.error("Failed to send email to student: {}", student.getEmail(), e);
+                log.error("Failed to send email to student: {}", member.getEmail(), e);
             }
         }
         return success;
     }
 
-    private void sendSms(Studio studio, Member student, String content) {
-        if (student.getPhone() == null || student.getPhone().isBlank()) {
+    private void sendSms(Studio studio, Member member, String content) {
+        if (member.getPhone() == null || member.getPhone().isBlank()) {
             throw new RuntimeException("Invalid phone number.");
         }
 
         String token = studio.getToken();
         String instanceId = studio.getInstanceId();
-        ultraMsgUtil.sendMessage(token, instanceId, student.getPhone(), content);
+        ultraMsgUtil.sendMessage(token, instanceId, member.getPhone(), content);
     }
 }

@@ -46,7 +46,7 @@ public class StudentManagerImpl implements StudentManager {
 
     @Override
     public StudentEntry add(StudentEntry studentEntry) throws Exception {
-        if (memberRepository.findByNameAndEmail(studentEntry.getName(), studentEntry.getEmail()).isPresent()) {
+        if (memberRepository.findByNameAndMemberTypeAndEmail(studentEntry.getName(), MemberType.STUDENT.name(), studentEntry.getEmail()).isPresent()) {
             throw new Exception("Student already exists");
         }
 

@@ -36,7 +36,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Payment findByPayeeIdAndPayeeType(@Param("payeeId") Long payeeId, @Param("payeeType") String payeeType);
 
     @Query("SELECT new com.dancestudio.erp.entry.PaymentExpenseSummary(COUNT(s), COALESCE(SUM(s.amount), 0)) " +
-    "FROM Payment s WHERE s.branch.id = :branchId AND s.paymentDate BETWEEN :startDate AND :endDate")
+    "FROM Payment s WHERE s.branch.id = :branchId AND s.status = 'COMPLETED' AND s.paymentDate BETWEEN :startDate AND :endDate")
         PaymentExpenseSummary findCountAndTotalAmountByBranchAndDateRange(
         @Param("branchId") Long branchId,
         @Param("startDate") Date startDate,
