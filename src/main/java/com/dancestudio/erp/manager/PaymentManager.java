@@ -16,4 +16,6 @@ public interface PaymentManager extends BaseManager<PaymentEntry, Long> {
     Long getPaymentCountByStudioId(Long studioId);
 
     PaymentEntry getPaymentByPayeeIdAndPayeeType(Long bookingId, PayeeType payeeType) throws EntityNotFoundException;
+
+    List<PaymentEntry> getAllPaymentsByDateRange(Long branchId, int startMonth, int startYear, int endMonth, int endYear) throws Exception;
 }

@@ -41,4 +41,12 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
         @Param("branchId") Long branchId,
         @Param("startDate") Date startDate,
         @Param("endDate") Date endDate);    
+        
+    @Query("SELECT e FROM Payment e WHERE e.branch.id = :branchId AND e.paymentDate BETWEEN :startDate AND :endDate")
+    List<Payment> findAllByBranchIdAndPaymentDateBetween(
+        @Param("branchId") Long branchId,
+        @Param("startDate") Date startDate,
+        @Param("endDate") Date endDate
+        );
+
 }

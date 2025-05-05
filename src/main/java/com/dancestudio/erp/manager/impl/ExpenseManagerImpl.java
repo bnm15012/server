@@ -9,6 +9,8 @@ import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.ExpenseManager;
 import com.dancestudio.erp.repository.ExpenseRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
+import com.dancestudio.erp.util.DateUtil;
+
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -133,5 +137,20 @@ public class ExpenseManagerImpl implements ExpenseManager {
         }
 
         return expense;
+    }
+
+    @Override
+    public List<ExpenseEntry> getAllExpensesByDateRange(Long branchId, int startMonth, int startYear, int endMonth,
+            int endYear) throws Exception {
+        Map<String, Date> monthRange = DateUtil.getRange(startMonth, startYear, endMonth, endYear);
+        List<Expense> entries = expenseRepository.findAllByBranchIdAndExpenseDateBetween(branchId,
+        monthRange.get("start"), monthRange.get("end"));
+
+        List<ExpenseEntry> expenseEntries = new ArrayList<>();
+        for (Expense entry : entries) {
+            ExpenseEntry expenseEntry = convertToEntry(entry);
+            expenseEntries.add(expenseEntry);
+        }
+        return expenseEntries;
     }
 }

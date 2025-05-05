@@ -126,7 +126,7 @@ public class StudentManagerImpl implements StudentManager {
 
         if (birthday == 1) {
             entries = entries.stream()
-                    .filter(student -> DateUtil.isToday(student.getDob()))
+                    .filter(student -> DateUtil.isTodaysDate(student.getDob()))
                     .collect(Collectors.toList());
         }
 

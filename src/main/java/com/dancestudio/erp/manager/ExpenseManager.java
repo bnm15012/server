@@ -11,4 +11,6 @@ public interface ExpenseManager extends BaseManager<ExpenseEntry, Long> {
     Long countExpensesByBranchIdAndMonth(Long branchId, Long startMonth, Long endMonth);
 
     List<ExpenseEntry> getAllExpenses(Long branchId, int page, int size, Long startMonth, Long startYear, Long endMonth, Long endYear) throws Exception;
+
+    List<ExpenseEntry> getAllExpensesByDateRange(Long branchId, int startMonth, int startYear, int endMonth, int endYear) throws Exception;
 }

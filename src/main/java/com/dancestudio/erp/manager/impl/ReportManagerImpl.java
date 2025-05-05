@@ -51,10 +51,10 @@ public class ReportManagerImpl implements ReportManager {
         return reportEntry;
     }
 
-    private IEMonthlyReportEntry processPaymentEntries(Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear) {
+    private IEMonthlyReportEntry processPaymentEntries(Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear) throws Exception {
         IEMonthlyReportEntry monthlyReports = new IEMonthlyReportEntry();
 
-        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, 10, startMonth, startYear, endMonth, endYear);
+        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByDateRange(branchId, startMonth.intValue(), startYear.intValue(), endMonth.intValue(), endYear.intValue());
         List<IncomeEntry> incomeEntries = paymentEntries.stream()
                 .map(this::extractIncomeEntry)
                 .collect(Collectors.toList());
@@ -69,7 +69,7 @@ public class ReportManagerImpl implements ReportManager {
     }
 
     private void processExpenseEntries(Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
-        List<ExpenseEntry> expenseEntries = expenseManager.getAllExpenses(branchId, 0, 10, startMonth, startYear, endMonth, endYear);
+        List<ExpenseEntry> expenseEntries = expenseManager.getAllExpensesByDateRange(branchId, startMonth.intValue(), startYear.intValue(), endMonth.intValue(), endYear.intValue());
         double totalExpense = expenseEntries.stream()
                 .mapToDouble(ExpenseEntry::getAmount)
                 .sum();

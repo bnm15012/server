@@ -42,4 +42,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("branchId") Long branchId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate);
+
+    @Query("SELECT e FROM Expense e WHERE e.branch.id = :branchId AND e.expenseDate BETWEEN :startDate AND :endDate")
+    List<Expense> findAllByBranchIdAndExpenseDateBetween(
+        @Param("branchId") Long branchId,
+        @Param("startDate") Date startDate,
+        @Param("endDate") Date endDate
+    );         
 }

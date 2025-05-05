@@ -5,6 +5,6 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 
 public interface DashboardManager {
 
-    DashboardEntry getDashboardDetails(Long studioId, int currentMonth, int currentYear, String userTimeZone) throws EntityNotFoundException;
+    DashboardEntry getDashboardDetails(Long studioId, int currentMonth, int currentYear) throws EntityNotFoundException;
 
 }

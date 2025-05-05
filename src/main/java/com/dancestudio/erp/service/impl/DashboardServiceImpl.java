@@ -17,10 +17,10 @@ public class DashboardServiceImpl implements DashboardService {
 
     private DashboardManager dashboardManager;
 
-    public DashboardResponse getDashboardDetails(Long studioId, int currentMonth, int currentYear, String userTimeZone) {
+    public DashboardResponse getDashboardDetails(Long studioId, int currentMonth, int currentYear) {
         DashboardResponse response = new DashboardResponse();
         try {
-            DashboardEntry entry = dashboardManager.getDashboardDetails(studioId, currentMonth, currentYear, userTimeZone);
+            DashboardEntry entry = dashboardManager.getDashboardDetails(studioId, currentMonth, currentYear);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Fetched dashboard details", StatusResponse.Type.SUCCESS));
         } catch (Exception ex) {

@@ -15,6 +15,8 @@ import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.repository.PaymentRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
+import com.dancestudio.erp.util.DateUtil;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -178,5 +183,20 @@ public class PaymentManagerImpl implements PaymentManager {
             throw new EntityNotFoundException("Payment not found");
         }
         return convertToEntry(payment);
+    }
+
+    @Override
+    public List<PaymentEntry> getAllPaymentsByDateRange(Long branchId, int startMonth, int startYear, int endMonth,
+            int endYear) throws Exception {
+        Map<String, Date> monthRange = DateUtil.getRange(startMonth, startYear, endMonth, endYear);
+        List<Payment> entries = paymentRepository.findAllByBranchIdAndPaymentDateBetween(branchId,
+        monthRange.get("start"), monthRange.get("end"));
+
+        List<PaymentEntry> expenseEntries = new ArrayList<>();
+        for (Payment entry : entries) {
+            PaymentEntry expenseEntry = convertToEntry(entry);
+            expenseEntries.add(expenseEntry);
+        }
+        return expenseEntries;
     }
 }

@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.dancestudio.erp.context.TimeZoneContext;
+
 public class DateUtil {
 
     public static Date addDays(Date date, int days) {
@@ -41,10 +43,8 @@ public class DateUtil {
      * @return A Map with UTC "start" and "end" Date values representing the user's
      *         local month boundaries
      */
-    public static Map<String, Date> getRange(int startMonth, int startYear, int endMonth, int endYear, ZoneId zoneId) {
-        if (zoneId == null) {
-            zoneId = ZoneOffset.UTC;
-        }
+    public static Map<String, Date> getRange(int startMonth, int startYear, int endMonth, int endYear) {
+        ZoneId zoneId = TimeZoneContext.getTimeZone();
 
         LocalDate localStartDate = YearMonth.of(startYear, startMonth).atDay(1);
         ZonedDateTime zonedStart = localStartDate.atStartOfDay(zoneId);
@@ -63,11 +63,10 @@ public class DateUtil {
         return result;
     }
 
-    public static boolean isToday(Date date) {
+    public static boolean isTodaysDate(Date date) {
         if (date == null)
             return false;
-
-        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        return LocalDate.now().equals(localDate);
+        ZoneId zoneId = TimeZoneContext.getTimeZone();
+        return LocalDate.now(zoneId).equals(date.toInstant().atZone(zoneId).toLocalDate());
     }
 }

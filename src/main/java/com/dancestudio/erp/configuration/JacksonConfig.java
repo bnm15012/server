@@ -1,4 +1,4 @@
-package com.dancestudio.erp.util;
+package com.dancestudio.erp.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
