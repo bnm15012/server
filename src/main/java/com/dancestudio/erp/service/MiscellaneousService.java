@@ -20,6 +20,8 @@ public interface MiscellaneousService {
 
     ResponseEntity<IEReportResponse> getReports(Long studioId, Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear);
 
+    ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId, int startMonth, int startYear, int endMonth, int endYear, String status);
+
     ResponseEntity<TemplateResponse> getTemplates(Long studioId);
 
 }

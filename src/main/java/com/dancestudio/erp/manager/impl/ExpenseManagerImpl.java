@@ -142,7 +142,7 @@ public class ExpenseManagerImpl implements ExpenseManager {
     @Override
     public List<ExpenseEntry> getAllExpensesByDateRange(Long branchId, int startMonth, int startYear, int endMonth,
             int endYear) throws Exception {
-        Map<String, Date> monthRange = DateUtil.getRange(startMonth, startYear, endMonth, endYear);
+        Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
         List<Expense> entries = expenseRepository.findAllByBranchIdAndExpenseDateBetween(branchId,
         monthRange.get("start"), monthRange.get("end"));
 

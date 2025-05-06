@@ -39,6 +39,14 @@ public class MiscellaneousController {
                                                        @RequestParam("endMonth") Long endMonth, @RequestParam("endYear") Long endYear) {
         return miscellaneousService.getReports(studioId, branchId, startMonth, startYear, endMonth, endYear);
     }
+    
+    @GetMapping("reports/payments/{studioId}/{branchId}")
+    public ResponseEntity<PaymentResponse> getPaymentReports(@PathVariable("studioId") Long studioId, @PathVariable("branchId") Long branchId,
+                                                       @RequestParam("startMonth") int startMonth, @RequestParam("startYear") int startYear,
+                                                       @RequestParam("endMonth") int endMonth, @RequestParam("endYear") int endYear, 
+                                                       @RequestParam("status") String status) {
+        return miscellaneousService.getPaymentReports(studioId, branchId, startMonth, startYear, endMonth, endYear, status);
+    }
 
     @PostMapping("password/reset")
     public ResponseEntity<PasswordResponse> requestPasswordReset(@RequestParam String email) {

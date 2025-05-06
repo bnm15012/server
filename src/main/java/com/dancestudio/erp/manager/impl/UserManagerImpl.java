@@ -122,9 +122,9 @@ public class UserManagerImpl implements UserManager {
         UserEntry entry = convertToEntry(userRepository.save(updatedUser));
 
         TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_USER_EMAIL);
-        String updatedBody = formatEmailBody(updatedUser, templateEntry, entry);
+        String updatedBody = templateEntry.getTemplateBody().replace("{user_name}", existingUser.getName());
 
-        notificationManager.sendEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null);
+        notificationManager.sendEmail(entry.getEmail(), templateEntry.getSubject(), updatedBody, null);
         return entry;
     }
 

@@ -104,8 +104,12 @@ public class InstructorManagerImpl implements InstructorManager {
         } else {
             Pageable pageable = PageRequest.of(page, size);
             Page<Member> instructorPage = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), pageable, searchTerm);
-            return instructorPage.getContent().stream()
+            List<InstructorEntry> entries = instructorPage.getContent().stream()
                     .map(this::convertToEntry)
+                    .toList();
+
+            return entries.stream()
+                    .filter(instructor -> instructor.getInstructorStatus() == membershipStatus)
                     .collect(Collectors.toList());
         }
     }

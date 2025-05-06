@@ -187,10 +187,10 @@ public class PaymentManagerImpl implements PaymentManager {
 
     @Override
     public List<PaymentEntry> getAllPaymentsByDateRange(Long branchId, int startMonth, int startYear, int endMonth,
-            int endYear) throws Exception {
-        Map<String, Date> monthRange = DateUtil.getRange(startMonth, startYear, endMonth, endYear);
-        List<Payment> entries = paymentRepository.findAllByBranchIdAndPaymentDateBetween(branchId,
-        monthRange.get("start"), monthRange.get("end"));
+            int endYear, String status) throws Exception {
+        Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
+        List<Payment> entries = paymentRepository.findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(branchId,
+        monthRange.get("start"), monthRange.get("end"), status);
 
         List<PaymentEntry> expenseEntries = new ArrayList<>();
         for (Payment entry : entries) {

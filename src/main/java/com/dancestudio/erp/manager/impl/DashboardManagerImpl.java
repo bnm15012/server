@@ -34,9 +34,9 @@ public class DashboardManagerImpl implements DashboardManager {
                 int lastMonth = (currentMonth == 1) ? 12 : currentMonth - 1;
                 int lastMonthYear = (currentMonth == 1) ? currentYear - 1 : currentYear;
 
-                Map<String, Date> currentMonthRange = DateUtil.getRange(currentMonth, currentYear, currentMonth,currentYear);
+                Map<String, Date> currentMonthRange = DateUtil.getDateRangeByMonthYear(currentMonth, currentYear, currentMonth,currentYear);
 
-                Map<String, Date> lastMonthRange = DateUtil.getRange(lastMonth, lastMonthYear, lastMonth, lastMonthYear);
+                Map<String, Date> lastMonthRange = DateUtil.getDateRangeByMonthYear(lastMonth, lastMonthYear, lastMonth, lastMonthYear);
                 PaymentExpenseSummary currentPayment = paymentRepository.findCountAndTotalAmountByBranchAndDateRange(
                                 branchId, currentMonthRange.get("start"), currentMonthRange.get("end"));
                 PaymentExpenseSummary lastPayment = paymentRepository.findCountAndTotalAmountByBranchAndDateRange(

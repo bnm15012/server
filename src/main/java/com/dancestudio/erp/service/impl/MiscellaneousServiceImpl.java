@@ -3,6 +3,7 @@ package com.dancestudio.erp.service.impl;
 import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.manager.ImageManager;
+import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.manager.ReportManager;
 import com.dancestudio.erp.manager.TemplateManager;
 import com.dancestudio.erp.manager.UserManager;
@@ -26,6 +27,7 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
 
     private ImageManager imageManager;
     private PasswordManagerImpl passwordManager;
+    private PaymentManager paymentManager;
     private UserManager userManager;
     private JwtUtil jwtUtil;
     private ReportManager reportManager;
@@ -139,6 +141,23 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
             List<TemplateEntry> templates = templateManager.getAllTemplates(studioId);
             response.setData(templates);
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(templates) ? 0 : templates.size()));
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+
+    @Override
+    public ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId, int startMonth,
+            int startYear, int endMonth, int endYear, String status) {
+        PaymentResponse response = new PaymentResponse();
+        try {
+            List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByDateRange(branchId, startMonth, startYear, endMonth, endYear, status);
+            response.setData((paymentEntries));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));

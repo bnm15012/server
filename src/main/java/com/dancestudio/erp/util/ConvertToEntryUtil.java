@@ -242,6 +242,10 @@ public class ConvertToEntryUtil {
 
     public static BankAccountEntry convertToEntry(BankAccount bankAccount) {
 
+        if (Objects.isNull(bankAccount)) {
+            return null;
+        }
+
         BankAccountEntry bankAccountEntry = new BankAccountEntry();
         bankAccountEntry.setBankAccountId(bankAccount.getId());
         bankAccountEntry.setBankName(bankAccount.getBankName());

@@ -1,6 +1,7 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Member;
+import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.MemberType;
 import com.dancestudio.erp.enums.MembershipStatus;
@@ -10,6 +11,7 @@ import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
+import com.dancestudio.erp.util.UltraMsgUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +39,7 @@ public class StudentManagerImpl implements StudentManager {
     @Autowired private BranchManager branchManager;
     @Autowired private TemplateManager templateManager;
     @Autowired private StudentActivityAssignmentManager studentActivityAssignmentManager;
+    @Autowired private UltraMsgUtil ultraMsgUtil;
 
     @Autowired
     public StudentManagerImpl(MemberRepository memberRepository, StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
@@ -58,10 +61,16 @@ public class StudentManagerImpl implements StudentManager {
         BranchEntry branchEntry = branchManager.getById(member.getBranch().getId());
         StudioEntry studioEntry = studioManager.getById(branchEntry.getStudioId());
 
+        String updatedBody = formatEmailBody(studioEntry, templateEntry, member);
         if(Objects.nonNull(studioEntry.getPasscode()) && Objects.nonNull(studioEntry.getEmail())) {
-            String updatedBody = formatEmailBody(studioEntry, templateEntry, member);
             notificationManager.sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, branchEntry.getStudioId());
         }
+
+        Studio studio = member.getBranch().getStudio();
+        if(Objects.nonNull(studio.getToken()) && Objects.nonNull(studio.getInstanceId())) {
+            ultraMsgUtil.sendMessage(studio.getToken(), studio.getInstanceId(), member.getPhone(), updatedBody);
+        }
+
         return convertToEntry(member);
     }
 
@@ -72,11 +81,6 @@ public class StudentManagerImpl implements StudentManager {
 
         Member updatedStudent = convertToEntity(studentEntry, existingStudent);
         updatedStudent = memberRepository.save(updatedStudent);
-
-        // TemplateEntry templateEntry =
-        // templateManager.getTemplateDetails(UPDATE_STUDENT_EMAIL);
-        // emailManager.sendEmail(updatedStudentEntry.getEmail(),
-        // templateEntry.getSubject(), templateEntry.getTemplateBody());
 
         return convertToEntry(updatedStudent);
     }
@@ -107,8 +111,12 @@ public class StudentManagerImpl implements StudentManager {
         } else {
             Pageable pageable = PageRequest.of(page, size);
             Page<Member> studentPage = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, activityId, membershipStatus != null ? membershipStatus.name() : null, pageable, searchTerm);
-            return studentPage.getContent().stream()
+            List<StudentEntry> entries =  studentPage.getContent().stream()
                     .map(this::convertToEntry)
+                    .toList();
+
+            return entries.stream()
+                    .filter(student -> student.getMembershipStatus() == membershipStatus)
                     .collect(Collectors.toList());
         }
     }
