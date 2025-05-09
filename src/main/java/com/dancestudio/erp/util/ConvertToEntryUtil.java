@@ -51,7 +51,7 @@ public class ConvertToEntryUtil {
             userEntry.setStudioEntry(studioEntry);
 
             SubscriptionManagerImpl subscriptionManagerImpl = applicationContext.getBean(SubscriptionManagerImpl.class);
-            SubscriptionEntry subscriptionEntry = subscriptionManagerImpl.getSubscriptionPlanByBranchId(user.getBranch().getId());
+            SubscriptionEntry subscriptionEntry = subscriptionManagerImpl.getSubscriptionPlanByStudioId(user.getStudio().getId());
 
             userEntry.setSubscriptionEntry(subscriptionEntry);
         }

@@ -5,8 +5,6 @@ import com.dancestudio.erp.entry.SubscriptionEntry;
 import com.dancestudio.erp.enums.SubscriptionStatus;
 import com.dancestudio.erp.enums.SubscriptionType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.BranchManager;
-import com.dancestudio.erp.manager.PlanManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.manager.SubscriptionManager;
 import com.dancestudio.erp.response.StatusResponse;
@@ -28,8 +26,6 @@ public class StudioServiceImpl implements StudioService {
 
     private StudioManager studioManager;
     private SubscriptionManager subscriptionManager;
-    private BranchManager branchManager;
-    private PlanManager planManager;
 
     @Override
     public ResponseEntity<StudioResponse> add(StudioEntry studioEntry) {
@@ -37,7 +33,7 @@ public class StudioServiceImpl implements StudioService {
 
         try {
             StudioEntry entry = studioManager.add(studioEntry);
-            SubscriptionEntry subscriptionEntry = createTrialSubscriptionPlan(entry.getBranchList().get(0).getBranchId());
+            SubscriptionEntry subscriptionEntry = createTrialSubscriptionPlan(entry.getStudioId());
             entry.setSubscriptionEntry(subscriptionEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Studio added successfully", StatusResponse.Type.SUCCESS));
@@ -111,10 +107,10 @@ public class StudioServiceImpl implements StudioService {
         }
     }
 
-    private SubscriptionEntry createTrialSubscriptionPlan(Long branchId) throws Exception {
+    private SubscriptionEntry createTrialSubscriptionPlan(Long studioId) throws Exception {
         SubscriptionEntry trialPlan = new SubscriptionEntry();
         trialPlan.setSubscriptionPlan(SubscriptionType.TRIAL);
-        trialPlan.setBranchId(branchId);
+        trialPlan.setStudioId(studioId);
         trialPlan.setStatus(SubscriptionStatus.ACTIVE);
         trialPlan.setOrderId("TRIAL-" + UUID.randomUUID().toString().replaceAll("-", "").substring(0, 6));
         trialPlan.setPrice(0.0);

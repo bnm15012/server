@@ -14,8 +14,8 @@ import java.util.Date;
 public class Subscription extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "branch_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_subscription_branch_id"))
-    private Branch branch;
+    @JoinColumn(name = "studio_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_subscription_studio_id"))
+    private Studio studio;
 
     @Column(name = "subscription_plan", nullable = false)
     private String subscriptionPlan; // e.g., "Monthly", "Yearly", "Half-Yearly"

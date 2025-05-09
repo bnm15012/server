@@ -8,6 +8,6 @@ public interface SubscriptionManager extends BaseManager<SubscriptionEntry, Long
 
     SubscriptionEntry verifyPayment(String orderId, String paymentId, String signature) throws Exception;
 
-    SubscriptionEntry getSubscriptionPlanByBranchId(Long studioId) throws Exception;
+    SubscriptionEntry getSubscriptionPlanByStudioId(Long studioId) throws Exception;
 
 }

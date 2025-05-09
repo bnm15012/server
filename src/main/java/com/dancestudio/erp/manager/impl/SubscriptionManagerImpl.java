@@ -1,14 +1,14 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Subscription;
-import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.entry.PlanEntry;
+import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.SubscriptionEntry;
 import com.dancestudio.erp.enums.SubscriptionStatus;
 import com.dancestudio.erp.enums.SubscriptionType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.PlanManager;
+import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.manager.SubscriptionManager;
 import com.dancestudio.erp.repository.SubscriptionRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
@@ -38,7 +38,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     private String razorpaySecret;
 
     @Autowired private RazorpayClient razorpayClient;
-    @Autowired private BranchManager branchManager;
+    @Autowired private StudioManager studioManager;
     @Autowired private PlanManager planManager;
 
     @Autowired
@@ -77,8 +77,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public SubscriptionEntry getSubscriptionPlanByBranchId(Long branchId) throws Exception {
-        List<Subscription> subscriptions = subscriptionRepository.findLatestSubscriptionByBranchId(branchId);
+    public SubscriptionEntry getSubscriptionPlanByStudioId(Long studioId) throws Exception {
+        List<Subscription> subscriptions = subscriptionRepository.findLatestSubscriptionByStudioId(studioId);
 
         if (CollectionUtils.isEmpty(subscriptions)) {
             return null;
@@ -107,8 +107,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
         subscriptionEntry.setPlanId(subscription.getId());
 
-        BranchEntry entry = branchManager.getById(subscription.getBranch().getId());
-        subscriptionEntry.setBranchId(entry.getBranchId());
+        StudioEntry entry = studioManager.getById(subscription.getStudio().getId());
+        subscriptionEntry.setStudioId(entry.getStudioId());
 
         subscriptionEntry.setSubscriptionPlan(SubscriptionType.valueOf(subscription.getSubscriptionPlan()));
         subscriptionEntry.setStartDate(subscription.getStartDate());
@@ -138,7 +138,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             subscriptionEntry.setMessage(order.toString());
             subscriptionEntry.setPrice(planEntry.getAmount());
 
-            List<Subscription> activeSubscriptions = subscriptionRepository.findLatestSubscriptionByBranchId(subscriptionEntry.getStudioId());
+            List<Subscription> activeSubscriptions = subscriptionRepository.findLatestSubscriptionByStudioId(subscriptionEntry.getStudioId());
 
             Subscription maxEndDateSubscription = activeSubscriptions.stream()
                     .max((s1, s2) -> s1.getEndDate().compareTo(s2.getEndDate()))
@@ -191,8 +191,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
             subscription.setId(subscriptionEntry.getPlanId());
         }
         if (Objects.nonNull(subscriptionEntry.getBranchId())) {
-            BranchEntry entry = branchManager.getById(subscriptionEntry.getBranchId());
-            subscription.setBranch(ConvertToEntryUtil.convertToEntity(entry, null));
+            StudioEntry entry = studioManager.getById(subscriptionEntry.getStudioId());
+            subscription.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
         }
         if (Objects.nonNull(subscriptionEntry.getSubscriptionPlan())) {
             subscription.setSubscriptionPlan(String.valueOf(subscriptionEntry.getSubscriptionPlan()));
