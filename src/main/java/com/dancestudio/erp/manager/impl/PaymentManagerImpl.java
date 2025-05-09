@@ -16,7 +16,6 @@ import com.dancestudio.erp.repository.PaymentRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,10 +32,14 @@ import java.util.stream.Collectors;
 public class PaymentManagerImpl implements PaymentManager {
 
     private final PaymentRepository paymentRepository;
-    @Autowired private BranchManager branchManager;
-    @Autowired private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
-    @Autowired private ClientManager clientManager;
-    @Autowired private InstructorManager instructorManager;
+    @Autowired
+    private BranchManager branchManager;
+    @Autowired
+    private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
+    @Autowired
+    private ClientManager clientManager;
+    @Autowired
+    private InstructorManager instructorManager;
 
     @Autowired
     public PaymentManagerImpl(PaymentRepository paymentRepository) {
@@ -80,29 +78,40 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public void delete(Long paymentId) throws EntityNotFoundException{
+    public void delete(Long paymentId) throws EntityNotFoundException {
         paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new EntityNotFoundException("Payment Id not found"));
 
         paymentRepository.deleteById(paymentId);
     }
 
+    @Override
+    public PaymentEntry getPaymentEntryByStudentActivityAssignmentId(Long studentActivityAssignmentId) throws Exception {
+        Payment payment = paymentRepository.findByPayeeId(studentActivityAssignmentId);
+        if(Objects.isNull(payment)) {
+            throw new Exception("Payment not found");
+        }
+        return convertToEntry(payment);
+
+     }
+
     @SneakyThrows
     @Override
-    public List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Long startMonth, Long startYear, Long endMonth, Long endYear) {
-        List<Payment> entries;
-        Pageable pageable = PageRequest.of(page, size);
+    public List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth,
+            Integer startYear, Integer endMonth, Integer endYear, String status) {
+        Page<Payment> entries;
+        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
         if (size == 7) {
-            Page<Payment> paymentPage = paymentRepository.findByBranchId(branchId, pageable);
-            return paymentPage.getContent().stream()
-                    .map(this::convertToEntry)
-                    .collect(Collectors.toList());
+            entries = paymentRepository.findByBranchId(branchId, pageable);
         } else {
-            entries = paymentRepository.findAllByBranchId(branchId, startMonth, startYear, endMonth, endYear);
-            return entries.stream()
-                    .map(this::convertToEntry)
-                    .collect(Collectors.toList());
+            Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
+            entries = paymentRepository.findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(branchId,
+                    monthRange.get("start"),
+                    monthRange.get("end"), status, pageable);
         }
+        return entries.stream()
+                .map(this::convertToEntry)
+                .collect(Collectors.toList());
     }
 
     private PaymentEntry convertToEntry(Payment payment) {
@@ -111,10 +120,12 @@ public class PaymentManagerImpl implements PaymentManager {
         paymentEntry.setPayeeId(payment.getPayeeId());
 
         try {
-            if(PayeeType.STUDENT.name().equals(payment.getPayeeType())) {
-                Optional<StudentActivityAssignment> studentActivityAssignmentOptional = studentActivityAssignmentRepository.findById(payment.getPayeeId());
-                studentActivityAssignmentOptional.ifPresent(studentActivityAssignment -> paymentEntry.setStudentEntry(ConvertToEntryUtil.convertToEntry(studentActivityAssignment.getStudent())));
-            } else if(PayeeType.BOOKING.name().equals(payment.getPayeeType())) {
+            if (PayeeType.STUDENT.name().equals(payment.getPayeeType())) {
+                Optional<StudentActivityAssignment> studentActivityAssignmentOptional = studentActivityAssignmentRepository
+                        .findById(payment.getPayeeId());
+                studentActivityAssignmentOptional.ifPresent(studentActivityAssignment -> paymentEntry
+                        .setStudentEntry(ConvertToEntryUtil.convertToEntry(studentActivityAssignment.getStudent())));
+            } else if (PayeeType.BOOKING.name().equals(payment.getPayeeType())) {
                 paymentEntry.setClientEntry(clientManager.getById(payment.getPayeeId()));
             }
         } catch (Exception ex) {
@@ -139,9 +150,11 @@ public class PaymentManagerImpl implements PaymentManager {
             payment.setId(Long.valueOf(paymentEntry.getPaymentId()));
         }
 
-        if (Objects.nonNull(paymentEntry.getStudentEntry()) && Objects.nonNull(paymentEntry.getStudentEntry().getStudentId())) {
+        if (Objects.nonNull(paymentEntry.getStudentEntry())
+                && Objects.nonNull(paymentEntry.getStudentEntry().getStudentId())) {
             payment.setPayeeId(paymentEntry.getStudentEntry().getStudentId());
-        } else if (Objects.nonNull(paymentEntry.getClientEntry()) && Objects.nonNull(paymentEntry.getClientEntry().getClientId())) {
+        } else if (Objects.nonNull(paymentEntry.getClientEntry())
+                && Objects.nonNull(paymentEntry.getClientEntry().getClientId())) {
             payment.setPayeeId(paymentEntry.getClientEntry().getClientId());
         }
 
@@ -177,26 +190,12 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public PaymentEntry getPaymentByPayeeIdAndPayeeType(Long bookingId, PayeeType payeeType) throws EntityNotFoundException {
+    public PaymentEntry getPaymentByPayeeIdAndPayeeType(Long bookingId, PayeeType payeeType)
+            throws EntityNotFoundException {
         Payment payment = paymentRepository.findByPayeeIdAndPayeeType(bookingId, payeeType.toString());
         if (payment == null) {
             throw new EntityNotFoundException("Payment not found");
         }
         return convertToEntry(payment);
-    }
-
-    @Override
-    public List<PaymentEntry> getAllPaymentsByDateRange(Long branchId, int startMonth, int startYear, int endMonth,
-            int endYear, String status) throws Exception {
-        Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-        List<Payment> entries = paymentRepository.findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(branchId,
-        monthRange.get("start"), monthRange.get("end"), status);
-
-        List<PaymentEntry> expenseEntries = new ArrayList<>();
-        for (Payment entry : entries) {
-            PaymentEntry expenseEntry = convertToEntry(entry);
-            expenseEntries.add(expenseEntry);
-        }
-        return expenseEntries;
     }
 }

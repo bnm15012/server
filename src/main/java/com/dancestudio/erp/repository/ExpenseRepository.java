@@ -14,39 +14,53 @@ import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
-    @Query("SELECT s FROM Expense s WHERE s.branch.id = :branchId and year(s.expenseDate) >= :startYear and month(s.expenseDate) >= :startMonth and month(s.expenseDate) <= :endMonth and year(s.expenseDate) <= :endYear")
-    Page<Expense> findAllByBranchId(@Param("branchId") Long branchId, @Param("startMonth") Long startMonth, @Param("startYear") Long startYear, @Param("endMonth") Long endMonth, @Param("endYear") Long endYear, Pageable pageable);
+        @Query("""
+                            SELECT e
+                              FROM Expense e
+                             WHERE e.branch.id = :branchId
+                               AND e.expenseDate BETWEEN :startDate AND :endDate
+                        """)
+        Page<Expense> findAllByBranchIdAndDateRange(
+                        @Param("branchId") Long branchId,
+                        @Param("startDate") Date startDate,
+                        @Param("endDate") Date endDate,
+                        Pageable pageable);
 
-    @Query("SELECT s FROM Expense s WHERE s.branch.id = :branchId")
-    Page<Expense> findExpensesByBranchId(@Param("branchId") Long branchId, Pageable pageable);
+        Page<Expense> findByBranchId(Long branchId, Pageable pageable);
 
-    @Query("SELECT COUNT(s) FROM Expense s WHERE s.branch.id = :branchId")
-    Long countExpensesByBranchId(@Param("branchId") Long branchId);
+        Long countByBranchId(Long branchId);
 
-    @Query("SELECT COUNT(s) FROM Expense s WHERE s.branch.id = :branchId and month(s.expenseDate) >= :startMonth and month(s.expenseDate) <= :endMonth")
-    Long countExpensesByBranchIdAndMonthLong(@Param("branchId") Long branchId, @Param("startMonth") Long startMonth, @Param("endMonth") Long endMonth);
+        @Query("""
+                            SELECT COUNT(e)
+                              FROM Expense e
+                             WHERE e.branch.id = :branchId
+                               AND e.expenseDate BETWEEN :startDate AND :endDate
+                        """)
+        Long countByBranchIdAndDateRange(
+                        @Param("branchId") Long branchId,
+                        @Param("startDate") Date startDate,
+                        @Param("endDate") Date endDate);
 
-    @Query("SELECT MONTH(s.expenseDate), COUNT(s), SUM(s.amount) FROM Expense s " +
-    "WHERE s.branch.id = :branchId AND " +
-    "((YEAR(s.expenseDate) = YEAR(CURRENT_DATE) AND MONTH(s.expenseDate) = MONTH(CURRENT_DATE)) " +
-    "OR (YEAR(s.expenseDate) = CASE WHEN MONTH(CURRENT_DATE) = 1 THEN YEAR(CURRENT_DATE) - 1 ELSE YEAR(CURRENT_DATE) END " +
-    "AND MONTH(s.expenseDate) = CASE WHEN MONTH(CURRENT_DATE) = 1 THEN 12 ELSE MONTH(CURRENT_DATE) - 1 END)) " +
-    "GROUP BY MONTH(s.expenseDate)")
-    List<Object[]> countAndSumExpensesForCurrentAndLastMonth(@Param("branchId") Long branchId);
+        @Query("""
+                            SELECT e.expenseCategory, SUM(e.amount)
+                              FROM Expense e
+                             WHERE e.branch.id = :branchId
+                               AND e.expenseDate BETWEEN :startDate AND :endDate
+                             GROUP BY e.expenseCategory
+                        """)
+        List<Object[]> findCategoryWiseSumOfExpensesByDateRangeAndBranchId(
+                        @Param("startDate") Date startDate,
+                        @Param("endDate") Date endDate,
+                        @Param("branchId") Long branchId);
 
-    @Query("SELECT e.expenseCategory, SUM(e.amount) FROM Expense e WHERE e.branch.id = :branchId AND MONTH(e.expenseDate) = :month AND YEAR(e.expenseDate) = :year GROUP BY e.expenseCategory")
-    List<Object[]> findCategoryWiseSumOfExpensesByMonthAndYearAndBranchId(@Param("month") int month, @Param("year") int year, @Param("branchId") Long branchId);
-
-   @Query("SELECT new com.dancestudio.erp.entry.PaymentExpenseSummary(COUNT(s), COALESCE(SUM(s.amount), 0)) FROM Expense s WHERE s.branch.id = :branchId AND s.expenseDate BETWEEN :startDate AND :endDate")
-   PaymentExpenseSummary findCountAndTotalAmountByBranchAndDateRange(
-            @Param("branchId") Long branchId,
-            @Param("startDate") Date startDate,
-            @Param("endDate") Date endDate);
-
-    @Query("SELECT e FROM Expense e WHERE e.branch.id = :branchId AND e.expenseDate BETWEEN :startDate AND :endDate")
-    List<Expense> findAllByBranchIdAndExpenseDateBetween(
-        @Param("branchId") Long branchId,
-        @Param("startDate") Date startDate,
-        @Param("endDate") Date endDate
-    );         
+        @Query("""
+                            SELECT new com.dancestudio.erp.entry.PaymentExpenseSummary(COUNT(e), COALESCE(SUM(e.amount), 0))
+                              FROM Expense e
+                             WHERE e.branch.id = :branchId
+                               AND e.expenseDate BETWEEN :startDate AND :endDate
+                        """)
+        PaymentExpenseSummary findCountAndTotalAmountByBranchAndDateRange(
+                        @Param("branchId") Long branchId,
+                        @Param("startDate") Date startDate,
+                        @Param("endDate") Date endDate);
 }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.List;
 
-@Setter(onMethod = @__({@Autowired}))
+@Setter(onMethod = @__({ @Autowired }))
 @Component
 public class BookingServiceImpl implements BookingService {
 
@@ -89,17 +89,22 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<BookingResponse> getAllBookings(Long branchId, int page, int size, Long startMonth, Long endMonth) {
+    public ResponseEntity<BookingResponse> getAllBookings(Long branchId, Integer page, Integer size, Integer startMonth,
+            Integer startYear, Integer endMonth, Integer endYear) {
         BookingResponse response = new BookingResponse();
 
         try {
-            List<BookingEntry> entries = bookingManager.getAllBookings(branchId, page, size, startMonth, endMonth);
+            List<BookingEntry> entries = bookingManager.getAllBookings(branchId, page, size, startMonth, startYear,
+                    endMonth, endYear);
 
-            long bookingCount = (startMonth.equals(0L) || endMonth.equals(0L))
+            long bookingCount = (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0))
+        
                     ? bookingManager.countBookingsByBranchId(branchId)
-                    : bookingManager.countBookingsByBranchIdAndMonth(branchId, startMonth, endMonth);
+                    : bookingManager.countBookingsByBranchIdAndMonth(branchId, startMonth, startYear, endMonth,
+                            endYear);
             response.setData(entries);
-            response.setStatus(new StatusResponse(1, "Bookings retrieved successfully", StatusResponse.Type.SUCCESS, (int) bookingCount));
+            response.setStatus(new StatusResponse(1, "Bookings retrieved successfully", StatusResponse.Type.SUCCESS,
+                    (int) bookingCount));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));

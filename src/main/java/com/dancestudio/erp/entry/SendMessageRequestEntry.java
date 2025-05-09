@@ -14,4 +14,8 @@ public class SendMessageRequestEntry {
     private Boolean sentToAll = false;
     private List<Long> memberIds;
 
+    private String templateName;
+    private String invoiceUrl;
+    private Long studioId;
+    private String activityType;
 }

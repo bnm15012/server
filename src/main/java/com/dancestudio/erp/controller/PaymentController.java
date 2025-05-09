@@ -36,20 +36,18 @@ public class PaymentController extends BaseController<PaymentEntry, PaymentRespo
     }
 
     @PutMapping("/updateStatus/{paymentId}")
-    public ResponseEntity<PaymentResponse> updatePaymentStatus(@PathVariable Long paymentId, @PathVariable PaymentStatus status) {
+    public ResponseEntity<PaymentResponse> updatePaymentStatus(@PathVariable Long paymentId,
+            @PathVariable PaymentStatus status) {
         return paymentService.updatePaymentStatus(paymentId, status);
     }
 
-    @GetMapping("/getAllPayments/{branchId}")
-    public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long branchId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-                                                          @RequestParam(value = "startMonth", required = false) Long startMonth,
-                                                          @RequestParam(value = "startYear", required = false) Long startYear,
-                                                          @RequestParam(value = "endMonth", required = false) Long endMonth,
-                                                          @RequestParam(value = "endYear", required = false) Long endYear) {
-        if (startMonth == null || startYear == null || endMonth == null || endYear == null) {
-            startMonth = 0L; startYear = 0L; endMonth = 0L; endYear = 0L;
-        }
-
+    @GetMapping("/getAllPayments/{branchId}/{startMonth}/{startYear}/{endMonth}/{endYear}")
+    public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long branchId,
+            @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size,
+            @PathVariable Integer startMonth,
+            @PathVariable Integer startYear,
+            @PathVariable Integer endMonth,
+            @PathVariable Integer endYear) {
         return paymentService.getAllPayments(branchId, page, size, startMonth, startYear, endMonth, endYear);
     }
 }

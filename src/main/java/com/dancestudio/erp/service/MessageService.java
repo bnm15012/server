@@ -9,4 +9,5 @@ public interface MessageService {
     void sendWhatsAppMessage(String to, String messageText);
 
     ResponseEntity<SendMessageResponse> sendMessage(SendMessageRequestEntry request);
+
 }

@@ -1,6 +1,7 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Member;
+import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.ExpenseCategory;
@@ -17,16 +18,20 @@ import com.dancestudio.erp.repository.PaymentRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
+@Setter
 public class StudentActivityAssignmentManagerImpl implements StudentActivityAssignmentManager {
     private final StudentActivityAssignmentRepository studentActivityAssignmentRepository;
 
@@ -52,7 +57,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry add(StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws Exception {
+    public StudentActivityAssignmentEntry add(StudentActivityAssignmentEntry studentActivityAssignmentEntry)
+            throws Exception {
         memberRepository.findById(studentActivityAssignmentEntry.getStudentId())
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
@@ -73,7 +79,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry update(Long studentActivityAssignmentId, StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws Exception {
+    public StudentActivityAssignmentEntry update(Long studentActivityAssignmentId,
+            StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws Exception {
         StudentActivityAssignment existingStudentActivityAssignment = studentActivityAssignmentRepository
                 .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
@@ -90,7 +97,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         studentActivityAssignmentRepository.findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
-        PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(studentActivityAssignmentId, PayeeType.STUDENT);
+        PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(studentActivityAssignmentId,
+                PayeeType.STUDENT);
         try {
             paymentManager.delete(Long.valueOf(paymentEntry.getPaymentId()));
         } catch (Exception e) {
@@ -110,7 +118,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId) throws Exception {
+    public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId)
+            throws Exception {
         StudentActivityAssignment assignment = studentActivityAssignmentRepository
                 .findByStudentIdAndActivityId(studentId, activityId);
         return convertToEntry(assignment);
@@ -147,8 +156,9 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     @SneakyThrows
     @Override
-    public List<MonthlyReportEntry> getAnalysisReport(Long year, Long branchId) {
-        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository.getAnalysisReport(Math.toIntExact(year), branchId);
+    public List<MonthlyReportEntry> getAnalysisReport(Integer year, Long branchId) {
+        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository
+                .getAnalysisReport(Math.toIntExact(year), branchId);
         for (int month = 0; month < 12; month++) {
             processMonthlyReport(reportEntries, month, year, branchId);
         }
@@ -157,7 +167,9 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         return reportEntries;
     }
 
-    private void processMonthlyReport(List<MonthlyReportEntry> reportEntries, int month, Long year, Long branchId) throws EntityNotFoundException {
+    private void processMonthlyReport(List<MonthlyReportEntry> reportEntries, Integer month, Integer year,
+            Long branchId)
+            throws EntityNotFoundException {
         List<ExpenseEntry> expenseEntries = getExpenseEntriesForMonth(month, year, branchId);
         List<PaymentEntry> paymentEntries = getPaymentEntriesForMonth(month, year, branchId);
         double revenue = calculateRevenueForMonth(reportEntries, month);
@@ -168,7 +180,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         monthlyReportEntry.setRevenue(revenue);
     }
 
-    private MonthlyReportEntry findOrCreateMonthlyReportEntry(List<MonthlyReportEntry> reportEntries, int month, double revenue) {
+    private MonthlyReportEntry findOrCreateMonthlyReportEntry(List<MonthlyReportEntry> reportEntries, int month,
+            double revenue) {
         return reportEntries.stream()
                 .filter(entry -> entry.getMonth() == month)
                 .findFirst()
@@ -179,8 +192,12 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                 });
     }
 
-    private List<ExpenseEntry> getExpenseEntriesForMonth(int month, Long year, Long branchId) throws EntityNotFoundException {
-        List<Object[]> expenses = expenseRepository.findCategoryWiseSumOfExpensesByMonthAndYearAndBranchId(month, Math.toIntExact(year), branchId);
+    private List<ExpenseEntry> getExpenseEntriesForMonth(Integer month, Integer year, Long branchId)
+            throws EntityNotFoundException {
+        Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(month, year, month, year);
+        List<Object[]> expenses = expenseRepository
+                .findCategoryWiseSumOfExpensesByDateRangeAndBranchId(monthRange.get("start"), monthRange.get("end"),
+                        branchId);
         List<ExpenseEntry> expenseEntries = new ArrayList<>();
         for (Object[] expense : expenses) {
             ExpenseEntry expenseEntry = new ExpenseEntry();
@@ -192,8 +209,10 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         return expenseEntries;
     }
 
-    private List<PaymentEntry> getPaymentEntriesForMonth(int month, Long year, Long studioId) {
-        List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByMonthAndYearAndBranchId(month, Math.toIntExact(year), studioId);
+    private List<PaymentEntry> getPaymentEntriesForMonth(Integer month, Integer year, Long studioId) {
+        Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(month, year, month, year);
+        List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByDateRange(studioId,
+                monthRange.get("start"), monthRange.get("end"));
         List<PaymentEntry> paymentEntries = new ArrayList<>();
 
         for (Object[] payment : payments) {
@@ -234,6 +253,10 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
             ActivityEntry activityEntry = activityManager.getById(studentActivityAssignment.getActivity().getId());
             studentActivityAssignmentEntry.setActivity(activityEntry);
         }
+
+        Payment payment = paymentRepository.findByPayeeId(studentActivityAssignment.getId());
+        studentActivityAssignmentEntry.setPaymentEntry(ConvertToEntryUtil.convertToEntry(payment));
+
         return studentActivityAssignmentEntry;
     }
 

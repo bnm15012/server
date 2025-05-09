@@ -30,7 +30,8 @@ public class ExpenseManagerImpl implements ExpenseManager {
 
     private final ExpenseRepository expenseRepository;
 
-    @Autowired private BranchManager branchManager;
+    @Autowired
+    private BranchManager branchManager;
 
     @Autowired
     public ExpenseManagerImpl(ExpenseRepository expenseRepository) {
@@ -69,13 +70,18 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public List<ExpenseEntry> getAllExpenses(Long branchId, int page, int size, Long startMonth, Long startYear, Long endMonth, Long endYear) throws Exception {
+    public List<ExpenseEntry> getAllExpenses(Long branchId, Integer page, Integer size, Integer startMonth,
+            Integer startYear,
+            Integer endMonth, Integer endYear) throws Exception {
+
         Page<Expense> entries;
-        Pageable pageable = PageRequest.of(page, size);
-        if (startMonth.equals(0L) || endMonth.equals(0L)) {
-            entries = expenseRepository.findExpensesByBranchId(branchId, pageable);
+        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
+        if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
+            entries = expenseRepository.findByBranchId(branchId, pageable);
         } else {
-            entries = expenseRepository.findAllByBranchId(branchId, startMonth, startYear, endMonth, endYear, pageable);
+            Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
+            entries = expenseRepository.findAllByBranchIdAndDateRange(branchId, monthRange.get("start"),
+                    monthRange.get("end"), pageable);
         }
 
         List<ExpenseEntry> expenseEntries = new ArrayList<>();
@@ -105,12 +111,14 @@ public class ExpenseManagerImpl implements ExpenseManager {
 
     @Override
     public Long countExpensesByBranchId(Long branchId) {
-        return expenseRepository.countExpensesByBranchId(branchId);
+        return expenseRepository.countByBranchId(branchId);
     }
 
     @Override
-    public Long countExpensesByBranchIdAndMonth(Long branchId, Long startMonth, Long endMonth) {
-        return expenseRepository.countExpensesByBranchIdAndMonthLong(branchId, startMonth, endMonth);
+    public Long countExpensesByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear, Integer endMonth,
+            Integer endYear) {
+        Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
+        return expenseRepository.countByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"));
     }
 
     private Expense convertToEntity(ExpenseEntry expenseEntry, Expense existingExpense) throws Exception {
@@ -137,20 +145,5 @@ public class ExpenseManagerImpl implements ExpenseManager {
         }
 
         return expense;
-    }
-
-    @Override
-    public List<ExpenseEntry> getAllExpensesByDateRange(Long branchId, int startMonth, int startYear, int endMonth,
-            int endYear) throws Exception {
-        Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-        List<Expense> entries = expenseRepository.findAllByBranchIdAndExpenseDateBetween(branchId,
-        monthRange.get("start"), monthRange.get("end"));
-
-        List<ExpenseEntry> expenseEntries = new ArrayList<>();
-        for (Expense entry : entries) {
-            ExpenseEntry expenseEntry = convertToEntry(entry);
-            expenseEntries.add(expenseEntry);
-        }
-        return expenseEntries;
     }
 }

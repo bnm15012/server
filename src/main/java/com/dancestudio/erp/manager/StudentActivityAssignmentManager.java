@@ -13,5 +13,5 @@ public interface StudentActivityAssignmentManager extends BaseManager<StudentAct
 
     List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) throws Exception;
 
-    List<MonthlyReportEntry> getAnalysisReport(Long year, Long studioId);
+    List<MonthlyReportEntry> getAnalysisReport(Integer year, Long studioId);
 }

@@ -89,16 +89,21 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ResponseEntity<ExpenseResponse> getAllExpenses(Long branchId, int page, int size, Long startMonth, Long startYear, Long endMonth, Long endYear) {
+    public ResponseEntity<ExpenseResponse> getAllExpenses(Long branchId, Integer page, Integer size, Integer startMonth,
+            Integer startYear, Integer endMonth, Integer endYear) {
         ExpenseResponse response = new ExpenseResponse();
 
         try {
-            List<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, page, size, startMonth, startYear, endMonth, endYear);
+            List<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, page, size, startMonth, startYear,
+                    endMonth, endYear);
 
-            long expenseCount = (startMonth.equals(0L) || endMonth.equals(0L)) ? expenseManager.countExpensesByBranchId(branchId)
-                    : expenseManager.countExpensesByBranchIdAndMonth(branchId, startMonth, endMonth);
+            long expenseCount = (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0)
+                    || endYear.equals(0)) ? expenseManager.countExpensesByBranchId(branchId)
+                            : expenseManager.countExpensesByBranchIdAndMonth(branchId, startMonth, startYear, endMonth,
+                                    endYear);
             response.setData(entries);
-            response.setStatus(new StatusResponse(1, "Expenses retrieved successfully", StatusResponse.Type.SUCCESS, (int) expenseCount));
+            response.setStatus(new StatusResponse(1, "Expenses retrieved successfully", StatusResponse.Type.SUCCESS,
+                    (int) expenseCount));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));

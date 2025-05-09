@@ -16,9 +16,9 @@ public interface MiscellaneousService {
 
     ResponseEntity<StringResponse> refreshToken(UserEntry userEntry);
 
-    ResponseEntity<ReportResponse> getAnalysisReport(Long year, Long studioId);
+    ResponseEntity<ReportResponse> getAnalysisReport(Integer year, Long studioId);
 
-    ResponseEntity<IEReportResponse> getReports(Long studioId, Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear);
+    ResponseEntity<IEReportResponse> getReports(Long studioId, Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear);
 
     ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId, int startMonth, int startYear, int endMonth, int endYear, String status);
 

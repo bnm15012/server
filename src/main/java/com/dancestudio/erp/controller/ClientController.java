@@ -1,11 +1,17 @@
 package com.dancestudio.erp.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.dancestudio.erp.entry.ClientEntry;
 import com.dancestudio.erp.response.ClientResponse;
 import com.dancestudio.erp.service.ClientService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/clients")
@@ -34,14 +40,20 @@ public class ClientController extends BaseController<ClientEntry, ClientResponse
         return clientService.get(id);
     }
 
-    @GetMapping("/getAllClients/{branchId}/{startMonth}/{endMonth}")
-    public ResponseEntity<ClientResponse> getAllClients(@PathVariable Long branchId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @PathVariable Long startMonth, @PathVariable Long endMonth,
+    @GetMapping("/getAllClients/{branchId}/{startMonth}/{startYear}/{endMonth}/{endYear}")
+    public ResponseEntity<ClientResponse> getAllClients(@PathVariable Long branchId,
+            @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size,
+            @PathVariable Integer startMonth,
+            @PathVariable Integer startYear,
+            @PathVariable Integer endMonth,
+            @PathVariable Integer endYear,
             @RequestParam(required = false) String searchTerm) {
-        return clientService.getAllClients(branchId, page, size, startMonth, endMonth, searchTerm);
+        return clientService.getAllClients(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ClientResponse> searchClientsByName(@RequestParam String clientName) {
-        return clientService.searchClientsByName(clientName);
+    public ResponseEntity<ClientResponse> searchClientsByName(@RequestParam String clientName,
+            @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
+        return clientService.searchClientsByName(clientName, page, size);
     }
 }

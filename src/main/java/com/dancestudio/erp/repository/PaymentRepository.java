@@ -14,40 +14,73 @@ import java.util.List;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    @Query("SELECT s FROM Payment s WHERE s.branch.id = :branchId and year(s.paymentDate) >= :startYear and month(s.paymentDate) >= :startMonth and month(s.paymentDate) <= :endMonth and year(s.paymentDate) <= :endYear")
-    List<Payment> findAllByBranchId(@Param("branchId") Long branchId, @Param("startMonth") Long startMonth, @Param("startYear") Long startYear, @Param("endMonth") Long endMonth, @Param("endYear") Long endYear);
+    @Query("SELECT p FROM Payment p WHERE p.payeeId = :payeeId")
+    Payment findByPayeeId(@Param("payeeId") Long payeeId);
 
-    @Query("SELECT count(s) FROM Payment s WHERE s.branch.id = :branchId")
-    Long getPaymentCountByBranchId(Long branchId);
+      @Query("""
+          SELECT e FROM Payment e 
+           WHERE e.branch.id = :branchId 
+             AND e.paymentDate BETWEEN :startDate AND :endDate 
+             AND (:status IS NULL OR e.status = :status)
+      """)
+      Page<Payment> findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(
+          @Param("branchId") Long branchId,
+          @Param("startDate") Date startDate,
+          @Param("endDate") Date endDate,
+          @Param("status") String status,
+          Pageable pageable
+      );
+
+    @Query("SELECT COUNT(s) FROM Payment s WHERE s.branch.id = :branchId")
+    Long getPaymentCountByBranchId(@Param("branchId") Long branchId);
 
     @Query("SELECT s FROM Payment s WHERE s.branch.id = :branchId")
     Page<Payment> findByBranchId(@Param("branchId") Long branchId, Pageable pageable);
 
-    @Query("SELECT MONTH(s.paymentDate), COUNT(s), SUM(s.amount) FROM Payment s WHERE s.branch.id = :branchId AND " +
-            "((YEAR(s.paymentDate) = YEAR(CURRENT_DATE) AND MONTH(s.paymentDate) = MONTH(CURRENT_DATE)) " +
-            "OR (YEAR(s.paymentDate) = CASE WHEN MONTH(CURRENT_DATE) = 1 THEN YEAR(CURRENT_DATE) - 1 ELSE YEAR(CURRENT_DATE) END " +
-            "AND MONTH(s.paymentDate) = CASE WHEN MONTH(CURRENT_DATE) = 1 THEN 12 ELSE MONTH(CURRENT_DATE) - 1 END)) GROUP BY MONTH(s.paymentDate)")
-    List<Object[]> countAndSumPaymentsForCurrentAndLastMonth(@Param("branchId") Long branchId);
-
-    @Query("SELECT p.payeeType, SUM(p.amount) FROM Payment p WHERE p.branch.id = :branchId AND MONTH(p.paymentDate) = :month AND YEAR(p.paymentDate) = :year GROUP BY p.payeeType")
-    List<Object[]> findCategoryWiseSumOfPaymentsByMonthAndYearAndBranchId(@Param("month") int month, @Param("year") int year, @Param("branchId") Long branchId);
-
-    @Query("SELECT p FROM Payment p WHERE p.payeeId = :payeeId and p.payeeType = :payeeType")
-    Payment findByPayeeIdAndPayeeType(@Param("payeeId") Long payeeId, @Param("payeeType") String payeeType);
-
-    @Query("SELECT new com.dancestudio.erp.entry.PaymentExpenseSummary(COUNT(s), COALESCE(SUM(s.amount), 0)) " +
-    "FROM Payment s WHERE s.branch.id = :branchId AND s.status = 'COMPLETED' AND s.paymentDate BETWEEN :startDate AND :endDate")
-        PaymentExpenseSummary findCountAndTotalAmountByBranchAndDateRange(
-        @Param("branchId") Long branchId,
-        @Param("startDate") Date startDate,
-        @Param("endDate") Date endDate);    
-        
-    @Query("SELECT e FROM Payment e WHERE e.branch.id = :branchId AND e.paymentDate BETWEEN :startDate AND :endDate AND (:status IS NULL OR e.status = :status)")
-    List<Payment> findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(
+    @Query("""
+        SELECT s.paymentDate, COUNT(s), SUM(s.amount) 
+          FROM Payment s 
+         WHERE s.branch.id = :branchId 
+           AND s.paymentDate BETWEEN :startDate AND :endDate
+         GROUP BY s.paymentDate
+         ORDER BY s.paymentDate
+    """)
+    Page<Object[]> countAndSumPaymentsByDateRange(
         @Param("branchId") Long branchId,
         @Param("startDate") Date startDate,
         @Param("endDate") Date endDate,
-        @Param("status") String status 
-        );
+        Pageable pageable
+    );
 
+    @Query("""
+        SELECT p.payeeType, SUM(p.amount) 
+          FROM Payment p 
+         WHERE p.branch.id = :branchId 
+           AND p.paymentDate BETWEEN :startDate AND :endDate 
+         GROUP BY p.payeeType
+    """)
+    List<Object[]> findCategoryWiseSumOfPaymentsByDateRange(
+        @Param("branchId") Long branchId,
+        @Param("startDate") Date startDate,
+        @Param("endDate") Date endDate
+    );
+
+    @Query("SELECT p FROM Payment p WHERE p.payeeId = :payeeId AND p.payeeType = :payeeType")
+    Payment findByPayeeIdAndPayeeType(
+        @Param("payeeId") Long payeeId,
+        @Param("payeeType") String payeeType
+    );
+
+    @Query("""
+        SELECT new com.dancestudio.erp.entry.PaymentExpenseSummary(COUNT(s), COALESCE(SUM(s.amount), 0)) 
+          FROM Payment s 
+         WHERE s.branch.id = :branchId 
+           AND s.status = 'COMPLETED' 
+           AND s.paymentDate BETWEEN :startDate AND :endDate
+    """)
+    PaymentExpenseSummary findCountAndTotalAmountByBranchAndDateRange(
+        @Param("branchId") Long branchId,
+        @Param("startDate") Date startDate,
+        @Param("endDate") Date endDate
+    );
 }

@@ -2,10 +2,12 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Member;
 import com.dancestudio.erp.entity.Studio;
+import com.dancestudio.erp.entry.SendMessageRequestEntry;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.manager.NotificationManager;
 import com.dancestudio.erp.manager.TemplateManager;
+import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.repository.StudioRepository;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,7 @@ public class NotificationManagerImpl implements NotificationManager {
 
     @Autowired private TemplateManager templateManager;
     @Autowired private StudioRepository studioRepository;
+    @Autowired private MemberRepository memberRepository;
 
     public void sendEmail(String to, String subject, String body, Long studioId) throws Exception {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -88,6 +91,19 @@ public class NotificationManagerImpl implements NotificationManager {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    @Override
+    public void sendEmail(SendMessageRequestEntry requestEntry) throws Exception {
+        TemplateEntry templateEntry = templateManager.getTemplateDetails(requestEntry.getTemplateName());
+        Studio studio = studioRepository.findById(requestEntry.getStudioId()).get();
+        Member member = memberRepository.findById(requestEntry.getMemberIds().get(0)).get();
+
+        String updatedBody = formatEmailBody(templateEntry, studio.getName(), member.getName(), requestEntry.getActivityType());
+        updatedBody.replace("{invoice_url}", requestEntry.getInvoiceUrl());
+
+        sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, requestEntry.getStudioId());
     }
 
     private String formatEmailBody(TemplateEntry templateEntry, String studioName, String studentName, String activityType) {

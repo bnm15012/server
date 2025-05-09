@@ -11,11 +11,12 @@ public interface PaymentManager extends BaseManager<PaymentEntry, Long> {
 
     PaymentEntry updatePaymentStatus(Long paymentId, PaymentStatus status) throws EntityNotFoundException;
 
-    List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int size, int limit, Long startMonth, Long startYear, Long endMonth, Long endYear);
+    List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String status);
 
     Long getPaymentCountByStudioId(Long studioId);
 
     PaymentEntry getPaymentByPayeeIdAndPayeeType(Long bookingId, PayeeType payeeType) throws EntityNotFoundException;
 
-    List<PaymentEntry> getAllPaymentsByDateRange(Long branchId, int startMonth, int startYear, int endMonth, int endYear, String status) throws Exception;
+    PaymentEntry getPaymentEntryByStudentActivityAssignmentId(Long studentActivityAssignmentId) throws Exception;
+
 }

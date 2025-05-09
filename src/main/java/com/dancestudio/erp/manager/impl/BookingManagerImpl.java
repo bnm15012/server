@@ -9,6 +9,8 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.BookingRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
+import com.dancestudio.erp.util.DateUtil;
+
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -112,18 +116,21 @@ public class BookingManagerImpl implements BookingManager {
     }
 
     @Override
-    public Long countBookingsByBranchIdAndMonth(Long branchId, Long startMonth, Long endMonth) {
-        return bookingRepository.countBookingsByBranchIdAndMonthLong(branchId, startMonth, endMonth);
+    public Long countBookingsByBranchIdAndMonth(Long branchId, Integer startMonth,Integer startYear,  Integer endMonth, Integer endYear) {
+        Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
+        return bookingRepository.countBookingsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"));
     }
 
     @Override
-    public List<BookingEntry> getAllBookings(Long branchId, int page, int size, Long startMonth, Long endMonth) throws Exception {
+    public List<BookingEntry> getAllBookings(Long branchId, Integer page,Integer size, Integer startMonth,Integer startYear,  Integer endMonth, Integer endYear) throws Exception {
         Page<Booking> entries;
-        Pageable pageable = PageRequest.of(page, size);
-        if (startMonth.equals(0L) || endMonth.equals(0L)) {
+        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
+        
+        if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
             entries = bookingRepository.findBookingsByBranchId(branchId, pageable);
         } else {
-            entries = bookingRepository.findAllByBranchId(branchId, startMonth, endMonth, pageable);
+            Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
+            entries = bookingRepository.findAllBookingsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"), pageable);
         }
 
         List<BookingEntry> bookingEntries = new ArrayList<>();

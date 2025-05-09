@@ -102,12 +102,15 @@ public class InstructorManagerImpl implements InstructorManager {
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         } else {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<Member> instructorPage = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), pageable, searchTerm);
+            Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
+            Page<Member> instructorPage = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus != null ? membershipStatus.name() : null, pageable, searchTerm);
             List<InstructorEntry> entries = instructorPage.getContent().stream()
                     .map(this::convertToEntry)
                     .toList();
 
+            if (membershipStatus == null) {
+                return entries;
+            }
             return entries.stream()
                     .filter(instructor -> instructor.getInstructorStatus() == membershipStatus)
                     .collect(Collectors.toList());
@@ -210,7 +213,7 @@ public class InstructorManagerImpl implements InstructorManager {
         if (size == -1) {
             entries = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), null);
         } else {
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
             Page<Member> instructorPage = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), pageable, null);
             entries = instructorPage.getContent().stream().toList();
         }

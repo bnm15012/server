@@ -2,9 +2,12 @@ package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.PasswordEntry;
 import com.dancestudio.erp.entry.SendMessageRequestEntry;
+import com.dancestudio.erp.entry.StringRequest;
 import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.response.*;
-import com.dancestudio.erp.service.*;
+import com.dancestudio.erp.service.MessageService;
+import com.dancestudio.erp.service.MiscellaneousService;
+import com.dancestudio.erp.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,38 +17,41 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/")
 public class MiscellaneousController {
 
-    @Autowired
-    private MiscellaneousService miscellaneousService;
-
-    @Autowired
-    private MessageService whatsappService;
-
-    @Autowired
-    private MessageService messageService;
+    @Autowired private MiscellaneousService miscellaneousService;
+    @Autowired private MessageService messageService;
+    @Autowired private S3Service s3Service;
 
     @PostMapping("uploadImage/{entityType}")
-    public ResponseEntity<StringResponse> uploadImage(@PathVariable("entityType") String entityType, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<StringResponse> uploadImage(@PathVariable("entityType") String entityType,
+            @RequestParam("file") MultipartFile file) {
         return miscellaneousService.uploadImage(entityType, file);
     }
 
     @GetMapping("analysis/{year}/{studioId}")
-    public ResponseEntity<ReportResponse> getAnalysisReport(@PathVariable Long year, @PathVariable Long studioId) {
+    public ResponseEntity<ReportResponse> getAnalysisReport(@PathVariable Integer year, @PathVariable Long studioId) {
         return miscellaneousService.getAnalysisReport(year, studioId);
     }
 
-    @GetMapping("reports/{studioId}/{branchId}")
-    public ResponseEntity<IEReportResponse> getReports(@PathVariable("studioId") Long studioId, @PathVariable("branchId") Long branchId,
-                                                       @RequestParam("startMonth") Long startMonth, @RequestParam("startYear") Long startYear,
-                                                       @RequestParam("endMonth") Long endMonth, @RequestParam("endYear") Long endYear) {
+    @GetMapping("reports/{studioId}/{branchId}/{startMonth}/{startYear}/{endMonth}/{endYear}")
+    public ResponseEntity<IEReportResponse> getReports(@PathVariable Long studioId,
+            @PathVariable Long branchId,
+            @PathVariable Integer startMonth,
+            @PathVariable Integer startYear,
+            @PathVariable Integer endMonth,
+            @PathVariable Integer endYear) {
         return miscellaneousService.getReports(studioId, branchId, startMonth, startYear, endMonth, endYear);
     }
-    
-    @GetMapping("reports/payments/{studioId}/{branchId}")
-    public ResponseEntity<PaymentResponse> getPaymentReports(@PathVariable("studioId") Long studioId, @PathVariable("branchId") Long branchId,
-                                                       @RequestParam("startMonth") int startMonth, @RequestParam("startYear") int startYear,
-                                                       @RequestParam("endMonth") int endMonth, @RequestParam("endYear") int endYear, 
-                                                       @RequestParam("status") String status) {
-        return miscellaneousService.getPaymentReports(studioId, branchId, startMonth, startYear, endMonth, endYear, status);
+
+    @GetMapping("reports/payments/{studioId}/{branchId}/{startMonth}/{startYear}/{endMonth}/{endYear}")
+    public ResponseEntity<PaymentResponse> getPaymentReports(@PathVariable Long studioId,
+            @PathVariable Long branchId,
+            @PathVariable Integer startMonth,
+            @PathVariable Integer startYear,
+            @PathVariable Integer endMonth,
+            @PathVariable Integer endYear,
+            @RequestParam String status) {
+        return miscellaneousService.getPaymentReports(studioId, branchId, startMonth, startYear, endMonth, endYear,
+                status);
     }
 
     @PostMapping("password/reset")
@@ -70,7 +76,7 @@ public class MiscellaneousController {
 
     @PostMapping("whatsapp/sendMessage")
     public String sendWhatsAppMessage(@RequestParam String to, @RequestParam String message) {
-        whatsappService.sendWhatsAppMessage(to, message);
+        messageService.sendWhatsAppMessage(to, message);
         return "Message sent successfully!";
     }
 
@@ -79,4 +85,8 @@ public class MiscellaneousController {
         return messageService.sendMessage(request);
     }
 
+    @PostMapping("/generatePresignUrl")
+    public ResponseEntity<PreSignedResponse> getPresignedUrl(@RequestBody StringRequest request) {
+        return s3Service.generatePresignedUrl(request);
+    }
 }

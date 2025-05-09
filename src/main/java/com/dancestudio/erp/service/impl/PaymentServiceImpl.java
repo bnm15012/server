@@ -97,10 +97,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ResponseEntity<PaymentResponse> getAllPayments(Long branchId, int size,int page, Long startMonth, Long startYear, Long endMonth, Long endYear) {
+    public ResponseEntity<PaymentResponse> getAllPayments(Long branchId, int size,int page, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) {
         PaymentResponse response = new PaymentResponse();
         try {
-            List<PaymentEntry> entry = paymentManager.getAllPaymentsByBranch(branchId, size, page, startMonth, startYear, endMonth, endYear);
+            List<PaymentEntry> entry = paymentManager.getAllPaymentsByBranch(branchId, size, page, startMonth, startYear, endMonth, endYear, null);
             long totalCount = paymentManager.getPaymentCountByStudioId(branchId);
             response.setData(entry);
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : (int) totalCount ));

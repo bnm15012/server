@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
-@Setter(onMethod = @__({@Autowired}))
+@Setter(onMethod = @__({ @Autowired }))
 public class MiscellaneousServiceImpl implements MiscellaneousService {
 
     private ImageManager imageManager;
@@ -48,7 +48,6 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
         }
     }
 
-
     public ResponseEntity<PasswordResponse> initiatePasswordReset(String email) {
         PasswordResponse response = new PasswordResponse();
         try {
@@ -71,7 +70,8 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
                 UserEntry userEntry = userManager.getUserByEmail(passwordEntry.getUserEntry().getEmail());
                 userEntry.setPassword(passwordEntry.getUserEntry().getPassword());
                 userManager.update(userEntry.getUserId(), userEntry);
-                response.setStatus(new StatusResponse(1, "OTP veriried, Password changed successfully", StatusResponse.Type.SUCCESS));
+                response.setStatus(new StatusResponse(1, "OTP veriried, Password changed successfully",
+                        StatusResponse.Type.SUCCESS));
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
                 response.setStatus(new StatusResponse(1, "Invalid or expired OTP", StatusResponse.Type.ERROR));
@@ -102,14 +102,14 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
-
     @Override
-    public ResponseEntity<ReportResponse> getAnalysisReport(Long year, Long studioId) {
+    public ResponseEntity<ReportResponse> getAnalysisReport(Integer year, Long studioId) {
         ReportResponse response = new ReportResponse();
         try {
             List<MonthlyReportEntry> reportEntries = reportManager.getAnalysisReport(year, studioId);
             response.setData(reportEntries);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(reportEntries) ? 0 : reportEntries.size()));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS,
+                    Objects.isNull(reportEntries) ? 0 : reportEntries.size()));
 
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
@@ -119,11 +119,13 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
     }
 
     @Override
-    public ResponseEntity<IEReportResponse> getReports(Long studioId, Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear) {
+    public ResponseEntity<IEReportResponse> getReports(Long studioId, Long branchId, Integer startMonth,
+            Integer startYear, Integer endMonth, Integer endYear) {
 
         IEReportResponse response = new IEReportResponse();
         try {
-            IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startMonth, startYear, endMonth, endYear);
+            IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startMonth, startYear, endMonth,
+                    endYear);
             response.setData(Collections.singletonList(reportEntry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
 
@@ -140,7 +142,8 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
         try {
             List<TemplateEntry> templates = templateManager.getAllTemplates(studioId);
             response.setData(templates);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(templates) ? 0 : templates.size()));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS,
+                    Objects.isNull(templates) ? 0 : templates.size()));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
@@ -148,13 +151,13 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
         }
     }
 
-
     @Override
     public ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId, int startMonth,
             int startYear, int endMonth, int endYear, String status) {
         PaymentResponse response = new PaymentResponse();
         try {
-            List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByDateRange(branchId, startMonth, startYear, endMonth, endYear, status);
+            List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startMonth,
+                    startYear, endMonth, endYear, status);
             response.setData((paymentEntries));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
 

@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 
 public interface ClientService extends BaseService<ClientEntry, ClientResponse, Long> {
 
-    ResponseEntity<ClientResponse> getAllClients(Long branchId, int page, int size, Long startMonth, Long endMonth, String searchTerm);
+    ResponseEntity<ClientResponse> getAllClients(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm);
 
-    ResponseEntity<ClientResponse> searchClientsByName(String clientName);
+    ResponseEntity<ClientResponse> searchClientsByName(String clientName, Integer page, Integer size);
 
 }

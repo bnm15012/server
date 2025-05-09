@@ -109,11 +109,15 @@ public class StudentManagerImpl implements StudentManager {
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         } else {
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
             Page<Member> studentPage = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, activityId, membershipStatus != null ? membershipStatus.name() : null, pageable, searchTerm);
             List<StudentEntry> entries =  studentPage.getContent().stream()
                     .map(this::convertToEntry)
                     .toList();
+
+            if (membershipStatus == null) {
+                return entries;
+            }
 
             return entries.stream()
                     .filter(student -> student.getMembershipStatus() == membershipStatus)
@@ -127,7 +131,7 @@ public class StudentManagerImpl implements StudentManager {
         if (size == -1) {
             entries = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), null);
         } else {
-            Pageable pageable = PageRequest.of(page, size);
+            Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
             Page<Member> studentPage = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), pageable, null);
             entries = studentPage.getContent().stream().toList();
         }

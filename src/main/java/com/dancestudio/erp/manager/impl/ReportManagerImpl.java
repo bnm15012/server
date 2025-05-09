@@ -26,12 +26,12 @@ public class ReportManagerImpl implements ReportManager {
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
 
 
-    public List<MonthlyReportEntry> getAnalysisReport(Long year, Long studioId) {
+    public List<MonthlyReportEntry> getAnalysisReport(Integer year, Long studioId) {
         return studentActivityAssignmentManager.getAnalysisReport(year, studioId);
     }
 
     @Override
-    public IEReportEntry getReports(Long studioId, Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear) throws Exception {
+    public IEReportEntry getReports(Long studioId, Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) throws Exception {
         IEReportEntry reportEntry = new IEReportEntry();
 
         IEMonthlyReportEntry monthlyReports = processPaymentEntries(branchId, startMonth, startYear, endMonth, endYear);
@@ -51,10 +51,10 @@ public class ReportManagerImpl implements ReportManager {
         return reportEntry;
     }
 
-    private IEMonthlyReportEntry processPaymentEntries(Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear) throws Exception {
+    private IEMonthlyReportEntry processPaymentEntries(Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) throws Exception {
         IEMonthlyReportEntry monthlyReports = new IEMonthlyReportEntry();
 
-        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByDateRange(branchId, startMonth.intValue(), startYear.intValue(), endMonth.intValue(), endYear.intValue(), null);
+        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startMonth, startYear, endMonth, endYear, null);
         List<IncomeEntry> incomeEntries = paymentEntries.stream()
                 .map(this::extractIncomeEntry)
                 .collect(Collectors.toList());
@@ -68,8 +68,8 @@ public class ReportManagerImpl implements ReportManager {
         return monthlyReports;
     }
 
-    private void processExpenseEntries(Long branchId, Long startMonth, Long startYear, Long endMonth, Long endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
-        List<ExpenseEntry> expenseEntries = expenseManager.getAllExpensesByDateRange(branchId, startMonth.intValue(), startYear.intValue(), endMonth.intValue(), endYear.intValue());
+    private void processExpenseEntries(Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
+        List<ExpenseEntry> expenseEntries = expenseManager.getAllExpenses(branchId, 0, -1, startMonth.intValue(), startYear.intValue(), endMonth.intValue(), endYear.intValue());
         double totalExpense = expenseEntries.stream()
                 .mapToDouble(ExpenseEntry::getAmount)
                 .sum();

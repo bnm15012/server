@@ -34,9 +34,13 @@ public class ExpenseController extends BaseController<ExpenseEntry, ExpenseRespo
         return expenseService.get(id);
     }
 
-    @GetMapping("/getAllExpenses/{studioId}/{startMonth}/{endMonth}")
-    public ResponseEntity<ExpenseResponse> getAllExpenses(@PathVariable Long studioId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @PathVariable Long startMonth, @PathVariable Long endMonth) {
-        Long currentYear = (long) java.time.Year.now().getValue();
-        return expenseService.getAllExpenses(studioId, page, size, startMonth, currentYear, endMonth, currentYear);
+    @GetMapping("/getAllExpenses/{branchId}/{startMonth}/{startYear}/{endMonth}/{endYear}")
+    public ResponseEntity<ExpenseResponse> getAllExpenses(@PathVariable Long branchId,
+            @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size,
+            @PathVariable Integer startMonth,
+            @PathVariable Integer startYear,
+            @PathVariable Integer endMonth,
+            @PathVariable Integer endYear) {
+        return expenseService.getAllExpenses(branchId, page, size, startMonth, startYear, endMonth, endYear);
     }
 }
