@@ -111,8 +111,15 @@ public class NotificationManagerImpl implements NotificationManager {
 
         Branch branch = branchRepository.findById(requestEntry.getBranchId()).get();
         Studio studio = branch.getStudio();
-        Message message = createAndSaveMessage(requestEntry, branch);
 
+        boolean saveFlag = true;
+        if(Objects.nonNull(requestEntry.getTemplateName()) && StringUtils.isEmpty(requestEntry.getContent())) {
+            TemplateEntry templateEntry = templateManager.getTemplateDetails(requestEntry.getTemplateName());
+            requestEntry.setContent(templateEntry.getTemplateBody());
+            saveFlag = false;
+        }
+
+        Message message = createAndSaveMessage(requestEntry, branch, saveFlag);
         for(Member member : members) {
             if(Objects.isNull(requestEntry.getTemplateName())) {
                 sendEmail(member.getEmail(), message.getTitle(), message.getContent(), message.getBranch().getStudio().getId());
@@ -127,14 +134,19 @@ public class NotificationManagerImpl implements NotificationManager {
         }
     }
 
-    public Message createAndSaveMessage(SendMessageRequestEntry request, Branch branch) {
+    public Message createAndSaveMessage(SendMessageRequestEntry request, Branch branch, boolean saveMessage) {
         Message message = new Message();
         message.setTitle(request.getTitle());
         message.setContent(request.getContent());
         message.setNotiticationType(request.getNotiticationType());
         message.setBranch(branch);
         message.setSendToAll(request.getSentToAll());
-        return messageRepository.save(message);
+
+        if(saveMessage) {
+            return messageRepository.save(message);
+        }
+
+        return message;
     }
 
     private String formatEmailBody(TemplateEntry templateEntry, String studioName, String studentName, String activityType) {

@@ -3,7 +3,6 @@ package com.dancestudio.erp.constants;
 public class TemplateName {
 
     public static final String ADD_NEW_STUDENT_EMAIL = "NEW_STUDENT_EMAIL";
-    public static final String UPDATE_STUDENT_EMAIL = "UPDATE_STUDENT_EMAIL";
 
     public static final String ADD_NEW_USER_EMAIL = "NEW_USER_EMAIL";
     public static final String UPDATE_USER_EMAIL = "UPDATE_USER_EMAIL";
