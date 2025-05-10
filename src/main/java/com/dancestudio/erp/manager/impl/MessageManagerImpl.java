@@ -1,6 +1,8 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.*;
+import com.dancestudio.erp.entry.MessageEntry;
+import com.dancestudio.erp.entry.MessageRecipientEntry;
 import com.dancestudio.erp.entry.SendMessageRequestEntry;
 import com.dancestudio.erp.enums.MessageStatus;
 import com.dancestudio.erp.enums.TemplateType;
@@ -64,7 +66,46 @@ public class MessageManagerImpl implements MessageManager {
         return new SendMessageResponse(members.size(), success, failed);
     }
 
-    private Message createAndSaveMessage(SendMessageRequestEntry request, Branch branch) {
+    @Override
+    public List<MessageEntry> getMessagesByBranchId(Long branchId) {
+        List<Message> messages = messageRepository.findByBranchId(branchId);
+        return messages.stream()
+                .sorted((m1, m2) -> m2.getCreatedOn().compareTo(m1.getCreatedOn()))
+                .map(this::convertToMessageEntry)
+                .toList();
+    }
+
+    @Override
+    public List<MessageRecipientEntry> getMessageRecipients(Long messageId) {
+        List<MessageRecipient> recipients = recipientRepository.findByMessageId(messageId);
+        return recipients.stream()
+                .map(recipient -> {
+                    MessageRecipientEntry entry = new MessageRecipientEntry();
+                    entry.setId(recipient.getId());
+                    entry.setMemberId(recipient.getMember().getId());
+                    entry.setName(recipient.getName());
+                    entry.setPhoneNumber(recipient.getPhoneNumber());
+                    entry.setStatus(recipient.getStatus());
+                    entry.setReason(recipient.getReason());
+                    return entry;
+                })
+                .toList();
+    }
+
+    public MessageEntry convertToMessageEntry(Message message) {
+        MessageEntry entry = new MessageEntry();
+        entry.setId(message.getId());
+        entry.setTitle(message.getTitle());
+        entry.setContent(message.getContent());
+        entry.setNotificationType(message.getNotiticationType());
+        entry.setSentDate(message.getCreatedOn());
+        entry.setBranchId(message.getBranch().getId());
+        entry.setSentToAll(message.getSendToAll());
+
+        return entry;
+    }
+
+    public Message createAndSaveMessage(SendMessageRequestEntry request, Branch branch) {
         Message message = new Message();
         message.setTitle(request.getTitle());
         message.setContent(request.getContent());

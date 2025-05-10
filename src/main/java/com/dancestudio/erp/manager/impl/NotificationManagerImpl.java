@@ -1,13 +1,17 @@
 package com.dancestudio.erp.manager.impl;
 
+import com.dancestudio.erp.entity.Branch;
 import com.dancestudio.erp.entity.Member;
+import com.dancestudio.erp.entity.Message;
 import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.SendMessageRequestEntry;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.manager.NotificationManager;
 import com.dancestudio.erp.manager.TemplateManager;
+import com.dancestudio.erp.repository.BranchRepository;
 import com.dancestudio.erp.repository.MemberRepository;
+import com.dancestudio.erp.repository.MessageRepository;
 import com.dancestudio.erp.repository.StudioRepository;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +23,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
+import static com.dancestudio.erp.constants.TemplateName.MEMBERSHIP_INVOICE;
 import static com.dancestudio.erp.constants.TemplateName.SUBSCRIPTION_RENEWAL_REMINDER;
 
 @Service
@@ -46,6 +53,8 @@ public class NotificationManagerImpl implements NotificationManager {
     @Autowired private TemplateManager templateManager;
     @Autowired private StudioRepository studioRepository;
     @Autowired private MemberRepository memberRepository;
+    @Autowired private BranchRepository branchRepository;
+    @Autowired private MessageRepository messageRepository;
 
     public void sendEmail(String to, String subject, String body, Long studioId) throws Exception {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -96,14 +105,36 @@ public class NotificationManagerImpl implements NotificationManager {
 
     @Override
     public void sendEmail(SendMessageRequestEntry requestEntry) throws Exception {
-        TemplateEntry templateEntry = templateManager.getTemplateDetails(requestEntry.getTemplateName());
-        Studio studio = studioRepository.findById(requestEntry.getStudioId()).get();
-        Member member = memberRepository.findById(requestEntry.getMemberIds().get(0)).get();
+        List<Member> members = (requestEntry.getMemberIds() == null || requestEntry.getMemberIds().isEmpty())
+                ? memberRepository.findByBranchId(requestEntry.getBranchId())
+                : memberRepository.findAllById(requestEntry.getMemberIds());
 
-        String updatedBody = formatEmailBody(templateEntry, studio.getName(), member.getName(), requestEntry.getActivityType());
-        updatedBody.replace("{invoice_url}", requestEntry.getInvoiceUrl());
+        Branch branch = branchRepository.findById(requestEntry.getBranchId()).get();
+        Studio studio = branch.getStudio();
+        Message message = createAndSaveMessage(requestEntry, branch);
 
-        sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, requestEntry.getStudioId());
+        for(Member member : members) {
+            if(Objects.isNull(requestEntry.getTemplateName())) {
+                sendEmail(member.getEmail(), message.getTitle(), message.getContent(), message.getBranch().getStudio().getId());
+            } else {
+                TemplateEntry templateEntry = templateManager.getTemplateDetails(requestEntry.getTemplateName());
+                String updatedBody = formatEmailBody(templateEntry, studio.getName(), member.getName(), requestEntry.getActivityType());
+                if(requestEntry.getTemplateName().equalsIgnoreCase(MEMBERSHIP_INVOICE)) {
+                    updatedBody = updatedBody.replace("{invoice_url}", requestEntry.getInvoiceUrl());
+                }
+                sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, message.getBranch().getStudio().getId());
+            }
+        }
+    }
+
+    public Message createAndSaveMessage(SendMessageRequestEntry request, Branch branch) {
+        Message message = new Message();
+        message.setTitle(request.getTitle());
+        message.setContent(request.getContent());
+        message.setNotiticationType(request.getNotiticationType());
+        message.setBranch(branch);
+        message.setSendToAll(request.getSentToAll());
+        return messageRepository.save(message);
     }
 
     private String formatEmailBody(TemplateEntry templateEntry, String studioName, String studentName, String activityType) {

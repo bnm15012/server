@@ -26,8 +26,8 @@ public class ReportManagerImpl implements ReportManager {
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
 
 
-    public List<MonthlyReportEntry> getAnalysisReport(Integer year, Long studioId) {
-        return studentActivityAssignmentManager.getAnalysisReport(year, studioId);
+    public List<MonthlyReportEntry> getAnalysisReport(Integer year, Long branchId) {
+        return studentActivityAssignmentManager.getAnalysisReport(year, branchId);
     }
 
     @Override

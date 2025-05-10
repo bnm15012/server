@@ -103,13 +103,12 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
     }
 
     @Override
-    public ResponseEntity<ReportResponse> getAnalysisReport(Integer year, Long studioId) {
+    public ResponseEntity<ReportResponse> getAnalysisReport(Integer year, Long branchId) {
         ReportResponse response = new ReportResponse();
         try {
-            List<MonthlyReportEntry> reportEntries = reportManager.getAnalysisReport(year, studioId);
+            List<MonthlyReportEntry> reportEntries = reportManager.getAnalysisReport(year, branchId);
             response.setData(reportEntries);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS,
-                    Objects.isNull(reportEntries) ? 0 : reportEntries.size()));
+            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(reportEntries) ? 0 : reportEntries.size()));
 
             return ResponseEntity.ok(response);
         } catch (Exception ex) {

@@ -15,4 +15,5 @@ public class TemplateName {
     public static final String STUDIO_CLOSED_NOTICE = "STUDIO_CLOSED_NOTICE";
     public static final String PAYMENT_REMINDER = "PAYMENT_REMINDER";
 
+    public static final String MEMBERSHIP_INVOICE = "MEMBERSHIP_INVOICE";
 }

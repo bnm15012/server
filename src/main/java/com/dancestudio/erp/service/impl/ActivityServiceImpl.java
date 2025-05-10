@@ -90,11 +90,11 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public ResponseEntity<ActivityResponse> getAllActivities(Long studioId) {
+    public ResponseEntity<ActivityResponse> getAllActivities(Long branchId) {
         ActivityResponse response = new ActivityResponse();
 
         try {
-            List<ActivityEntry> entries = activityManager.getAllActivities(studioId);
+            List<ActivityEntry> entries = activityManager.getAllActivities(branchId);
 
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Activities retrieved successfully", StatusResponse.Type.SUCCESS, entries.size()));

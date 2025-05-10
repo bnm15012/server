@@ -34,8 +34,8 @@ public class ActivityController extends BaseController<ActivityEntry, ActivityRe
         return activityService.get(id);
     }
 
-    @GetMapping("/getAllActivities/{studioId}")
-    public ResponseEntity<ActivityResponse> getAll(@PathVariable Long studioId) {
-        return activityService.getAllActivities(studioId);
+    @GetMapping("/getAllActivities/{branchId}")
+    public ResponseEntity<ActivityResponse> getAll(@PathVariable Long branchId) {
+        return activityService.getAllActivities(branchId);
     }
 }

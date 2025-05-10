@@ -85,6 +85,16 @@ public class MiscellaneousController {
         return messageService.sendMessage(request);
     }
 
+    @GetMapping("getMessageHistory/{branchId}")
+    public ResponseEntity<MessageResponse> getMessageHistory(@PathVariable Long branchId) {
+        return messageService.getMessagesByBranchId(branchId);
+    }
+
+    @GetMapping("getMessageRecipients/{messageId}")
+    public ResponseEntity<MessageRecipientResponse> getMessageRecipients(@PathVariable Long messageId) {
+        return messageService.getMessageRecipients(messageId);
+    }
+
     @PostMapping("/generatePresignUrl")
     public ResponseEntity<PreSignedResponse> getPresignedUrl(@RequestBody StringRequest request) {
         return s3Service.generatePresignedUrl(request);

@@ -6,5 +6,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface ActivityService extends BaseService<ActivityEntry, ActivityResponse, Long> {
 
-    ResponseEntity<ActivityResponse> getAllActivities(Long studioId);
+    ResponseEntity<ActivityResponse> getAllActivities(Long branchId);
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ReportManager {
 
-    List<MonthlyReportEntry> getAnalysisReport(Integer year, Long studioId);
+    List<MonthlyReportEntry> getAnalysisReport(Integer year, Long branchId);
 
     IEReportEntry getReports(Long studioId, Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) throws Exception;
 }
