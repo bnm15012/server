@@ -57,7 +57,8 @@ public class MessageServiceImpl implements MessageService {
         MessageResponse response = new MessageResponse();
         try {
             List<MessageEntry> messageEntries = messageManager.getMessagesByBranchId(branchId, page, size);
-            response.setStatus(new StatusResponse(1, "Messages fetched successfully", StatusResponse.Type.SUCCESS, messageEntries.size()));
+            long totalMessages = messageManager.getMessageCountByBranchId(branchId);
+            response.setStatus(new StatusResponse(1, "Messages fetched successfully", StatusResponse.Type.SUCCESS, (int) totalMessages));
             response.setData(messageEntries);
             return ResponseEntity.ok(response);
         } catch (Exception ex) {

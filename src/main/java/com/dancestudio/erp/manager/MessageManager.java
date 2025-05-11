@@ -13,6 +13,8 @@ public interface MessageManager {
 
     List<MessageEntry> getMessagesByBranchId(Long branchId, int page, int size);
 
+    long getMessageCountByBranchId(Long branchId);
+
     List<MessageRecipientEntry> getMessageRecipients(Long messageId);
 
 }

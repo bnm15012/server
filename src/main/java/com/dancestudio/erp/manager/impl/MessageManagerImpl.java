@@ -87,6 +87,11 @@ public class MessageManagerImpl implements MessageManager {
     }
 
     @Override
+    public long getMessageCountByBranchId(Long branchId) {
+        return messageRepository.totalMessagesByBranchId(branchId);
+    }
+
+    @Override
     public List<MessageRecipientEntry> getMessageRecipients(Long messageId) {
         List<MessageRecipient> recipients = recipientRepository.findByMessageId(messageId);
         return recipients.stream()
