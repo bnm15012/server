@@ -151,14 +151,13 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
     }
 
     @Override
-    public ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId, int startMonth,
-            int startYear, int endMonth, int endYear, String status) {
+    public ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId, int startMonth, int startYear, int endMonth, int endYear, String status) {
         PaymentResponse response = new PaymentResponse();
         try {
             List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startMonth,
                     startYear, endMonth, endYear, status);
             response.setData((paymentEntries));
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
+            response.setStatus(new StatusResponse(1, "Report data retrieved successfully", StatusResponse.Type.SUCCESS, 1));
 
             return ResponseEntity.ok(response);
         } catch (Exception ex) {

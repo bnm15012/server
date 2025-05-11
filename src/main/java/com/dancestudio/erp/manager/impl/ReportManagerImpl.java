@@ -69,7 +69,7 @@ public class ReportManagerImpl implements ReportManager {
     }
 
     private void processExpenseEntries(Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
-        List<ExpenseEntry> expenseEntries = expenseManager.getAllExpenses(branchId, 0, -1, startMonth.intValue(), startYear.intValue(), endMonth.intValue(), endYear.intValue());
+        List<ExpenseEntry> expenseEntries = expenseManager.getAllExpenses(branchId, 0, -1, startMonth.intValue(), startYear.intValue(), endMonth.intValue(), endYear.intValue(), null);
         double totalExpense = expenseEntries.stream()
                 .mapToDouble(ExpenseEntry::getAmount)
                 .sum();

@@ -10,6 +10,6 @@ public interface ExpenseManager extends BaseManager<ExpenseEntry, Long> {
 
     Long countExpensesByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear,  Integer endMonth, Integer endYear);
 
-    List<ExpenseEntry> getAllExpenses(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) throws Exception;
+    List<ExpenseEntry> getAllExpenses(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm) throws Exception;
 
 }

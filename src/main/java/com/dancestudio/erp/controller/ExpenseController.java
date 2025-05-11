@@ -40,7 +40,8 @@ public class ExpenseController extends BaseController<ExpenseEntry, ExpenseRespo
             @PathVariable Integer startMonth,
             @PathVariable Integer startYear,
             @PathVariable Integer endMonth,
-            @PathVariable Integer endYear) {
-        return expenseService.getAllExpenses(branchId, page, size, startMonth, startYear, endMonth, endYear);
+            @PathVariable Integer endYear,
+            @RequestParam(required = false) String searchTerm) {
+        return expenseService.getAllExpenses(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
     }
 }

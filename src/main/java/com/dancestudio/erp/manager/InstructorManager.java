@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface InstructorManager extends BaseManager<InstructorEntry, Long> {
 
-    List<InstructorEntry> getAllInstructorsByStudio(Long studioId, MembershipStatus membershipStatus, int page, int size, String searchTerm) throws EntityNotFoundException;
+    List<InstructorEntry> getAllInstructorsByBranch(Long studioId, MembershipStatus membershipStatus, int page, int size, String searchTerm) throws EntityNotFoundException;
 
     Long getCountInstructorByBranchId(Long branchId);
 

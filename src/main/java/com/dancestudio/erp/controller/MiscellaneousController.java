@@ -22,8 +22,7 @@ public class MiscellaneousController {
     @Autowired private S3Service s3Service;
 
     @PostMapping("uploadImage/{entityType}")
-    public ResponseEntity<StringResponse> uploadImage(@PathVariable("entityType") String entityType,
-            @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<StringResponse> uploadImage(@PathVariable("entityType") String entityType, @RequestParam("file") MultipartFile file) {
         return miscellaneousService.uploadImage(entityType, file);
     }
 
@@ -50,8 +49,7 @@ public class MiscellaneousController {
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear,
             @RequestParam String status) {
-        return miscellaneousService.getPaymentReports(studioId, branchId, startMonth, startYear, endMonth, endYear,
-                status);
+        return miscellaneousService.getPaymentReports(studioId, branchId, startMonth, startYear, endMonth, endYear, status);
     }
 
     @PostMapping("password/reset")

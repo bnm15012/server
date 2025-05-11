@@ -95,14 +95,14 @@ public class InstructorManagerImpl implements InstructorManager {
     }
 
     @Override
-    public List<InstructorEntry> getAllInstructorsByStudio(Long branchId, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
+    public List<InstructorEntry> getAllInstructorsByBranch(Long branchId, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
         if (size == -1) {
             List<Member> entries = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, null, searchTerm);
             return entries.stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         } else {
-            Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(page, size);
             Page<Member> instructorPage = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus != null ? membershipStatus.name() : null, pageable, searchTerm);
             List<InstructorEntry> entries = instructorPage.getContent().stream()
                     .map(this::convertToEntry)
