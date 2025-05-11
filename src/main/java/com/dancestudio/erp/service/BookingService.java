@@ -6,6 +6,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface BookingService extends BaseService<BookingEntry, BookingResponse, Long> {
 
-    ResponseEntity<BookingResponse> getAllBookings(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear);
+    ResponseEntity<BookingResponse> getAllBookings(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm);
 
 }

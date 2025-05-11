@@ -122,15 +122,15 @@ public class BookingManagerImpl implements BookingManager {
     }
 
     @Override
-    public List<BookingEntry> getAllBookings(Long branchId, Integer page,Integer size, Integer startMonth,Integer startYear,  Integer endMonth, Integer endYear) throws Exception {
+    public List<BookingEntry> getAllBookings(Long branchId, Integer page,Integer size, Integer startMonth,Integer startYear,  Integer endMonth, Integer endYear, String searchTerm) throws Exception {
         Page<Booking> entries;
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
         
         if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
-            entries = bookingRepository.findBookingsByBranchId(branchId, pageable);
+            entries = bookingRepository.findBookingsByBranchId(branchId, pageable, searchTerm);
         } else {
             Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-            entries = bookingRepository.findAllBookingsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"), pageable);
+            entries = bookingRepository.findAllBookingsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"), pageable, searchTerm);
         }
 
         List<BookingEntry> bookingEntries = new ArrayList<>();
@@ -138,6 +138,8 @@ public class BookingManagerImpl implements BookingManager {
             BookingEntry bookingEntry = convertToEntry(entry);
             bookingEntries.add(bookingEntry);
         }
+
+
 
         return bookingEntries;
     }
