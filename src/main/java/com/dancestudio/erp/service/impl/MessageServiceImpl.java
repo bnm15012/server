@@ -53,10 +53,10 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public ResponseEntity<MessageResponse> getMessagesByBranchId(Long branchId) {
+    public ResponseEntity<MessageResponse> getMessagesByBranchId(Long branchId, int page, int size) {
         MessageResponse response = new MessageResponse();
         try {
-            List<MessageEntry> messageEntries = messageManager.getMessagesByBranchId(branchId);
+            List<MessageEntry> messageEntries = messageManager.getMessagesByBranchId(branchId, page, size);
             response.setStatus(new StatusResponse(1, "Messages fetched successfully", StatusResponse.Type.SUCCESS, messageEntries.size()));
             response.setData(messageEntries);
             return ResponseEntity.ok(response);

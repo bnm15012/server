@@ -12,7 +12,7 @@ public interface MessageService {
 
     ResponseEntity<SendMessageResponse> sendMessage(SendMessageRequestEntry request);
 
-    ResponseEntity<MessageResponse> getMessagesByBranchId(Long branchId);
+    ResponseEntity<MessageResponse> getMessagesByBranchId(Long branchId, int page, int size);
 
     ResponseEntity<MessageRecipientResponse> getMessageRecipients(Long messageId);
 }

@@ -213,7 +213,7 @@ public class InstructorManagerImpl implements InstructorManager {
         if (size == -1) {
             entries = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), null);
         } else {
-            Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
+            Pageable pageable = PageRequest.of(page, size);
             Page<Member> instructorPage = memberRepository.findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null, membershipStatus.name(), pageable, null);
             entries = instructorPage.getContent().stream().toList();
         }

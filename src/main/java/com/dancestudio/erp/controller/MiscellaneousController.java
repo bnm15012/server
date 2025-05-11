@@ -86,8 +86,8 @@ public class MiscellaneousController {
     }
 
     @GetMapping("getMessageHistory/{branchId}")
-    public ResponseEntity<MessageResponse> getMessageHistory(@PathVariable Long branchId) {
-        return messageService.getMessagesByBranchId(branchId);
+    public ResponseEntity<MessageResponse> getMessageHistory(@PathVariable Long branchId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "-1") int size) {
+        return messageService.getMessagesByBranchId(branchId, page, size);
     }
 
     @GetMapping("getMessageRecipients/{messageId}")

@@ -11,7 +11,7 @@ public interface MessageManager {
 
     SendMessageResponse sendMessage(SendMessageRequestEntry request);
 
-    List<MessageEntry> getMessagesByBranchId(Long branchId);
+    List<MessageEntry> getMessagesByBranchId(Long branchId, int page, int size);
 
     List<MessageRecipientEntry> getMessageRecipients(Long messageId);
 

@@ -19,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -67,8 +70,16 @@ public class MessageManagerImpl implements MessageManager {
     }
 
     @Override
-    public List<MessageEntry> getMessagesByBranchId(Long branchId) {
-        List<Message> messages = messageRepository.findByBranchId(branchId);
+    public List<MessageEntry> getMessagesByBranchId(Long branchId, int page, int size) {
+        List<Message> messages;
+        if (size == -1) {
+            messages = messageRepository.findByBranchId(branchId);
+        } else {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Message> messagePage = messageRepository.findByBranchId(branchId, pageable);
+            messages = messagePage.getContent().stream().toList();
+        }
+
         return messages.stream()
                 .sorted((m1, m2) -> m2.getCreatedOn().compareTo(m1.getCreatedOn()))
                 .map(this::convertToMessageEntry)
