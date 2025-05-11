@@ -19,12 +19,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -73,15 +74,15 @@ public class MessageManagerImpl implements MessageManager {
     public List<MessageEntry> getMessagesByBranchId(Long branchId, int page, int size) {
         List<Message> messages;
         if (size == -1) {
-            messages = messageRepository.findByBranchId(branchId);
+            messages = messageRepository.findByBranchId(branchId).stream()
+                    .sorted(Comparator.comparing(Message::getCreatedOn).reversed())
+                    .toList();
         } else {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<Message> messagePage = messageRepository.findByBranchId(branchId, pageable);
-            messages = messagePage.getContent().stream().toList();
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
+            messages = messageRepository.findByBranchId(branchId, pageable).getContent();
         }
 
         return messages.stream()
-                .sorted((m1, m2) -> m2.getCreatedOn().compareTo(m1.getCreatedOn()))
                 .map(this::convertToMessageEntry)
                 .toList();
     }
