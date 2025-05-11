@@ -47,7 +47,8 @@ public class PaymentController extends BaseController<PaymentEntry, PaymentRespo
             @PathVariable Integer startMonth,
             @PathVariable Integer startYear,
             @PathVariable Integer endMonth,
-            @PathVariable Integer endYear) {
-        return paymentService.getAllPayments(branchId, page, size, startMonth, startYear, endMonth, endYear);
+            @PathVariable Integer endYear,
+            @RequestParam(required = false) String searchTerm) {
+        return paymentService.getAllPayments(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
     }
 }

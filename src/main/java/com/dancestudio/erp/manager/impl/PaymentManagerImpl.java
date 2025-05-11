@@ -97,20 +97,27 @@ public class PaymentManagerImpl implements PaymentManager {
 
     @SneakyThrows
     @Override
-    public List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth,
-            Integer startYear, Integer endMonth, Integer endYear, String status) {
+    public List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String status, String searchTerm) {
         Page<Payment> entries;
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
         if (size == 7) {
             entries = paymentRepository.findByBranchId(branchId, pageable);
         } else {
             Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-            entries = paymentRepository.findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(branchId,
-                    monthRange.get("start"),
-                    monthRange.get("end"), status, pageable);
+            entries = paymentRepository.findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(branchId, monthRange.get("start"), monthRange.get("end"), status, pageable);
         }
+
         return entries.stream()
                 .map(this::convertToEntry)
+                .filter(paymentEntry -> {
+                    if (searchTerm == null || searchTerm.isBlank()) {
+                        return true;
+                    }
+                    String lowerSearchTerm = searchTerm.toLowerCase();
+                    return (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().getName() != null &&
+                            paymentEntry.getStudentEntry().getName().toLowerCase().contains(lowerSearchTerm)) ||
+                            (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().toString().toLowerCase().contains(lowerSearchTerm));
+                })
                 .collect(Collectors.toList());
     }
 

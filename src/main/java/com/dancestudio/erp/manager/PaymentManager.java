@@ -11,7 +11,7 @@ public interface PaymentManager extends BaseManager<PaymentEntry, Long> {
 
     PaymentEntry updatePaymentStatus(Long paymentId, PaymentStatus status) throws EntityNotFoundException;
 
-    List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String status);
+    List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String status, String searchTerm);
 
     Long getPaymentCountByStudioId(Long studioId);
 

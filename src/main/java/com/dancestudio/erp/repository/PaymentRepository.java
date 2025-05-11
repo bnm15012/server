@@ -23,13 +23,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
              AND e.paymentDate BETWEEN :startDate AND :endDate 
              AND (:status IS NULL OR e.status = :status)
       """)
-      Page<Payment> findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(
-          @Param("branchId") Long branchId,
-          @Param("startDate") Date startDate,
-          @Param("endDate") Date endDate,
-          @Param("status") String status,
-          Pageable pageable
-      );
+      Page<Payment> findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(@Param("branchId") Long branchId, @Param("startDate") Date startDate, @Param("endDate") Date endDate,
+          @Param("status") String status, Pageable pageable);
 
     @Query("SELECT COUNT(s) FROM Payment s WHERE s.branch.id = :branchId")
     Long getPaymentCountByBranchId(@Param("branchId") Long branchId);

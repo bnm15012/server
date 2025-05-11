@@ -54,7 +54,7 @@ public class ReportManagerImpl implements ReportManager {
     private IEMonthlyReportEntry processPaymentEntries(Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) throws Exception {
         IEMonthlyReportEntry monthlyReports = new IEMonthlyReportEntry();
 
-        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startMonth, startYear, endMonth, endYear, null);
+        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startMonth, startYear, endMonth, endYear, null, null);
         List<IncomeEntry> incomeEntries = paymentEntries.stream()
                 .map(this::extractIncomeEntry)
                 .collect(Collectors.toList());
