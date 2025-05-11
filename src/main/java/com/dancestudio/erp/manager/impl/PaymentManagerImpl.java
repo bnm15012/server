@@ -100,7 +100,7 @@ public class PaymentManagerImpl implements PaymentManager {
     public List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String status, String searchTerm) {
         Page<Payment> entries;
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
-        if (size == 7) {
+        if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
             entries = paymentRepository.findByBranchId(branchId, pageable);
         } else {
             Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
