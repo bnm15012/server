@@ -112,10 +112,9 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public Long countExpensesByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear, Integer endMonth,
-            Integer endYear) {
+    public Long countExpensesByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm) {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-        return expenseRepository.countByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"));
+        return expenseRepository.countByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"), searchTerm);
     }
 
     private Expense convertToEntity(ExpenseEntry expenseEntry, Expense existingExpense) throws Exception {

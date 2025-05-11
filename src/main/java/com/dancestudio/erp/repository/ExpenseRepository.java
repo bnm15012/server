@@ -28,8 +28,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
         Long countByBranchId(Long branchId);
 
         @Query("""
-               SELECT COUNT(e) FROM Expense e WHERE e.branch.id = :branchId AND e.expenseDate BETWEEN :startDate AND :endDate""")
-        Long countByBranchIdAndDateRange(@Param("branchId") Long branchId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+               SELECT COUNT(e) FROM Expense e WHERE e.branch.id = :branchId AND e.expenseDate BETWEEN :startDate AND :endDate AND (:searchTerm IS NULL OR LOWER(e.description) LIKE LOWER(CONCAT('%', :searchTerm, '%')))""")
+        Long countByBranchIdAndDateRange(@Param("branchId") Long branchId, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("searchTerm") String searchTerm);
 
         @Query("""
               SELECT e.expenseCategory, SUM(e.amount) FROM Expense e WHERE e.branch.id = :branchId AND e.expenseDate BETWEEN :startDate AND :endDate GROUP BY e.expenseCategory

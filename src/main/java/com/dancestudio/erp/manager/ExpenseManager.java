@@ -8,7 +8,7 @@ public interface ExpenseManager extends BaseManager<ExpenseEntry, Long> {
 
     Long countExpensesByBranchId(Long branchId);
 
-    Long countExpensesByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear,  Integer endMonth, Integer endYear);
+    Long countExpensesByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear,  Integer endMonth, Integer endYear, String searchTerm);
 
     List<ExpenseEntry> getAllExpenses(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm) throws Exception;
 

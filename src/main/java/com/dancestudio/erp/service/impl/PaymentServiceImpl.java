@@ -101,7 +101,7 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentResponse response = new PaymentResponse();
         try {
             List<PaymentEntry> entry = paymentManager.getAllPaymentsByBranch(branchId, size, page, startMonth, startYear, endMonth, endYear, null, searchTerm);
-            long totalCount = paymentManager.getPaymentCountByStudioId(branchId);
+            long totalCount = paymentManager.getPaymentCountByStudioId(branchId, searchTerm);
             response.setData(entry);
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, Objects.isNull(entry) ? 0 : (int) totalCount ));
             return ResponseEntity.status(HttpStatus.OK).body(response);

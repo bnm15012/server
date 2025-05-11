@@ -192,7 +192,7 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public Long getPaymentCountByStudioId(Long branchId) {
+    public Long getPaymentCountByStudioId(Long branchId, String searchTerm) {
         return paymentRepository.getPaymentCountByBranchId(branchId);
     }
 

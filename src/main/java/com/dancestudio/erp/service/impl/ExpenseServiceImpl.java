@@ -94,8 +94,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         try {
             List<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
-            long expenseCount = (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0)
-                    || endYear.equals(0)) ? expenseManager.countExpensesByBranchId(branchId) : expenseManager.countExpensesByBranchIdAndMonth(branchId, startMonth, startYear, endMonth, endYear);
+            long expenseCount = (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) ? expenseManager.countExpensesByBranchId(branchId) : expenseManager.countExpensesByBranchIdAndMonth(branchId, startMonth, startYear, endMonth, endYear, searchTerm);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Expenses retrieved successfully", StatusResponse.Type.SUCCESS,
                     (int) expenseCount));

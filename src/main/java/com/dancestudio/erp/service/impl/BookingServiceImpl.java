@@ -89,20 +89,16 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public ResponseEntity<BookingResponse> getAllBookings(Long branchId, Integer page, Integer size, Integer startMonth,
-            Integer startYear, Integer endMonth, Integer endYear, String searchTerm) {
+    public ResponseEntity<BookingResponse> getAllBookings(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm) {
         BookingResponse response = new BookingResponse();
 
         try {
             List<BookingEntry> entries = bookingManager.getAllBookings(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
             long bookingCount = (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0))
-        
                     ? bookingManager.countBookingsByBranchId(branchId)
-                    : bookingManager.countBookingsByBranchIdAndMonth(branchId, startMonth, startYear, endMonth,
-                            endYear);
+                    : bookingManager.countBookingsByBranchIdAndMonth(branchId, startMonth, startYear, endMonth, endYear);
             response.setData(entries);
-            response.setStatus(new StatusResponse(1, "Bookings retrieved successfully", StatusResponse.Type.SUCCESS,
-                    (int) bookingCount));
+            response.setStatus(new StatusResponse(1, "Bookings retrieved successfully", StatusResponse.Type.SUCCESS, (int) bookingCount));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));

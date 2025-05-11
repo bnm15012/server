@@ -41,7 +41,7 @@ public class BookingController extends BaseController<BookingEntry, BookingRespo
             @PathVariable Integer startYear,
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear,
-            @RequestParam String searchTerm) {
+            @RequestParam (required = false) String searchTerm) {
         return bookingService.getAllBookings(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
     }
 

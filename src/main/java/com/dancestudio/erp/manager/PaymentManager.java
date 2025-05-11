@@ -13,7 +13,7 @@ public interface PaymentManager extends BaseManager<PaymentEntry, Long> {
 
     List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String status, String searchTerm);
 
-    Long getPaymentCountByStudioId(Long studioId);
+    Long getPaymentCountByStudioId(Long studioId, String searchTerm);
 
     PaymentEntry getPaymentByPayeeIdAndPayeeType(Long bookingId, PayeeType payeeType) throws EntityNotFoundException;
 
