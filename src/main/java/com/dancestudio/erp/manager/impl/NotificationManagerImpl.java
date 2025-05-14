@@ -127,7 +127,8 @@ public class NotificationManagerImpl implements NotificationManager {
                 TemplateEntry templateEntry = templateManager.getTemplateDetails(requestEntry.getTemplateName());
                 String updatedBody = formatEmailBody(templateEntry, studio.getName(), member.getName(), requestEntry.getActivityType());
                 if(requestEntry.getTemplateName().equalsIgnoreCase(MEMBERSHIP_INVOICE)) {
-                    updatedBody = updatedBody.replace("{invoice_url}", requestEntry.getInvoiceUrl());
+                    String sanitizedUrl = requestEntry.getInvoiceUrl().replace(" ", "%20");
+                    updatedBody = updatedBody.replace("{invoice_url}", sanitizedUrl);
                 }
                 sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, message.getBranch().getStudio().getId());
             }
