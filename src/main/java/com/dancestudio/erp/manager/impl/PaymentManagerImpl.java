@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -99,9 +100,12 @@ public class PaymentManagerImpl implements PaymentManager {
     @Override
     public List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String status, String searchTerm) {
         Page<Payment> entries;
-        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
+        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
         if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
-            entries = paymentRepository.findByBranchId(branchId, pageable);
+            List<Payment> payments = paymentRepository.findByBranchId(branchId, pageable).getContent();
+            return payments.stream()
+                    .map(this::convertToEntry)
+                    .toList();
         } else {
             Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
             entries = paymentRepository.findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(branchId, monthRange.get("start"), monthRange.get("end"), status, pageable);

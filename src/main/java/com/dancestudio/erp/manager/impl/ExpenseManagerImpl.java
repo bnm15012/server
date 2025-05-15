@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -73,9 +74,19 @@ public class ExpenseManagerImpl implements ExpenseManager {
     public List<ExpenseEntry> getAllExpenses(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm) throws Exception {
 
         Page<Expense> entries;
-        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
+        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
         if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
-            entries = expenseRepository.findByBranchId(branchId, pageable, searchTerm);
+            List<Expense> expenses = expenseRepository.findByBranchId(branchId, pageable, searchTerm).getContent();
+            return expenses.stream()
+                    .map(expense -> {
+                        try {
+                            return convertToEntry(expense);
+                        } catch (Exception e) {
+                            throw new RuntimeException("Error converting Expense to entry", e);
+                        }
+                    })
+                    .toList();
+
         } else {
             Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
             entries = expenseRepository.findAllByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"), pageable, searchTerm);

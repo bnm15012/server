@@ -1,29 +1,30 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Booking;
-import com.dancestudio.erp.entry.*;
+import com.dancestudio.erp.entry.BookingEntry;
+import com.dancestudio.erp.entry.BranchEntry;
+import com.dancestudio.erp.entry.ClientEntry;
+import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.*;
+import com.dancestudio.erp.manager.BookingManager;
+import com.dancestudio.erp.manager.BranchManager;
+import com.dancestudio.erp.manager.ClientManager;
+import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.repository.BookingRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
-
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Setter(onMethod = @__({@Autowired}))
@@ -124,10 +125,20 @@ public class BookingManagerImpl implements BookingManager {
     @Override
     public List<BookingEntry> getAllBookings(Long branchId, Integer page,Integer size, Integer startMonth,Integer startYear,  Integer endMonth, Integer endYear, String searchTerm) throws Exception {
         Page<Booking> entries;
-        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
+        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
         
         if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
-            entries = bookingRepository.findBookingsByBranchId(branchId, pageable, searchTerm);
+            List<Booking> bookings = bookingRepository.findBookingsByBranchId(branchId, pageable, searchTerm).getContent();
+            return bookings.stream()
+                    .map(booking -> {
+                        try {
+                            return convertToEntry(booking);
+                        } catch (Exception e) {
+                            throw new RuntimeException("Error converting Booking to entry", e);
+                        }
+                    })
+                    .toList();
+
         } else {
             Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
             entries = bookingRepository.findAllBookingsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"), pageable, searchTerm);
