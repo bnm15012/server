@@ -17,6 +17,7 @@ public class StudentActivityAssignmentEntry {
     private MembershipType membershipType;
     private Double activityAmount;
     private MembershipStatus membershipStatus = MembershipStatus.INACTIVE;
+    private Integer daysPerWeek;
 
     private PaymentEntry paymentEntry;
     private Long studentId;

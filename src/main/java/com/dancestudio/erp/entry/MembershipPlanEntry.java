@@ -8,5 +8,6 @@ public class MembershipPlanEntry {
 
     private MembershipType membershipType;
     private Double amount;
+    private Integer daysPerWeek;
 
 }

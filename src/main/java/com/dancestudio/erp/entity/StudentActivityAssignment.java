@@ -30,6 +30,9 @@ public class StudentActivityAssignment extends BaseEntity {
     @Column(name = "activity_amount", nullable = false)
     private Double activityAmount;
 
+    @Column(name = "days_per_week", nullable = false)
+    private Integer daysPerWeek;
+
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_id"))
     private Member student;

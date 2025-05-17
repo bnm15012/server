@@ -157,7 +157,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     @SneakyThrows
     @Override
     public List<MonthlyReportEntry> getAnalysisReport(Integer year, Long branchId) {
-        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository.getAnalysisReport(Math.toIntExact(year), branchId);
+        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository
+                .getAnalysisReport(Math.toIntExact(year), branchId);
         for (int month = 1; month <= 12; month++) {
             processMonthlyReport(reportEntries, month, year, branchId);
         }
@@ -244,8 +245,13 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         studentActivityAssignmentEntry.setRegistrationDate(studentActivityAssignment.getRegistrationDate());
         studentActivityAssignmentEntry.setMembershipStartDate(studentActivityAssignment.getMembershipStartDate());
         studentActivityAssignmentEntry.setMembershipEndDate(studentActivityAssignment.getMembershipEndDate());
-        studentActivityAssignmentEntry.setMembershipStatus(studentActivityAssignment.getMembershipEndDate().after(DateUtil.getCurrentDateUTC()) ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
-        studentActivityAssignmentEntry.setMembershipType(MembershipType.valueOf(studentActivityAssignment.getMembershipType()));
+        studentActivityAssignmentEntry.setDaysPerWeek(studentActivityAssignment.getDaysPerWeek());
+        studentActivityAssignmentEntry.setMembershipStatus(
+                studentActivityAssignment.getMembershipEndDate().after(DateUtil.getCurrentDateUTC())
+                        ? MembershipStatus.ACTIVE
+                        : MembershipStatus.INACTIVE);
+        studentActivityAssignmentEntry
+                .setMembershipType(MembershipType.valueOf(studentActivityAssignment.getMembershipType()));
         studentActivityAssignmentEntry.setActivityAmount(studentActivityAssignment.getActivityAmount());
 
         if (Objects.nonNull(studentActivityAssignment.getActivity())) {
@@ -282,6 +288,9 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         }
         if (Objects.nonNull(studentActivityAssignmentEntry.getActivityAmount())) {
             studentActivityAssignment.setActivityAmount(studentActivityAssignmentEntry.getActivityAmount());
+        }
+        if (Objects.nonNull(studentActivityAssignmentEntry.getDaysPerWeek())) {
+            studentActivityAssignment.setDaysPerWeek(studentActivityAssignmentEntry.getDaysPerWeek());
         }
         if (Objects.nonNull(studentActivityAssignmentEntry.getStudentId())) {
             Member student = memberRepository.findById(studentActivityAssignmentEntry.getStudentId())
