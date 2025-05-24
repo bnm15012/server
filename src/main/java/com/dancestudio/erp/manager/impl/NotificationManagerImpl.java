@@ -93,7 +93,7 @@ public class NotificationManagerImpl implements NotificationManager {
         try {
             TemplateEntry templateEntry = templateManager.getTemplateDetails(SUBSCRIPTION_RENEWAL_REMINDER);
 
-            String updatedBody = formatEmailBody(templateEntry, studioName, student.getName(), entry.getActivity().getActivityType().name());
+            String updatedBody = formatEmailBody(templateEntry, studioName, student.getName(), entry.getActivityName());
             sendEmail(student.getEmail(), templateEntry.getSubject(), updatedBody, student.getBranch().getStudio().getId());
         } catch (MailException e) {
             log.error(e.getMessage());
@@ -139,7 +139,7 @@ public class NotificationManagerImpl implements NotificationManager {
         Message message = new Message();
         message.setTitle(request.getTitle());
         message.setContent(request.getContent());
-        message.setNotiticationType(request.getNotiticationType());
+        message.setNotiticationType(request.getNotificationType());
         message.setBranch(branch);
         message.setSendToAll(request.getSentToAll());
 

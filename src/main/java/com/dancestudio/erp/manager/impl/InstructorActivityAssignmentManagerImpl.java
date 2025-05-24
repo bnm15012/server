@@ -3,7 +3,6 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.InstructorActivityAssignment;
 import com.dancestudio.erp.entity.Member;
-import com.dancestudio.erp.entry.ActivityEntry;
 import com.dancestudio.erp.entry.InstructorActivityAssignmentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
@@ -11,7 +10,6 @@ import com.dancestudio.erp.manager.ActivityManager;
 import com.dancestudio.erp.manager.InstructorActivityAssignmentManager;
 import com.dancestudio.erp.repository.InstructorActivityAssignmentRepository;
 import com.dancestudio.erp.repository.MemberRepository;
-import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,8 +72,8 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
     }
 
     @Override
-    public InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, Long activityId) throws Exception {
-        InstructorActivityAssignment assignment = instructorActivityAssignmentRepository.findByInstructorIdAndActivityId(instructorId, activityId);
+    public InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, String activityName) throws Exception {
+        InstructorActivityAssignment assignment = instructorActivityAssignmentRepository.findByInstructorIdAndActivityId(instructorId, activityName);
         return convertToEntry(assignment);
     }
 
@@ -108,9 +106,8 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
                         ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE
         );
 
-        if (Objects.nonNull(instructorActivityAssignment.getActivity())) {
-            ActivityEntry activityEntry = activityManager.getById(instructorActivityAssignment.getActivity().getId());
-            instructorActivityAssignmentEntry.setActivity(activityEntry);
+        if (Objects.nonNull(instructorActivityAssignment.getActivityName())) {
+            instructorActivityAssignmentEntry.setActivityName(instructorActivityAssignment.getActivityName());
         }
         return instructorActivityAssignmentEntry;
     }
@@ -135,10 +132,8 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
                     .orElseThrow(() -> new EntityNotFoundException("Student not found"));
             instructorActivityAssignment.setInstructor(instructor);
         }
-
-        if (Objects.nonNull(instructorActivityAssignmentEntry.getActivity()) && Objects.nonNull(instructorActivityAssignmentEntry.getActivity().getActivityId())) {
-            ActivityEntry activityEntry = activityManager.getById(instructorActivityAssignmentEntry.getActivity().getActivityId());
-            instructorActivityAssignment.setActivity(ConvertToEntryUtil.convertToEntity(activityEntry, null));
+        if (Objects.nonNull(instructorActivityAssignmentEntry.getActivityName())) {
+            instructorActivityAssignment.setActivityName(instructorActivityAssignmentEntry.getActivityName());
         }
 
         return instructorActivityAssignment;

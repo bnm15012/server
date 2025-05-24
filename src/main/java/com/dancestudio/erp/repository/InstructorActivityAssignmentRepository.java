@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface InstructorActivityAssignmentRepository extends JpaRepository<InstructorActivityAssignment, Long> {
 
-    @Query("SELECT a FROM InstructorActivityAssignment a WHERE a.instructor.id = :instructorId AND a.activity.id = :activityId")
-    InstructorActivityAssignment findByInstructorIdAndActivityId(@Param("instructorId") Long instructorId, @Param("activityId") Long activityId);
+    @Query("SELECT a FROM InstructorActivityAssignment a WHERE a.instructor.id = :instructorId AND a.activityName = :activityName")
+    InstructorActivityAssignment findByInstructorIdAndActivityId(@Param("instructorId") Long instructorId, @Param("activityName") String activityName);
 
     @Query("SELECT a FROM InstructorActivityAssignment a WHERE a.instructor.id = :instructorId")
     List<InstructorActivityAssignment> findByInstructorId(@Param("instructorId") Long instructorId);

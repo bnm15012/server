@@ -4,6 +4,7 @@ import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.ConfigurationType;
 import com.dancestudio.erp.enums.UserType;
+import com.dancestudio.erp.enums.WhatsAppStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.StudioRepository;
@@ -26,10 +27,14 @@ public class StudioManagerImpl implements StudioManager {
 
     private final StudioRepository studioRepository;
 
-    @Autowired private UserManager userManager;
-    @Autowired private NotificationManager notificationManager;
-    @Autowired private TemplateManager templateManager;
-    @Autowired private BranchManager branchManager;
+    @Autowired
+    private UserManager userManager;
+    @Autowired
+    private NotificationManager notificationManager;
+    @Autowired
+    private TemplateManager templateManager;
+    @Autowired
+    private BranchManager branchManager;
 
     private static final String MAIN_BRANCH_NAME = "MAIN BRANCH";
 
@@ -41,16 +46,15 @@ public class StudioManagerImpl implements StudioManager {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public StudioEntry add(StudioEntry studioEntry) throws Exception {
-        if(studioRepository.findByName(studioEntry.getStudioName()).isPresent()) {
+        if (studioRepository.findByName(studioEntry.getStudioName()).isPresent()) {
             throw new EntityNotFoundException("Studio already exists");
         }
-
         addDefaultConfiguration(studioEntry);
         Studio studio = convertToEntity(studioEntry, null);
         studio = studioRepository.save(studio);
 
         BranchEntry branchEntry = studioEntry.getBranchList().get(0);
-        if(Objects.nonNull(branchEntry)) {
+        if (Objects.nonNull(branchEntry)) {
             branchEntry.setName(MAIN_BRANCH_NAME);
             branchEntry.setStudioId(studio.getId());
             branchEntry = branchManager.add(branchEntry);
@@ -74,8 +78,9 @@ public class StudioManagerImpl implements StudioManager {
         templateEntry.setTemplateBody(templateEntry.getTemplateBody()
                 .replace("{studio_name}", updatedStudio.getName()));
 
-        if(Objects.nonNull(studioEntry.getEmail()) && Objects.nonNull(studioEntry.getPasscode())) {
-            notificationManager.sendEmail(studioEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody(), null);
+        if (Objects.nonNull(studioEntry.getEmail()) && Objects.nonNull(studioEntry.getPasscode())) {
+            notificationManager.sendEmail(studioEntry.getEmail(), templateEntry.getSubject(),
+                    templateEntry.getTemplateBody(), null);
         }
         return convertToEntry(updatedStudio);
     }

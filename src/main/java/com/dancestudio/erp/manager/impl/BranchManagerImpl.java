@@ -1,10 +1,10 @@
 package com.dancestudio.erp.manager.impl;
 
-
 import com.dancestudio.erp.entity.Branch;
 import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.UserEntry;
+import com.dancestudio.erp.enums.WhatsAppStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.UserManager;
@@ -24,7 +24,8 @@ public class BranchManagerImpl implements BranchManager, ApplicationContextAware
     private final BranchRepository branchRepository;
     private static ApplicationContext applicationContext;
 
-    @Autowired private UserManager userManager;
+    @Autowired
+    private UserManager userManager;
 
     @Autowired
     public BranchManagerImpl(BranchRepository branchRepository) {
@@ -38,6 +39,9 @@ public class BranchManagerImpl implements BranchManager, ApplicationContextAware
 
     @Override
     public BranchEntry add(BranchEntry branchEntry) throws Exception {
+        if (Objects.isNull(branchEntry.getWhatsAppStatus())) {
+            branchEntry.setWhatsAppStatus(WhatsAppStatus.INACTIVE);
+        }
         Branch branch = convertToEntity(branchEntry, null);
         return convertToEntry(branchRepository.save(branch));
     }
@@ -80,7 +84,7 @@ public class BranchManagerImpl implements BranchManager, ApplicationContextAware
         Branch existingBranch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found"));
 
-        if(flag) {
+        if (flag) {
             existingBranch.setIsActive(true);
         }
 
@@ -120,6 +124,10 @@ public class BranchManagerImpl implements BranchManager, ApplicationContextAware
         if (branchEntry.getIsActive() != null) {
             branch.setIsActive(branchEntry.getIsActive());
         }
+        if (Objects.nonNull(branchEntry.getWhatsAppStatus())) {
+            branch.setWhatsappStatus(branchEntry.getWhatsAppStatus().name());
+        }
+        
         if (Objects.nonNull(branchEntry.getStudioId())) {
             StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
             StudioEntry studioEntry = studioManagerImpl.getById(branchEntry.getStudioId());
@@ -141,6 +149,7 @@ public class BranchManagerImpl implements BranchManager, ApplicationContextAware
         branchEntry.setPincode(branch.getPincode());
         branchEntry.setPhone(branch.getPhone());
         branchEntry.setIsActive(branch.getIsActive());
+        branchEntry.setWhatsAppStatus(WhatsAppStatus.valueOf(branch.getWhatsappStatus()));
 
         return branchEntry;
     }

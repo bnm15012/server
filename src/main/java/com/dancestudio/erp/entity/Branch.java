@@ -38,4 +38,7 @@ public class Branch extends BaseEntity {
     @Column(name = "is_active", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean isActive = true;
 
+    @Column(name = "whatsapp_status", nullable = false)
+    private String whatsappStatus;
+
 }

@@ -38,12 +38,12 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
     @GetMapping("/getAllStudents/{studioId}")
     public ResponseEntity<StudentResponse> getAllStudents(
             @PathVariable Long studioId,
-            @RequestParam(required = false) Long activityId,
+            @RequestParam(required = false) String activityName,
             @RequestParam(required = false) MembershipStatus membershipStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "-1") int size,
             @RequestParam(required = false) String searchTerm) {
-        return studentService.getAllStudents(studioId, activityId, membershipStatus, page, size, searchTerm);
+        return studentService.getAllStudents(studioId, activityName, membershipStatus, page, size, searchTerm);
     }
 
     @GetMapping("/getAllStudentsForCommunication/{branchId}")
@@ -56,8 +56,8 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
         return studentService.getAllStudentsForCommunication(branchId, membershipStatus, page, size, birthday);
     }
 
-    @PostMapping("/sendSubscriptionRenewalReminder/{studentId}/{activityId}")
-    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(@PathVariable Long studentId, @PathVariable Long activityId) {
-        return studentService.sendSubscriptionRenewalReminder(studentId, activityId);
+    @PostMapping("/sendSubscriptionRenewalReminder/{studentId}/{activityName}")
+    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(@PathVariable Long studentId, @PathVariable String activityName) {
+        return studentService.sendSubscriptionRenewalReminder(studentId, activityName);
     }
 }

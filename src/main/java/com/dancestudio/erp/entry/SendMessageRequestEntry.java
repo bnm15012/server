@@ -9,7 +9,7 @@ public class SendMessageRequestEntry {
 
     private String title;
     private String content;
-    private String notiticationType;
+    private String notificationType;
     private Long branchId;
     private Boolean sentToAll = false;
     private List<Long> memberIds;

@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface StudentService extends BaseService<StudentEntry, StudentResponse, Long> {
 
-    ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size, String searchTerm);
+    ResponseEntity<StudentResponse> getAllStudents(Long studioId, String activityName, MembershipStatus membershipStatus, int page, int size, String searchTerm);
 
     ResponseEntity<StudentCommunicationResponse> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size, int birthday);
 
-    ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId, Long activityId);
+    ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId, String activityName);
 }

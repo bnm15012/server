@@ -14,6 +14,7 @@ public class PaymentEntry {
     private PayeeType payeeType;
     private Long payeeId;
     private Double amount;
+    private Double actualAmount;
     private Date paymentDate;
     private PaymentStatus status;
     private PaymentType paymentType;

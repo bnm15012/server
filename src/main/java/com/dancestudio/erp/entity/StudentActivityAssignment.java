@@ -11,9 +11,8 @@ import java.util.Date;
 @Entity
 public class StudentActivityAssignment extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_saa_activity_id"))
-    private Activity activity;
+    @Column(name = "activity_name", nullable = false, length = 100)
+    private String activityName;
 
     @Column(name = "registration_date", nullable = false)
     private Date registrationDate;

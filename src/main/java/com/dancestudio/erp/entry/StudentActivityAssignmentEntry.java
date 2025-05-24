@@ -10,7 +10,7 @@ import java.util.Date;
 public class StudentActivityAssignmentEntry {
 
     private Long assignmentId;
-    private ActivityEntry activity;
+    private String activityName;
     private Date registrationDate;
     private Date membershipStartDate;
     private Date membershipEndDate;

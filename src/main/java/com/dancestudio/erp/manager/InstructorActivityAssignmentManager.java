@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface InstructorActivityAssignmentManager extends BaseManager<InstructorActivityAssignmentEntry, Long> {
 
-    InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, Long activityId) throws Exception;
+    InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, String activityName) throws Exception;
 
     List<InstructorActivityAssignmentEntry> getInstructorAssignmentsByInstructorId(Long instructorId) throws Exception;
 

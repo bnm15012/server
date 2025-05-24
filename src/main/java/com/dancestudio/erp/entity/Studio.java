@@ -36,10 +36,4 @@ public class Studio extends BaseEntity {
     @Column(name = "configuration", columnDefinition = "json")
     private String configuration;
 
-    @Column(name = "instance_id")
-    private String instanceId;
-
-    @Column(name = "token")
-    private String token;
-
 }

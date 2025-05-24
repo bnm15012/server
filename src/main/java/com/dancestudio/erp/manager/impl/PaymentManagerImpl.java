@@ -132,8 +132,7 @@ public class PaymentManagerImpl implements PaymentManager {
 
         try {
             if (PayeeType.STUDENT.name().equals(payment.getPayeeType())) {
-                Optional<StudentActivityAssignment> studentActivityAssignmentOptional = studentActivityAssignmentRepository
-                        .findById(payment.getPayeeId());
+                Optional<StudentActivityAssignment> studentActivityAssignmentOptional = studentActivityAssignmentRepository.findById(payment.getPayeeId());
                 studentActivityAssignmentOptional.ifPresent(studentActivityAssignment -> paymentEntry
                         .setStudentEntry(ConvertToEntryUtil.convertToEntry(studentActivityAssignment.getStudent())));
             } else if (PayeeType.BOOKING.name().equals(payment.getPayeeType())) {
@@ -146,6 +145,7 @@ public class PaymentManagerImpl implements PaymentManager {
         paymentEntry.setPayeeId(payment.getPayeeId());
         paymentEntry.setPayeeType(PayeeType.valueOf(payment.getPayeeType()));
         paymentEntry.setAmount(payment.getAmount());
+        paymentEntry.setActualAmount(payment.getActualAmount());
         paymentEntry.setPaymentDate(payment.getPaymentDate());
         paymentEntry.setStatus(PaymentStatus.valueOf(payment.getStatus()));
         paymentEntry.setPaymentType(PaymentType.valueOf(payment.getPaymentType()));
@@ -174,6 +174,9 @@ public class PaymentManagerImpl implements PaymentManager {
         }
         if (Objects.nonNull(paymentEntry.getAmount())) {
             payment.setAmount(paymentEntry.getAmount());
+        }
+        if (Objects.nonNull(paymentEntry.getActualAmount())) {
+            payment.setActualAmount(paymentEntry.getActualAmount());
         }
         if (Objects.nonNull(paymentEntry.getPayeeType())) {
             payment.setPayeeType(paymentEntry.getPayeeType().name());

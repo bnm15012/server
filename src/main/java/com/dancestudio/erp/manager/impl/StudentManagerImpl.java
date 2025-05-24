@@ -1,7 +1,6 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Member;
-import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.MemberType;
 import com.dancestudio.erp.enums.MembershipStatus;
@@ -11,7 +10,8 @@ import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
-import com.dancestudio.erp.util.UltraMsgUtil;
+import com.dancestudio.erp.util.WhatsappUtil;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +29,7 @@ import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_STUDENT_EMAIL;
 
 @Service
 @Slf4j
+@Setter
 public class StudentManagerImpl implements StudentManager {
 
     private final MemberRepository memberRepository;
@@ -39,7 +40,7 @@ public class StudentManagerImpl implements StudentManager {
     @Autowired private BranchManager branchManager;
     @Autowired private TemplateManager templateManager;
     @Autowired private StudentActivityAssignmentManager studentActivityAssignmentManager;
-    @Autowired private UltraMsgUtil ultraMsgUtil;
+    @Autowired private WhatsappUtil whatsappUtil;
 
     @Autowired
     public StudentManagerImpl(MemberRepository memberRepository, StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
@@ -66,9 +67,9 @@ public class StudentManagerImpl implements StudentManager {
             notificationManager.sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, branchEntry.getStudioId());
         }
 
-        Studio studio = member.getBranch().getStudio();
-        if(Objects.nonNull(studio.getToken()) && Objects.nonNull(studio.getInstanceId())) {
-            ultraMsgUtil.sendMessage(studio.getToken(), studio.getInstanceId(), member.getPhone(), updatedBody);
+        boolean msgSent = whatsappUtil.sendMessage(member.getPhone(), updatedBody, member.getBranch().getId());
+        if(!msgSent) {
+            log.error("Failed to send WhatsApp message to student: {}", member.getName());
         }
 
         return convertToEntry(member);
@@ -102,15 +103,15 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public List<StudentEntry> getAllStudentsByStudio(Long branchId, Long activityId, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
+    public List<StudentEntry> getAllStudentsByStudio(Long branchId, String activityName, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
         if (size == -1) {
-            List<Member> entries = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, activityId, null, searchTerm);
+            List<Member> entries = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, activityName, null, searchTerm);
             return entries.stream()
                     .map(this::convertToEntry)
                     .collect(Collectors.toList());
         } else {
             Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
-            Page<Member> studentPage = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, activityId, membershipStatus != null ? membershipStatus.name() : null, pageable, searchTerm);
+            Page<Member> studentPage = memberRepository.findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, activityName, membershipStatus != null ? membershipStatus.name() : null, pageable, searchTerm);
             List<StudentEntry> entries =  studentPage.getContent().stream()
                     .map(this::convertToEntry)
                     .toList();
@@ -169,17 +170,16 @@ public class StudentManagerImpl implements StudentManager {
     }
 
     @Override
-    public boolean sendSubscriptionRenewalReminder(Long studentId, Long activityId) throws Exception {
+    public boolean sendSubscriptionRenewalReminder(Long studentId, String activityName) throws Exception {
         Member student = memberRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-        StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.getStudentAssignmentsByStudentAndActivityId(studentId, activityId);
+        StudentActivityAssignmentEntry entry = studentActivityAssignmentManager.getStudentAssignmentsByStudentAndActivityId(studentId, activityName);
         if (Objects.isNull(entry)) {
             throw new EntityNotFoundException("No active subscription found");
         }
 
-        StudioEntry studioEntry = studioManager.getById(entry.getActivity().getStudioId());
-        notificationManager.sendSubscriptionRenewalEmail(student, entry, studioEntry.getStudioName());
+        notificationManager.sendSubscriptionRenewalEmail(student, entry, student.getBranch().getStudio().getName());
         return true;
     }
 

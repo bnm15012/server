@@ -1,19 +1,18 @@
 package com.dancestudio.erp.response;
 
 
+import com.dancestudio.erp.entry.SessionEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendMessageResponse extends AbstractResponse {
-
-    private int total;
-    private int success;
-    private int failed;
-    private String message;
+public class CreateSessionResponse extends AbstractResponse {
+    private List<SessionEntry> data;
 }

@@ -22,7 +22,11 @@ public class Payment extends BaseEntity {
 
     private Long payeeId;
 
+    @Column(name = "amount")
     private Double amount;
+
+    @Column(name = "actual_amount")
+    private Double actualAmount;
 
     private Date paymentDate;
 

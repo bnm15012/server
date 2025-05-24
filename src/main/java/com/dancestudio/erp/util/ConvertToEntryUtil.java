@@ -27,7 +27,8 @@ public class ConvertToEntryUtil {
     private static ApplicationContext applicationContext;
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired private ApplicationContext context;
+    @Autowired
+    private ApplicationContext context;
 
     @PostConstruct
     public void init() {
@@ -51,7 +52,8 @@ public class ConvertToEntryUtil {
             userEntry.setStudioEntry(studioEntry);
 
             SubscriptionManagerImpl subscriptionManagerImpl = applicationContext.getBean(SubscriptionManagerImpl.class);
-            SubscriptionEntry subscriptionEntry = subscriptionManagerImpl.getSubscriptionPlanByStudioId(user.getStudio().getId());
+            SubscriptionEntry subscriptionEntry = subscriptionManagerImpl
+                    .getSubscriptionPlanByStudioId(user.getStudio().getId());
 
             userEntry.setSubscriptionEntry(subscriptionEntry);
         }
@@ -70,12 +72,14 @@ public class ConvertToEntryUtil {
         return UserType.ADMIN.name().equals(user.getRole());
     }
 
-    private static void setBranchListForAdmin(User user, UserEntry userEntry, BranchManagerImpl branchManagerImpl) throws Exception {
+    private static void setBranchListForAdmin(User user, UserEntry userEntry, BranchManagerImpl branchManagerImpl)
+            throws Exception {
         List<BranchEntry> branchEntries = branchManagerImpl.findByStudioId(user.getStudio().getId());
         userEntry.getStudioEntry().setBranchList(branchEntries);
     }
 
-    private static void setBranchListForNonAdmin(User user, UserEntry userEntry, BranchManagerImpl branchManagerImpl) throws Exception {
+    private static void setBranchListForNonAdmin(User user, UserEntry userEntry, BranchManagerImpl branchManagerImpl)
+            throws Exception {
         if (Objects.nonNull(user.getBranch().getId())) {
             BranchEntry branchEntry = branchManagerImpl.getById(user.getBranch().getId());
             if (branchEntry.getIsActive()) {
@@ -123,7 +127,8 @@ public class ConvertToEntryUtil {
             user.setStudio(convertToEntity(studioEntry, null));
         }
 
-        if(Objects.nonNull(userEntry.getStudioEntry()) && !CollectionUtils.isEmpty(userEntry.getStudioEntry().getBranchList())) {
+        if (Objects.nonNull(userEntry.getStudioEntry())
+                && !CollectionUtils.isEmpty(userEntry.getStudioEntry().getBranchList())) {
             Long branchId = userEntry.getStudioEntry().getBranchList().get(0).getBranchId();
 
             BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
@@ -144,12 +149,12 @@ public class ConvertToEntryUtil {
         studioEntry.setEmail(studio.getEmail());
         studioEntry.setPasscode(studio.getPasscode());
         studioEntry.setContactDetails(studio.getContactDetails());
-        studioEntry.setInstanceId(studio.getInstanceId());
-        studioEntry.setToken(studio.getToken());
 
         if (studio.getConfiguration() != null) {
             try {
-                List<StudioConfigurationEntry> configrationEntries = objectMapper.readValue(studio.getConfiguration(), new TypeReference<>() {});
+                List<StudioConfigurationEntry> configrationEntries = objectMapper.readValue(studio.getConfiguration(),
+                        new TypeReference<>() {
+                        });
                 StudioConfigurationRequest request = new StudioConfigurationRequest();
                 request.setConfigrationEntryList(configrationEntries);
                 studioEntry.setConfiguration(request);
@@ -193,14 +198,9 @@ public class ConvertToEntryUtil {
         if (Objects.nonNull(studioEntry.getContactDetails())) {
             studio.setContactDetails(studioEntry.getContactDetails());
         }
-        if (Objects.nonNull(studioEntry.getInstanceId())) {
-            studio.setInstanceId(studioEntry.getInstanceId());
-        }
-        if (Objects.nonNull(studioEntry.getToken())) {
-            studio.setToken(studioEntry.getToken());
-        }
         if (Objects.nonNull(studioEntry.getConfiguration())) {
-            List<StudioConfigurationEntry> configrationEntries = studioEntry.getConfiguration().getConfigrationEntryList();
+            List<StudioConfigurationEntry> configrationEntries = studioEntry.getConfiguration()
+                    .getConfigrationEntryList();
             try {
                 String configurationJson = objectMapper.writeValueAsString(configrationEntries);
                 studio.setConfiguration(configurationJson);
@@ -257,7 +257,8 @@ public class ConvertToEntryUtil {
         return bankAccountEntry;
     }
 
-    public static BankAccount convertToEntity(BankAccountEntry bankAccountEntry, BankAccount existingBankAccount) throws EntityNotFoundException {
+    public static BankAccount convertToEntity(BankAccountEntry bankAccountEntry, BankAccount existingBankAccount)
+            throws EntityNotFoundException {
         BankAccount bankAccount = (existingBankAccount != null) ? existingBankAccount : new BankAccount();
 
         if (Objects.nonNull(bankAccountEntry.getBankAccountId())) {
@@ -298,7 +299,9 @@ public class ConvertToEntryUtil {
 
         if (activity.getMembershipPlans() != null) {
             try {
-                List<MembershipPlanEntry> membershipPlans = objectMapper.readValue(activity.getMembershipPlans(), new TypeReference<>() {});
+                List<MembershipPlanEntry> membershipPlans = objectMapper.readValue(activity.getMembershipPlans(),
+                        new TypeReference<>() {
+                        });
                 MembershipPlanRequest request = new MembershipPlanRequest();
                 request.setMembershipPlanEntryList(membershipPlans);
                 activityEntry.setMembershipPlanRequest(request);
@@ -331,7 +334,8 @@ public class ConvertToEntryUtil {
         }
 
         if (Objects.nonNull(activityEntry.getMembershipPlanRequest())) {
-            List<MembershipPlanEntry> membershipPlans = activityEntry.getMembershipPlanRequest().getMembershipPlanEntryList();
+            List<MembershipPlanEntry> membershipPlans = activityEntry.getMembershipPlanRequest()
+                    .getMembershipPlanEntryList();
             try {
                 String membershipPlansJson = objectMapper.writeValueAsString(membershipPlans);
                 activity.setMembershipPlans(membershipPlansJson);
@@ -367,6 +371,7 @@ public class ConvertToEntryUtil {
         paymentEntry.setPayeeId(payment.getPayeeId());
         paymentEntry.setPayeeType(PayeeType.valueOf(payment.getPayeeType()));
         paymentEntry.setAmount(payment.getAmount());
+        paymentEntry.setActualAmount(payment.getActualAmount());
         paymentEntry.setPaymentDate(payment.getPaymentDate());
         paymentEntry.setStatus(PaymentStatus.valueOf(payment.getStatus()));
         paymentEntry.setPaymentType(PaymentType.valueOf(payment.getPaymentType()));
@@ -388,8 +393,10 @@ public class ConvertToEntryUtil {
 
         try {
 
-            StudentActivityAssignmentManagerImpl studentActivityAssignmentManagerImpl = applicationContext.getBean(StudentActivityAssignmentManagerImpl.class);
-            List<StudentActivityAssignmentEntry> entries = studentActivityAssignmentManagerImpl.getStudentAssignmentsByStudentId(student.getId());
+            StudentActivityAssignmentManagerImpl studentActivityAssignmentManagerImpl = applicationContext
+                    .getBean(StudentActivityAssignmentManagerImpl.class);
+            List<StudentActivityAssignmentEntry> entries = studentActivityAssignmentManagerImpl
+                    .getStudentAssignmentsByStudentId(student.getId());
             boolean isActive = false;
             for (StudentActivityAssignmentEntry entry : entries) {
                 if (entry.getMembershipEndDate().after(DateUtil.getCurrentDateUTC())) {

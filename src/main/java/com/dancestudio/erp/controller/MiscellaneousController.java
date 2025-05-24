@@ -17,12 +17,16 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/")
 public class MiscellaneousController {
 
-    @Autowired private MiscellaneousService miscellaneousService;
-    @Autowired private MessageService messageService;
-    @Autowired private S3Service s3Service;
+    @Autowired
+    private MiscellaneousService miscellaneousService;
+    @Autowired
+    private MessageService messageService;
+    @Autowired
+    private S3Service s3Service;
 
     @PostMapping("uploadImage/{entityType}")
-    public ResponseEntity<StringResponse> uploadImage(@PathVariable("entityType") String entityType, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<StringResponse> uploadImage(@PathVariable("entityType") String entityType,
+            @RequestParam("file") MultipartFile file) {
         return miscellaneousService.uploadImage(entityType, file);
     }
 
@@ -49,7 +53,8 @@ public class MiscellaneousController {
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear,
             @RequestParam String status) {
-        return miscellaneousService.getPaymentReports(studioId, branchId, startMonth, startYear, endMonth, endYear, status);
+        return miscellaneousService.getPaymentReports(studioId, branchId, startMonth, startYear, endMonth, endYear,
+                status);
     }
 
     @PostMapping("password/reset")
@@ -84,7 +89,8 @@ public class MiscellaneousController {
     }
 
     @GetMapping("getMessageHistory/{branchId}")
-    public ResponseEntity<MessageResponse> getMessageHistory(@PathVariable Long branchId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "-1") int size) {
+    public ResponseEntity<MessageResponse> getMessageHistory(@PathVariable Long branchId,
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "-1") int size) {
         return messageService.getMessagesByBranchId(branchId, page, size);
     }
 
@@ -96,5 +102,20 @@ public class MiscellaneousController {
     @PostMapping("/generatePresignUrl")
     public ResponseEntity<PreSignedResponse> getPresignedUrl(@RequestBody StringRequest request) {
         return s3Service.generatePresignedUrl(request);
+    }
+
+    @GetMapping("/whatsapp/createSession/{branchId}")
+    public ResponseEntity<CreateSessionResponse> createSession(@PathVariable Long branchId) {
+        return messageService.createSession(branchId);
+    }
+
+    @GetMapping("/whatsapp/status/{branchId}")
+    public ResponseEntity<WhatsAppStatusResponse> checkSessionStatus(@PathVariable Long branchId) {
+        return messageService.checkStatus(branchId);
+    }
+
+    @GetMapping("/whatsapp/logout/{branchId}")
+    public ResponseEntity<WhatsAppStatusResponse> logoutWhatsAppSession(@PathVariable Long branchId) {
+        return messageService.logoutWhatsAppSession(branchId);
     }
 }

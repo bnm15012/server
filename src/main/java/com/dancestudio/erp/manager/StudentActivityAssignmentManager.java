@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface StudentActivityAssignmentManager extends BaseManager<StudentActivityAssignmentEntry, Long> {
 
-    StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, Long activityId) throws Exception;
+    StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, String activityName) throws Exception;
 
     List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId) throws Exception;
 
-    List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(Long activityId, Long studioId, String status) throws Exception;
+    List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(String activityName, Long studioId, String status) throws Exception;
 
     List<MonthlyReportEntry> getAnalysisReport(Integer year, Long branchId);
 }

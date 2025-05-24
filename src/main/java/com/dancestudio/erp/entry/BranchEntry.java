@@ -3,6 +3,7 @@ package com.dancestudio.erp.entry;
 import lombok.Data;
 
 import java.util.List;
+import com.dancestudio.erp.enums.WhatsAppStatus;
 
 @Data
 public class BranchEntry {
@@ -16,6 +17,7 @@ public class BranchEntry {
     private String pincode;
     private String phone;
     private Boolean isActive;
+    private WhatsAppStatus whatsAppStatus; 
 
     private List<UserEntry> userEntries;
 

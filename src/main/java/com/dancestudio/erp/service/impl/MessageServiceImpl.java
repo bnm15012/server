@@ -3,12 +3,11 @@ package com.dancestudio.erp.service.impl;
 import com.dancestudio.erp.entry.MessageEntry;
 import com.dancestudio.erp.entry.MessageRecipientEntry;
 import com.dancestudio.erp.entry.SendMessageRequestEntry;
+import com.dancestudio.erp.entry.SessionEntry;
+import com.dancestudio.erp.entry.WhatsAppStatusEntry;
 import com.dancestudio.erp.manager.MessageManager;
 import com.dancestudio.erp.manager.NotificationManager;
-import com.dancestudio.erp.response.MessageRecipientResponse;
-import com.dancestudio.erp.response.MessageResponse;
-import com.dancestudio.erp.response.SendMessageResponse;
-import com.dancestudio.erp.response.StatusResponse;
+import com.dancestudio.erp.response.*;
 import com.dancestudio.erp.service.MessageService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +37,7 @@ public class MessageServiceImpl implements MessageService {
 
         SendMessageResponse response = new SendMessageResponse();
         try {
-            if(request.getNotiticationType().equals(EMAIL.name())) {
+            if(request.getNotificationType().equals(EMAIL.name())) {
                 notificationManager.sendEmail(request);
                 response.setStatus(new StatusResponse(1, "Email sent successfully", StatusResponse.Type.SUCCESS, 1));
             } else {
@@ -74,6 +74,52 @@ public class MessageServiceImpl implements MessageService {
             List<MessageRecipientEntry> messageEntries = messageManager.getMessageRecipients(messageId);
             response.setStatus(new StatusResponse(1, "Message recipients fetched successfully", StatusResponse.Type.SUCCESS, messageEntries.size()));
             response.setData(messageEntries);
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
+    public ResponseEntity<CreateSessionResponse> createSession(Long branchId) {
+        CreateSessionResponse response = new CreateSessionResponse();
+        try {
+            SessionEntry sessionEntry = messageManager.createSession(branchId);
+            response.setStatus(new StatusResponse(1, "Whatsapp session created successfully", StatusResponse.Type.SUCCESS));
+            response.setData(Collections.singletonList(sessionEntry));
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
+    public ResponseEntity<WhatsAppStatusResponse> checkStatus(Long branchId) {
+        WhatsAppStatusResponse response = new WhatsAppStatusResponse();
+        try {
+            String status = messageManager.checkStatus(branchId);
+            WhatsAppStatusEntry whatsAppStatusEntry = new WhatsAppStatusEntry();
+            whatsAppStatusEntry.setWebWhatsAppStatus(status);
+            response.setStatus(new StatusResponse(1, "Whatsapp session status retrived successfully", StatusResponse.Type.SUCCESS));
+            response.setData(Collections.singletonList(whatsAppStatusEntry));
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
+    public ResponseEntity<WhatsAppStatusResponse> logoutWhatsAppSession(Long branchId) {
+        WhatsAppStatusResponse response = new WhatsAppStatusResponse();
+        try {
+            String status = messageManager.logoutWhatsAppSession(branchId);
+            WhatsAppStatusEntry whatsAppStatusEntry = new WhatsAppStatusEntry();
+            whatsAppStatusEntry.setWebWhatsAppStatus(status);
+            response.setStatus(new StatusResponse(1, "Whatsapp session closed successfully", StatusResponse.Type.SUCCESS));
+            response.setData(Collections.singletonList(whatsAppStatusEntry));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));

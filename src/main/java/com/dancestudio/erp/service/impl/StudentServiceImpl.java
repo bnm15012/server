@@ -89,11 +89,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<StudentResponse> getAllStudents(Long studioId, Long activityId, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
+    public ResponseEntity<StudentResponse> getAllStudents(Long studioId, String activityName, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
         StudentResponse response = new StudentResponse();
 
         try {
-            List<StudentEntry> entries = studentManager.getAllStudentsByStudio(studioId, activityId, membershipStatus, page, size, searchTerm);
+            List<StudentEntry> entries = studentManager.getAllStudentsByStudio(studioId, activityName, membershipStatus, page, size, searchTerm);
             long totalSize = studentManager.getAllStudentsCountByStudio(studioId);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Students retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));
@@ -121,10 +121,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId, Long activityId) {
+    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(Long studentId, String activityName) {
         StudentResponse response = new StudentResponse();
         try {
-            boolean reminderSent = studentManager.sendSubscriptionRenewalReminder(studentId, activityId);
+            boolean reminderSent = studentManager.sendSubscriptionRenewalReminder(studentId, activityName);
 
             response.setStatus(new StatusResponse(0, "Reminder not sent", StatusResponse.Type.ERROR));
             if (reminderSent) {

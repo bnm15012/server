@@ -15,9 +15,8 @@ public class InstructorActivityAssignment extends BaseEntity {
     @JoinColumn(name = "instructor_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_instructor_id"))
     private Member instructor;
 
-    @ManyToOne
-    @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_iaa_activity_id"))
-    private Activity activity;
+    @Column(name = "activity_name", nullable = false, length = 100)
+    private String activityName;
 
     private Date assignedDate;
 
