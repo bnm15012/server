@@ -1,16 +1,11 @@
 package com.dancestudio.erp.util;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import com.dancestudio.erp.context.TimeZoneContext;
+
+import java.time.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.dancestudio.erp.context.TimeZoneContext;
 
 public class DateUtil {
 
@@ -79,9 +74,12 @@ public class DateUtil {
     }
 
     public static boolean isTodaysDate(Date date) {
-        if (date == null)
+        if (date == null) {
             return false;
-        ZoneId zoneId = TimeZoneContext.getTimeZone();
-        return LocalDate.now(zoneId).equals(date.toInstant().atZone(zoneId).toLocalDate());
+        }
+        LocalDate inputDate = date.toInstant().atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate updatedDate = inputDate.plusDays(1);
+        LocalDate currentDateUTC = LocalDate.now(ZoneOffset.UTC);
+        return updatedDate.getMonth() == currentDateUTC.getMonth() && updatedDate.getDayOfMonth() == currentDateUTC.getDayOfMonth();
     }
 }

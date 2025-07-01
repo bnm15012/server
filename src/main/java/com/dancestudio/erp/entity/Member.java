@@ -3,7 +3,6 @@ package com.dancestudio.erp.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.util.Date;
 
@@ -25,7 +24,6 @@ public class Member extends BaseEntity {
     private String phone;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate
     @Column(name = "dob", columnDefinition = "TIMESTAMP")
     private Date dob;
 
