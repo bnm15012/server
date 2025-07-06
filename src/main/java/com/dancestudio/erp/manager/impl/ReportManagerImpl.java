@@ -86,12 +86,18 @@ public class ReportManagerImpl implements ReportManager {
         incomeEntry.setPaymentMode(paymentEntry.getPaymentType().name());
 
         if (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().getEnrolledActivities() != null) {
-            paymentEntry.getStudentEntry().getEnrolledActivities().stream().findFirst().ifPresent(studentActivityAssignmentEntry -> {
-                if (studentActivityAssignmentEntry.getActivityName() != null) {
-                    incomeEntry.setActivityName(studentActivityAssignmentEntry.getActivityName());
-                }
-                incomeEntry.setMembershipType(studentActivityAssignmentEntry.getMembershipType().name());
-            });
+            String paymentId = paymentEntry.getPaymentId();
+            paymentEntry.getStudentEntry().getEnrolledActivities().stream()
+                .filter(activityAssignmentEntry -> paymentId != null && paymentId.equals(activityAssignmentEntry.getAssignmentId().toString()))
+                .findFirst()
+                .ifPresent(matchedActivityAssignment -> {
+                    if (matchedActivityAssignment.getActivityName() != null) {
+                        incomeEntry.setActivityName(matchedActivityAssignment.getActivityName());
+                    }
+                    if (matchedActivityAssignment.getMembershipType() != null) {
+                        incomeEntry.setMembershipType(matchedActivityAssignment.getMembershipType().name());
+                    }
+                });
         }
 
         return incomeEntry;
