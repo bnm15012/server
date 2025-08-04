@@ -28,7 +28,9 @@ public class Plan extends BaseEntity {
     @Column(name = "country_code", nullable = false)
     private String countryCode;
 
+    @Column(name = "popular", nullable = false)
+    private Boolean popular;
 
-
-
+    @Column(name = "description", nullable = false)
+    private String description;
 }

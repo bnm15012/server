@@ -15,4 +15,6 @@ public class PlanEntry {
     private List<String> disabledFeatures;
     private Long smsQuota;
     private String countryCode;
+    private String description;
+    private Boolean popular;
 }

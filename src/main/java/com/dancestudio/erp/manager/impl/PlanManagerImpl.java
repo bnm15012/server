@@ -97,7 +97,9 @@ public class PlanManagerImpl implements PlanManager {
 
         PlanEntry planEntry = new PlanEntry();
         planEntry.setId(plan.getId());
+        planEntry.setDescription(plan.getDescription());
         planEntry.setAmount(plan.getAmount());
+        planEntry.setPopular(plan.getPopular());
         if (Objects.nonNull(plan.getEnabledFeatures()) && !plan.getEnabledFeatures().isEmpty()) {
             planEntry.setEnabledFeatures(new ArrayList<>(List.of(plan.getEnabledFeatures().split(","))));
         } else {
@@ -122,6 +124,12 @@ public class PlanManagerImpl implements PlanManager {
         }
         if (Objects.nonNull(planEntry.getAmount())) {
             plan.setAmount(planEntry.getAmount());
+        }
+        if (Objects.nonNull(planEntry.getDescription())) {
+            plan.setDescription(planEntry.getDescription());
+        }
+        if (Objects.nonNull(planEntry.getPopular())) {
+            plan.setPopular(planEntry.getPopular());
         }
         if (Objects.nonNull(planEntry.getEnabledFeatures())) {
             plan.setEnabledFeatures(String.join(",", planEntry.getEnabledFeatures()));
