@@ -19,9 +19,6 @@ public interface BulkUploadRepository extends JpaRepository<BulkUpload, Long> {
     
     @Query("SELECT b FROM BulkUpload b WHERE b.branch.id = :branchId")
     Page<BulkUpload> findByBranchId(@Param("branchId") Long branchId, Pageable pageable);
-    
-    @Query("SELECT s FROM BulkUpload s WHERE s.branch.id = :branchId")
-    List<BulkUpload> findAllByBranchId(@Param("branchId") Long branchId);
 
     @Query("SELECT COUNT(s) FROM BulkUpload s WHERE s.branch.id = :branchId")
     Long countByBranchId(@Param("branchId") Long branchId);

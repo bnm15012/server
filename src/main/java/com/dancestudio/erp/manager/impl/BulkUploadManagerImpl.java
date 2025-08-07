@@ -144,7 +144,7 @@ public class BulkUploadManagerImpl implements BulkUploadManager {
     @Override
     public List<BulkUploadEntry> getAllJobs(Long branchId, Integer page, Integer size) {
         Page<BulkUpload> entries;
-        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by("lastModifiedOn").descending());
 
         entries = bulkUploadRepository.findByBranchId(branchId, pageable);
 
