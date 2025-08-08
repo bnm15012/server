@@ -26,4 +26,7 @@ public class InstructorActivityAssignment extends BaseEntity {
     @Column(name = "end_date")
     private Date endDate;
 
+    @Column(name = "contract_document")
+    private String contractDocument;
+
 }

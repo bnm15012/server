@@ -14,6 +14,7 @@ public class InstructorActivityAssignmentEntry {
 
     private Date startDate;
     private Date endDate;
+    private String contractDocument;
     private MembershipStatus membershipStatus = MembershipStatus.INACTIVE;
 
     private Long instructorId;

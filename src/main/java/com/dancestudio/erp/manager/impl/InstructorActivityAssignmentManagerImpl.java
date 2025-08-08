@@ -100,6 +100,7 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         instructorActivityAssignmentEntry.setAssignedDate(instructorActivityAssignment.getAssignedDate());
         instructorActivityAssignmentEntry.setStartDate(instructorActivityAssignment.getStartDate());
         instructorActivityAssignmentEntry.setEndDate(instructorActivityAssignment.getEndDate());
+        instructorActivityAssignmentEntry.setContractDocument(instructorActivityAssignment.getContractDocument());
 
         instructorActivityAssignmentEntry.setMembershipStatus(
                 (instructorActivityAssignment.getEndDate() == null || instructorActivityAssignment.getEndDate().after(DateUtil.getCurrentDateUTC()))
@@ -126,6 +127,9 @@ public class InstructorActivityAssignmentManagerImpl implements InstructorActivi
         }
         if (Objects.nonNull(instructorActivityAssignmentEntry.getEndDate())) {
             instructorActivityAssignment.setEndDate(instructorActivityAssignmentEntry.getEndDate());
+        }
+        if (Objects.nonNull(instructorActivityAssignmentEntry.getContractDocument())) {
+            instructorActivityAssignment.setContractDocument(instructorActivityAssignmentEntry.getContractDocument());
         }
         if (Objects.nonNull(instructorActivityAssignmentEntry.getInstructorId())) {
             Member instructor = memberRepository.findById(instructorActivityAssignmentEntry.getInstructorId())
