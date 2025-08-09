@@ -21,7 +21,7 @@ public class Conditions extends BaseEntity {
     @Column(name = "template_name", nullable = false)
     private String templateName;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
