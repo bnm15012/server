@@ -34,24 +34,13 @@ public class ConditionsController extends BaseController<ConditionsEntry, Condit
         return conditionsService.get(id);
     }
 
-    @GetMapping("/entityType/{entityType}/branch/{branchId}")
-    public ResponseEntity<ConditionsResponse> getByEntityTypeAndBranchId(
-            @PathVariable String entityType,
-            @PathVariable Long branchId) {
-        return conditionsService.getByEntityTypeAndBranchId(entityType, branchId);
-    }
-    
-    @GetMapping("/branch/{branchId}")
-    public ResponseEntity<ConditionsResponse> getAllByBranchId(
+    @GetMapping("/getAllConditions/{branchId}")
+    public ResponseEntity<ConditionsResponse> getAllConditions(
             @PathVariable Long branchId,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) {
-        return conditionsService.getAllByBranchId(branchId, page, size);
-    }
-    
-    @GetMapping("/branch/{branchId}/count")
-    public ResponseEntity<ConditionsResponse> countAllByBranchId(
-            @PathVariable Long branchId) {
-        return conditionsService.countAllByBranchId(branchId);
+            @RequestParam(required = false) String entityType,
+            @RequestParam(required = false) String activityType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return conditionsService.getAllByBranchId(branchId, entityType, activityType, page, size);
     }
 }

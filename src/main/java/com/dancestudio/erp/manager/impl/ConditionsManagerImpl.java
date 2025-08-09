@@ -66,26 +66,19 @@ public class ConditionsManagerImpl implements ConditionsManager {
                 .orElseThrow(() -> new EntityNotFoundException("Conditions not found"));
         return convertToEntry(conditions);
     }
-
-    @Override
-    public ConditionsEntry getByEntityTypeAndBranchId(String entityType, Long branchId) throws EntityNotFoundException {
-        Conditions conditions = conditionsRepository.findByEntityTypeAndBranchId(entityType, branchId)
-                .orElseThrow(() -> new EntityNotFoundException("Conditions not found for entity type: " + entityType + " and branch id: " + branchId));
-        return convertToEntry(conditions);
-    }
     
     @Override
-    public List<ConditionsEntry> getAllByBranchId(Long branchId, Integer page, Integer size) throws Exception {
+    public List<ConditionsEntry> getAllConditionsByBranchId(Long branchId, String entityType, String activityType, Integer page, Integer size) throws Exception {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
-        Page<Conditions> conditionsPage = conditionsRepository.findByBranchId(branchId, pageable);
+        Page<Conditions> conditionsPage = conditionsRepository.findByBranchIdAndFilters(branchId, entityType, activityType, pageable);
         return conditionsPage.getContent().stream()
                 .map(this::convertToEntry)
                 .collect(Collectors.toList());
     }
     
     @Override
-    public long countAllByBranchId(Long branchId) throws Exception {
-        return conditionsRepository.countByBranchId(branchId);
+    public long countByFilters(Long branchId, String entityType, String activityType) throws Exception {
+        return conditionsRepository.countByBranchIdAndFilters(branchId, entityType, activityType);
     }
 
     private Conditions convertToEntity(ConditionsEntry entry, Conditions existingConditions) throws Exception {
@@ -96,6 +89,12 @@ public class ConditionsManagerImpl implements ConditionsManager {
         }
         if (Objects.nonNull(entry.getDescription())) {
             conditions.setDescription(entry.getDescription());
+        }
+        if(Objects.nonNull(entry.getTemplateName())) {
+            conditions.setTemplateName(entry.getTemplateName());
+        }
+        if (Objects.nonNull(entry.getActivityType())) {
+            conditions.setActivityType(entry.getActivityType());
         }
         if (Objects.nonNull(entry.getBranchId())) {
             BranchEntry branchEntry = branchManager.getById(entry.getBranchId());
@@ -109,6 +108,8 @@ public class ConditionsManagerImpl implements ConditionsManager {
         ConditionsEntry entry = new ConditionsEntry();
         entry.setId(conditions.getId());
         entry.setEntityType(conditions.getEntityType());
+        entry.setActivityType(conditions.getActivityType());
+        entry.setTemplateName(conditions.getTemplateName());
         entry.setDescription(conditions.getDescription());
         if (conditions.getBranch() != null) {
             entry.setBranchId(conditions.getBranch().getId());

@@ -8,13 +8,20 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @Table(name = "conditions", uniqueConstraints = {
-        @UniqueConstraint(name = "entityType_branch_key", columnNames = {"entityType", "branch_id"})
+        @UniqueConstraint(name = "activityType_entityType_branch_key", columnNames = {"activity_type", "entity_type", "branch_id"})
 })
 public class Conditions extends BaseEntity {
 
-    @Column(name = "entityType", nullable = false)
+    @Column(name = "entity_type", nullable = false)
     private String entityType;
 
+    @Column(name = "activity_type", nullable = false)
+    private String activityType;
+
+    @Column(name = "template_name", nullable = false)
+    private String templateName;
+
+    @Column(name = "description")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)

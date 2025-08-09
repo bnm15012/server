@@ -83,48 +83,22 @@ public class ConditionsServiceImpl implements ConditionsService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
+    
     @Override
-    public ResponseEntity<ConditionsResponse> getByEntityTypeAndBranchId(String entityType, Long branchId) {
+    public ResponseEntity<ConditionsResponse> getAllByBranchId(Long branchId, String entityType, String activityType, int page, int size) {
         ConditionsResponse response = new ConditionsResponse();
+        List<ConditionsEntry> entries;
 
         try {
-            ConditionsEntry entry = conditionsManager.getByEntityTypeAndBranchId(entityType, branchId);
-            response.setData(Collections.singletonList(entry));
-            response.setStatus(new StatusResponse(1, "Conditions retrieved successfully", StatusResponse.Type.SUCCESS, 1));
+            entries = conditionsManager.getAllConditionsByBranchId(branchId, entityType, activityType, page, size);
+            long totalCount = conditionsManager.countByFilters(branchId, entityType, activityType);
+            
+            response.setData(entries);
+            response.setStatus(new StatusResponse(1, "Conditions retrieved successfully", StatusResponse.Type.SUCCESS, (int) totalCount));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (EntityNotFoundException e) {
             response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        } catch (Exception e) {
-            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-    
-    @Override
-    public ResponseEntity<ConditionsResponse> getAllByBranchId(Long branchId, Integer page, Integer size) {
-        ConditionsResponse response = new ConditionsResponse();
-
-        try {
-            List<ConditionsEntry> entries = conditionsManager.getAllByBranchId(branchId, page, size);
-            response.setData(entries);
-            response.setStatus(new StatusResponse(1, "Conditions retrieved successfully", StatusResponse.Type.SUCCESS, entries.size()));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-    
-    @Override
-    public ResponseEntity<ConditionsResponse> countAllByBranchId(Long branchId) {
-        ConditionsResponse response = new ConditionsResponse();
-
-        try {
-            long count = conditionsManager.countAllByBranchId(branchId);
-            response.setStatus(new StatusResponse(1, "Conditions count retrieved successfully", StatusResponse.Type.SUCCESS, (int) count));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

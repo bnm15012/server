@@ -35,15 +35,15 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
         return studentService.get(id);
     }
 
-    @GetMapping("/getAllStudents/{studioId}")
+    @GetMapping("/getAllStudents/{branchId}")
     public ResponseEntity<StudentResponse> getAllStudents(
-            @PathVariable Long studioId,
+            @PathVariable Long branchId,
             @RequestParam(required = false) String activityName,
             @RequestParam(required = false) MembershipStatus membershipStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "-1") int size,
             @RequestParam(required = false) String searchTerm) {
-        return studentService.getAllStudents(studioId, activityName, membershipStatus, page, size, searchTerm);
+        return studentService.getAllStudents(branchId, activityName, membershipStatus, page, size, searchTerm);
     }
 
     @GetMapping("/getAllStudentsForCommunication/{branchId}")

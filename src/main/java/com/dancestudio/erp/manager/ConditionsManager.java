@@ -1,14 +1,12 @@
 package com.dancestudio.erp.manager;
 
 import com.dancestudio.erp.entry.ConditionsEntry;
-import com.dancestudio.erp.exception.EntityNotFoundException;
 
 import java.util.List;
 
 public interface ConditionsManager extends BaseManager<ConditionsEntry, Long> {
-    ConditionsEntry getByEntityTypeAndBranchId(String entityType, Long branchId) throws EntityNotFoundException;
+
+    List<ConditionsEntry> getAllConditionsByBranchId(Long branchId, String entityType, String activityType, Integer page, Integer size) throws Exception;
     
-    List<ConditionsEntry> getAllByBranchId(Long branchId, Integer page, Integer size) throws Exception;
-    
-    long countAllByBranchId(Long branchId) throws Exception;
+    long countByFilters(Long branchId, String entityType, String activityType) throws Exception;
 }

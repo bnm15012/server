@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface StudentManager extends BaseManager<StudentEntry, Long> {
 
-    List<StudentEntry> getAllStudentsByStudio(Long studioId, String activityName, MembershipStatus membershipStatus, int page, int size, String searchTerm);
+    List<StudentEntry> getAllStudentsByStudio(Long branchId, String activityName, MembershipStatus membershipStatus, int page, int size, String searchTerm);
 
     List<StudentCommunicationEntry> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size, int birthday);
 

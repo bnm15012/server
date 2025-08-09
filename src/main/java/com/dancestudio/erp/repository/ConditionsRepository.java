@@ -8,16 +8,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 public interface ConditionsRepository extends JpaRepository<Conditions, Long> {
-    Optional<Conditions> findByEntityTypeAndBranchId(String entityType, Long branchId);
+
+    @Query("""
+        SELECT c FROM Conditions c WHERE c.branch.id = :branchId AND (:entityType IS NULL OR c.entityType = :entityType) AND (:activityType IS NULL OR c.activityType = :activityType)
+    """)
+    Page<Conditions> findByBranchIdAndFilters(@Param("branchId") Long branchId, @Param("entityType") String entityType, @Param("activityType") String activityType, Pageable pageable);
     
-    @Query("SELECT c FROM Conditions c WHERE c.branch.id = :branchId")
-    Page<Conditions> findByBranchId(@Param("branchId") Long branchId, Pageable pageable);
-    
-    @Query("SELECT COUNT(c) FROM Conditions c WHERE c.branch.id = :branchId")
-    long countByBranchId(@Param("branchId") Long branchId);
+    @Query("""
+        SELECT COUNT(c) FROM Conditions c WHERE c.branch.id = :branchId AND (:entityType IS NULL OR c.entityType = :entityType) AND (:activityType IS NULL OR c.activityType = :activityType)
+    """)
+    long countByBranchIdAndFilters(@Param("branchId") Long branchId, @Param("entityType") String entityType, @Param("activityType") String activityType);
 }
