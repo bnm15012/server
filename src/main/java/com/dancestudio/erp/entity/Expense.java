@@ -27,7 +27,7 @@ public class Expense extends BaseEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
-    @Column(name = "expense_date", nullable = false, updatable = false, insertable = true, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "expense_date", nullable = false, updatable = false)
     private Date expenseDate;
 
 }

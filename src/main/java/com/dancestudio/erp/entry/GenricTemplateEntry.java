@@ -5,11 +5,11 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ConditionsEntry {
+public class GenricTemplateEntry {
     private Long id;
-    private String entityType;
-    private String description;
-    private String activityType;
+    private String templateType;
     private String templateName;
+    private String templateSubject;
+    private String templateContent;
     private Long branchId;
 }

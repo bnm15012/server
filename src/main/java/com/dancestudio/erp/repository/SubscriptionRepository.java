@@ -24,7 +24,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query("""
     SELECT s FROM Subscription s WHERE s.studio.id = :studioId AND s.status = 'ACTIVE' AND s.endDate = (
         SELECT MAX(sp.endDate) FROM Subscription sp WHERE sp.studio.id = :studioId AND sp.status = 'ACTIVE') 
-    AND s.endDate > CURRENT_TIMESTAMP""")
+    AND s.endDate >  function('utc_timestamp')""")
     List<Subscription> findLatestSubscriptionByStudioId(@Param("studioId") Long studioId);
 
     @Modifying

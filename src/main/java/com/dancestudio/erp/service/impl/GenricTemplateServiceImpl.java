@@ -1,11 +1,12 @@
 package com.dancestudio.erp.service.impl;
 
-import com.dancestudio.erp.entry.ConditionsEntry;
+import com.dancestudio.erp.entry.GenricTemplateEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.ConditionsManager;
-import com.dancestudio.erp.response.ConditionsResponse;
+import com.dancestudio.erp.manager.GenricTemplateManager;
+import com.dancestudio.erp.response.GenericTemplateResponse;
 import com.dancestudio.erp.response.StatusResponse;
-import com.dancestudio.erp.service.ConditionsService;
+import com.dancestudio.erp.service.GenricTemplateService;
+
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,16 +18,16 @@ import java.util.List;
 
 @Setter(onMethod = @__({ @Autowired }))
 @Component
-public class ConditionsServiceImpl implements ConditionsService {
+public class GenricTemplateServiceImpl implements GenricTemplateService {
 
-    private ConditionsManager conditionsManager;
+    private GenricTemplateManager conditionsManager;
 
     @Override
-    public ResponseEntity<ConditionsResponse> add(ConditionsEntry conditionsEntry) {
-        ConditionsResponse response = new ConditionsResponse();
+    public ResponseEntity<GenericTemplateResponse> add(GenricTemplateEntry genericTemplateEntry) {
+        GenericTemplateResponse response = new GenericTemplateResponse();
 
         try {
-            ConditionsEntry entry = conditionsManager.add(conditionsEntry);
+            GenricTemplateEntry entry = conditionsManager.add(genericTemplateEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Conditions added successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -37,11 +38,11 @@ public class ConditionsServiceImpl implements ConditionsService {
     }
 
     @Override
-    public ResponseEntity<ConditionsResponse> update(Long id, ConditionsEntry conditionsEntry) {
-        ConditionsResponse response = new ConditionsResponse();
+    public ResponseEntity<GenericTemplateResponse> update(Long id, GenricTemplateEntry genericTemplateEntry) {
+        GenericTemplateResponse response = new GenericTemplateResponse();
 
         try {
-            ConditionsEntry entry = conditionsManager.update(id, conditionsEntry);
+            GenricTemplateEntry entry = conditionsManager.update(id, genericTemplateEntry);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Conditions updated successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -67,11 +68,11 @@ public class ConditionsServiceImpl implements ConditionsService {
     }
 
     @Override
-    public ResponseEntity<ConditionsResponse> get(Long id) {
-        ConditionsResponse response = new ConditionsResponse();
+    public ResponseEntity<GenericTemplateResponse> get(Long id) {
+        GenericTemplateResponse response = new GenericTemplateResponse();
 
         try {
-            ConditionsEntry entry = conditionsManager.getById(id);
+            GenricTemplateEntry entry = conditionsManager.getById(id);
             response.setData(Collections.singletonList(entry));
             response.setStatus(new StatusResponse(1, "Conditions retrieved successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -85,13 +86,13 @@ public class ConditionsServiceImpl implements ConditionsService {
     }
     
     @Override
-    public ResponseEntity<ConditionsResponse> getAllByBranchId(Long branchId, String entityType, String activityType, int page, int size) {
-        ConditionsResponse response = new ConditionsResponse();
-        List<ConditionsEntry> entries;
+    public ResponseEntity<GenericTemplateResponse> getAllByBranchId(Long branchId, String templateType, int page, int size) {
+        GenericTemplateResponse response = new GenericTemplateResponse();
+        List<GenricTemplateEntry> entries;
 
         try {
-            entries = conditionsManager.getAllConditionsByBranchId(branchId, entityType, activityType, page, size);
-            long totalCount = conditionsManager.countByFilters(branchId, entityType, activityType);
+            entries = conditionsManager.getAllConditionsByBranchId(branchId, templateType, page, size);
+            long totalCount = conditionsManager.countByFilters(branchId, templateType);
             
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Conditions retrieved successfully", StatusResponse.Type.SUCCESS, (int) totalCount));

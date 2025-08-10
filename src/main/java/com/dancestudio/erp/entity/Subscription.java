@@ -21,11 +21,11 @@ public class Subscription extends BaseEntity {
     private String subscriptionPlan; // e.g., "Monthly", "Yearly", "Half-Yearly"
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "start_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "start_date", nullable = false)
     private Date startDate;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "end_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "end_date", nullable = false)
     private Date endDate;
 
     @Column(name = "status", nullable = false)
@@ -41,7 +41,7 @@ public class Subscription extends BaseEntity {
     private String paymentId;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "renewal_date", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "renewal_date")
     private Date renewalDate;
     
     public boolean isExpired() {

@@ -1,6 +1,6 @@
 package com.dancestudio.erp.response;
 
-import com.dancestudio.erp.entry.ConditionsEntry;
+import com.dancestudio.erp.entry.GenricTemplateEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConditionsResponse extends AbstractResponse {
+public class GenericTemplateResponse extends AbstractResponse {
 
-    private List<ConditionsEntry> data;
+    private List<GenricTemplateEntry> data;
 }
