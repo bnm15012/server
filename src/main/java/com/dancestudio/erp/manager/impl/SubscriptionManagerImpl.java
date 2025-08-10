@@ -190,7 +190,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         if (Objects.nonNull(subscriptionEntry.getPlanId())) {
             subscription.setId(subscriptionEntry.getPlanId());
         }
-        if (Objects.nonNull(subscriptionEntry.getBranchId())) {
+        if (Objects.nonNull(subscriptionEntry.getStudioId())) {
             StudioEntry entry = studioManager.getById(subscriptionEntry.getStudioId());
             subscription.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
         }
