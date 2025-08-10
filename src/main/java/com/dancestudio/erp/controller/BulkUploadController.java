@@ -34,7 +34,7 @@ public class BulkUploadController extends BaseController<BulkUploadEntry, BulkUp
         return bulkUploadService.get(id);
     }
 
-    @PostMapping("/process/")
+    @PostMapping("/process")
     public ResponseEntity<BulkUploadResponse> processBulkUpload(@RequestBody BulkUploadEntry entry) {
         return bulkUploadService.processBulkUpload(entry);
     }
