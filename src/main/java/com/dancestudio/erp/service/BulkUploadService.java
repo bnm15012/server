@@ -10,6 +10,6 @@ public interface BulkUploadService extends BaseService<BulkUploadEntry, BulkUplo
 
     ResponseEntity<BulkUploadResponse> searchBulkUploads(Long branchId, String entityType, String status);
 
-    ResponseEntity<BulkUploadResponse> processBulkUpload(Long branchId, String entityType, String fileUrl);
+    ResponseEntity<BulkUploadResponse> processBulkUpload(BulkUploadEntry entry);
 
 }

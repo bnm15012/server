@@ -90,7 +90,7 @@ public class BulkUploadServiceImpl implements BulkUploadService {
     }
 
     @Override
-    public ResponseEntity<BulkUploadResponse> processBulkUpload(Long branchId, String entityType, String fileUrl) {
+    public ResponseEntity<BulkUploadResponse> processBulkUpload(BulkUploadEntry entry) {
         BulkUploadResponse response = new BulkUploadResponse();
         BulkUploadEntry jobEntry = new BulkUploadEntry();
 
@@ -98,14 +98,14 @@ public class BulkUploadServiceImpl implements BulkUploadService {
             BulkUploadEntry bulkUploadEntry = new BulkUploadEntry();
 
             BranchEntry branchEntry = new BranchEntry();
-            branchEntry.setBranchId(branchId);
+            branchEntry.setBranchId(entry.getBranchEntry().getBranchId());
             bulkUploadEntry.setBranchEntry(branchEntry);
-            bulkUploadEntry.setEntityType(entityType);
-            bulkUploadEntry.setFileUrl(fileUrl);
-            bulkUploadEntry.setFileName(fileUrl.substring(fileUrl.lastIndexOf('/') + 1));
+            bulkUploadEntry.setEntityType(entry.getEntityType());
+            bulkUploadEntry.setFileUrl(entry.getFileUrl());
+            bulkUploadEntry.setFileName(entry.getFileUrl().substring(entry.getFileUrl().lastIndexOf('/') + 1));
 
             jobEntry = bulkUploadManager.add(bulkUploadEntry);
-            jobEntry = bulkUploadManager.processBulkUpload(jobEntry, branchId, entityType, fileUrl);
+            jobEntry = bulkUploadManager.processBulkUpload(jobEntry, entry.getBranchEntry().getBranchId(), entry.getEntityType(), entry.getFileUrl());
 
             jobEntry.setStatus("COMPLETED");
             bulkUploadManager.update(jobEntry.getId(), jobEntry);
