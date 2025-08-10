@@ -86,16 +86,17 @@ public class BulkUploadManagerImpl implements BulkUploadManager {
 
     @Override
     public BulkUploadEntry processBulkUpload(BulkUploadEntry jobEntry, Long branchId, String entityType, String fileUrl) {
-
+        HttpURLConnection connection = null;
         try {
             if (!MemberType.STUDENT.name().equalsIgnoreCase(entityType) && !MemberType.INSTRUCTOR.name().equalsIgnoreCase(entityType)) {
                 throw new IllegalArgumentException("Invalid entity type. Must be 'STUDENT' or 'INSTRUCTOR'");
             }
 
-            URL url = new URL(fileUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            String encodedUrl = fileUrl.replace(" ", "%20");
+            URL url = new URL(encodedUrl);
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-
+            
             int responseCode = connection.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 throw new IOException("Failed to download file from URL. Response code: " + responseCode);
@@ -112,10 +113,14 @@ public class BulkUploadManagerImpl implements BulkUploadManager {
             } catch (IOException | CsvValidationException e) {
                 throw new RuntimeException("Error reading CSV file: " + e.getMessage(), e);
             } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+        } catch (Exception e) {
+            if (connection != null) {
                 connection.disconnect();
             }
-
-        } catch (Exception e) {
             log.error("Error processing bulk upload: {}", e.getMessage(), e);
             throw new RuntimeException("Error processing bulk upload: " + e.getMessage(), e);
         }
