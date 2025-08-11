@@ -72,6 +72,7 @@ public class MiscellaneousController {
         return miscellaneousService.refreshToken(userEntry);
     }
 
+    // TODO: remove this endpoint after testing
     @GetMapping("getTemplates/{studioId}")
     public ResponseEntity<TemplateResponse> getTemplates(@PathVariable("studioId") Long studioId) {
         return miscellaneousService.getTemplates(studioId);

@@ -7,8 +7,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-@Table(name = "genric_template", uniqueConstraints = {
-        @UniqueConstraint(name = "templateType_templateName_branch_key", columnNames = {"template_type", "template_name", "branch_id"})
+@Table(name = "generic_template", uniqueConstraints = {
+        @UniqueConstraint(name = "templateType_templateName_studio_key", columnNames = {"template_type", "template_name", "studio_id"})
 })
 public class GenericTemplate extends BaseEntity {
 
@@ -25,7 +25,7 @@ public class GenericTemplate extends BaseEntity {
     private String templateContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "branch_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_condition_branch_id"))
-    private Branch branch;
+    @JoinColumn(name = "studio_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_condition_studio_id"))
+    private Studio studio;
 
 }

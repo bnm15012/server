@@ -13,6 +13,7 @@ public enum ConfigurationType {
     PAYMENTS,
     EXPENSE,
     ANALYSIS,
-    REPORTS
+    REPORTS,
+    TEMPLATES
 
 }

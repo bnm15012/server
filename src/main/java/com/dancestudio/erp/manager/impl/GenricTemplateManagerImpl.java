@@ -1,11 +1,11 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.GenericTemplate;
-import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.entry.GenricTemplateEntry;
+import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.GenricTemplateManager;
+import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.repository.GenricTemplateRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import lombok.Setter;
@@ -28,7 +28,7 @@ public class GenricTemplateManagerImpl implements GenricTemplateManager {
     private final GenricTemplateRepository conditionsRepository;
 
     @Autowired
-    private BranchManager branchManager;
+    private StudioManager studioManager;
 
     @Autowired
     public GenricTemplateManagerImpl(GenricTemplateRepository conditionsRepository) {
@@ -68,51 +68,51 @@ public class GenricTemplateManagerImpl implements GenricTemplateManager {
     }
     
     @Override
-    public List<GenricTemplateEntry> getAllConditionsByBranchId(Long branchId, String templateType, Integer page, Integer size) throws Exception {
+    public List<GenricTemplateEntry> getAllConditionsByStudioId(Long studioId, String templateType, Integer page, Integer size) throws Exception {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
-        Page<GenericTemplate> conditionsPage = conditionsRepository.findByBranchIdAndFilters(branchId, templateType, pageable);
+        Page<GenericTemplate> conditionsPage = conditionsRepository.findByStudioIdAndFilters(studioId, templateType, pageable);
         return conditionsPage.getContent().stream()
                 .map(this::convertToEntry)
                 .collect(Collectors.toList());
     }
     
     @Override
-    public long countByFilters(Long branchId, String templateType ) throws Exception {
-        return conditionsRepository.countByBranchIdAndFilters(branchId, templateType);
+    public long countByFilters(Long studioId, String templateType ) throws Exception {
+        return conditionsRepository.countByStudioIdAndFilters(studioId, templateType);
     }
 
     private GenericTemplate convertToEntity(GenricTemplateEntry entry, GenericTemplate existingConditions) throws Exception {
-        GenericTemplate conditions = (existingConditions != null) ? existingConditions : new GenericTemplate();
+        GenericTemplate genericTemplate = (existingConditions != null) ? existingConditions : new GenericTemplate();
 
         if (Objects.nonNull(entry.getTemplateType())) {
-            conditions.setTemplateType(entry.getTemplateType());
+            genericTemplate.setTemplateType(entry.getTemplateType());
         }
         if (Objects.nonNull(entry.getTemplateName())) {
-            conditions.setTemplateName(entry.getTemplateName());
+            genericTemplate.setTemplateName(entry.getTemplateName());
         }
         if(Objects.nonNull(entry.getTemplateSubject())) {
-            conditions.setTemplateSubject(entry.getTemplateSubject());
+            genericTemplate.setTemplateSubject(entry.getTemplateSubject());
         }
         if (Objects.nonNull(entry.getTemplateContent())) {
-            conditions.setTemplateContent(entry.getTemplateContent());
+            genericTemplate.setTemplateContent(entry.getTemplateContent());
         }
-        if (Objects.nonNull(entry.getBranchId())) {
-            BranchEntry branchEntry = branchManager.getById(entry.getBranchId());
-            conditions.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
+        if (Objects.nonNull(entry.getStudioId())) {
+            StudioEntry studioEntry = studioManager.getById(entry.getStudioId());
+            genericTemplate.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
         }
 
-        return conditions;
+        return genericTemplate;
     }
 
-    private GenricTemplateEntry convertToEntry(GenericTemplate conditions) {
+    private GenricTemplateEntry convertToEntry(GenericTemplate genericTemplate) {
         GenricTemplateEntry entry = new GenricTemplateEntry();
-        entry.setId(conditions.getId());
-        entry.setTemplateType(conditions.getTemplateType());
-        entry.setTemplateName(conditions.getTemplateName());
-        entry.setTemplateSubject(conditions.getTemplateSubject());
-        entry.setTemplateContent(conditions.getTemplateContent());
-        if (conditions.getBranch() != null) {
-            entry.setBranchId(conditions.getBranch().getId());
+        entry.setId(genericTemplate.getId());
+        entry.setTemplateType(genericTemplate.getTemplateType());
+        entry.setTemplateName(genericTemplate.getTemplateName());
+        entry.setTemplateSubject(genericTemplate.getTemplateSubject());
+        entry.setTemplateContent(genericTemplate.getTemplateContent());
+        if (genericTemplate.getStudio() != null) {
+            entry.setStudioId(genericTemplate.getStudio().getId());
         }
         return entry;
     }

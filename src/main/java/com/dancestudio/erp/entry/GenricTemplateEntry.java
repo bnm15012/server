@@ -11,5 +11,5 @@ public class GenricTemplateEntry {
     private String templateName;
     private String templateSubject;
     private String templateContent;
-    private Long branchId;
+    private Long studioId;
 }

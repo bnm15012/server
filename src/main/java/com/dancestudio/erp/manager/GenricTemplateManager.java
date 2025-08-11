@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface GenricTemplateManager extends BaseManager<GenricTemplateEntry, Long> {
 
-    List<GenricTemplateEntry> getAllConditionsByBranchId(Long branchId, String templateType, Integer page, Integer size) throws Exception;
-    
-    long countByFilters(Long branchId, String templateType) throws Exception;
+    List<GenricTemplateEntry> getAllConditionsByStudioId(Long studioId, String templateType, Integer page, Integer size) throws Exception;
+
+    long countByFilters(Long studioId, String templateType) throws Exception;
 }

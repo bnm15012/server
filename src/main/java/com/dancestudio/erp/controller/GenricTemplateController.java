@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/conditions")
+@RequestMapping("/genericTemplate")
 public class GenricTemplateController extends BaseController<GenricTemplateEntry, GenericTemplateResponse, Long> {
 
     @Autowired
@@ -35,12 +35,12 @@ public class GenricTemplateController extends BaseController<GenricTemplateEntry
         return genericTemplateService.get(id);
     }
 
-    @GetMapping("/getAllConditions/{branchId}")
+    @GetMapping("/getAllTemplates/{studioId}")
     public ResponseEntity<GenericTemplateResponse> getAllConditions(
-            @PathVariable Long branchId,
+            @PathVariable Long studioId,
             @RequestParam(required = false) String templateType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return genericTemplateService.getAllByBranchId(branchId, templateType, page, size);
+        return genericTemplateService.getAllByStudioId(studioId, templateType, page, size);
     }
 }

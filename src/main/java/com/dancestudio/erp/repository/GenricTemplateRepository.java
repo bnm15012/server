@@ -14,11 +14,11 @@ public interface GenricTemplateRepository extends JpaRepository<GenericTemplate,
     @Query("""
         SELECT c 
         FROM GenericTemplate c 
-        WHERE c.branch.id = :branchId
+        WHERE c.studio.id = :studioId
           AND (:templateType IS NULL OR c.templateType LIKE %:templateType%)
     """)
-    Page<GenericTemplate> findByBranchIdAndFilters(
-        @Param("branchId") Long branchId,
+    Page<GenericTemplate> findByStudioIdAndFilters(
+        @Param("studioId") Long studioId,
         @Param("templateType") String templateType,
         Pageable pageable
     );
@@ -26,11 +26,11 @@ public interface GenricTemplateRepository extends JpaRepository<GenericTemplate,
     @Query("""
         SELECT COUNT(c) 
         FROM GenericTemplate c 
-        WHERE c.branch.id = :branchId
+        WHERE c.studio.id = :studioId
           AND (:templateType IS NULL OR c.templateType LIKE %:templateType%)
     """)
-    long countByBranchIdAndFilters(
-        @Param("branchId") Long branchId,
+    long countByStudioIdAndFilters(
+        @Param("studioId") Long studioId,
         @Param("templateType") String templateType
     );
 }

@@ -6,5 +6,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface GenricTemplateService extends BaseService<GenricTemplateEntry, GenericTemplateResponse, Long> {
 
-    ResponseEntity<GenericTemplateResponse> getAllByBranchId(Long branchId, String templateType, int page, int size);
+    ResponseEntity<GenericTemplateResponse> getAllByStudioId(Long studioId, String templateType, int page, int size);
 }
