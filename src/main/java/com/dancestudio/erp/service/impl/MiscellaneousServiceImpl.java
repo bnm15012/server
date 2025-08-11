@@ -123,8 +123,7 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
 
         IEReportResponse response = new IEReportResponse();
         try {
-            IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startMonth, startYear, endMonth,
-                    endYear);
+            IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startMonth, startYear, endMonth, endYear);
             response.setData(Collections.singletonList(reportEntry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
 

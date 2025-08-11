@@ -133,8 +133,7 @@ public class PaymentManagerImpl implements PaymentManager {
         try {
             if (PayeeType.STUDENT.name().equals(payment.getPayeeType())) {
                 Optional<StudentActivityAssignment> studentActivityAssignmentOptional = studentActivityAssignmentRepository.findById(payment.getPayeeId());
-                studentActivityAssignmentOptional.ifPresent(studentActivityAssignment -> paymentEntry
-                        .setStudentEntry(ConvertToEntryUtil.convertToEntry(studentActivityAssignment.getStudent())));
+                studentActivityAssignmentOptional.ifPresent(studentActivityAssignment -> paymentEntry.setStudentEntry(ConvertToEntryUtil.convertToEntry(studentActivityAssignment.getStudent())));
             } else if (PayeeType.BOOKING.name().equals(payment.getPayeeType())) {
                 paymentEntry.setClientEntry(clientManager.getById(payment.getPayeeId()));
             }
