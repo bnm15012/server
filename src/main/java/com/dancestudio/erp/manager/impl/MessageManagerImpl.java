@@ -92,8 +92,7 @@ public class MessageManagerImpl implements MessageManager {
                 for (Member member : members) {
                     whatsappUtil.sendMessage("91" + member.getPhone(), message.getContent(), request.getBranchId());
                 }
-                // success = handleWhatsappNotification(request, branch, members, message);
-                // handleEmailNotification(request, branch, members);
+                 success = handleWhatsappNotification(request, branch, members, message);
             } else if (isSmsNotification(request)) {
                 success = handleSmsNotification(request, branch, members, message);
                 handleEmailNotification(request, branch, members);
@@ -206,8 +205,7 @@ public class MessageManagerImpl implements MessageManager {
         return TemplateType.SMS.name().equals(request.getNotificationType());
     }
 
-    private int handleWhatsappNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
-            Message message) {
+    private int handleWhatsappNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
         if (WhatsAppStatus.ACTIVE.name().equals(branch.getWhatsappStatus())) {
             return processRecipients(members, message, request.getContent());
         }
