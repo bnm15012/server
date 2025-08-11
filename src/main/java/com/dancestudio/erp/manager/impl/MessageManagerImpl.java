@@ -68,12 +68,12 @@ public class MessageManagerImpl implements MessageManager {
                 int success;
                 if (isWhatsappNotification(request)) {
                     success = handleWhatsappNotification(request, branch, members, message);
-                    handleEmailNotification(request, branch, members);
+                    handleEmailNotification(request, branch, members, message);
                 } else if (isSmsNotification(request)) {
                     success = handleSmsNotification(request, branch, members, message);
-                    handleEmailNotification(request, branch, members);
+                    handleEmailNotification(request, branch, members, message);
                 } else {
-                    success = handleEmailNotification(request, branch, members);
+                    success = handleEmailNotification(request, branch, members, message);
                 }
                 int failed = members.size() - success;
                 log.info("Async message sending completed. Success: {}, Failed: {}", success, failed);
@@ -95,9 +95,9 @@ public class MessageManagerImpl implements MessageManager {
                  success = handleWhatsappNotification(request, branch, members, message);
             } else if (isSmsNotification(request)) {
                 success = handleSmsNotification(request, branch, members, message);
-                handleEmailNotification(request, branch, members);
+                handleEmailNotification(request, branch, members, message);
             } else {
-                success = handleEmailNotification(request, branch, members);
+                success = handleEmailNotification(request, branch, members, message);
             }
             int failed = members.size() - success;
             return new SendMessageResponse(members.size(), success, failed, "Message sent successfully");
@@ -136,6 +136,7 @@ public class MessageManagerImpl implements MessageManager {
                     entry.setMemberId(recipient.getMember().getId());
                     entry.setName(recipient.getName());
                     entry.setPhoneNumber(recipient.getPhoneNumber());
+                    entry.setEmail(recipient.getEmail());
                     entry.setStatus(recipient.getStatus());
                     entry.setReason(recipient.getReason());
                     return entry;
@@ -171,7 +172,7 @@ public class MessageManagerImpl implements MessageManager {
         return messageRepository.save(message);
     }
 
-    private int processRecipients(List<Member> members, Message message, String content) {
+    private int processRecipients(List<Member> members, Message message, String content, Boolean sendWhatsapp) {
 
         int success = 0;
         for (Member member : members) {
@@ -179,11 +180,14 @@ public class MessageManagerImpl implements MessageManager {
             recipient.setMessage(message);
             recipient.setMember(member);
             recipient.setName(member.getName());
+            recipient.setEmail(member.getEmail());
             recipient.setPhoneNumber(member.getPhone());
             recipient.setStatus(MessageStatus.PENDING);
 
             try {
-                sendSms(member, content);
+                if(sendWhatsapp) {
+                    sendSms(member, content);
+                }
                 recipient.setStatus(MessageStatus.SENT);
                 success++;
             } catch (Exception e) {
@@ -207,28 +211,27 @@ public class MessageManagerImpl implements MessageManager {
 
     private int handleWhatsappNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
         if (WhatsAppStatus.ACTIVE.name().equals(branch.getWhatsappStatus())) {
-            return processRecipients(members, message, request.getContent());
+            return processRecipients(members, message, request.getContent(), true);
         }
         throw new RuntimeException("Studio not configured for WhatsApp messaging");
     }
 
-    private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
-            Message message) {
+    private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
         Studio studio = branch.getStudio();
         return 0;
     }
 
-    private int handleEmailNotification(SendMessageRequestEntry request, Branch branch, List<Member> members) {
+    private int handleEmailNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
         int success = 0;
         for (Member member : members) {
             try {
-                notificationManager.sendEmail(member.getEmail(), request.getTitle(), request.getContent(),
-                        branch.getStudio().getId());
+                notificationManager.sendEmail(member.getEmail(), request.getTitle(), request.getContent(), branch.getStudio().getId());
                 success++;
             } catch (Exception e) {
                 log.error("Failed to send email to student: {}", member.getEmail(), e);
             }
         }
+        processRecipients(members, message, request.getContent(), false);
         return success;
     }
 

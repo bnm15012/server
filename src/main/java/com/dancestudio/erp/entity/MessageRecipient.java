@@ -25,6 +25,9 @@ public class MessageRecipient extends BaseEntity {
     @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
+    @Column(name = "email")
+    private String email;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private MessageStatus status = MessageStatus.PENDING;

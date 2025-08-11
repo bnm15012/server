@@ -10,6 +10,7 @@ public class MessageRecipientEntry {
     private Long messageId;
     private Long memberId;
     private String name;
+    private String email;
     private String phoneNumber;
     private MessageStatus status;
     private String reason;
