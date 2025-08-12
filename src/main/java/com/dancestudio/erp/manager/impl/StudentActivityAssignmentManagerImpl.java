@@ -3,13 +3,15 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entity.Member;
 import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
-import com.dancestudio.erp.entry.*;
+import com.dancestudio.erp.entry.ExpenseEntry;
+import com.dancestudio.erp.entry.MonthlyReportEntry;
+import com.dancestudio.erp.entry.PaymentEntry;
+import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.enums.ExpenseCategory;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.enums.MembershipType;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.ActivityManager;
 import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.manager.StudentActivityAssignmentManager;
 import com.dancestudio.erp.repository.ExpenseRepository;
@@ -23,20 +25,12 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Setter
 public class StudentActivityAssignmentManagerImpl implements StudentActivityAssignmentManager {
     private final StudentActivityAssignmentRepository studentActivityAssignmentRepository;
-
-    @Autowired
-    private ActivityManager activityManager;
 
     @Autowired
     private PaymentManager paymentManager;
