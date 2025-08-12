@@ -86,9 +86,9 @@ public class ReportManagerImpl implements ReportManager {
         incomeEntry.setPaymentMode(paymentEntry.getPaymentType().name());
 
         if (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().getEnrolledActivities() != null) {
-            String paymentId = paymentEntry.getPaymentId();
+            Long payeeId = paymentEntry.getPayeeId();
             paymentEntry.getStudentEntry().getEnrolledActivities().stream()
-                .filter(activityAssignmentEntry -> paymentId != null && paymentId.equals(activityAssignmentEntry.getAssignmentId().toString()))
+                .filter(activityAssignmentEntry -> payeeId.equals(activityAssignmentEntry.getAssignmentId()))
                 .findFirst()
                 .ifPresent(matchedActivityAssignment -> {
                     if (matchedActivityAssignment.getActivityName() != null) {
