@@ -1,8 +1,14 @@
-package com.dancestudio.erp.entity;
+package com.dancestudio.erp.entity.activity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.dancestudio.erp.entity.BaseEntity;
+import com.dancestudio.erp.entity.Branch;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -21,6 +27,6 @@ public class Activity extends BaseEntity {
     @JoinColumn(name = "branch_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_activity_branch_id"))
     private Branch branch;
 
-    @Column(name = "membership_plans", columnDefinition = "json")
-    private String membershipPlans;
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ActivityMembershipPlan> membershipPlan = new ArrayList<>();
 }

@@ -32,6 +32,12 @@ public class StudentActivityAssignment extends BaseEntity {
     @Column(name = "days_per_week", nullable = false)
     private Integer daysPerWeek;
 
+    @Column(name = "batch_name", nullable = false)
+    private String batchName;
+
+    @Column(name = "batch_time", nullable = false)
+    private String batchTime;
+
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_id"))
     private Member student;

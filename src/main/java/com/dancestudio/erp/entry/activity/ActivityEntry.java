@@ -1,4 +1,6 @@
-package com.dancestudio.erp.entry;
+package com.dancestudio.erp.entry.activity;
+
+import java.util.List;
 
 import com.dancestudio.erp.enums.ActivityType;
 import lombok.Data;
@@ -9,8 +11,7 @@ public class ActivityEntry {
     private Long activityId;
     private ActivityType activityType;
     private String description;
-    private Long studioId;
-    private Long branchId;
 
-    private MembershipPlanRequest membershipPlanRequest;
+    private Long branchId;
+    private List<ActivityMembershipPlanEntry> membershipPlanEntry;
 }

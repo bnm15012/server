@@ -1,6 +1,6 @@
 package com.dancestudio.erp.controller;
 
-import com.dancestudio.erp.entry.ActivityEntry;
+import com.dancestudio.erp.entry.activity.ActivityEntry;
 import com.dancestudio.erp.response.ActivityResponse;
 import com.dancestudio.erp.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;

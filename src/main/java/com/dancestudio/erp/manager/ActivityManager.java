@@ -1,8 +1,9 @@
 package com.dancestudio.erp.manager;
 
-import com.dancestudio.erp.entry.ActivityEntry;
-
 import java.util.List;
+
+import com.dancestudio.erp.entry.activity.ActivityEntry;
+
 
 public interface ActivityManager extends BaseManager<ActivityEntry, Long> {
 

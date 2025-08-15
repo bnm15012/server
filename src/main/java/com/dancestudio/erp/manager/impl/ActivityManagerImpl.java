@@ -1,36 +1,43 @@
 package com.dancestudio.erp.manager.impl;
 
-
-import com.dancestudio.erp.entity.Activity;
-import com.dancestudio.erp.entry.ActivityEntry;
+import com.dancestudio.erp.converter.ActivityConverter;
+import com.dancestudio.erp.entity.activity.Activity;
+import com.dancestudio.erp.entry.activity.ActivityEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
-import com.dancestudio.erp.repository.ActivityRepository;
-import com.dancestudio.erp.util.ConvertToEntryUtil;
+import com.dancestudio.erp.repository.Activity.ActivityMembershipRepository;
+import com.dancestudio.erp.repository.Activity.ActivityRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ActivityManagerImpl implements ActivityManager {
+
+    private final ActivityMembershipRepository activityMembershipRepository;
     private final ActivityRepository activityRepository;
 
     @Autowired
-    public ActivityManagerImpl(ActivityRepository activityRepository) {
+    public ActivityManagerImpl(ActivityRepository activityRepository,
+            ActivityMembershipRepository activityMembershipRepository) {
         this.activityRepository = activityRepository;
+        this.activityMembershipRepository = activityMembershipRepository;
     }
 
     @Override
     public ActivityEntry add(ActivityEntry activityEntry) throws Exception {
-        activityRepository.findByActivityTypeAndBranchId(activityEntry.getActivityType().name(), activityEntry.getBranchId())
+        activityRepository
+                .findByActivityTypeAndBranchId(activityEntry.getActivityType().name(), activityEntry.getBranchId())
                 .ifPresent(existingActivity -> {
-                    throw new IllegalArgumentException("Given activity already exists in the studio.");
+                    throw new IllegalArgumentException("Given activity already exists in this branch.");
                 });
 
-        Activity activity = ConvertToEntryUtil.convertToEntity(activityEntry, null);
-        return ConvertToEntryUtil.convertToEntry(activityRepository.save(activity));
+        Activity activity = ActivityConverter.convertToEntity(activityEntry, null);
+        return ActivityConverter.convertToEntry(activityRepository.save(activity));
     }
 
     @Override
@@ -38,16 +45,18 @@ public class ActivityManagerImpl implements ActivityManager {
         Activity existingActivity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 
-        Activity updatedActivity = ConvertToEntryUtil.convertToEntity(activityEntry, existingActivity);
-        return ConvertToEntryUtil.convertToEntry(activityRepository.save(updatedActivity));
+        Activity updatedActivity = ActivityConverter.convertToEntity(activityEntry, existingActivity);
+
+        return ActivityConverter.convertToEntry(activityRepository.save(updatedActivity));
     }
 
     @Override
+    @Transactional
     public void delete(Long activityId) throws EntityNotFoundException {
-        activityRepository.findById(activityId)
+        Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 
-        activityRepository.deleteById(activityId);
+        activityRepository.delete(activity);
     }
 
     @Override
@@ -55,7 +64,7 @@ public class ActivityManagerImpl implements ActivityManager {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new EntityNotFoundException("Activity not found"));
 
-        return ConvertToEntryUtil.convertToEntry(activity);
+        return ActivityConverter.convertToEntry(activity);
     }
 
     @Override
@@ -64,7 +73,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
         List<ActivityEntry> activityEntries = new ArrayList<>();
         for (Activity entry : entries) {
-            ActivityEntry activityEntry = ConvertToEntryUtil.convertToEntry(entry);
+            ActivityEntry activityEntry = ActivityConverter.convertToEntry(entry);
             activityEntries.add(activityEntry);
         }
 

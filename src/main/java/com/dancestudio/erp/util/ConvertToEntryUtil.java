@@ -285,68 +285,6 @@ public class ConvertToEntryUtil {
         return bankAccount;
     }
 
-    public static ActivityEntry convertToEntry(Activity activity) throws Exception {
-
-        ActivityEntry activityEntry = new ActivityEntry();
-        activityEntry.setActivityId(activity.getId());
-        activityEntry.setActivityType(ActivityType.valueOf(activity.getActivityType()));
-        activityEntry.setDescription(activity.getDescription());
-
-        BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
-        BranchEntry branchEntry = branchManagerImpl.getById(activity.getBranch().getId());
-        activityEntry.setBranchId(branchEntry.getBranchId());
-        activityEntry.setStudioId(branchEntry.getStudioId());
-
-        if (activity.getMembershipPlans() != null) {
-            try {
-                List<MembershipPlanEntry> membershipPlans = objectMapper.readValue(activity.getMembershipPlans(),
-                        new TypeReference<>() {
-                        });
-                MembershipPlanRequest request = new MembershipPlanRequest();
-                request.setMembershipPlanEntryList(membershipPlans);
-                activityEntry.setMembershipPlanRequest(request);
-            } catch (Exception e) {
-                throw new RuntimeException("Error parsing membership plans JSON", e);
-            }
-        }
-
-        return activityEntry;
-    }
-
-    public static Activity convertToEntity(ActivityEntry activityEntry, Activity existingActivity) throws Exception {
-        Activity activity = (existingActivity != null) ? existingActivity : new Activity();
-
-        if (Objects.nonNull(activityEntry.getActivityId())) {
-            activity.setId(activityEntry.getActivityId());
-        }
-        if (Objects.nonNull(activityEntry.getActivityType())) {
-            activity.setActivityType(activityEntry.getActivityType().name());
-        }
-        if (Objects.nonNull(activityEntry.getDescription())) {
-            activity.setDescription(activityEntry.getDescription());
-        }
-
-        if (Objects.nonNull(activityEntry.getBranchId())) {
-            BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
-            BranchEntry branchEntry = branchManagerImpl.getById(activityEntry.getBranchId());
-
-            activity.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
-        }
-
-        if (Objects.nonNull(activityEntry.getMembershipPlanRequest())) {
-            List<MembershipPlanEntry> membershipPlans = activityEntry.getMembershipPlanRequest()
-                    .getMembershipPlanEntryList();
-            try {
-                String membershipPlansJson = objectMapper.writeValueAsString(membershipPlans);
-                activity.setMembershipPlans(membershipPlansJson);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException("Error converting membership plans to JSON", e);
-            }
-        }
-
-        return activity;
-    }
-
     public static ExpenseEntry convertToEntry(Expense expense) throws Exception {
 
         ExpenseEntry expenseEntry = new ExpenseEntry();

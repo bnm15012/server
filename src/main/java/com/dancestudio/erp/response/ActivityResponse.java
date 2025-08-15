@@ -1,13 +1,14 @@
 package com.dancestudio.erp.response;
 
 
-import com.dancestudio.erp.entry.ActivityEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
+import com.dancestudio.erp.entry.activity.ActivityEntry;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

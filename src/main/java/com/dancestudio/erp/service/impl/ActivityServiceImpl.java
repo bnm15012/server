@@ -1,7 +1,7 @@
 package com.dancestudio.erp.service.impl;
 
 
-import com.dancestudio.erp.entry.ActivityEntry;
+import com.dancestudio.erp.entry.activity.ActivityEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
 import com.dancestudio.erp.response.ActivityResponse;
@@ -52,6 +52,7 @@ public class ActivityServiceImpl implements ActivityService {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

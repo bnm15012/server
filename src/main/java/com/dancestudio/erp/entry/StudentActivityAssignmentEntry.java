@@ -18,6 +18,8 @@ public class StudentActivityAssignmentEntry {
     private Double activityAmount;
     private MembershipStatus membershipStatus = MembershipStatus.INACTIVE;
     private Integer daysPerWeek;
+    private String batchName;
+    private String batchTime;
 
     private PaymentEntry paymentEntry;
     private Long studentId;

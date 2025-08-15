@@ -51,12 +51,15 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry add(StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws Exception {
+    public StudentActivityAssignmentEntry add(StudentActivityAssignmentEntry studentActivityAssignmentEntry)
+            throws Exception {
         memberRepository.findById(studentActivityAssignmentEntry.getStudentId())
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-        StudentActivityAssignment studentStudentActivityAssignmentAssignment = convertToEntity(studentActivityAssignmentEntry, null);
-        studentStudentActivityAssignmentAssignment = studentActivityAssignmentRepository.save(studentStudentActivityAssignmentAssignment);
+        StudentActivityAssignment studentStudentActivityAssignmentAssignment = convertToEntity(
+                studentActivityAssignmentEntry, null);
+        studentStudentActivityAssignmentAssignment = studentActivityAssignmentRepository
+                .save(studentStudentActivityAssignmentAssignment);
 
         try {
             Long payeeId = studentStudentActivityAssignmentAssignment.getId();
@@ -70,11 +73,14 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public StudentActivityAssignmentEntry update(Long studentActivityAssignmentId, StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws Exception {
-        StudentActivityAssignment existingStudentActivityAssignment = studentActivityAssignmentRepository.findById(studentActivityAssignmentId)
+    public StudentActivityAssignmentEntry update(Long studentActivityAssignmentId,
+            StudentActivityAssignmentEntry studentActivityAssignmentEntry) throws Exception {
+        StudentActivityAssignment existingStudentActivityAssignment = studentActivityAssignmentRepository
+                .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
-        StudentActivityAssignment updatedStudentActivityAssignment = convertToEntity(studentActivityAssignmentEntry, existingStudentActivityAssignment);
+        StudentActivityAssignment updatedStudentActivityAssignment = convertToEntity(studentActivityAssignmentEntry,
+                existingStudentActivityAssignment);
         updatedStudentActivityAssignment = studentActivityAssignmentRepository.save(updatedStudentActivityAssignment);
 
         return convertToEntry(studentActivityAssignmentRepository.save(updatedStudentActivityAssignment));
@@ -85,7 +91,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         studentActivityAssignmentRepository.findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
-        PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(studentActivityAssignmentId, PayeeType.STUDENT);
+        PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(studentActivityAssignmentId,
+                PayeeType.STUDENT);
         try {
             paymentManager.delete(Long.valueOf(paymentEntry.getPaymentId()));
         } catch (Exception e) {
@@ -97,15 +104,18 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     @Override
     public StudentActivityAssignmentEntry getById(Long studentActivityAssignmentId) throws Exception {
-        StudentActivityAssignment studentActivityAssignment = studentActivityAssignmentRepository.findById(studentActivityAssignmentId)
+        StudentActivityAssignment studentActivityAssignment = studentActivityAssignmentRepository
+                .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
         return convertToEntry(studentActivityAssignment);
     }
 
     @Override
-    public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, String activityName) throws Exception {
-        StudentActivityAssignment assignment = studentActivityAssignmentRepository.findByStudentIdAndActivityId(studentId, activityName);
+    public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId,
+            String activityName) throws Exception {
+        StudentActivityAssignment assignment = studentActivityAssignmentRepository
+                .findByStudentIdAndActivityId(studentId, activityName);
         return convertToEntry(assignment);
     }
 
@@ -122,9 +132,11 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     }
 
     @Override
-    public List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(String activityName, Long studioId, String status) throws Exception {
+    public List<StudentActivityAssignmentEntry> getStudentByActivityIdAndStudioIdAndStatus(String activityName,
+            Long studioId, String status) throws Exception {
 
-        List<StudentActivityAssignment> entries = studentActivityAssignmentRepository.findStudentsWithActiveMemberships(activityName, studioId);
+        List<StudentActivityAssignment> entries = studentActivityAssignmentRepository
+                .findStudentsWithActiveMemberships(activityName, studioId);
         List<StudentActivityAssignmentEntry> assignmentEntries = new ArrayList<>();
 
         for (StudentActivityAssignment entry : entries) {
@@ -139,7 +151,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     @SneakyThrows
     @Override
     public List<MonthlyReportEntry> getAnalysisReport(Integer year, Long branchId) {
-        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository.getAnalysisReport(Math.toIntExact(year), branchId);
+        List<MonthlyReportEntry> reportEntries = studentActivityAssignmentRepository
+                .getAnalysisReport(Math.toIntExact(year), branchId);
         for (int month = 1; month <= 12; month++) {
             processMonthlyReport(reportEntries, month, year, branchId);
         }
@@ -148,7 +161,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         return reportEntries;
     }
 
-    private void processMonthlyReport(List<MonthlyReportEntry> reportEntries, Integer month, Integer year, Long branchId) throws EntityNotFoundException {
+    private void processMonthlyReport(List<MonthlyReportEntry> reportEntries, Integer month, Integer year,
+            Long branchId) throws EntityNotFoundException {
         List<ExpenseEntry> expenseEntries = getExpenseEntriesForMonth(month, year, branchId);
         List<PaymentEntry> paymentEntries = getPaymentEntriesForMonth(month, year, branchId);
         double revenue = calculateRevenueForMonth(reportEntries, month);
@@ -159,7 +173,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         monthlyReportEntry.setRevenue(revenue);
     }
 
-    private MonthlyReportEntry findOrCreateMonthlyReportEntry(List<MonthlyReportEntry> reportEntries, int month, double revenue) {
+    private MonthlyReportEntry findOrCreateMonthlyReportEntry(List<MonthlyReportEntry> reportEntries, int month,
+            double revenue) {
         return reportEntries.stream().filter(entry -> entry.getMonth() == month)
                 .findFirst()
                 .orElseGet(() -> {
@@ -169,9 +184,11 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                 });
     }
 
-    private List<ExpenseEntry> getExpenseEntriesForMonth(Integer month, Integer year, Long branchId) throws EntityNotFoundException {
+    private List<ExpenseEntry> getExpenseEntriesForMonth(Integer month, Integer year, Long branchId)
+            throws EntityNotFoundException {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(month, year, month, year);
-        List<Object[]> expenses = expenseRepository.findCategoryWiseSumOfExpensesByDateRangeAndBranchId(monthRange.get("start"), monthRange.get("end"),                 branchId);
+        List<Object[]> expenses = expenseRepository.findCategoryWiseSumOfExpensesByDateRangeAndBranchId(
+                monthRange.get("start"), monthRange.get("end"), branchId);
         List<ExpenseEntry> expenseEntries = new ArrayList<>();
         for (Object[] expense : expenses) {
             ExpenseEntry expenseEntry = new ExpenseEntry();
@@ -185,7 +202,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     private List<PaymentEntry> getPaymentEntriesForMonth(Integer month, Integer year, Long studioId) {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(month, year, month, year);
-        List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByDateRange(studioId, monthRange.get("start"), monthRange.get("end"));
+        List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByDateRange(studioId,
+                monthRange.get("start"), monthRange.get("end"));
         List<PaymentEntry> paymentEntries = new ArrayList<>();
 
         for (Object[] payment : payments) {
@@ -204,7 +222,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                 .sum();
     }
 
-    private StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment) throws Exception {
+    private StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment)
+            throws Exception {
 
         if (Objects.isNull(studentActivityAssignment)) {
             return null;
@@ -214,13 +233,17 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         studentActivityAssignmentEntry.setAssignmentId(studentActivityAssignment.getId());
         studentActivityAssignmentEntry.setStudentId(studentActivityAssignment.getStudent().getId());
         studentActivityAssignmentEntry.setRegistrationDate(studentActivityAssignment.getRegistrationDate());
+        studentActivityAssignmentEntry.setBatchName(studentActivityAssignment.getBatchName());
+        studentActivityAssignmentEntry.setBatchTime(studentActivityAssignment.getBatchTime());
         studentActivityAssignmentEntry.setMembershipStartDate(studentActivityAssignment.getMembershipStartDate());
         studentActivityAssignmentEntry.setMembershipEndDate(studentActivityAssignment.getMembershipEndDate());
         studentActivityAssignmentEntry.setDaysPerWeek(studentActivityAssignment.getDaysPerWeek());
-        studentActivityAssignmentEntry.setMembershipStatus(studentActivityAssignment.getMembershipEndDate().after(DateUtil.getCurrentDateUTC())
+        studentActivityAssignmentEntry.setMembershipStatus(
+                studentActivityAssignment.getMembershipEndDate().after(DateUtil.getCurrentDateUTC())
                         ? MembershipStatus.ACTIVE
                         : MembershipStatus.INACTIVE);
-        studentActivityAssignmentEntry.setMembershipType(MembershipType.valueOf(studentActivityAssignment.getMembershipType()));
+        studentActivityAssignmentEntry
+                .setMembershipType(MembershipType.valueOf(studentActivityAssignment.getMembershipType()));
         studentActivityAssignmentEntry.setActivityAmount(studentActivityAssignment.getActivityAmount());
 
         if (Objects.nonNull(studentActivityAssignment.getActivityName())) {
@@ -233,14 +256,23 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         return studentActivityAssignmentEntry;
     }
 
-    private StudentActivityAssignment convertToEntity(StudentActivityAssignmentEntry studentActivityAssignmentEntry, StudentActivityAssignment existingStudentActivityAssignment) throws Exception {
-        StudentActivityAssignment studentActivityAssignment = (existingStudentActivityAssignment != null) ? existingStudentActivityAssignment : new StudentActivityAssignment();
+    private StudentActivityAssignment convertToEntity(StudentActivityAssignmentEntry studentActivityAssignmentEntry,
+            StudentActivityAssignment existingStudentActivityAssignment) throws Exception {
+        StudentActivityAssignment studentActivityAssignment = (existingStudentActivityAssignment != null)
+                ? existingStudentActivityAssignment
+                : new StudentActivityAssignment();
 
         if (Objects.nonNull(studentActivityAssignmentEntry.getAssignmentId())) {
             studentActivityAssignment.setId(studentActivityAssignmentEntry.getAssignmentId());
         }
         if (Objects.nonNull(studentActivityAssignmentEntry.getRegistrationDate())) {
             studentActivityAssignment.setRegistrationDate(studentActivityAssignmentEntry.getRegistrationDate());
+        }
+        if (Objects.nonNull(studentActivityAssignmentEntry.getBatchName())) {
+            studentActivityAssignment.setBatchName(studentActivityAssignmentEntry.getBatchName());
+        }
+        if (Objects.nonNull(studentActivityAssignmentEntry.getBatchTime())) {
+            studentActivityAssignment.setBatchTime(studentActivityAssignmentEntry.getBatchTime());
         }
         if (Objects.nonNull(studentActivityAssignmentEntry.getMembershipStartDate())) {
             studentActivityAssignment.setMembershipStartDate(studentActivityAssignmentEntry.getMembershipStartDate());
