@@ -2,7 +2,6 @@ package com.dancestudio.erp.converter;
 
 import com.dancestudio.erp.entity.activity.Activity;
 import com.dancestudio.erp.entity.activity.ActivityBatch;
-import com.dancestudio.erp.entity.activity.ActivityMembershipPlan;
 import com.dancestudio.erp.entry.activity.*;
 import com.dancestudio.erp.enums.*;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
@@ -39,10 +38,32 @@ public class ActivityConverter {
         activityEntry.setDescription(activity.getDescription());
         activityEntry.setBranchId(activity.getBranch().getId());
 
-        activityEntry.setMembershipPlanEntry(convertPlansToEntry(activity.getMembershipPlan()));
+        activityEntry.setBatchEntries(convertPlansToEntry(activity.getBatches()));
 
         return activityEntry;
     }
+
+    private static List<ActivityBatchEntry> convertPlansToEntry(
+            List<ActivityBatch> batches) {
+
+        if (batches == null)
+            return List.of();
+
+        return batches.stream().map(batch -> {
+            ActivityBatchEntry batchEntry = new ActivityBatchEntry();
+            batchEntry.setBatchId(batch.getId());
+            batchEntry.setActivityId(batch.getActivity().getId());
+            batchEntry.setPrice(batch.getPrice());
+            batchEntry.setName(batch.getName());
+            batchEntry.setStartTime(batch.getStartTime());
+            batchEntry.setPlanType(MembershipType.valueOf(batch.getPlanType()));
+            batchEntry.setDaysPerWeek(batch.getDaysPerWeek());
+            batchEntry.setEndTime(batch.getEndTime());
+            return batchEntry;
+        }).toList();
+    }
+
+    // Converts ActivityEntry to Activity entity
 
     public static Activity convertToEntity(ActivityEntry activityEntry, Activity existingActivity) throws Exception {
         Activity activity = (existingActivity != null) ? existingActivity : new Activity();
@@ -63,61 +84,19 @@ public class ActivityConverter {
             activity.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
         }
 
-        convertPlansToEntity(activityEntry.getMembershipPlanEntry(), activity);
+        convertBatchesToEntity(activityEntry.getBatchEntries(), activity);
 
         return activity;
     }
 
-    // ---------- PRIVATE HELPERS ----------
-    private static void convertPlansToEntity(
-            List<ActivityMembershipPlanEntry> planEntries,
-            Activity activity) {
-
-        List<ActivityMembershipPlan> existingPlans = activity.getMembershipPlan() != null
-                ? activity.getMembershipPlan()
-                : new ArrayList<>();
-
-        // Remove plans not present in DTO
-        existingPlans.removeIf(existing -> planEntries.stream()
-                .noneMatch(dto -> dto.getMembershipPlanId() != null &&
-                        dto.getMembershipPlanId().equals(existing.getId())));
-
-        // Update existing or add new
-        for (ActivityMembershipPlanEntry planEntry : planEntries) {
-            ActivityMembershipPlan plan = null;
-
-            if (planEntry.getMembershipPlanId() != null) {
-                plan = existingPlans.stream()
-                        .filter(p -> planEntry.getMembershipPlanId().equals(p.getId()))
-                        .findFirst()
-                        .orElse(null);
-            }
-
-            if (plan == null) {
-                plan = new ActivityMembershipPlan();
-                plan.setActivity(activity);
-                existingPlans.add(plan);
-            }
-
-            plan.setPlanType(planEntry.getMembershipType().name());
-            plan.setDaysPerWeek(planEntry.getDaysPerWeek());
-
-            convertBatchesToEntity(planEntry.getActivityBatchEntries(), plan);
-        }
-
-        if (activity.getMembershipPlan() == null) {
-            activity.setMembershipPlan(existingPlans);
-        }
-    }
-
     private static void convertBatchesToEntity(
             List<ActivityBatchEntry> batchEntries,
-            ActivityMembershipPlan plan) {
+            Activity activity) {
 
-        List<ActivityBatch> existingBatches = plan.getBatches();
+        List<ActivityBatch> existingBatches = activity.getBatches();
         if (existingBatches == null) {
             existingBatches = new ArrayList<>();
-            plan.setBatches(existingBatches);
+            activity.setBatches(existingBatches);
         }
 
         // Remove batches not present in incoming list
@@ -137,48 +116,17 @@ public class ActivityConverter {
 
             if (batch == null) {
                 batch = new ActivityBatch();
-                batch.setMembershipPlan(plan);
+                batch.setActivity(activity);
                 existingBatches.add(batch);
             }
+
+            batch.setPlanType(batchEntry.getPlanType().name());
+            batch.setDaysPerWeek(batchEntry.getDaysPerWeek());
 
             batch.setPrice(batchEntry.getPrice());
             batch.setName(batchEntry.getName());
             batch.setStartTime(batchEntry.getStartTime());
             batch.setEndTime(batchEntry.getEndTime());
         }
-    }
-
-    private static List<ActivityMembershipPlanEntry> convertPlansToEntry(
-            List<ActivityMembershipPlan> plans) {
-        if (plans == null)
-            return List.of();
-
-        return plans.stream().map(plan -> {
-            ActivityMembershipPlanEntry planEntry = new ActivityMembershipPlanEntry();
-            planEntry.setMembershipPlanId(plan.getId());
-            planEntry.setMembershipType(MembershipType.valueOf(plan.getPlanType()));
-            planEntry.setDaysPerWeek(plan.getDaysPerWeek());
-            planEntry.setActivityId(plan.getActivity().getId());
-            planEntry.setActivityBatchEntries(
-                    convertBatchesToEntry(plan.getBatches()));
-            return planEntry;
-        }).toList();
-    }
-
-    private static List<ActivityBatchEntry> convertBatchesToEntry(
-            List<ActivityBatch> batches) {
-        if (batches == null)
-            return List.of();
-
-        return batches.stream().map(batch -> {
-            ActivityBatchEntry batchEntry = new ActivityBatchEntry();
-            batchEntry.setBatchId(batch.getId());
-            batchEntry.setMembershipPlanId(batch.getMembershipPlan().getId());
-            batchEntry.setPrice(batch.getPrice());
-            batchEntry.setName(batch.getName());
-            batchEntry.setStartTime(batch.getStartTime());
-            batchEntry.setEndTime(batch.getEndTime());
-            return batchEntry;
-        }).toList();
     }
 }

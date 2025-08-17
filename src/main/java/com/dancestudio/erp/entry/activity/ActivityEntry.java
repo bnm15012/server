@@ -13,5 +13,5 @@ public class ActivityEntry {
     private String description;
 
     private Long branchId;
-    private List<ActivityMembershipPlanEntry> membershipPlanEntry;
+    private List<ActivityBatchEntry> batchEntries;
 }

@@ -33,6 +33,9 @@ public class Studio extends BaseEntity {
     @Column(name = "contact")
     private String contactDetails;
 
+    @Column(name = "gst_number")
+    private String gstNumber;
+
     @Column(name = "configuration", columnDefinition = "json")
     private String configuration;
 

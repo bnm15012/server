@@ -5,7 +5,7 @@ import com.dancestudio.erp.entity.activity.Activity;
 import com.dancestudio.erp.entry.activity.ActivityEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityManager;
-import com.dancestudio.erp.repository.Activity.ActivityMembershipRepository;
+import com.dancestudio.erp.repository.Activity.ActivityBatchRepository;
 import com.dancestudio.erp.repository.Activity.ActivityRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +18,14 @@ import java.util.List;
 @Service
 public class ActivityManagerImpl implements ActivityManager {
 
-    private final ActivityMembershipRepository activityMembershipRepository;
+    private final ActivityBatchRepository activityBatchRepository;
     private final ActivityRepository activityRepository;
 
     @Autowired
     public ActivityManagerImpl(ActivityRepository activityRepository,
-            ActivityMembershipRepository activityMembershipRepository) {
+            ActivityBatchRepository activityMembershipRepository) {
         this.activityRepository = activityRepository;
-        this.activityMembershipRepository = activityMembershipRepository;
+        this.activityBatchRepository = activityMembershipRepository;
     }
 
     @Override

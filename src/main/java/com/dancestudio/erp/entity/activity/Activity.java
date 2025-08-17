@@ -28,5 +28,5 @@ public class Activity extends BaseEntity {
     private Branch branch;
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ActivityMembershipPlan> membershipPlan = new ArrayList<>();
+    private List<ActivityBatch> batches = new ArrayList<>();
 }

@@ -147,6 +147,7 @@ public class ConvertToEntryUtil {
         studioEntry.setLocation(studio.getLocation());
         studioEntry.setLogo(studio.getLogo());
         studioEntry.setEmail(studio.getEmail());
+        studioEntry.setGstNumber(studio.getGstNumber());
         studioEntry.setPasscode(studio.getPasscode());
         studioEntry.setContactDetails(studio.getContactDetails());
 
@@ -186,6 +187,10 @@ public class ConvertToEntryUtil {
         if (Objects.nonNull(studioEntry.getLogo())) {
             studio.setLogo(studioEntry.getLogo());
         }
+        if (Objects.nonNull(studioEntry.getGstNumber())) {
+            studio.setGstNumber(studioEntry.getGstNumber());
+        }
+        
         if (Objects.nonNull(studioEntry.getEmail())) {
             studio.setEmail(studioEntry.getEmail());
         }
