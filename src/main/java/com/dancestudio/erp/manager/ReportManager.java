@@ -9,5 +9,6 @@ public interface ReportManager {
 
     List<MonthlyReportEntry> getAnalysisReport(Integer year, Long branchId);
 
-    IEReportEntry getReports(Long studioId, Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) throws Exception;
+    IEReportEntry getReports(Long studioId, Long branchId, Integer startDate, Integer startMonth, Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear) throws Exception;
 }

@@ -1,7 +1,5 @@
 package com.dancestudio.erp.entry.activity;
 
-import com.dancestudio.erp.enums.MembershipType;
-
 import lombok.Data;
 
 @Data
@@ -9,7 +7,7 @@ public class ActivityBatchEntry {
     private Long batchId;
     private Long activityId;
 
-    private MembershipType planType;
+    private String planType;
     private Integer daysPerWeek;
     private Double price;
     private String name;

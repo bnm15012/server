@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Setter(onMethod = @__({ @Autowired }))
 @Component
@@ -89,12 +90,21 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ResponseEntity<ExpenseResponse> getAllExpenses(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm) {
+    public ResponseEntity<ExpenseResponse> getAllExpenses(Long branchId, Integer page, Integer size,
+            Integer startDate, Integer startMonth, Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear, String searchTerm) {
         ExpenseResponse response = new ExpenseResponse();
 
         try {
-            List<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
-            long expenseCount = (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) ? expenseManager.countExpensesByBranchId(branchId) : expenseManager.countExpensesByBranchIdAndMonth(branchId, startMonth, startYear, endMonth, endYear, searchTerm);
+            List<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, page, size, startDate, startMonth,
+                    startYear, endDate,
+                    endMonth, endYear, searchTerm);
+            long expenseCount = (Objects.nonNull(startDate) && Objects.nonNull(startMonth) && Objects.nonNull(startYear)
+                    && Objects.nonNull(endDate) && Objects.nonNull(endMonth) && Objects.nonNull(endYear))
+                            ? expenseManager.countExpensesByBranchIdAndMonth(branchId, startMonth, startYear, endMonth,
+                                    endYear,
+                                    searchTerm)
+                            : expenseManager.countExpensesByBranchId(branchId);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Expenses retrieved successfully", StatusResponse.Type.SUCCESS,
                     (int) expenseCount));

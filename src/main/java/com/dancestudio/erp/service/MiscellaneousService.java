@@ -16,12 +16,16 @@ public interface MiscellaneousService {
 
     ResponseEntity<StringResponse> refreshToken(UserEntry userEntry);
 
-    ResponseEntity<ReportResponse> getAnalysisReport(Integer year, Long studioId);
+    ResponseEntity<IEPReportResponse> getAnalysisReport(Integer year, Long studioId);
 
-    ResponseEntity<IEReportResponse> getReports(Long studioId, Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear);
+    ResponseEntity<IEReportResponse> getExpenseIncomeReports(Long studioId, Long branchId,
+            Integer startDate, Integer startMonth, Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear);
 
-    ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId, int startMonth, int startYear, int endMonth, int endYear, String status);
+    ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId,
+            Integer startDate,int startMonth, int startYear,
+            Integer endDate,int endMonth, int endYear,
+            String status);
 
     ResponseEntity<TemplateResponse> getTemplates(Long studioId);
-
 }

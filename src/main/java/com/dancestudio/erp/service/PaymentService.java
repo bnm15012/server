@@ -9,5 +9,7 @@ public interface PaymentService extends BaseService<PaymentEntry, PaymentRespons
 
     ResponseEntity<PaymentResponse> updatePaymentStatus(Long paymentId, PaymentStatus status);
 
-    ResponseEntity<PaymentResponse> getAllPayments(Long branchId, int page, int size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm);
+    ResponseEntity<PaymentResponse> getAllPayments(Long branchId, int page, int size, Integer startDate,
+            Integer startMonth, Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear, String searchTerm);
 }

@@ -14,28 +14,32 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-@Setter(onMethod = @__({@Autowired}))
+@Setter(onMethod = @__({ @Autowired }))
 @Component
 public class ReportManagerImpl implements ReportManager {
 
-    @Autowired private ExpenseManager expenseManager;
-    @Autowired private PaymentManager paymentManager;
+    @Autowired
+    private ExpenseManager expenseManager;
+    @Autowired
+    private PaymentManager paymentManager;
 
     @Autowired
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
-
 
     public List<MonthlyReportEntry> getAnalysisReport(Integer year, Long branchId) {
         return studentActivityAssignmentManager.getAnalysisReport(year, branchId);
     }
 
     @Override
-    public IEReportEntry getReports(Long studioId, Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) throws Exception {
+    public IEReportEntry getReports(Long studioId, Long branchId, Integer startDate, Integer startMonth,
+            Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear) throws Exception {
         IEReportEntry reportEntry = new IEReportEntry();
 
-        IEMonthlyReportEntry monthlyReports = processPaymentEntries(branchId, startMonth, startYear, endMonth, endYear);
-        processExpenseEntries(branchId, startMonth, startYear, endMonth, endYear, monthlyReports);
+        IEMonthlyReportEntry monthlyReports = processPaymentEntries(branchId, startDate, startMonth, startYear, endDate,
+                endMonth, endYear);
+        processExpenseEntries(branchId, startDate, startMonth, startYear, endDate,
+                endMonth, endYear, monthlyReports);
 
         reportEntry.setStudioId(studioId);
         reportEntry.setBranchId(branchId);
@@ -51,10 +55,14 @@ public class ReportManagerImpl implements ReportManager {
         return reportEntry;
     }
 
-    private IEMonthlyReportEntry processPaymentEntries(Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) throws Exception {
+    private IEMonthlyReportEntry processPaymentEntries(Long branchId, Integer startDate, Integer startMonth,
+            Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear) throws Exception {
         IEMonthlyReportEntry monthlyReports = new IEMonthlyReportEntry();
 
-        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startMonth, startYear, endMonth, endYear, null, null);
+        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startDate,
+                startMonth, startYear, endDate,
+                endMonth, endYear, null, null);
         List<IncomeEntry> incomeEntries = paymentEntries.stream()
                 .map(this::extractIncomeEntry)
                 .collect(Collectors.toList());
@@ -68,8 +76,13 @@ public class ReportManagerImpl implements ReportManager {
         return monthlyReports;
     }
 
-    private void processExpenseEntries(Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
-        List<ExpenseEntry> expenseEntries = expenseManager.getAllExpenses(branchId, 0, -1, startMonth.intValue(), startYear.intValue(), endMonth.intValue(), endYear.intValue(), null);
+    private void processExpenseEntries(Long branchId,
+            Integer startDate, Integer startMonth, Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear,
+            IEMonthlyReportEntry monthlyReports) throws Exception {
+        List<ExpenseEntry> expenseEntries = expenseManager.getAllExpenses(branchId, 0, -1, startDate, startMonth,
+                startYear, endDate,
+                endMonth, endYear, null);
         double totalExpense = expenseEntries.stream()
                 .mapToDouble(ExpenseEntry::getAmount)
                 .sum();
@@ -84,6 +97,7 @@ public class ReportManagerImpl implements ReportManager {
         incomeEntry.setStudentName(paymentEntry.getStudentEntry().getName());
         incomeEntry.setAmount(paymentEntry.getAmount());
         incomeEntry.setPaymentMode(paymentEntry.getPaymentType().name());
+        incomeEntry.setPaymenDate(paymentEntry.getPaymentDate());
 
         if (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().getEnrolledActivities() != null) {
             Long payeeId = paymentEntry.getPayeeId();

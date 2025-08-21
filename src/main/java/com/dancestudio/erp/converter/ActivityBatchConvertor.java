@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entity.activity.ActivityBatch;
-import com.dancestudio.erp.enums.MembershipType;
 import com.dancestudio.erp.entry.activity.ActivityBatchEntry;
 import com.dancestudio.erp.entry.activity.ActivityEntry;
 
@@ -35,7 +34,7 @@ public class ActivityBatchConvertor {
         activityBatchEntry.setActivityId(activityBatch.getActivity().getId());
       
         activityBatchEntry.setDaysPerWeek(activityBatch.getDaysPerWeek());
-        activityBatchEntry.setPlanType(MembershipType.valueOf(activityBatch.getPlanType()));
+        activityBatchEntry.setPlanType((activityBatch.getPlanType()));
         activityBatchEntry.setPrice((activityBatch.getPrice()));
         activityBatchEntry.setName((activityBatch.getName()));
         activityBatchEntry.setStartTime(activityBatch.getStartTime());
@@ -53,7 +52,7 @@ public class ActivityBatchConvertor {
         }
 
         if (Objects.nonNull(activityBatchEntry.getPlanType())) {
-            newActivityBatch.setPlanType(activityBatchEntry.getPlanType().name());
+            newActivityBatch.setPlanType(activityBatchEntry.getPlanType());
         }
         if (Objects.nonNull(activityBatchEntry.getDaysPerWeek())) {
             newActivityBatch.setDaysPerWeek(activityBatchEntry.getDaysPerWeek());

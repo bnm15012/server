@@ -31,29 +31,36 @@ public class MiscellaneousController {
     }
 
     @GetMapping("analysis/{year}/{studioId}")
-    public ResponseEntity<ReportResponse> getAnalysisReport(@PathVariable Integer year, @PathVariable Long studioId) {
+    public ResponseEntity<IEPReportResponse> getAnalysisReport(@PathVariable Integer year,
+            @PathVariable Long studioId) {
         return miscellaneousService.getAnalysisReport(year, studioId);
     }
 
-    @GetMapping("reports/{studioId}/{branchId}/{startMonth}/{startYear}/{endMonth}/{endYear}")
+    @GetMapping("reports/{studioId}/{branchId}/{startDate}/{startMonth}/{startYear}/{endDate}/{endMonth}/{endYear}")
     public ResponseEntity<IEReportResponse> getReports(@PathVariable Long studioId,
             @PathVariable Long branchId,
+            @PathVariable Integer startDate,
             @PathVariable Integer startMonth,
             @PathVariable Integer startYear,
+            @PathVariable Integer endDate,
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear) {
-        return miscellaneousService.getReports(studioId, branchId, startMonth, startYear, endMonth, endYear);
+        return miscellaneousService.getExpenseIncomeReports(studioId, branchId, startDate, startMonth, startYear,
+                endDate, endMonth, endYear);
     }
 
-    @GetMapping("reports/payments/{studioId}/{branchId}/{startMonth}/{startYear}/{endMonth}/{endYear}")
+    @GetMapping("reports/payments/{studioId}/{branchId}/{startDate}/{startMonth}/{startYear}/{endDate}/{endMonth}/{endYear}")
     public ResponseEntity<PaymentResponse> getPaymentReports(@PathVariable Long studioId,
             @PathVariable Long branchId,
+            @PathVariable Integer startDate,
             @PathVariable Integer startMonth,
             @PathVariable Integer startYear,
+            @PathVariable Integer endDate,
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear,
             @RequestParam String status) {
-        return miscellaneousService.getPaymentReports(studioId, branchId, startMonth, startYear, endMonth, endYear,
+        return miscellaneousService.getPaymentReports(studioId, branchId, startDate, startMonth, startYear,
+                endDate, endMonth, endYear,
                 status);
     }
 

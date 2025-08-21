@@ -87,28 +87,35 @@ public class PaymentManagerImpl implements PaymentManager {
     }
 
     @Override
-    public PaymentEntry getPaymentEntryByStudentActivityAssignmentId(Long studentActivityAssignmentId) throws Exception {
+    public PaymentEntry getPaymentEntryByStudentActivityAssignmentId(Long studentActivityAssignmentId)
+            throws Exception {
         Payment payment = paymentRepository.findByPayeeId(studentActivityAssignmentId);
-        if(Objects.isNull(payment)) {
+        if (Objects.isNull(payment)) {
             throw new Exception("Payment not found");
         }
         return convertToEntry(payment);
 
-     }
+    }
 
     @SneakyThrows
     @Override
-    public List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String status, String searchTerm) {
+    public List<PaymentEntry> getAllPaymentsByBranch(Long branchId, int page, int size, Integer startDate,
+            Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear, String status,
+            String searchTerm) {
         Page<Payment> entries;
-        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
-        if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
+        Pageable pageable = size == -1 ? Pageable.unpaged()
+                : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
+        if (Objects.nonNull(startDate) && Objects.nonNull(startMonth) && Objects.nonNull(startYear)
+                && Objects.nonNull(endDate) && Objects.nonNull(endMonth) && Objects.nonNull(endYear)) {
+            Map<String, Date> monthRange = DateUtil.getUTCDateRange(startDate, startMonth, startYear, endDate,
+                    endMonth, endYear);
+            entries = paymentRepository.findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(branchId,
+                    monthRange.get("start"), monthRange.get("end"), status, pageable);
+        } else {
             List<Payment> payments = paymentRepository.findByBranchId(branchId, pageable).getContent();
             return payments.stream()
                     .map(this::convertToEntry)
                     .toList();
-        } else {
-            Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-            entries = paymentRepository.findAllByBranchIdAndPaymentDateBetweenAndOptionalStatus(branchId, monthRange.get("start"), monthRange.get("end"), status, pageable);
         }
 
         return entries.stream()
@@ -118,9 +125,11 @@ public class PaymentManagerImpl implements PaymentManager {
                         return true;
                     }
                     String lowerSearchTerm = searchTerm.toLowerCase();
-                    return (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().getName() != null &&
+                    return (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().getName() != null
+                            &&
                             paymentEntry.getStudentEntry().getName().toLowerCase().contains(lowerSearchTerm)) ||
-                            (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().toString().toLowerCase().contains(lowerSearchTerm));
+                            (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().toString()
+                                    .toLowerCase().contains(lowerSearchTerm));
                 })
                 .collect(Collectors.toList());
     }
@@ -132,8 +141,10 @@ public class PaymentManagerImpl implements PaymentManager {
 
         try {
             if (PayeeType.STUDENT.name().equals(payment.getPayeeType())) {
-                Optional<StudentActivityAssignment> studentActivityAssignmentOptional = studentActivityAssignmentRepository.findById(payment.getPayeeId());
-                studentActivityAssignmentOptional.ifPresent(studentActivityAssignment -> paymentEntry.setStudentEntry(ConvertToEntryUtil.convertToEntry(studentActivityAssignment.getStudent())));
+                Optional<StudentActivityAssignment> studentActivityAssignmentOptional = studentActivityAssignmentRepository
+                        .findById(payment.getPayeeId());
+                studentActivityAssignmentOptional.ifPresent(studentActivityAssignment -> paymentEntry
+                        .setStudentEntry(ConvertToEntryUtil.convertToEntry(studentActivityAssignment.getStudent())));
             } else if (PayeeType.BOOKING.name().equals(payment.getPayeeType())) {
                 paymentEntry.setClientEntry(clientManager.getById(payment.getPayeeId()));
             }

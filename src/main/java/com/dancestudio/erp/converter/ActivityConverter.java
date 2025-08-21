@@ -56,7 +56,7 @@ public class ActivityConverter {
             batchEntry.setPrice(batch.getPrice());
             batchEntry.setName(batch.getName());
             batchEntry.setStartTime(batch.getStartTime());
-            batchEntry.setPlanType(MembershipType.valueOf(batch.getPlanType()));
+            batchEntry.setPlanType((batch.getPlanType()));
             batchEntry.setDaysPerWeek(batch.getDaysPerWeek());
             batchEntry.setEndTime(batch.getEndTime());
             return batchEntry;
@@ -120,7 +120,7 @@ public class ActivityConverter {
                 existingBatches.add(batch);
             }
 
-            batch.setPlanType(batchEntry.getPlanType().name());
+            batch.setPlanType(batchEntry.getPlanType());
             batch.setDaysPerWeek(batchEntry.getDaysPerWeek());
 
             batch.setPrice(batchEntry.getPrice());

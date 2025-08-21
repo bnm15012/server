@@ -3,11 +3,13 @@ package com.dancestudio.erp.util;
 import com.dancestudio.erp.context.TimeZoneContext;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DateUtil {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     public static Date addDays(Date date, int days) {
         if (date == null) {
@@ -25,7 +27,7 @@ public class DateUtil {
     }
 
     public static Map<String, Date> getDateRangeByMonthYear(int startMonth, int startYear, int endMonth, int endYear) {
-        return getDateRange(1, startMonth, startYear, 31, endMonth, endYear);
+        return getUTCDateRange(1, startMonth, startYear, 31, endMonth, endYear);
     }
 
     /**
@@ -42,7 +44,7 @@ public class DateUtil {
      * @param endYear    The end year
      * @return A Map with UTC "start" and "end" Date values
      */
-    public static Map<String, Date> getDateRange(int startDate, int startMonth, int startYear,
+    public static Map<String, Date> getUTCDateRange(int startDate, int startMonth, int startYear,
             int endDate, int endMonth, int endYear) {
         ZoneId zoneId = TimeZoneContext.getTimeZone();
 
@@ -73,6 +75,23 @@ public class DateUtil {
         return getDateRangeByMonthYear(1, startYear, 12, endYear);
     }
 
+    public static Map<String, Date> getUTCDateRange(String startDateStr, String endDateStr) {
+        if (startDateStr == null || endDateStr == null) {
+            throw new IllegalArgumentException("Start and End date strings cannot be null");
+        }
+
+        LocalDate startDate = LocalDate.parse(startDateStr, FORMATTER);
+        LocalDate endDate = LocalDate.parse(endDateStr, FORMATTER);
+
+        return getUTCDateRange(
+                startDate.getDayOfMonth(),
+                startDate.getMonthValue(),
+                startDate.getYear(),
+                endDate.getDayOfMonth(),
+                endDate.getMonthValue(),
+                endDate.getYear());
+    }
+
     public static boolean isTodaysDate(Date date) {
         if (date == null) {
             return false;
@@ -80,6 +99,7 @@ public class DateUtil {
         LocalDate inputDate = date.toInstant().atZone(ZoneOffset.UTC).toLocalDate();
         LocalDate updatedDate = inputDate.plusDays(1);
         LocalDate currentDateUTC = LocalDate.now(ZoneOffset.UTC);
-        return updatedDate.getMonth() == currentDateUTC.getMonth() && updatedDate.getDayOfMonth() == currentDateUTC.getDayOfMonth();
+        return updatedDate.getMonth() == currentDateUTC.getMonth()
+                && updatedDate.getDayOfMonth() == currentDateUTC.getDayOfMonth();
     }
 }

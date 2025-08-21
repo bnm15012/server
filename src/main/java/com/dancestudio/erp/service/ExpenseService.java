@@ -6,5 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface ExpenseService extends BaseService<ExpenseEntry, ExpenseResponse, Long> {
 
-    ResponseEntity<ExpenseResponse> getAllExpenses(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm);
+    ResponseEntity<ExpenseResponse> getAllExpenses(Long branchId, Integer page, Integer size, Integer startDate,
+            Integer startMonth, Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear, String searchTerm);
 }
