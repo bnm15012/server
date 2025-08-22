@@ -1,7 +1,6 @@
 package com.dancestudio.erp.entry;
 
 import com.dancestudio.erp.enums.MembershipStatus;
-import com.dancestudio.erp.enums.MembershipType;
 import lombok.Data;
 
 import java.util.Date;
@@ -14,7 +13,7 @@ public class StudentActivityAssignmentEntry {
     private Date registrationDate;
     private Date membershipStartDate;
     private Date membershipEndDate;
-    private MembershipType membershipType;
+    private String membershipType;
     private Double activityAmount;
     private MembershipStatus membershipStatus = MembershipStatus.INACTIVE;
     private Integer daysPerWeek;

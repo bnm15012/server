@@ -109,7 +109,7 @@ public class ReportManagerImpl implements ReportManager {
                         incomeEntry.setActivityName(matchedActivityAssignment.getActivityName());
                     }
                     if (matchedActivityAssignment.getMembershipType() != null) {
-                        incomeEntry.setMembershipType(matchedActivityAssignment.getMembershipType().name());
+                        incomeEntry.setMembershipType(matchedActivityAssignment.getMembershipType());
                     }
                 });
         }

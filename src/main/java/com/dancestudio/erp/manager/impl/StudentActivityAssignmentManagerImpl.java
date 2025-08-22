@@ -9,7 +9,6 @@ import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.enums.ExpenseCategory;
 import com.dancestudio.erp.enums.MembershipStatus;
-import com.dancestudio.erp.enums.MembershipType;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.PaymentManager;
@@ -243,7 +242,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                         ? MembershipStatus.ACTIVE
                         : MembershipStatus.INACTIVE);
         studentActivityAssignmentEntry
-                .setMembershipType(MembershipType.valueOf(studentActivityAssignment.getMembershipType()));
+                .setMembershipType((studentActivityAssignment.getMembershipType()));
         studentActivityAssignmentEntry.setActivityAmount(studentActivityAssignment.getActivityAmount());
 
         if (Objects.nonNull(studentActivityAssignment.getActivityName())) {
@@ -281,7 +280,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
             studentActivityAssignment.setMembershipEndDate(studentActivityAssignmentEntry.getMembershipEndDate());
         }
         if (Objects.nonNull(studentActivityAssignmentEntry.getMembershipType())) {
-            studentActivityAssignment.setMembershipType(studentActivityAssignmentEntry.getMembershipType().name());
+            studentActivityAssignment.setMembershipType(studentActivityAssignmentEntry.getMembershipType());
         }
         if (Objects.nonNull(studentActivityAssignmentEntry.getActivityAmount())) {
             studentActivityAssignment.setActivityAmount(studentActivityAssignmentEntry.getActivityAmount());
