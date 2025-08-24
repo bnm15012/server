@@ -10,8 +10,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @Table(name = "activity_batch", uniqueConstraints = {
-        @UniqueConstraint(name = "plan_type_activity_id_days_per_week_key", columnNames = { "plan_type", "activity_id",
-                "days_per_week" })
+        @UniqueConstraint(name = "name_plan_type_activity_id_days_per_week_key", columnNames = {"name", "plan_type", "activity_id", "days_per_week" })
 })
 public class ActivityBatch extends BaseEntity {
 
