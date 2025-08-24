@@ -5,5 +5,9 @@ public enum ActivityType {
     DANCE,
     ZUMBA,
     YOGA,
-    MARTIAL_ARTS
+    MARTIAL_ARTS,
+    KATHAK,
+    BHARATNATYAM,
+    FREESTYLE,
+    SEMI_CLASSICAL,
 }
