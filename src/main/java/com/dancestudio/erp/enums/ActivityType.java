@@ -9,5 +9,7 @@ public enum ActivityType {
     KATHAK,
     BHARATNATYAM,
     FREESTYLE,
-    SEMI_CLASSICAL
+    SEMI_CLASSICAL,
+    BOLLYHOP,
+    GYMNASTICS
 }
