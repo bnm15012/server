@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BranchRepository extends JpaRepository<Branch, Long> {
 
@@ -13,4 +14,7 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
 
     @Query(value = "SELECT whatsapp_status FROM branch WHERE id = :branchId", nativeQuery = true)
     String findWhatsAppStatusByBranchId(@Param("branchId") Long branchId);
+    
+    @Query("SELECT b FROM Branch b LEFT JOIN FETCH b.studio WHERE b.id = :branchId")
+    Optional<Branch> findBranchWithStudioById(@Param("branchId") Long branchId);
 }

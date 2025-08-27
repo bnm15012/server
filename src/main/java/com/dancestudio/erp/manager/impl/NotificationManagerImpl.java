@@ -109,7 +109,8 @@ public class NotificationManagerImpl implements NotificationManager {
                 ? memberRepository.findByBranchId(requestEntry.getBranchId())
                 : memberRepository.findAllById(requestEntry.getMemberIds());
 
-        Branch branch = branchRepository.findById(requestEntry.getBranchId()).get();
+        Branch branch = branchRepository.findBranchWithStudioById(requestEntry.getBranchId())
+            .orElseThrow(() -> new RuntimeException("Branch not found"));
         Studio studio = branch.getStudio();
 
         boolean saveFlag = true;
@@ -119,10 +120,12 @@ public class NotificationManagerImpl implements NotificationManager {
             saveFlag = false;
         }
 
+        Long studioId = branch.getStudio().getId();
+        
         Message message = createAndSaveMessage(requestEntry, branch, saveFlag);
         for(Member member : members) {
             if(Objects.isNull(requestEntry.getTemplateName())) {
-                sendEmail(member.getEmail(), message.getTitle(), message.getContent(), message.getBranch().getStudio().getId());
+                sendEmail(member.getEmail(), message.getTitle(), message.getContent(), studioId);
             } else {
                 TemplateEntry templateEntry = templateManager.getTemplateDetails(requestEntry.getTemplateName());
                 String updatedBody = formatEmailBody(templateEntry, studio.getName(), member.getName(), requestEntry.getActivityType());
@@ -130,7 +133,7 @@ public class NotificationManagerImpl implements NotificationManager {
                     String sanitizedUrl = requestEntry.getInvoiceUrl().replace(" ", "%20");
                     updatedBody = updatedBody.replace("{invoice_url}", sanitizedUrl);
                 }
-                sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, message.getBranch().getStudio().getId());
+                sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, studioId);
             }
         }
     }

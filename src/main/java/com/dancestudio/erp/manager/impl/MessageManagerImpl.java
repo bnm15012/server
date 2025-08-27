@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -50,58 +51,60 @@ public class MessageManagerImpl implements MessageManager {
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Transactional
-    public SendMessageResponse sendMessage(SendMessageRequestEntry request) {
+    public SendMessageResponse sendMessage(SendMessageRequestEntry request) throws Exception {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found"));
 
         boolean sendToAll = (request.getMemberIds() == null || request.getMemberIds().isEmpty());
-
-        if (sendToAll) {
-            // Async processing for all members
-            executorService.submit(() -> {
-                List<Member> members = memberRepository.findByBranchId(branch.getId());
+        
+        // Common async processing for both cases
+        executorService.submit(() -> {
+            try {
+                List<Member> members = sendToAll 
+                    ? memberRepository.findByBranchId(branch.getId()) 
+                    : memberRepository.findAllById(request.getMemberIds());
+                    
                 if (members.isEmpty()) {
                     log.error("No members found to send message.");
                     return;
                 }
+                
                 Message message = createAndSaveMessage(request, branch);
-                int success;
+                int success = 0;
+                
                 if (isWhatsappNotification(request)) {
-                    success = handleWhatsappNotification(request, branch, members, message);
-                    handleEmailNotification(request, branch, members, message);
+                    success = sendWhatsAppMessagesWithDelay(members, message.getContent(), request.getBranchId());
                 } else if (isSmsNotification(request)) {
                     success = handleSmsNotification(request, branch, members, message);
-                    handleEmailNotification(request, branch, members, message);
                 } else {
-                    success = handleEmailNotification(request, branch, members, message);
+                    notificationManager.sendEmail(request);
+                    success = members.size();
                 }
+                
                 int failed = members.size() - success;
                 log.info("Async message sending completed. Success: {}, Failed: {}", success, failed);
-            });
+                
+            } catch (Exception e) {
+                log.error("Error in async message sending: {}", e.getMessage(), e);
+            }
+        });
 
-            return new SendMessageResponse(0, 0, 0, "Please check after sometime. Message will be delivered soon");
-        } else {
-            // Synchronous processing for specific members
-            List<Member> members = memberRepository.findAllById(request.getMemberIds());
-            if (members.isEmpty()) {
-                throw new RuntimeException("No members found to send message.");
+        return new SendMessageResponse(0, 0, 0, "Messages are being sent in the background. Please check back later for status.");
+    }
+    
+    private int sendWhatsAppMessagesWithDelay(List<Member> members, String message, Long branchId) {
+        int success = 0;
+        for (Member member : members) {
+            try {
+                whatsappUtil.sendMessage("91" + member.getPhone(), message, branchId);
+                success++;
+                // Add 5 second delay between messages
+                Thread.sleep(5000);
+            } catch (Exception e) {
+                log.error("Error sending WhatsApp message to {}: {}", member.getPhone(), e.getMessage());
             }
-            Message message = createAndSaveMessage(request, branch);
-            int success = 0;
-            if (isWhatsappNotification(request)) {
-                for (Member member : members) {
-                    whatsappUtil.sendMessage("91" + member.getPhone(), message.getContent(), request.getBranchId());
-                }
-                 success = handleWhatsappNotification(request, branch, members, message);
-            } else if (isSmsNotification(request)) {
-                success = handleSmsNotification(request, branch, members, message);
-                handleEmailNotification(request, branch, members, message);
-            } else {
-                success = handleEmailNotification(request, branch, members, message);
-            }
-            int failed = members.size() - success;
-            return new SendMessageResponse(members.size(), success, failed, "Message sent successfully");
         }
+        return success;
     }
 
     @Override
@@ -165,7 +168,11 @@ public class MessageManagerImpl implements MessageManager {
     public Message createAndSaveMessage(SendMessageRequestEntry request, Branch branch) {
         Message message = new Message();
         message.setTitle(request.getTitle());
-        message.setContent(request.getContent());
+        if(Objects.isNull(request.getContent())) {
+            message.setContent(request.getInvoiceUrl());
+        } else {
+            message.setContent(request.getContent());
+        }
         message.setNotiticationType(request.getNotificationType());
         message.setBranch(branch);
         message.setSendToAll(request.getSentToAll());
@@ -207,6 +214,10 @@ public class MessageManagerImpl implements MessageManager {
 
     private boolean isSmsNotification(SendMessageRequestEntry request) {
         return TemplateType.SMS.name().equals(request.getNotificationType());
+    }
+
+    private boolean isEmailNotification(SendMessageRequestEntry request) {
+        return TemplateType.EMAIL.name().equals(request.getNotificationType());
     }
 
     private int handleWhatsappNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
