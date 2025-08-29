@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,16 +61,6 @@ public class MessageManagerImpl implements MessageManager {
         boolean sendToAll = (request.getMemberIds() == null || request.getMemberIds().isEmpty());
 
         // Common async processing for both cases
-
-        if (isWhatsappNotification(request)) {
-            SessionEntry sessionEntry = whatsappUtil.createSession(request.getBranchId());
-            if (!sessionEntry.isSuccess()) {
-                log.error("WhatsApp session is not active for branch ID: {}", request.getBranchId());
-                throw new RuntimeException(
-                        "Not able to connect with whatsapp. Please re-configure if it is disconnected or Try after sometime!.");
-            }
-        }
-
         executorService.submit(() -> {
             try {
                 List<Member> members = sendToAll

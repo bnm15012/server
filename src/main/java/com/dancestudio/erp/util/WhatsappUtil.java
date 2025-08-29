@@ -131,6 +131,7 @@ public class WhatsappUtil {
 
     public boolean sendMessage(String number, String message, Long branchId, byte[] fileBytes, String originalName,
             String contentType) {
+        createSession(branchId);
         String apiUrl = createSessionUrl + "/send/" + branchId;
 
         String boundary = "----Boundary" + System.currentTimeMillis();
