@@ -67,7 +67,7 @@ public class StudentManagerImpl implements StudentManager {
             notificationManager.sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, branchEntry.getStudioId());
         }
 
-        boolean msgSent = whatsappUtil.sendMessage(member.getPhone(), updatedBody, member.getBranch().getId());
+        boolean msgSent = whatsappUtil.sendMessage(member.getPhone(), updatedBody, member.getBranch().getId(), null, null, null);
         if(!msgSent) {
             log.error("Failed to send WhatsApp message to student: {}", member.getName());
         }

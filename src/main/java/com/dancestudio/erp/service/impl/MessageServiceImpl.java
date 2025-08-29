@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,20 +20,26 @@ import java.util.Objects;
 @Setter
 public class MessageServiceImpl implements MessageService {
 
-    @Autowired private MessageManager messageManager;
-    @Autowired private NotificationManager notificationManager;
+    @Autowired
+    private MessageManager messageManager;
+    @Autowired
+    private NotificationManager notificationManager;
 
     @Override
     public void sendWhatsAppMessage(String to, String messageText) {
     }
 
     @Override
-    public ResponseEntity<SendMessageResponse> sendMessage(SendMessageRequestEntry request) {
+    public ResponseEntity<SendMessageResponse> sendMessage(SendMessageRequestEntry request, MultipartFile file) {
 
         SendMessageResponse response = new SendMessageResponse();
         try {
-            SendMessageResponse result = messageManager.sendMessage(request);
-            response.setStatus(new StatusResponse(1, "Message sent successfully", StatusResponse.Type.SUCCESS, Objects.isNull(result) ? 0 : 1));
+            byte[] fileBytes = file != null && !file.isEmpty() ? file.getBytes() : null;
+            String originalName = file != null ? file.getOriginalFilename() : null;
+            SendMessageResponse result = messageManager.sendMessage(request, fileBytes, originalName,
+                    file != null ? file.getContentType() : null);
+            response.setStatus(new StatusResponse(1, "Message sent successfully", StatusResponse.Type.SUCCESS,
+                    Objects.isNull(result) ? 0 : 1));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
@@ -46,7 +53,8 @@ public class MessageServiceImpl implements MessageService {
         try {
             List<MessageEntry> messageEntries = messageManager.getMessagesByBranchId(branchId, page, size);
             long totalMessages = messageManager.getMessageCountByBranchId(branchId);
-            response.setStatus(new StatusResponse(1, "Messages fetched successfully", StatusResponse.Type.SUCCESS, (int) totalMessages));
+            response.setStatus(new StatusResponse(1, "Messages fetched successfully", StatusResponse.Type.SUCCESS,
+                    (int) totalMessages));
             response.setData(messageEntries);
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
@@ -60,7 +68,8 @@ public class MessageServiceImpl implements MessageService {
         MessageRecipientResponse response = new MessageRecipientResponse();
         try {
             List<MessageRecipientEntry> messageEntries = messageManager.getMessageRecipients(messageId);
-            response.setStatus(new StatusResponse(1, "Message recipients fetched successfully", StatusResponse.Type.SUCCESS, messageEntries.size()));
+            response.setStatus(new StatusResponse(1, "Message recipients fetched successfully",
+                    StatusResponse.Type.SUCCESS, messageEntries.size()));
             response.setData(messageEntries);
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
@@ -74,7 +83,8 @@ public class MessageServiceImpl implements MessageService {
         CreateSessionResponse response = new CreateSessionResponse();
         try {
             SessionEntry sessionEntry = messageManager.createSession(branchId);
-            response.setStatus(new StatusResponse(1, "Whatsapp session created successfully", StatusResponse.Type.SUCCESS));
+            response.setStatus(
+                    new StatusResponse(1, "Whatsapp session created successfully", StatusResponse.Type.SUCCESS));
             response.setData(Collections.singletonList(sessionEntry));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
@@ -90,7 +100,8 @@ public class MessageServiceImpl implements MessageService {
             String status = messageManager.checkStatus(branchId);
             WhatsAppStatusEntry whatsAppStatusEntry = new WhatsAppStatusEntry();
             whatsAppStatusEntry.setWebWhatsAppStatus(status);
-            response.setStatus(new StatusResponse(1, "Whatsapp session status retrived successfully", StatusResponse.Type.SUCCESS));
+            response.setStatus(new StatusResponse(1, "Whatsapp session status retrived successfully",
+                    StatusResponse.Type.SUCCESS));
             response.setData(Collections.singletonList(whatsAppStatusEntry));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
@@ -106,7 +117,8 @@ public class MessageServiceImpl implements MessageService {
             String status = messageManager.logoutWhatsAppSession(branchId);
             WhatsAppStatusEntry whatsAppStatusEntry = new WhatsAppStatusEntry();
             whatsAppStatusEntry.setWebWhatsAppStatus(status);
-            response.setStatus(new StatusResponse(1, "Whatsapp session closed successfully", StatusResponse.Type.SUCCESS));
+            response.setStatus(
+                    new StatusResponse(1, "Whatsapp session closed successfully", StatusResponse.Type.SUCCESS));
             response.setData(Collections.singletonList(whatsAppStatusEntry));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
@@ -116,4 +128,3 @@ public class MessageServiceImpl implements MessageService {
     }
 
 }
-

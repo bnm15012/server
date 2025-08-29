@@ -9,6 +9,7 @@ import com.dancestudio.erp.service.MessageService;
 import com.dancestudio.erp.service.MiscellaneousService;
 import com.dancestudio.erp.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -91,9 +92,15 @@ public class MiscellaneousController {
         return "Message sent successfully!";
     }
 
-    @PostMapping("sendMessage")
-    public ResponseEntity<SendMessageResponse> sendMessage(@RequestBody SendMessageRequestEntry request) {
-        return messageService.sendMessage(request);
+    // @PostMapping("sendMessage")
+    // public ResponseEntity<SendMessageResponse> sendMessage(@RequestBody SendMessageRequestEntry request) {
+    //     return messageService.sendMessage(request);
+    // }
+
+    @PostMapping("sendMessage/{branchId}")
+    public ResponseEntity<SendMessageResponse> sendMessage(@ModelAttribute SendMessageRequestEntry request, @PathVariable String branchId,
+            @RequestParam(value = "file", required=false) MultipartFile file) {
+        return messageService.sendMessage(request, file);
     }
 
     @GetMapping("getMessageHistory/{branchId}")

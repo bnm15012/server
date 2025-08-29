@@ -51,55 +51,70 @@ public class MessageManagerImpl implements MessageManager {
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Transactional
-    public SendMessageResponse sendMessage(SendMessageRequestEntry request) throws Exception {
+    public SendMessageResponse sendMessage(SendMessageRequestEntry request, byte[] fileBytes, String originalName,
+            String contentType)
+            throws Exception {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found"));
 
         boolean sendToAll = (request.getMemberIds() == null || request.getMemberIds().isEmpty());
-        
+
         // Common async processing for both cases
+
+        if (isWhatsappNotification(request)) {
+            SessionEntry sessionEntry = whatsappUtil.createSession(request.getBranchId());
+            if (!sessionEntry.isSuccess()) {
+                log.error("WhatsApp session is not active for branch ID: {}", request.getBranchId());
+                throw new RuntimeException(
+                        "Not able to connect with whatsapp. Please re-configure if it is disconnected or Try after sometime!.");
+            }
+        }
+
         executorService.submit(() -> {
             try {
-                List<Member> members = sendToAll 
-                    ? memberRepository.findByBranchId(branch.getId()) 
-                    : memberRepository.findAllById(request.getMemberIds());
-                    
+                List<Member> members = sendToAll
+                        ? memberRepository.findByBranchId(branch.getId())
+                        : memberRepository.findAllById(request.getMemberIds());
+
                 if (members.isEmpty()) {
                     log.error("No members found to send message.");
                     return;
                 }
-                
+
                 Message message = createAndSaveMessage(request, branch);
                 int success = 0;
-                
+
                 if (isWhatsappNotification(request)) {
-                    success = sendWhatsAppMessagesWithDelay(members, message.getContent(), request.getBranchId());
+                    success = sendWhatsAppMessagesWithDelay(members, message.getContent(), request.getBranchId(),
+                            fileBytes, originalName, contentType);
                 } else if (isSmsNotification(request)) {
                     success = handleSmsNotification(request, branch, members, message);
                 } else {
                     notificationManager.sendEmail(request);
                     success = members.size();
                 }
-                
+
                 int failed = members.size() - success;
                 log.info("Async message sending completed. Success: {}, Failed: {}", success, failed);
-                
+
             } catch (Exception e) {
-                log.error("Error in async message sending: {}", e.getMessage(), e);
+                throw new RuntimeException(e.getMessage(), e);
             }
         });
-
-        return new SendMessageResponse(0, 0, 0, "Messages are being sent in the background. Please check back later for status.");
+        return new SendMessageResponse(0, 0, 0,
+                "Messages are being sent in the background. Please check back later for status.");
     }
-    
-    private int sendWhatsAppMessagesWithDelay(List<Member> members, String message, Long branchId) {
+
+    private int sendWhatsAppMessagesWithDelay(List<Member> members, String message, Long branchId, byte[] fileBytes,
+            String originalName, String contentType) {
         int success = 0;
         for (Member member : members) {
             try {
-                whatsappUtil.sendMessage("91" + member.getPhone(), message, branchId);
+                whatsappUtil.sendMessage("91" + member.getPhone(), message, branchId, fileBytes, originalName,
+                        contentType);
                 success++;
-                // Add 5 second delay between messages
-                Thread.sleep(5000);
+                // Add 10 second delay between messages
+                Thread.sleep(10000);
             } catch (Exception e) {
                 log.error("Error sending WhatsApp message to {}: {}", member.getPhone(), e.getMessage());
             }
@@ -168,7 +183,7 @@ public class MessageManagerImpl implements MessageManager {
     public Message createAndSaveMessage(SendMessageRequestEntry request, Branch branch) {
         Message message = new Message();
         message.setTitle(request.getTitle());
-        if(Objects.isNull(request.getContent())) {
+        if (Objects.isNull(request.getContent())) {
             message.setContent(request.getInvoiceUrl());
         } else {
             message.setContent(request.getContent());
@@ -192,7 +207,7 @@ public class MessageManagerImpl implements MessageManager {
             recipient.setStatus(MessageStatus.PENDING);
 
             try {
-                if(sendWhatsapp) {
+                if (sendWhatsapp) {
                     sendSms(member, content);
                 }
                 recipient.setStatus(MessageStatus.SENT);
@@ -220,23 +235,27 @@ public class MessageManagerImpl implements MessageManager {
         return TemplateType.EMAIL.name().equals(request.getNotificationType());
     }
 
-    private int handleWhatsappNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
+    private int handleWhatsappNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
+            Message message) {
         if (WhatsAppStatus.ACTIVE.name().equals(branch.getWhatsappStatus())) {
             return processRecipients(members, message, request.getContent(), true);
         }
         throw new RuntimeException("Studio not configured for WhatsApp messaging");
     }
 
-    private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
+    private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
+            Message message) {
         Studio studio = branch.getStudio();
         return 0;
     }
 
-    private int handleEmailNotification(SendMessageRequestEntry request, Branch branch, List<Member> members, Message message) {
+    private int handleEmailNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
+            Message message) {
         int success = 0;
         for (Member member : members) {
             try {
-                notificationManager.sendEmail(member.getEmail(), request.getTitle(), request.getContent(), branch.getStudio().getId());
+                notificationManager.sendEmail(member.getEmail(), request.getTitle(), request.getContent(),
+                        branch.getStudio().getId());
                 success++;
             } catch (Exception e) {
                 log.error("Failed to send email to student: {}", member.getEmail(), e);
@@ -251,7 +270,7 @@ public class MessageManagerImpl implements MessageManager {
             throw new RuntimeException("Invalid phone number.");
         }
 
-        whatsappUtil.sendMessage(member.getPhone(), content, member.getBranch().getId());
+        whatsappUtil.sendMessage(member.getPhone(), content, member.getBranch().getId(), null, null, null);
     }
 
     @Override

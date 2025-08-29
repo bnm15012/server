@@ -6,8 +6,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -127,29 +129,47 @@ public class WhatsappUtil {
         }
     }
 
-    public boolean sendMessage(String number, String message, Long branchId) {
-        createSession(branchId);
+    public boolean sendMessage(String number, String message, Long branchId, byte[] fileBytes, String originalName,
+            String contentType) {
         String apiUrl = createSessionUrl + "/send/" + branchId;
+
+        String boundary = "----Boundary" + System.currentTimeMillis();
 
         try {
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
             connection.setDoOutput(true);
 
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("numbers", Collections.singletonList(number));
-            payload.put("message", message);
+            try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
 
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = mapper.writeValueAsBytes(payload);
-                os.write(input, 0, input.length);
+                // Add "numbers" field
+                out.writeBytes("--" + boundary + "\r\n");
+                out.writeBytes("Content-Disposition: form-data; name=\"numbers\"\r\n\r\n");
+                out.writeBytes("[\"" + number + "\"]\r\n");
+
+                // Add "message" field
+                out.writeBytes("--" + boundary + "\r\n");
+                out.writeBytes("Content-Disposition: form-data; name=\"message\"\r\n\r\n");
+                out.writeBytes(message + "\r\n");
+
+                // Add file (if present)
+                if (fileBytes != null) {
+                    out.writeBytes("--" + boundary + "\r\n");
+                    out.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\""
+                            + originalName + "\"\r\n");
+                    out.writeBytes("Content-Type: " + contentType + "\r\n\r\n");
+                    out.write(fileBytes);
+                    out.writeBytes("\r\n");
+                }
+
+                // End boundary
+                out.writeBytes("--" + boundary + "--\r\n");
+                out.flush();
             }
 
             int responseCode = connection.getResponseCode();
-
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 return true;
             } else {

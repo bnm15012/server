@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MessageManager {
 
-    SendMessageResponse sendMessage(SendMessageRequestEntry request) throws Exception;
+    SendMessageResponse sendMessage(SendMessageRequestEntry request, byte[] fileBytes , String originalName, String contentType) throws Exception;
 
     List<MessageEntry> getMessagesByBranchId(Long branchId, int page, int size);
 
