@@ -29,7 +29,7 @@ public class S3ManagerImpl implements S3Manager {
         String fileName = inputRequest.getData().get("fileName");
         String contentType = inputRequest.getData().get("contentType");
 
-        Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 5); // 5 minutes
+        Date expiration = new Date(System.currentTimeMillis() + 1000 * 86400); // 1 day
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, fileName)
                 .withMethod(HttpMethod.PUT)
                 .withExpiration(expiration);
