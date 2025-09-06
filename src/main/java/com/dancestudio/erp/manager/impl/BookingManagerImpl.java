@@ -123,11 +123,19 @@ public class BookingManagerImpl implements BookingManager {
     }
 
     @Override
-    public List<BookingEntry> getAllBookings(Long branchId, Integer page, Integer size, Integer startDate, Integer startMonth,Integer startYear,  Integer endDate, Integer endMonth, Integer endYear, String searchTerm) throws Exception {
+    public List<BookingEntry> getAllBookings(Long branchId, Integer page, Integer size, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear, String searchTerm) throws Exception {
         Page<Booking> entries;
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
         
-        if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
+        if ((startDate != null && startDate > 0) || (endDate != null && endDate > 0)) {
+            Map<String, Date> dateRange = DateUtil.getUTCDateRange(startDate, startMonth, startYear, endDate, endMonth, endYear);
+            entries = bookingRepository.findAllBookingsByBranchIdAndDateRange(branchId, dateRange.get("start"), dateRange.get("end"), pageable, searchTerm);
+        } else if (startMonth != null && startMonth > 0 && endMonth != null && endMonth > 0 && startYear != null && startYear > 0 && endYear != null && endYear > 0) {
+            // Handle month range
+            Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
+            entries = bookingRepository.findAllBookingsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"), pageable, searchTerm);
+        } else {
+            // No date filters, get all bookings
             List<Booking> bookings = bookingRepository.findBookingsByBranchId(branchId, pageable, searchTerm).getContent();
             return bookings.stream()
                     .map(booking -> {
@@ -138,10 +146,6 @@ public class BookingManagerImpl implements BookingManager {
                         }
                     })
                     .toList();
-
-        } else {
-            Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-            entries = bookingRepository.findAllBookingsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"), pageable, searchTerm);
         }
 
         List<BookingEntry> bookingEntries = new ArrayList<>();

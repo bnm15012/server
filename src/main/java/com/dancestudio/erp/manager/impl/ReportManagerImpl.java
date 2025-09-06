@@ -1,6 +1,7 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entry.*;
+import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.manager.*;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Setter(onMethod = @__({ @Autowired }))
+@Setter(onMethod = @__({@Autowired}))
 @Component
 public class ReportManagerImpl implements ReportManager {
 
@@ -56,6 +57,7 @@ public class ReportManagerImpl implements ReportManager {
 
         List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startDate, startMonth, startYear, endDate, endMonth, endYear, null, null);
         List<IncomeEntry> incomeEntries = paymentEntries.stream()
+                .filter(paymentEntry -> paymentEntry.getPayeeType().equals(PayeeType.STUDENT))
                 .map(this::extractIncomeEntry)
                 .collect(Collectors.toList());
 
@@ -81,7 +83,7 @@ public class ReportManagerImpl implements ReportManager {
     private void processBookingEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
         List<BookingEntry> bookingEntries = bookingManager.getAllBookings(branchId, 0, -1, startDate, startMonth, startYear, endDate, endMonth, endYear, null);
         double totalBooking = bookingEntries.stream()
-                    .mapToDouble(BookingEntry::getTotalAmount)
+                .mapToDouble(BookingEntry::getTotalAmount)
                 .sum();
 
         monthlyReports.setBookingEntries(bookingEntries);
