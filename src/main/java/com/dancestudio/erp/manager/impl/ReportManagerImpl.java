@@ -2,6 +2,7 @@ package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.PayeeType;
+import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.manager.*;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,7 @@ public class ReportManagerImpl implements ReportManager {
     private void processBookingEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
         List<BookingEntry> bookingEntries = bookingManager.getAllBookings(branchId, 0, -1, startDate, startMonth, startYear, endDate, endMonth, endYear, null);
         double totalBooking = bookingEntries.stream()
+                .filter(bookingEntry -> bookingEntry.getPaymentStatus().equals(PaymentStatus.COMPLETED))
                 .mapToDouble(BookingEntry::getTotalAmount)
                 .sum();
 
