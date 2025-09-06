@@ -13,7 +13,9 @@ public class IEMonthlyReportEntry {
 
     private double income;
     private double expense;
+    private double booking;
     private List<ExpenseEntry> expenseEntries;
     private List<IncomeEntry> incomeEntries;
+    private List<BookingEntry> bookingEntries;
 
 }

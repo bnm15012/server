@@ -119,14 +119,11 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
     }
 
     @Override
-    public ResponseEntity<IEReportResponse> getExpenseIncomeReports(Long studioId, Long branchId,
-            Integer startDate, Integer startMonth, Integer startYear,
-            Integer endDate, Integer endMonth, Integer endYear) {
+    public ResponseEntity<IEReportResponse> getExpenseIncomeReports(Long studioId, Long branchId, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear) {
 
         IEReportResponse response = new IEReportResponse();
         try {
-            IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startDate, startMonth, startYear,
-                    endDate, endMonth, endYear);
+            IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear);
             response.setData(Collections.singletonList(reportEntry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
 

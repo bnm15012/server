@@ -93,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
         BookingResponse response = new BookingResponse();
 
         try {
-            List<BookingEntry> entries = bookingManager.getAllBookings(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
+            List<BookingEntry> entries = bookingManager.getAllBookings(branchId, page, size, null, startMonth, startYear, null, endMonth, endYear, searchTerm);
             long bookingCount = (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0))
                     ? bookingManager.countBookingsByBranchId(branchId)
                     : bookingManager.countBookingsByBranchIdAndMonth(branchId, startMonth, startYear, endMonth, endYear);

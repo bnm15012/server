@@ -71,18 +71,13 @@ public class ExpenseManagerImpl implements ExpenseManager {
     }
 
     @Override
-    public List<ExpenseEntry> getAllExpenses(Long branchId, Integer page, Integer size, Integer startDate,
-            Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear,
-            String searchTerm) throws Exception {
+    public List<ExpenseEntry> getAllExpenses(Long branchId, Integer page, Integer size, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear, String searchTerm) throws Exception {
 
         Page<Expense> entries;
-        Pageable pageable = size == -1 ? Pageable.unpaged()
-                : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
-        if (Objects.nonNull(startDate) && Objects.nonNull(startMonth) && Objects.nonNull(startYear)
-                && Objects.nonNull(endDate) && Objects.nonNull(endMonth) && Objects.nonNull(endYear)) {
+        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
+        if (Objects.nonNull(startDate) && Objects.nonNull(startMonth) && Objects.nonNull(startYear) && Objects.nonNull(endDate) && Objects.nonNull(endMonth) && Objects.nonNull(endYear)) {
 
-            Map<String, Date> monthRange = DateUtil.getUTCDateRange(startDate, startMonth, startYear, endDate,
-                    endMonth, endYear);
+            Map<String, Date> monthRange = DateUtil.getUTCDateRange(startDate, startMonth, startYear, endDate, endMonth, endYear);
             entries = expenseRepository.findAllByBranchIdAndDateRange(branchId, monthRange.get("start"),
                     monthRange.get("end"), pageable, searchTerm);
         } else {

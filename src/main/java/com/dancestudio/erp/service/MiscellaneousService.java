@@ -18,14 +18,9 @@ public interface MiscellaneousService {
 
     ResponseEntity<IEPReportResponse> getAnalysisReport(Integer year, Long studioId);
 
-    ResponseEntity<IEReportResponse> getExpenseIncomeReports(Long studioId, Long branchId,
-            Integer startDate, Integer startMonth, Integer startYear,
-            Integer endDate, Integer endMonth, Integer endYear);
+    ResponseEntity<IEReportResponse> getExpenseIncomeReports(Long studioId, Long branchId, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear);
 
-    ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId,
-            Integer startDate,int startMonth, int startYear,
-            Integer endDate,int endMonth, int endYear,
-            String status);
+    ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId, Integer startDate,int startMonth, int startYear, Integer endDate,int endMonth, int endYear, String status);
 
     ResponseEntity<TemplateResponse> getTemplates(Long studioId);
 }

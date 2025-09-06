@@ -9,7 +9,6 @@ import com.dancestudio.erp.service.MessageService;
 import com.dancestudio.erp.service.MiscellaneousService;
 import com.dancestudio.erp.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,14 +25,12 @@ public class MiscellaneousController {
     private S3Service s3Service;
 
     @PostMapping("uploadImage/{entityType}")
-    public ResponseEntity<StringResponse> uploadImage(@PathVariable("entityType") String entityType,
-            @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<StringResponse> uploadImage(@PathVariable("entityType") String entityType, @RequestParam("file") MultipartFile file) {
         return miscellaneousService.uploadImage(entityType, file);
     }
 
     @GetMapping("analysis/{year}/{studioId}")
-    public ResponseEntity<IEPReportResponse> getAnalysisReport(@PathVariable Integer year,
-            @PathVariable Long studioId) {
+    public ResponseEntity<IEPReportResponse> getAnalysisReport(@PathVariable Integer year, @PathVariable Long studioId) {
         return miscellaneousService.getAnalysisReport(year, studioId);
     }
 
@@ -46,8 +43,7 @@ public class MiscellaneousController {
             @PathVariable Integer endDate,
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear) {
-        return miscellaneousService.getExpenseIncomeReports(studioId, branchId, startDate, startMonth, startYear,
-                endDate, endMonth, endYear);
+        return miscellaneousService.getExpenseIncomeReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear);
     }
 
     @GetMapping("reports/payments/{studioId}/{branchId}/{startDate}/{startMonth}/{startYear}/{endDate}/{endMonth}/{endYear}")
@@ -60,9 +56,7 @@ public class MiscellaneousController {
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear,
             @RequestParam String status) {
-        return miscellaneousService.getPaymentReports(studioId, branchId, startDate, startMonth, startYear,
-                endDate, endMonth, endYear,
-                status);
+        return miscellaneousService.getPaymentReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear, status);
     }
 
     @PostMapping("password/reset")

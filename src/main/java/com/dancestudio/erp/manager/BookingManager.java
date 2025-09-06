@@ -10,6 +10,6 @@ public interface BookingManager extends BaseManager<BookingEntry, Long> {
 
     Long countBookingsByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear);
 
-    List<BookingEntry> getAllBookings(Long branchId, Integer page, Integer size, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear, String searchTerm) throws Exception;
+    List<BookingEntry> getAllBookings(Long branchId, Integer page, Integer size, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear, String searchTerm) throws Exception;
 
 }
