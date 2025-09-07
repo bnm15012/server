@@ -37,7 +37,7 @@ public class PasswordManagerImpl {
         String otp = jwtUtil.generateOtp();
         String otpToken = jwtUtil.generateToken(email, null, otp, AuthType.OTP);
         String body = "Your OTP is: " + otp + ". It is valid for 5 minutes.";
-        notificationManager.sendEmail(email, PASSWORD_CHANGE_NOTIFICATION, body, null);
+        notificationManager.sendEmail(email, PASSWORD_CHANGE_NOTIFICATION, body, null, null, null);
 
         PasswordEntry passwordEntry = new PasswordEntry();
         passwordEntry.setOtpToken(otpToken);

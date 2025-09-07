@@ -5,16 +5,18 @@ import com.dancestudio.erp.entry.MessageEntry;
 import com.dancestudio.erp.entry.MessageRecipientEntry;
 import com.dancestudio.erp.entry.SendMessageRequestEntry;
 import com.dancestudio.erp.entry.SessionEntry;
-import com.dancestudio.erp.enums.MessageStatus;
 import com.dancestudio.erp.enums.TemplateType;
 import com.dancestudio.erp.enums.WhatsAppStatus;
 import com.dancestudio.erp.manager.MessageManager;
 import com.dancestudio.erp.manager.NotificationManager;
 import com.dancestudio.erp.repository.BranchRepository;
+import com.dancestudio.erp.repository.ClientRepository;
 import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.repository.MessageRecipientRepository;
 import com.dancestudio.erp.repository.MessageRepository;
+import com.dancestudio.erp.repository.StudioRepository;
 import com.dancestudio.erp.response.SendMessageResponse;
+import com.dancestudio.erp.util.GenericTemplateUtil;
 import com.dancestudio.erp.util.WhatsappUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +28,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.commons.lang3.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,8 @@ public class MessageManagerImpl implements MessageManager {
     private final MessageRecipientRepository recipientRepository;
     private final MemberRepository memberRepository;
     private final BranchRepository branchRepository;
+    private final StudioRepository studioRepository;
+    private final ClientRepository clientRepository;
 
     @Autowired
     private NotificationManager notificationManager;
@@ -58,17 +63,24 @@ public class MessageManagerImpl implements MessageManager {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found"));
 
-        boolean sendToAll = (request.getMemberIds() == null || request.getMemberIds().isEmpty());
+        boolean sendToAll = (request.getSentToAll());
+
+        isWhatsappNotification(request);
+        isEmailNotification(request, branch);
 
         // Common async processing for both cases
         executorService.submit(() -> {
             try {
-                List<Member> members = sendToAll
-                        ? memberRepository.findByBranchId(branch.getId())
-                        : memberRepository.findAllById(request.getMemberIds());
+                List<Member> members = request.getMemberIds() == null ? new ArrayList<>()
+                        : sendToAll
+                                ? memberRepository.findByBranchId(branch.getId())
+                                : memberRepository.findAllById(request.getMemberIds());
 
-                if (members.isEmpty()) {
-                    log.error("No members found to send message.");
+                List<Client> clients = request.getClientIds() == null ? new ArrayList<>():
+                         clientRepository.findAllById(request.getClientIds());
+
+                if (members.isEmpty() && clients.isEmpty()) {
+                    log.error("No members or client found to send message.");
                     return;
                 }
 
@@ -76,13 +88,15 @@ public class MessageManagerImpl implements MessageManager {
                 int success = 0;
 
                 if (isWhatsappNotification(request)) {
-                    success = sendWhatsAppMessagesWithDelay(members, message.getContent(), request.getBranchId(),
-                            fileBytes, originalName, contentType);
+                    success = sendWhatsAppMessagesWithDelay(members, clients, message, branch, fileBytes, originalName,
+                            contentType);
                 } else if (isSmsNotification(request)) {
                     success = handleSmsNotification(request, branch, members, message);
-                } else {
-                    notificationManager.sendEmail(request);
+                } else if (isEmailNotification(request, branch)) {
+                    notificationManager.sendEmail(request, fileBytes, originalName);
                     success = members.size();
+                } else {
+                    throw new RuntimeException("Unsupported notification type: " + request.getNotificationType());
                 }
 
                 int failed = members.size() - success;
@@ -96,21 +110,40 @@ public class MessageManagerImpl implements MessageManager {
                 "Messages are being sent in the background. Please check back later for status.");
     }
 
-    private int sendWhatsAppMessagesWithDelay(List<Member> members, String message, Long branchId, byte[] fileBytes,
+    private final Object lock = new Object();
+
+    private int sendWhatsAppMessagesWithDelay(List<Member> members, List<Client> clients, Message message,
+            Branch branch, byte[] fileBytes,
             String originalName, String contentType) {
-        int success = 0;
-        for (Member member : members) {
-            try {
-                whatsappUtil.sendMessage("91" + member.getPhone(), message, branchId, fileBytes, originalName,
-                        contentType);
-                success++;
-                // Add 10 second delay between messages
-                Thread.sleep(10000);
-            } catch (Exception e) {
-                log.error("Error sending WhatsApp message to {}: {}", member.getPhone(), e.getMessage());
+
+        synchronized (lock) {
+            int success = 0;
+            for (Member member : members) {
+                try {
+                    String content = GenericTemplateUtil.generateContentString(
+                            message.getContent(), branch.getStudio(), branch, member);
+                    whatsappUtil.sendMessage(
+                            "91" + member.getPhone(), content, branch.getId(),
+                            fileBytes, originalName, contentType);
+                    success++;
+                    Thread.sleep(10000);
+                } catch (Exception e) {
+                    log.error("Error sending WhatsApp message to {}: {}", member.getPhone(), e.getMessage());
+                }
             }
+            for (Client client : clients) {
+                try {
+                    whatsappUtil.sendMessage(
+                            "91" + client.getPocPhone(), message.getContent(), branch.getId(),
+                            fileBytes, originalName, contentType);
+                    success++;
+                    Thread.sleep(10000);
+                } catch (Exception e) {
+                    log.error("Error sending WhatsApp message to {}: {}", client.getPocPhone(), e.getMessage());
+                }
+            }
+            return success;
         }
-        return success;
     }
 
     @Override
@@ -185,83 +218,38 @@ public class MessageManagerImpl implements MessageManager {
         return messageRepository.save(message);
     }
 
-    private int processRecipients(List<Member> members, Message message, String content, Boolean sendWhatsapp) {
-
-        int success = 0;
-        for (Member member : members) {
-            MessageRecipient recipient = new MessageRecipient();
-            recipient.setMessage(message);
-            recipient.setMember(member);
-            recipient.setName(member.getName());
-            recipient.setEmail(member.getEmail());
-            recipient.setPhoneNumber(member.getPhone());
-            recipient.setStatus(MessageStatus.PENDING);
-
-            try {
-                if (sendWhatsapp) {
-                    sendSms(member, content);
-                }
-                recipient.setStatus(MessageStatus.SENT);
-                success++;
-            } catch (Exception e) {
-                recipient.setStatus(MessageStatus.FAILED);
-                recipient.setReason(e.getMessage());
-            }
-
-            recipientRepository.save(recipient);
+    private boolean isWhatsappNotification(SendMessageRequestEntry request) throws Exception {
+        boolean isWhatsApp = TemplateType.WHATSAPP.name().equals(request.getNotificationType());
+        if (isWhatsApp && checkStatus(request.getBranchId()).equals(WhatsAppStatus.INACTIVE.name())) {
+            throw new RuntimeException("WhatsApp session is not active. Please create session first.");
         }
-
-        return success;
-    }
-
-    private boolean isWhatsappNotification(SendMessageRequestEntry request) {
-        return TemplateType.WHATSAPP.name().equals(request.getNotificationType());
+        if (isWhatsApp && checkStatus(request.getBranchId()).equals(WhatsAppStatus.LOGOUT.name())) {
+            throw new RuntimeException("WhatsApp session is logout. Please re-configure session first.");
+        }
+        return isWhatsApp;
     }
 
     private boolean isSmsNotification(SendMessageRequestEntry request) {
         return TemplateType.SMS.name().equals(request.getNotificationType());
     }
 
-    private boolean isEmailNotification(SendMessageRequestEntry request) {
-        return TemplateType.EMAIL.name().equals(request.getNotificationType());
-    }
+    private boolean isEmailNotification(SendMessageRequestEntry request, Branch branch) {
+        boolean isEmail = TemplateType.EMAIL.name().equals(request.getNotificationType());
 
-    private int handleWhatsappNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
-            Message message) {
-        if (WhatsAppStatus.ACTIVE.name().equals(branch.getWhatsappStatus())) {
-            return processRecipients(members, message, request.getContent(), true);
+        Studio studio = studioRepository.findById(branch.getStudio().getId())
+                .orElseThrow(() -> new RuntimeException("Studio not found for branch: " + branch.getId()));
+
+        if (isEmail && Objects.isNull(studio.getPasscode()) && StringUtils.isBlank(studio.getEmail())) {
+            throw new RuntimeException("Email passcode isn't configured.");
         }
-        throw new RuntimeException("Studio not configured for WhatsApp messaging");
+
+        return isEmail;
+
     }
 
     private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
             Message message) {
-        Studio studio = branch.getStudio();
-        return 0;
-    }
-
-    private int handleEmailNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
-            Message message) {
-        int success = 0;
-        for (Member member : members) {
-            try {
-                notificationManager.sendEmail(member.getEmail(), request.getTitle(), request.getContent(),
-                        branch.getStudio().getId());
-                success++;
-            } catch (Exception e) {
-                log.error("Failed to send email to student: {}", member.getEmail(), e);
-            }
-        }
-        processRecipients(members, message, request.getContent(), false);
-        return success;
-    }
-
-    private void sendSms(Member member, String content) {
-        if (member.getPhone() == null || member.getPhone().isBlank()) {
-            throw new RuntimeException("Invalid phone number.");
-        }
-
-        whatsappUtil.sendMessage(member.getPhone(), content, member.getBranch().getId(), null, null, null);
+        throw new UnsupportedOperationException("SMS notification is not implemented yet.");
     }
 
     @Override
@@ -272,6 +260,68 @@ public class MessageManagerImpl implements MessageManager {
     @Override
     public String logoutWhatsAppSession(Long branchId) {
         SessionEntry sessionEntry = whatsappUtil.logoutSession(branchId);
+        if (sessionEntry == null || !sessionEntry.isSuccess()
+                || !checkStatus(branchId).equals(WhatsAppStatus.LOGOUT.name())) {
+            throw new RuntimeException("Failed to logout WhatsApp session for branch ID: " + branchId);
+        }
         return branchRepository.findWhatsAppStatusByBranchId(branchId);
     }
+
+    // dead code
+    // --------------------------------------------------------------------------------------------------------------------
+    // private void sendSms(Member member, String content) {
+    // if (member.getPhone() == null || member.getPhone().isBlank()) {
+    // throw new RuntimeException("Invalid phone number.");
+    // }
+
+    // whatsappUtil.sendMessage(member.getPhone(), content,
+    // member.getBranch().getId(), null, null, null);
+    // }
+
+    // private int processRecipients(List<Member> members, Message message, String
+    // content, Boolean sendWhatsapp) {
+
+    // int success = 0;
+    // for (Member member : members) {
+    // MessageRecipient recipient = new MessageRecipient();
+    // recipient.setMessage(message);
+    // recipient.setMember(member);
+    // recipient.setName(member.getName());
+    // recipient.setEmail(member.getEmail());
+    // recipient.setPhoneNumber(member.getPhone());
+    // recipient.setStatus(MessageStatus.PENDING);
+
+    // try {
+    // if (sendWhatsapp) {
+    // sendSms(member, content);
+    // }
+    // recipient.setStatus(MessageStatus.SENT);
+    // success++;
+    // } catch (Exception e) {
+    // recipient.setStatus(MessageStatus.FAILED);
+    // recipient.setReason(e.getMessage());
+    // }
+
+    // recipientRepository.save(recipient);
+    // }
+
+    // return success;
+    // }
+    // private int handleEmailNotification(SendMessageRequestEntry request, Branch
+    // branch, List<Member> members,
+    // Message message) {
+    // int success = 0;
+    // for (Member member : members) {
+    // try {
+    // notificationManager.sendEmail(member.getEmail(), request.getTitle(),
+    // request.getContent(),
+    // branch.getStudio().getId());
+    // success++;
+    // } catch (Exception e) {
+    // log.error("Failed to send email to student: {}", member.getEmail(), e);
+    // }
+    // }
+    // processRecipients(members, message, request.getContent(), false);
+    // return success;
+    // }
 }

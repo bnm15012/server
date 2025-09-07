@@ -64,7 +64,7 @@ public class StudentManagerImpl implements StudentManager {
 
         String updatedBody = formatEmailBody(studioEntry, templateEntry, member);
         if(Objects.nonNull(studioEntry.getPasscode()) && Objects.nonNull(studioEntry.getEmail())) {
-            notificationManager.sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, branchEntry.getStudioId());
+            notificationManager.sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, branchEntry.getStudioId(), null, null);
         }
 
         boolean msgSent = whatsappUtil.sendMessage(member.getPhone(), updatedBody, member.getBranch().getId(), null, null, null);

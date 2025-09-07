@@ -13,9 +13,10 @@ public class SendMessageRequestEntry {
     private Long branchId;
     private Boolean sentToAll = false;
     private List<Long> memberIds;
+    private List<Long> clientIds;
 
-    private String templateName;
-    private String invoiceUrl;
+    private String templateName; // should remove
+    private String invoiceUrl; // should remove
     private Long studioId;
     private String activityType;
 }

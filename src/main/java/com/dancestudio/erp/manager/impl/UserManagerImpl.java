@@ -73,7 +73,7 @@ public class UserManagerImpl implements UserManager {
             TemplateEntry templateEntry = templateManager.getTemplateDetails(ADD_NEW_USER_EMAIL);
             String updatedBody = formatEmailBody(user, templateEntry, entry);
 
-            notificationManager.sendEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null);
+            notificationManager.sendEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null, null, null);
         }
 
         return entry;
@@ -124,7 +124,7 @@ public class UserManagerImpl implements UserManager {
         TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_USER_EMAIL);
         String updatedBody = templateEntry.getTemplateBody().replace("{user_name}", existingUser.getName());
 
-        notificationManager.sendEmail(entry.getEmail(), templateEntry.getSubject(), updatedBody, null);
+        notificationManager.sendEmail(entry.getEmail(), templateEntry.getSubject(), updatedBody, null, null, null);
         return entry;
     }
 

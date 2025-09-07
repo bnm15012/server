@@ -80,7 +80,7 @@ public class StudioManagerImpl implements StudioManager {
 
         if (Objects.nonNull(studioEntry.getEmail()) && Objects.nonNull(studioEntry.getPasscode())) {
             notificationManager.sendEmail(studioEntry.getEmail(), templateEntry.getSubject(),
-                    templateEntry.getTemplateBody(), null);
+                    templateEntry.getTemplateBody(), null, null, null);
         }
         return convertToEntry(updatedStudio);
     }
@@ -131,7 +131,7 @@ public class StudioManagerImpl implements StudioManager {
         TemplateEntry templateEntry = templateManager.getTemplateDetails(ADD_NEW_STUDIO_EMAIL);
         String updatedBody = formatEmailBody(studio, templateEntry, userEntry);
 
-        notificationManager.sendEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null);
+        notificationManager.sendEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null, null, null);
     }
 
     private String formatEmailBody(Studio studio, TemplateEntry templateEntry, UserEntry userEntry) {

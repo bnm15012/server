@@ -38,7 +38,7 @@ public class MembershipManagerImpl {
             try {
                 BranchEntry branchEntry = branchManager.getById(studentEntry.getBranchId());
                 StudioEntry studioEntry = studioManager.getById(branchEntry.getStudioId());
-                notificationManager.sendEmail(studentEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody(), studioEntry.getStudioId());
+                notificationManager.sendEmail(studentEntry.getEmail(), templateEntry.getSubject(), templateEntry.getTemplateBody(), studioEntry.getStudioId(), null, null);
             } catch (Exception e) {
                 throw new EntityNotFoundException(e.getMessage());
             }
