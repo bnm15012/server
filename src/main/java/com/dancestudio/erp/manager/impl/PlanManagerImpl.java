@@ -64,15 +64,14 @@ public class PlanManagerImpl implements PlanManager {
     }
 
     @Override
-    public List<PlanEntry> getAllPlans(HttpServletRequest request) throws EntityNotFoundException {
-
+    public List<PlanEntry> getAllPlans(HttpServletRequest request, Boolean AMC) throws EntityNotFoundException {
         String ip = geoLocationUtil.extractClientIp(request);
         String countryCode = geoLocationUtil.getCountryCode(ip);
 
-        List<Plan> plans = planRepository.findByCountryCode(countryCode);
-        if(CollectionUtils.isEmpty(plans)) {
-            plans = planRepository.findByCountryCode("US");
-        }
+        List<Plan> plans = planRepository.findPlansByCountryCodeAndAmcFlag(countryCode, AMC);
+        // if(CollectionUtils.isEmpty(plans)) {
+        //     plans = planRepository.findByCountryCode("US");
+        // }
 
         List<PlanEntry> planEntries = new ArrayList<>();
         for (Plan plan : plans) {
@@ -112,6 +111,7 @@ public class PlanManagerImpl implements PlanManager {
             planEntry.setDisabledFeatures(new ArrayList<>());
         }
         planEntry.setSmsQuota((long) plan.getSmsQuota());
+        planEntry.setRemindBeforeDays(plan.getRemindBeforeDays());
         planEntry.setPlanType(MembershipType.valueOf(plan.getPlanType()));
         return planEntry;
     }
@@ -145,6 +145,11 @@ public class PlanManagerImpl implements PlanManager {
         }
         if (Objects.nonNull(planEntry.getCountryCode())) {
             plan.setCountryCode(planEntry.getCountryCode());
+        }
+        if (Objects.nonNull(planEntry.getRemindBeforeDays())) {
+            plan.setRemindBeforeDays(planEntry.getRemindBeforeDays());
+        } else {
+            plan.setRemindBeforeDays(0);
         }
 
         return plan;

@@ -35,7 +35,7 @@ public class InstructorController extends BaseController<InstructorEntry, Instru
         return instructorService.get(id);
     }
 
-    @GetMapping("/getAllInstructors/{branchId}")
+    @GetMapping("/getAll/{branchId}")
     public ResponseEntity<InstructorResponse> getAllInstructors(@PathVariable Long branchId, @RequestParam(required = false) MembershipStatus membershipStatus,
            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "-1") int size, @RequestParam(required = false) String searchTerm) {
         return instructorService.getAllInstructors(branchId, membershipStatus, page, size, searchTerm);

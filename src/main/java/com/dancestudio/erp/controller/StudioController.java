@@ -34,7 +34,7 @@ public class StudioController extends BaseController<StudioEntry, StudioResponse
         return studioService.get(id);
     }
 
-    @GetMapping("/getAllStudios")
+    @GetMapping("/getAll")
     public ResponseEntity<StudioResponse> getAllStudios() {
         return studioService.getAllStudios();
     }

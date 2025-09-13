@@ -41,7 +41,7 @@ public class PaymentController extends BaseController<PaymentEntry, PaymentRespo
         return paymentService.updatePaymentStatus(paymentId, status);
     }
 
-    @GetMapping("/getAllPayments/{branchId}")
+    @GetMapping("/getAll/{branchId}")
     public ResponseEntity<PaymentResponse> getAllPayments(@PathVariable Long branchId,
             @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) Integer startDate,
@@ -51,7 +51,7 @@ public class PaymentController extends BaseController<PaymentEntry, PaymentRespo
             @RequestParam(required = false) Integer endMonth,
             @RequestParam(required = false) Integer endYear,
             @RequestParam(required = false) String searchTerm) {
-        return paymentService.getAllPayments(branchId, page, size, startDate, startMonth, startYear, endDate, endMonth,
+        return paymentService.getAllPayments(branchId, --page, size, startDate, startMonth, startYear, endDate, endMonth,
                 endYear, searchTerm);
     }
 }

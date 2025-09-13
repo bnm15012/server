@@ -68,7 +68,6 @@ public class MessageManagerImpl implements MessageManager {
         isWhatsappNotification(request);
         isEmailNotification(request, branch);
 
-        // Common async processing for both cases
         executorService.submit(() -> {
             try {
                 List<Member> members = request.getMemberIds() == null ? new ArrayList<>()
@@ -93,7 +92,7 @@ public class MessageManagerImpl implements MessageManager {
                 } else if (isSmsNotification(request)) {
                     success = handleSmsNotification(request, branch, members, message);
                 } else if (isEmailNotification(request, branch)) {
-                    notificationManager.sendEmail(request, fileBytes, originalName);
+                    notificationManager.sendEmail(request,members,clients, fileBytes, originalName);
                     success = members.size();
                 } else {
                     throw new RuntimeException("Unsupported notification type: " + request.getNotificationType());

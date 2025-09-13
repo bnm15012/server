@@ -39,6 +39,9 @@ public class SubscriptionUtils {
             case YEARLY:
                 endLocalDate = startLocalDate.plusYears(1);
                 break;
+            case AMC:
+                endLocalDate = startLocalDate.plusYears(1);
+                break;
             default:
                 throw new IllegalArgumentException("Invalid Subscription Type: " + subscriptionType);
         }
@@ -67,6 +70,9 @@ public class SubscriptionUtils {
                 calendar.add(Calendar.MONTH, 6);
                 break;
             case YEARLY:
+                calendar.add(Calendar.YEAR, 1);
+                break;
+            case AMC:
                 calendar.add(Calendar.YEAR, 1);
                 break;
             default:

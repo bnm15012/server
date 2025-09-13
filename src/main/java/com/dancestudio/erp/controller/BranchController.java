@@ -34,7 +34,7 @@ public class BranchController extends BaseController<BranchEntry, BranchResponse
         return branchService.get(id);
     }
 
-    @GetMapping("/getAllBranchesOfStudio/{studioId}")
+    @GetMapping("/getAll/{studioId}")
     public ResponseEntity<BranchResponse> getAllBranchesOfStudio(@PathVariable Long studioId) throws Exception {
         return branchService.getAllBranchesOfStudio(studioId);
     }

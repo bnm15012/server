@@ -5,5 +5,6 @@ public enum SubscriptionType {
     MONTHLY,
     QUARTERLY,
     HALF_YEARLY,
-    YEARLY
+    YEARLY,
+    AMC
 }

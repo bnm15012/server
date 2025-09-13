@@ -25,6 +25,8 @@ public class Plan extends BaseEntity {
     @Column(name = "amount", nullable = false)
     private double amount;
 
+    private int remindBeforeDays;
+
     @Column(name = "country_code", nullable = false)
     private String countryCode;
 
@@ -33,4 +35,5 @@ public class Plan extends BaseEntity {
 
     @Column(name = "description", nullable = false)
     private String description;
+    
 }

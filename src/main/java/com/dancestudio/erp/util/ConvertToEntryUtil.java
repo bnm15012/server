@@ -150,6 +150,7 @@ public class ConvertToEntryUtil {
         studioEntry.setGstNumber(studio.getGstNumber());
         studioEntry.setPasscode(studio.getPasscode());
         studioEntry.setContactDetails(studio.getContactDetails());
+        studioEntry.setAmcEnabled(studio.getAmcEnabled());
 
         if (studio.getConfiguration() != null) {
             try {
@@ -190,7 +191,6 @@ public class ConvertToEntryUtil {
         if (Objects.nonNull(studioEntry.getGstNumber())) {
             studio.setGstNumber(studioEntry.getGstNumber());
         }
-        
         if (Objects.nonNull(studioEntry.getEmail())) {
             studio.setEmail(studioEntry.getEmail());
         }
@@ -212,6 +212,9 @@ public class ConvertToEntryUtil {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Error converting configuration settings to JSON", e);
             }
+        }
+        if (Objects.nonNull(studioEntry.getAmcEnabled())) {
+            studio.setAmcEnabled(studioEntry.getAmcEnabled());
         }
 
         return studio;

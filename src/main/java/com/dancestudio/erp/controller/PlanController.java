@@ -35,8 +35,8 @@ public class PlanController extends BaseController<PlanEntry, PlanResponse, Long
         return planService.get(id);
     }
 
-    @GetMapping("/getAllPlans")
-    public ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request) {
-        return planService.getAllPlans(request);
+    @GetMapping("/getAll")
+    public ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request, @RequestParam(defaultValue = "false") Boolean AMC) {
+        return planService.getAllPlans(request, AMC);
     }
 }

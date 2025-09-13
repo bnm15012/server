@@ -35,7 +35,7 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
         return studentService.get(id);
     }
 
-    @GetMapping("/getAllStudents/{branchId}")
+    @GetMapping("/getAll/{branchId}")
     public ResponseEntity<StudentResponse> getAllStudents(
             @PathVariable Long branchId,
             @RequestParam(required = false) String activityName,

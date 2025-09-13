@@ -125,21 +125,8 @@ public class NotificationManagerImpl implements NotificationManager {
     }
 
     @Override
-    public void sendEmail(SendMessageRequestEntry requestEntry, byte[] attachmentBytes, String attachmentFileName)
+    public void sendEmail(SendMessageRequestEntry requestEntry, List<Member> members, List<Client> clients, byte[] attachmentBytes, String attachmentFileName)
             throws Exception {
-
-        List<Member> members = requestEntry.getMemberIds() == null ? new ArrayList<>()
-                : requestEntry.getSentToAll()
-                        ? memberRepository.findByBranchId(requestEntry.getBranchId())
-                        : memberRepository.findAllById(requestEntry.getMemberIds());
-
-        List<Client> clients = requestEntry.getClientIds() == null ? new ArrayList<>()
-                : clientRepository.findAllById(requestEntry.getClientIds());
-
-        if (members.isEmpty() && clients.isEmpty()) {
-            log.error("No members or client found to send message.");
-            return;
-        }
 
         Branch branch = branchRepository.findBranchWithStudioById(requestEntry.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found"));

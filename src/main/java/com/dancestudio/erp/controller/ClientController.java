@@ -40,15 +40,15 @@ public class ClientController extends BaseController<ClientEntry, ClientResponse
         return clientService.get(id);
     }
 
-    @GetMapping("/getAllClients/{branchId}/{startMonth}/{startYear}/{endMonth}/{endYear}")
+    @GetMapping("/getAll/{branchId}")
     public ResponseEntity<ClientResponse> getAllClients(@PathVariable Long branchId,
-            @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size,
-            @PathVariable Integer startMonth,
-            @PathVariable Integer startYear,
-            @PathVariable Integer endMonth,
-            @PathVariable Integer endYear,
+            @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "0") Integer startMonth,
+            @RequestParam(defaultValue = "0") Integer startYear,
+            @RequestParam(defaultValue = "0") Integer endMonth,
+            @RequestParam(defaultValue = "0") Integer endYear,
             @RequestParam(required = false) String searchTerm) {
-        return clientService.getAllClients(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
+        return clientService.getAllClients(branchId, --page, size, startMonth, startYear, endMonth, endYear, searchTerm);
     }
 
     @GetMapping("/search")

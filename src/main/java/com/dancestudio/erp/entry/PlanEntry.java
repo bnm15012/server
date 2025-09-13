@@ -17,4 +17,5 @@ public class PlanEntry {
     private String countryCode;
     private String description;
     private Boolean popular;
+    private Integer remindBeforeDays;
 }

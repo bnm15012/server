@@ -90,11 +90,11 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request) {
+    public ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request, Boolean AMC) {
         PlanResponse response = new PlanResponse();
 
         try {
-            List<PlanEntry> entries = planManager.getAllPlans(request);
+            List<PlanEntry> entries = planManager.getAllPlans(request, AMC);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Plans retrieved successfully", StatusResponse.Type.SUCCESS, (int) entries.size()));
             return ResponseEntity.status(HttpStatus.OK).body(response);

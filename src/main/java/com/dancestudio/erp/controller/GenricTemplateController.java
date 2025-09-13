@@ -35,7 +35,7 @@ public class GenricTemplateController extends BaseController<GenricTemplateEntry
         return genericTemplateService.get(id);
     }
 
-    @GetMapping("/getAllTemplates/{studioId}")
+    @GetMapping("/getAll/{studioId}")
     public ResponseEntity<GenericTemplateResponse> getAllConditions(
             @PathVariable Long studioId,
             @RequestParam(required = false) String templateType,

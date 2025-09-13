@@ -39,4 +39,7 @@ public class Studio extends BaseEntity {
     @Column(name = "configuration", columnDefinition = "json")
     private String configuration;
 
+    @Column(name = "amc_enabled", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean amcEnabled = false;
+
 }

@@ -17,6 +17,7 @@ public class StudioEntry {
     private String contactDetails;
     private StudioConfigurationRequest configuration;
     private String gstNumber;
+    private Boolean amcEnabled;
 
     private SubscriptionEntry subscriptionEntry;
     private List<BranchEntry> branchList;

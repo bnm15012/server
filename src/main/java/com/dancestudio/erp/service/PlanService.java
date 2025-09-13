@@ -7,5 +7,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface PlanService extends BaseService<PlanEntry, PlanResponse, Long> {
 
-    ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request);
+    ResponseEntity<PlanResponse> getAllPlans(HttpServletRequest request, Boolean AMC);
 }
