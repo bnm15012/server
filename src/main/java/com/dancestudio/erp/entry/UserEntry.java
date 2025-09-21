@@ -15,6 +15,7 @@ public class UserEntry {
     private UserType role;
     private Boolean enabled;
     private StudioEntry studioEntry;
+    private UserAccessEntry userAccessEntry;
 
     private SubscriptionEntry subscriptionEntry;
     private String token;

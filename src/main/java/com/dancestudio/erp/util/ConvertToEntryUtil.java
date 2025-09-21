@@ -1,5 +1,6 @@
 package com.dancestudio.erp.util;
 
+import com.dancestudio.erp.converter.UserAccessConvertor;
 import com.dancestudio.erp.entity.*;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.*;
@@ -19,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -57,7 +59,9 @@ public class ConvertToEntryUtil {
 
             userEntry.setSubscriptionEntry(subscriptionEntry);
         }
-
+        if (user.getUserAccess() != null) {
+            userEntry.setUserAccessEntry(UserAccessConvertor.convertToEntry(user.getUserAccess()));
+        }
         BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
         if (isAdmin(user)) {
             setBranchListForAdmin(user, userEntry, branchManagerImpl);
@@ -136,6 +140,12 @@ public class ConvertToEntryUtil {
             user.setBranch(convertToEntity(branchEntry, null));
         }
 
+        if (Objects.nonNull(userEntry.getUserAccessEntry())) {
+            UserAccess userAccess = UserAccessConvertor.convertToEntity(userEntry.getUserAccessEntry(),
+                    user.getUserAccess());
+            user.setUserAccess(userAccess);
+        }
+
         return user;
     }
 
@@ -154,11 +164,13 @@ public class ConvertToEntryUtil {
 
         if (studio.getConfiguration() != null) {
             try {
-                List<StudioConfigurationEntry> configrationEntries = objectMapper.readValue(studio.getConfiguration(),
-                        new TypeReference<>() {
+                Map<String, Boolean> configurationMap = objectMapper.readValue(
+                        studio.getConfiguration(),
+                        new TypeReference<Map<String, Boolean>>() {
                         });
+
                 StudioConfigurationRequest request = new StudioConfigurationRequest();
-                request.setConfigrationEntryList(configrationEntries);
+                request.setConfigrationEntryList(configurationMap);
                 studioEntry.setConfiguration(request);
             } catch (Exception e) {
                 throw new RuntimeException("Error parsing configuration settings JSON ", e);
@@ -204,10 +216,10 @@ public class ConvertToEntryUtil {
             studio.setContactDetails(studioEntry.getContactDetails());
         }
         if (Objects.nonNull(studioEntry.getConfiguration())) {
-            List<StudioConfigurationEntry> configrationEntries = studioEntry.getConfiguration()
+            Map<String, Boolean> configurationMap = studioEntry.getConfiguration()
                     .getConfigrationEntryList();
             try {
-                String configurationJson = objectMapper.writeValueAsString(configrationEntries);
+                String configurationJson = objectMapper.writeValueAsString(configurationMap);
                 studio.setConfiguration(configurationJson);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Error converting configuration settings to JSON", e);

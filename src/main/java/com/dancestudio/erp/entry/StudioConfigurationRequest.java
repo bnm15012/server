@@ -2,11 +2,11 @@ package com.dancestudio.erp.entry;
 
 import lombok.Data;
 
-import java.util.List;
+import java.util.Map;
 
 @Data
 public class StudioConfigurationRequest {
 
-    private List<StudioConfigurationEntry> configrationEntryList;
+    private Map<String,Boolean> configrationEntryList;
 
 }

@@ -1,6 +1,7 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.authentication.JwtUtil;
+import com.dancestudio.erp.converter.UserAccessConvertor;
 import com.dancestudio.erp.entity.User;
 import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.entry.UserEntry;
@@ -62,13 +63,13 @@ public class UserManagerImpl implements UserManager {
         String password = userEntry.getPassword();
         userEntry.setPassword(hashPassword(password));
         User user = convertToEntity(userEntry, null);
+        user.setUserAccess(UserAccessConvertor.defaultAccessLevel(userEntry.getRole() == UserType.ADMIN, user));
         user = userRepository.save(user);
         UserEntry entry = convertToEntry(user);
 
         String token = jwtUtil.generateAuthToken(user.getEmail(), null);
         entry.setToken(token);
         entry.setPassword(password);
-
         if(!UserType.ADMIN.equals(entry.getRole())) {
             TemplateEntry templateEntry = templateManager.getTemplateDetails(ADD_NEW_USER_EMAIL);
             String updatedBody = formatEmailBody(user, templateEntry, entry);

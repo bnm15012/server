@@ -20,11 +20,15 @@ public class ImageManagerImpl implements ImageManager {
     private Cloudinary cloudinary;
 
     public String uploadImage(String entityType, MultipartFile file) throws Exception {
-        if(Objects.isNull(file)) {
+        if (Objects.isNull(file)) {
             throw new Exception("File not uploaded");
         }
 
-        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String originalFileNameRaw = file.getOriginalFilename();
+        if (originalFileNameRaw == null) {
+            throw new Exception("Original filename is null");
+        }
+        String originalFileName = StringUtils.cleanPath(originalFileNameRaw);
         String uniqueFileName = UUID.randomUUID() + "_" + originalFileName;
 
         Map<String, Object> uploadParams = Map.of(

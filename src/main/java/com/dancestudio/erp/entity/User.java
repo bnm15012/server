@@ -38,4 +38,7 @@ public class User extends BaseEntity {
     private boolean enabled = true;
 
     private String role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private UserAccess userAccess;
 }

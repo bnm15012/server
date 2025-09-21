@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_STUDIO_EMAIL;
@@ -143,16 +145,13 @@ public class StudioManagerImpl implements StudioManager {
     }
 
     private void addDefaultConfiguration(StudioEntry studioEntry) {
-        List<StudioConfigurationEntry> configurationEntryList = new ArrayList<>();
+        Map<String, Boolean> configurationMap = new HashMap<>();
         for (ConfigurationType configurationType : ConfigurationType.values()) {
-            StudioConfigurationEntry configEntry = new StudioConfigurationEntry();
-            configEntry.setNavBarName(configurationType.name());
-            configEntry.setEnabled(true);
-            configurationEntryList.add(configEntry);
+            configurationMap.put(configurationType.name(), true);
         }
 
         StudioConfigurationRequest configurationRequest = new StudioConfigurationRequest();
-        configurationRequest.setConfigrationEntryList(configurationEntryList);
+        configurationRequest.setConfigrationEntryList(configurationMap);
         studioEntry.setConfiguration(configurationRequest);
     }
 
