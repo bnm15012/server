@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 public class UserAccessEntry {
-    private AccessLevel branch;
     private AccessLevel activity;
     private AccessLevel communication;
     private AccessLevel payments;
@@ -13,6 +12,4 @@ public class UserAccessEntry {
     private AccessLevel analysis;
     private AccessLevel reports;
     private AccessLevel enquiry;
-    private AccessLevel templates;
-    private AccessLevel membershipPlanTable;
 }
