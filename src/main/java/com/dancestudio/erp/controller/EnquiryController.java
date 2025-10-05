@@ -36,7 +36,7 @@ public class EnquiryController extends BaseController<EnquiryEntry, EnquiryRespo
 
     @GetMapping("/getAll/{branchId}")
     public ResponseEntity<EnquiryResponse> getAllEnquiries(@PathVariable Long branchId,
-                                                           @RequestParam(defaultValue = "0") Integer page,
+                                                           @RequestParam(defaultValue = "1") Integer page,
                                                            @RequestParam(defaultValue = "10") Integer size,
                                                            @RequestParam(required = false) Integer startMonth,
                                                            @RequestParam(required = false) Integer startYear,

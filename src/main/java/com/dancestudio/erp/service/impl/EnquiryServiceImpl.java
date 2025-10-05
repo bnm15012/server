@@ -98,7 +98,7 @@ public class EnquiryServiceImpl implements EnquiryService {
         EnquiryResponse response = new EnquiryResponse();
 
         try {
-            List<EnquiryEntry> entries = enquiryManager.getAllEnquiries(branchId, page, size,
+            List<EnquiryEntry> entries = enquiryManager.getAllEnquiries(branchId, --page, size,
                     startMonth, startYear, endMonth, endYear, searchTerm);
 
             long enquiryCount = (Objects.nonNull(startMonth) && Objects.nonNull(startYear)
