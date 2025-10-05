@@ -42,7 +42,7 @@ public class BookingController extends BaseController<BookingEntry, BookingRespo
             @RequestParam(defaultValue = "0") Integer endMonth,
             @RequestParam(defaultValue = "0") Integer endYear,
             @RequestParam(required = false) String searchTerm) {
-        return bookingService.getAllBookings(branchId, --page, size, startMonth, startYear, endMonth, endYear, searchTerm);
+        return bookingService.getAllBookings(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
     }
 
 }
