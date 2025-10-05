@@ -77,7 +77,7 @@ public class WhatsAppService {
             }
 
             try {
-                TimeUnit.SECONDS.sleep(ThreadLocalRandom.current().nextInt(7, 23));
+                TimeUnit.SECONDS.sleep(ThreadLocalRandom.current().nextInt(10, 50));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

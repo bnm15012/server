@@ -40,7 +40,7 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
             @PathVariable Long branchId,
             @RequestParam(required = false) String activityName,
             @RequestParam(required = false) MembershipStatus membershipStatus,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "-1") int size,
             @RequestParam(required = false) String searchTerm) {
         return studentService.getAllStudents(branchId, activityName, membershipStatus, page, size, searchTerm);
@@ -53,7 +53,7 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "-1") int size,
             @RequestParam(defaultValue = "0") int birthday) {
-        return studentService.getAllStudentsForCommunication(branchId, membershipStatus, --page, size, birthday);
+        return studentService.getAllStudentsForCommunication(branchId, membershipStatus, page, size, birthday);
     }
 
     @PostMapping("/sendSubscriptionRenewalReminder/{studentId}/{activityName}")
