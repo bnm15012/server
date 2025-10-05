@@ -102,7 +102,7 @@ public class PaymentServiceImpl implements PaymentService {
             Integer endDate, Integer endMonth, Integer endYear, String searchTerm) {
         PaymentResponse response = new PaymentResponse();
         try {
-            List<PaymentEntry> entry = paymentManager.getAllPaymentsByBranch(branchId, size, page, startDate, startMonth, startYear, endDate,
+            List<PaymentEntry> entry = paymentManager.getAllPaymentsByBranch(branchId, size, --page, startDate, startMonth, startYear, endDate,
                 endMonth, endYear, null, searchTerm);
             long totalCount = paymentManager.getPaymentCountByStudioId(branchId, searchTerm);
             response.setData(entry);
