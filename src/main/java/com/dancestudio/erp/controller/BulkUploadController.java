@@ -40,7 +40,7 @@ public class BulkUploadController extends BaseController<BulkUploadEntry, BulkUp
     }
 
     @GetMapping("/getAll/{branchId}")
-    public ResponseEntity<BulkUploadResponse> getAllBulkUploadJobs(@PathVariable Long branchId, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
+    public ResponseEntity<BulkUploadResponse> getAllBulkUploadJobs(@PathVariable Long branchId, @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size) {
         return bulkUploadService.getAllBulkUploads(branchId, page, size);
     }
 

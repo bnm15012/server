@@ -127,7 +127,7 @@ public class BulkUploadServiceImpl implements BulkUploadService {
 
         BulkUploadResponse response = new BulkUploadResponse();
         try {
-            List<BulkUploadEntry> entries = bulkUploadManager.getAllJobs(branchId, page, size);
+            List<BulkUploadEntry> entries = bulkUploadManager.getAllJobs(branchId, --page, size);
             long clientCount = bulkUploadManager.countJobsByBranchId(branchId);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Clients retrieved successfully", StatusResponse.Type.SUCCESS, (int) clientCount));
