@@ -37,7 +37,7 @@ public class MessageServiceImpl implements MessageService {
             SendMessageResponse result = messageManager.sendMessage(request, fileBytes, originalName,
                     file != null ? file.getContentType() : null);
 
-            List<MessageEntry> messageEntries = messageManager.getMessagesByBranchId(request.getBranchId(), page, size);
+            List<MessageEntry> messageEntries = messageManager.getMessagesByBranchId(request.getBranchId(), --page, size);
             long totalMessages = messageManager.getMessageCountByBranchId(request.getBranchId());
 
             response.setStatus(new StatusResponse(1, "Message sent successfully", StatusResponse.Type.SUCCESS,
@@ -55,7 +55,7 @@ public class MessageServiceImpl implements MessageService {
     public ResponseEntity<MessageResponse> getMessagesByBranchId(Long branchId, int page, int size) {
         MessageResponse response = new MessageResponse();
         try {
-            List<MessageEntry> messageEntries = messageManager.getMessagesByBranchId(branchId, page, size);
+            List<MessageEntry> messageEntries = messageManager.getMessagesByBranchId(branchId, --page, size);
             long totalMessages = messageManager.getMessageCountByBranchId(branchId);
             response.setStatus(new StatusResponse(1, "Messages fetched successfully", StatusResponse.Type.SUCCESS,
                     (int) totalMessages));
