@@ -102,7 +102,7 @@ public class GenricTemplateServiceImpl implements GenricTemplateService {
 
         try {
             // Get GenericTemplate entries
-            entries.addAll(conditionsManager.getAllConditionsByStudioId(studioId, templateType, page, size));
+            entries.addAll(conditionsManager.getAllConditionsByStudioId(studioId, templateType, --page, size));
 
             // Merge with TemplateEntry list (mapped to GenricTemplateEntry)
             if (templateType.equalsIgnoreCase("COMMUNICATION")) {

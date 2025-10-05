@@ -39,7 +39,7 @@ public class GenricTemplateController extends BaseController<GenricTemplateEntry
     public ResponseEntity<GenericTemplateResponse> getAllConditions(
             @PathVariable Long studioId,
             @RequestParam(required = false) String templateType,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return genericTemplateService.getAllByStudioId(studioId, templateType, page, size);
     }
