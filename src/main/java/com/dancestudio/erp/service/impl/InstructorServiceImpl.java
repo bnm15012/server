@@ -99,7 +99,7 @@ public class InstructorServiceImpl implements InstructorService {
         InstructorResponse response = new InstructorResponse();
 
         try {
-            List<InstructorEntry> entries = instructorManager.getAllInstructorsByBranch(branchId, membershipStatus, page, size, searchTerm);
+            List<InstructorEntry> entries = instructorManager.getAllInstructorsByBranch(branchId, membershipStatus, --page, size, searchTerm);
             long totalSize = instructorManager.getCountInstructorByBranchId(branchId);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));
@@ -115,7 +115,7 @@ public class InstructorServiceImpl implements InstructorService {
         InstructorCommunicationResponse response = new InstructorCommunicationResponse();
 
         try {
-            List<InstructorCommunicationEntry> entries = instructorManager.getAllInstructorsForCommunication(branchId, membershipStatus, page, size);
+            List<InstructorCommunicationEntry> entries = instructorManager.getAllInstructorsForCommunication(branchId, membershipStatus, --page, size);
             long totalSize = instructorManager.getCountInstructorByBranchId(branchId);
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) totalSize));
