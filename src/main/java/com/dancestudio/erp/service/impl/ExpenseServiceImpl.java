@@ -96,7 +96,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         ExpenseResponse response = new ExpenseResponse();
 
         try {
-            List<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, page, size, startDate, startMonth,
+            List<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, --page, size, startDate, startMonth,
                     startYear, endDate,
                     endMonth, endYear, searchTerm);
             long expenseCount = (Objects.nonNull(startDate) && Objects.nonNull(startMonth) && Objects.nonNull(startYear)
