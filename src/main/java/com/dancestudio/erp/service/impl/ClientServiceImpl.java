@@ -93,7 +93,7 @@ public class ClientServiceImpl implements ClientService {
         ClientResponse response = new ClientResponse();
 
         try {
-            List<ClientEntry> entries = clientManager.getAllClients(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
+            List<ClientEntry> entries = clientManager.getAllClients(branchId, --page, size, startMonth, startYear, endMonth, endYear, searchTerm);
 
             long clientCount = (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0))
                     ? clientManager.countClientsByBranchId(branchId)
@@ -111,7 +111,7 @@ public class ClientServiceImpl implements ClientService {
     public ResponseEntity<ClientResponse> searchClientsByName(String clientName, Integer page, Integer size) {
         ClientResponse response = new ClientResponse();
         try {
-            List<ClientEntry> clients = clientManager.searchClientsByName(clientName, page, size);
+            List<ClientEntry> clients = clientManager.searchClientsByName(clientName, --page, size);
             response.setData(clients);
             response.setStatus(new StatusResponse(1, "Client retrieved successfully", StatusResponse.Type.SUCCESS, 1));
             return ResponseEntity.status(HttpStatus.OK).body(response);

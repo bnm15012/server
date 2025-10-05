@@ -48,12 +48,12 @@ public class ClientController extends BaseController<ClientEntry, ClientResponse
             @RequestParam(defaultValue = "0") Integer endMonth,
             @RequestParam(defaultValue = "0") Integer endYear,
             @RequestParam(required = false) String searchTerm) {
-        return clientService.getAllClients(branchId, --page, size, startMonth, startYear, endMonth, endYear, searchTerm);
+        return clientService.getAllClients(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
     }
 
     @GetMapping("/search")
     public ResponseEntity<ClientResponse> searchClientsByName(@RequestParam String clientName,
-            @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size) {
         return clientService.searchClientsByName(clientName, page, size);
     }
 }
