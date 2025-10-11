@@ -154,7 +154,6 @@ public class WhatsappUtil {
                     return objectMapper.readValue(response.toString(), SessionEntry.class);
                 }
             } else {
-                log.error("Failed to create session: HTTP " + responseCode);
                 sessionEntry.setData(null);
                 sessionEntry.setMessage("Whatsapp socket hang up !");
                 sessionEntry.setSuccess(false);
