@@ -13,7 +13,8 @@ public interface MessageService {
 
     void sendWhatsAppMessage(String to, String messageText);
 
-    ResponseEntity<SendMessageResponse> sendMessage(SendMessageRequestEntry request, MultipartFile file);
+    ResponseEntity<SendMessageResponse> sendMessage(SendMessageRequestEntry request, MultipartFile file, Integer page,
+            Integer size);
 
     ResponseEntity<MessageResponse> getMessagesByBranchId(Long branchId, int page, int size);
 

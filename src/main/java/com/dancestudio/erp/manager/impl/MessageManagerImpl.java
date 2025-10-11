@@ -5,10 +5,20 @@ import com.dancestudio.erp.entry.MessageEntry;
 import com.dancestudio.erp.entry.MessageRecipientEntry;
 import com.dancestudio.erp.entry.SendMessageRequestEntry;
 import com.dancestudio.erp.entry.SessionEntry;
+import com.dancestudio.erp.entry.TemplateEntry;
+import com.dancestudio.erp.enums.MemberType;
+import com.dancestudio.erp.enums.MessageStatus;
+import com.dancestudio.erp.enums.NotificationType;
 import com.dancestudio.erp.enums.TemplateType;
 import com.dancestudio.erp.enums.WhatsAppStatus;
 import com.dancestudio.erp.manager.MessageManager;
-import com.dancestudio.erp.manager.NotificationManager;
+import com.dancestudio.erp.manager.TemplateManager;
+import com.dancestudio.erp.message_queue.MessageQueue;
+import com.dancestudio.erp.message_queue.MessageQueueRepository;
+import com.dancestudio.erp.message_queue.events.EmailQueuedEvent;
+import com.dancestudio.erp.message_queue.events.WhatsAppMessageQueuedEvent;
+import com.dancestudio.erp.message_queue.services.EmailService;
+import com.dancestudio.erp.message_queue.services.WhatsAppService;
 import com.dancestudio.erp.repository.BranchRepository;
 import com.dancestudio.erp.repository.ClientRepository;
 import com.dancestudio.erp.repository.MemberRepository;
@@ -16,24 +26,24 @@ import com.dancestudio.erp.repository.MessageRecipientRepository;
 import com.dancestudio.erp.repository.MessageRepository;
 import com.dancestudio.erp.repository.StudioRepository;
 import com.dancestudio.erp.response.SendMessageResponse;
-import com.dancestudio.erp.util.GenericTemplateUtil;
+import com.dancestudio.erp.util.TempFileUtil;
 import com.dancestudio.erp.util.WhatsappUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.apache.commons.lang3.StringUtils;
 
 @Service
@@ -42,6 +52,10 @@ import org.apache.commons.lang3.StringUtils;
 @Setter
 public class MessageManagerImpl implements MessageManager {
 
+    private final WhatsAppService whatsAppService;
+
+    private final EmailService emailService;
+    private final MessageQueueRepository messageQueueRepository;
     private final MessageRepository messageRepository;
     private final MessageRecipientRepository recipientRepository;
     private final MemberRepository memberRepository;
@@ -50,11 +64,13 @@ public class MessageManagerImpl implements MessageManager {
     private final ClientRepository clientRepository;
 
     @Autowired
-    private NotificationManager notificationManager;
+    private TemplateManager templateManager;
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
     @Autowired
     private WhatsappUtil whatsappUtil;
-
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Transactional
     public SendMessageResponse sendMessage(SendMessageRequestEntry request, byte[] fileBytes, String originalName,
@@ -63,85 +79,164 @@ public class MessageManagerImpl implements MessageManager {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found"));
 
-        boolean sendToAll = (request.getSentToAll());
+        MemberType memberType = (request.getMemberType());
 
         isWhatsappNotification(request);
         isEmailNotification(request, branch);
 
-        executorService.submit(() -> {
-            try {
-                List<Member> members = request.getMemberIds() == null ? new ArrayList<>()
-                        : sendToAll
-                                ? memberRepository.findByBranchId(branch.getId())
-                                : memberRepository.findAllById(request.getMemberIds());
-
-                List<Client> clients = request.getClientIds() == null ? new ArrayList<>():
-                         clientRepository.findAllById(request.getClientIds());
-
-                if (members.isEmpty() && clients.isEmpty()) {
-                    log.error("No members or client found to send message.");
-                    return;
-                }
-
-                Message message = createAndSaveMessage(request, branch);
-                int success = 0;
-
-                if (isWhatsappNotification(request)) {
-                    success = sendWhatsAppMessagesWithDelay(members, clients, message, branch, fileBytes, originalName,
-                            contentType);
-                } else if (isSmsNotification(request)) {
-                    success = handleSmsNotification(request, branch, members, message);
-                } else if (isEmailNotification(request, branch)) {
-                    notificationManager.sendEmail(request,members,clients, fileBytes, originalName);
-                    success = members.size();
+        try {
+            List<Member> members = new ArrayList<>();
+            if (Objects.nonNull(memberType)) {
+                if (memberType.equals(MemberType.ALL)) {
+                    members = memberRepository.findByBranchId(branch.getId());
                 } else {
-                    throw new RuntimeException("Unsupported notification type: " + request.getNotificationType());
+                    members = memberRepository.findByBranchIdAndMemberType(branch.getId(), memberType.name());
                 }
-
-                int failed = members.size() - success;
-                log.info("Async message sending completed. Success: {}, Failed: {}", success, failed);
-
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage(), e);
+            } else if (Objects.nonNull(request.getMemberIds())) {
+                members = memberRepository.findAllById(request.getMemberIds());
             }
-        });
+
+            List<Client> clients = request.getClientIds() == null ? new ArrayList<>()
+                    : clientRepository.findAllById(request.getClientIds());
+
+            if (members.isEmpty() && clients.isEmpty()) {
+                log.error("No members or client found to send message.");
+                throw new RuntimeException("No members or client found to send message.");
+            }
+
+            Message message = createAndSaveMessage(request, branch);
+            int success = 0;
+
+            if (isWhatsappNotification(request)) {
+                success = sendWhatsAppMessagesWithDelay(members, clients, message, branch, fileBytes, originalName,
+                        contentType);
+            } else if (isEmailNotification(request, branch)) {
+                sendEmail(request, members, clients, fileBytes, originalName, message, contentType);
+                success = members.size();
+            } else if (isSmsNotification(request)) {
+                success = handleSmsNotification(request, branch, members, message);
+            } else {
+                throw new RuntimeException("Unsupported notification type: " + request.getNotificationType());
+            }
+
+            int failed = members.size() - success;
+            log.info("Async message sending completed. Success: {}, Failed: {}", success, failed);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
         return new SendMessageResponse(0, 0, 0,
-                "Messages are being sent in the background. Please check back later for status.");
+                "Messages are being sent in the background. Please check back later for status.", new ArrayList<>());
     }
 
-    private final Object lock = new Object();
+    private void sendEmail(SendMessageRequestEntry requestEntry, List<Member> members, List<Client> clients,
+            byte[] fileBytes, String originalName, Message message, String contentType)
+            throws Exception {
+
+        Branch branch = branchRepository.findWithStudioById(requestEntry.getBranchId())
+                .orElseThrow(() -> new RuntimeException("Branch not found"));
+        Studio studio = branch.getStudio();
+
+        if (Objects.nonNull(requestEntry.getTemplateName()) && !StringUtils.isAllEmpty(requestEntry.getContent())) {
+            TemplateEntry templateEntry = templateManager.getTemplateDetails(requestEntry.getTemplateName());
+            requestEntry.setContent(templateEntry.getTemplateBody());
+        }
+
+        Long studioId = branch.getStudio().getId();
+
+        for (Member member : members) {
+            if (Objects.nonNull(requestEntry.getTemplateName())) {
+                TemplateEntry templateEntry = templateManager.getTemplateDetails(requestEntry.getTemplateName());
+                String updatedBody = formatEmailBody(templateEntry, studio.getName(), member.getName(),
+                        requestEntry.getActivityType());
+                message.setContent(updatedBody);
+                messageRepository.save(message);
+                MessageRecipient recipient = recipientRepository
+                        .save(new MessageRecipient(message,
+                                member.getName(), member.getEmail(),
+                                MessageStatus.PENDING, null));
+                emailService.sendHighPriorityEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, studioId,
+                        fileBytes,
+                        originalName, recipient);
+            }
+        }
+        if (Objects.isNull(requestEntry.getTemplateName())) {
+            String filePath = fileBytes != null ? TempFileUtil.saveTempFile(fileBytes, originalName, contentType)
+                    : null;
+            if (addToMemberTOQueue(members, message, branch, filePath, NotificationType.EMAIL)) {
+                publisher.publishEvent(new EmailQueuedEvent());
+            }
+        }
+        for (Client client : clients) {
+            TemplateEntry templateEntry = templateManager.getTemplateDetails(requestEntry.getTemplateName());
+            String updatedBody = formatEmailBody(templateEntry, studio.getName(), client.getPocName(),
+                    requestEntry.getActivityType());
+            message.setContent(updatedBody);
+            messageRepository.save(message);
+            MessageRecipient recipient = recipientRepository
+                    .save(new MessageRecipient(message, client.getPocName(), client.getPocPhone(),
+                            MessageStatus.PENDING, null));
+
+            emailService.sendHighPriorityEmail(client.getPocEmail(), templateEntry.getSubject(), updatedBody, studioId,
+                    fileBytes,
+                    originalName, recipient);
+        }
+    }
 
     private int sendWhatsAppMessagesWithDelay(List<Member> members, List<Client> clients, Message message,
             Branch branch, byte[] fileBytes,
-            String originalName, String contentType) {
+            String originalName, String contentType) throws IOException {
 
-        synchronized (lock) {
-            int success = 0;
-            for (Member member : members) {
-                try {
-                    String content = GenericTemplateUtil.generateContentString(
-                            message.getContent(), branch.getStudio(), branch, member);
-                    whatsappUtil.sendMessage(
-                            "91" + member.getPhone(), content, branch.getId(),
-                            fileBytes, originalName, contentType);
-                    success++;
-                    Thread.sleep(10000);
-                } catch (Exception e) {
-                    log.error("Error sending WhatsApp message to {}: {}", member.getPhone(), e.getMessage());
-                }
-            }
+        int success = 0;
+        if (!clients.isEmpty()) {
+            log.info("Sending WhatsApp messages with attachment to {} members and {} clients",
+                    members.size(), clients.size());
             for (Client client : clients) {
                 try {
-                    whatsappUtil.sendMessage(
+                    MessageRecipient recipient = recipientRepository
+                            .save(new MessageRecipient(message, client.getPocName(), client.getPocPhone(),
+                                    MessageStatus.PENDING, null));
+
+                    whatsAppService.sendHighPriorityWhatsAppMessage(
                             "91" + client.getPocPhone(), message.getContent(), branch.getId(),
-                            fileBytes, originalName, contentType);
+                            fileBytes, originalName, contentType, recipient);
                     success++;
-                    Thread.sleep(10000);
                 } catch (Exception e) {
                     log.error("Error sending WhatsApp message to {}: {}", client.getPocPhone(), e.getMessage());
                 }
             }
-            return success;
+        }
+        log.info("Sending WhatsApp messages to {} members and {} clients",
+                members.size(), clients.size());
+        String filePath = fileBytes != null ? TempFileUtil.saveTempFile(fileBytes, originalName, contentType) : null;
+        if (addToMemberTOQueue(members, message, branch, filePath, NotificationType.WHATSAPP)) {
+            success = members.size();
+            publisher.publishEvent(new WhatsAppMessageQueuedEvent());
+        }
+
+        return success;
+    }
+
+    private Boolean addToMemberTOQueue(List<Member> members, Message message, Branch branch, String filePath,
+            NotificationType notificationType) {
+        try {
+            for (Member member : members) {
+                MessageRecipient recipient = recipientRepository.save(new MessageRecipient(message, member.getName(),
+                        notificationType.equals(NotificationType.EMAIL) ? member.getEmail() : member.getPhone(),
+                        MessageStatus.PENDING, null));
+                MessageQueue messageQueue = new MessageQueue();
+                messageQueue.setMember(member);
+                messageQueue.setMessage(message);
+                messageQueue.setBranch(branch);
+                messageQueue.setStudio(branch.getStudio());
+                messageQueue.setNotificationType(notificationType);
+                messageQueue.setFilePath(filePath);
+                messageQueue.setRecipient(recipient);
+                messageQueueRepository.save(messageQueue);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -174,10 +269,8 @@ public class MessageManagerImpl implements MessageManager {
                 .map(recipient -> {
                     MessageRecipientEntry entry = new MessageRecipientEntry();
                     entry.setId(recipient.getId());
-                    entry.setMemberId(recipient.getMember().getId());
                     entry.setName(recipient.getName());
-                    entry.setPhoneNumber(recipient.getPhoneNumber());
-                    entry.setEmail(recipient.getEmail());
+                    entry.setContact(recipient.getContact());
                     entry.setStatus(recipient.getStatus());
                     entry.setReason(recipient.getReason());
                     return entry;
@@ -213,7 +306,7 @@ public class MessageManagerImpl implements MessageManager {
         }
         message.setNotiticationType(request.getNotificationType());
         message.setBranch(branch);
-        message.setSendToAll(request.getSentToAll());
+        message.setSendToAll(Objects.nonNull(request.getMemberType()));
         return messageRepository.save(message);
     }
 
@@ -246,26 +339,38 @@ public class MessageManagerImpl implements MessageManager {
 
     }
 
-    private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
-            Message message) {
-        throw new UnsupportedOperationException("SMS notification is not implemented yet.");
-    }
-
     @Override
     public String checkStatus(Long branchId) {
-        return branchRepository.findWhatsAppStatusByBranchId(branchId);
+        whatsappUtil.checkSessionStatus(branchId);
+        return branchRepository.findProjectedById(branchId)
+                .map(BranchRepository.WhatsAppStatusView::getWhatsappStatus)
+                .orElse(null);
     }
 
     @Override
     public String logoutWhatsAppSession(Long branchId) {
         SessionEntry sessionEntry = whatsappUtil.logoutSession(branchId);
-        if (sessionEntry == null || !sessionEntry.isSuccess()
-                || !checkStatus(branchId).equals(WhatsAppStatus.LOGOUT.name())) {
+        if (sessionEntry == null || !sessionEntry.isSuccess()) {
             throw new RuntimeException("Failed to logout WhatsApp session for branch ID: " + branchId);
         }
-        return branchRepository.findWhatsAppStatusByBranchId(branchId);
+        branchRepository.updateWhatsAppStatus(branchId, WhatsAppStatus.LOGOUT.name());
+        return branchRepository.findProjectedById(branchId)
+                .map(BranchRepository.WhatsAppStatusView::getWhatsappStatus)
+                .orElse(null);
     }
 
+    private int handleSmsNotification(SendMessageRequestEntry request, Branch branch, List<Member> members,
+            Message message) {
+        throw new UnsupportedOperationException("SMS notification is not implemented yet.");
+    }
+
+    private String formatEmailBody(TemplateEntry templateEntry, String studioName, String studentName,
+            String activityType) {
+        return templateEntry.getTemplateBody()
+                .replace("{studio_name}", studioName)
+                .replace("{student_name}", studentName)
+                .replace("{activity_type}", activityType != null ? activityType : "");
+    }
     // dead code
     // --------------------------------------------------------------------------------------------------------------------
     // private void sendSms(Member member, String content) {

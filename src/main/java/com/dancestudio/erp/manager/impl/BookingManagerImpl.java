@@ -14,17 +14,26 @@ import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.ClientManager;
 import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.repository.BookingRepository;
+import com.dancestudio.erp.specification.BookingSpecifications;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
 import lombok.Setter;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
 
 @Service
 @Setter(onMethod = @__({@Autowired}))
@@ -36,7 +45,6 @@ public class BookingManagerImpl implements BookingManager {
     private ClientManager clientManager;
     private PaymentManager paymentManager;
 
-    @Autowired
     public BookingManagerImpl(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
@@ -107,55 +115,51 @@ public class BookingManagerImpl implements BookingManager {
     public BookingEntry getById(Long bookingId) throws Exception {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-
         return convertToEntry(booking);
     }
 
     @Override
     public Long countBookingsByBranchId(Long branchId) {
-        return bookingRepository.countBookingsByBranchId(branchId);
+        Specification<Booking> spec = Specification.where(BookingSpecifications.hasBranchId(branchId));
+        return bookingRepository.count(spec);
     }
 
     @Override
-    public Long countBookingsByBranchIdAndMonth(Long branchId, Integer startMonth,Integer startYear,  Integer endMonth, Integer endYear) {
+    public Long countBookingsByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear, Integer endMonth, Integer endYear) {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-        return bookingRepository.countBookingsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"));
+        Specification<Booking> spec = Specification
+                .where(BookingSpecifications.hasBranchId(branchId))
+                .and(BookingSpecifications.createdOnBetween(monthRange.get("start"), monthRange.get("end")));
+        return bookingRepository.count(spec);
     }
 
     @Override
-    public List<BookingEntry> getAllBookings(Long branchId, Integer page, Integer size, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear, String searchTerm) throws Exception {
-        Page<Booking> entries;
-        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
-        
-        if ((startDate != null && startDate > 0) || (endDate != null && endDate > 0)) {
+    public List<BookingEntry> getAllBookings(Long branchId, Integer page, Integer size,
+                                             Integer startDate, Integer startMonth, Integer startYear,
+                                             Integer endDate, Integer endMonth, Integer endYear,
+                                             String searchTerm) throws Exception {
+        Pageable pageable = size == -1
+                ? Pageable.unpaged()
+                : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
+
+        Specification<Booking> spec = Specification.where(BookingSpecifications.hasBranchId(branchId))
+                .and(BookingSpecifications.search(searchTerm));
+
+        if ((startDate != null && startDate > 0) && (endDate != null && endDate > 0)) {
             Map<String, Date> dateRange = DateUtil.getUTCDateRange(startDate, startMonth, startYear, endDate, endMonth, endYear);
-            entries = bookingRepository.findAllBookingsByBranchIdAndDateRange(branchId, dateRange.get("start"), dateRange.get("end"), pageable, searchTerm);
-        } else if (startMonth != null && startMonth > 0 && endMonth != null && endMonth > 0 && startYear != null && startYear > 0 && endYear != null && endYear > 0) {
-            // Handle month range
+            spec = spec.and(BookingSpecifications.createdOnBetween(dateRange.get("start"), dateRange.get("end")));
+        } else if (startMonth != null && startMonth > 0 && endMonth != null && endMonth > 0 &&
+                   startYear != null && startYear > 0 && endYear != null && endYear > 0) {
             Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-            entries = bookingRepository.findAllBookingsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"), pageable, searchTerm);
-        } else {
-            // No date filters, get all bookings
-            List<Booking> bookings = bookingRepository.findBookingsByBranchId(branchId, pageable, searchTerm).getContent();
-            return bookings.stream()
-                    .map(booking -> {
-                        try {
-                            return convertToEntry(booking);
-                        } catch (Exception e) {
-                            throw new RuntimeException("Error converting Booking to entry", e);
-                        }
-                    })
-                    .toList();
+            spec = spec.and(BookingSpecifications.createdOnBetween(monthRange.get("start"), monthRange.get("end")));
         }
+
+        Page<Booking> pageResult = bookingRepository.findAll(spec, pageable);
 
         List<BookingEntry> bookingEntries = new ArrayList<>();
-        for (Booking entry : entries) {
-            BookingEntry bookingEntry = convertToEntry(entry);
-            bookingEntries.add(bookingEntry);
+        for (Booking booking : pageResult) {
+            bookingEntries.add(convertToEntry(booking));
         }
-
-
-
         return bookingEntries;
     }
 

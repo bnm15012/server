@@ -69,7 +69,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     public List<ActivityEntry> getAllActivities(Long branchId) throws Exception {
-        List<Activity> entries = activityRepository.findAllByBranchId(branchId);
+        List<Activity> entries = activityRepository.findByBranchId(branchId);
 
         List<ActivityEntry> activityEntries = new ArrayList<>();
         for (Activity entry : entries) {

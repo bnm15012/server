@@ -36,13 +36,13 @@ public class BookingController extends BaseController<BookingEntry, BookingRespo
 
     @GetMapping("/getAll/{branchId}")
     public ResponseEntity<BookingResponse> getAllBookings(@PathVariable Long branchId,
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") Integer startMonth,
             @RequestParam(defaultValue = "0") Integer startYear,
             @RequestParam(defaultValue = "0") Integer endMonth,
             @RequestParam(defaultValue = "0") Integer endYear,
             @RequestParam(required = false) String searchTerm) {
-        return bookingService.getAllBookings(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
+        return bookingService.getAllBookings(branchId, --page, size, startMonth, startYear, endMonth, endYear, searchTerm);
     }
 
 }

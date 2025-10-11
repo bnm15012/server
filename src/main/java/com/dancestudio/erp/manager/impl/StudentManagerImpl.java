@@ -1,12 +1,18 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Member;
+import com.dancestudio.erp.entity.Message;
+import com.dancestudio.erp.entity.MessageRecipient;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.MemberType;
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.enums.MessageStatus;
+import com.dancestudio.erp.enums.NotificationType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
+import com.dancestudio.erp.message_queue.services.EmailService;
 import com.dancestudio.erp.repository.MemberRepository;
+import com.dancestudio.erp.repository.MessageRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
@@ -32,8 +38,11 @@ import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_STUDENT_EMAIL;
 @Setter
 public class StudentManagerImpl implements StudentManager {
 
+    private final EmailService emailService;
+
     private final MemberRepository memberRepository;
     private final StudentActivityAssignmentRepository studentActivityAssignmentRepository;
+    private final MessageRepository messageRepository;
 
     @Autowired private NotificationManager notificationManager;
     @Autowired private StudioManager studioManager;
@@ -43,9 +52,11 @@ public class StudentManagerImpl implements StudentManager {
     @Autowired private WhatsappUtil whatsappUtil;
 
     @Autowired
-    public StudentManagerImpl(MemberRepository memberRepository, StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
+    public StudentManagerImpl(MemberRepository memberRepository, StudentActivityAssignmentRepository studentActivityAssignmentRepository, EmailService emailService, MessageRepository messageRepository) {
         this.memberRepository = memberRepository;
         this.studentActivityAssignmentRepository = studentActivityAssignmentRepository;
+        this.emailService = emailService;
+        this.messageRepository = messageRepository;
     }
 
     @Override
@@ -64,7 +75,13 @@ public class StudentManagerImpl implements StudentManager {
 
         String updatedBody = formatEmailBody(studioEntry, templateEntry, member);
         if(Objects.nonNull(studioEntry.getPasscode()) && Objects.nonNull(studioEntry.getEmail())) {
-            notificationManager.sendEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, branchEntry.getStudioId(), null, null);
+
+            Message message =messageRepository.save(new Message(member.getBranch(), false,
+                    templateEntry.getSubject(), templateEntry.getTemplateBody(),
+                    NotificationType.EMAIL.name()));
+            MessageRecipient recepient = new MessageRecipient(message, member.getName(), member.getEmail(),
+                    MessageStatus.PENDING, null);
+            emailService.sendHighPriorityEmail(member.getEmail(), templateEntry.getSubject(), updatedBody, branchEntry.getStudioId(), null, null, recepient);
         }
 
         boolean msgSent = whatsappUtil.sendMessage(member.getPhone(), updatedBody, member.getBranch().getId(), null, null, null);

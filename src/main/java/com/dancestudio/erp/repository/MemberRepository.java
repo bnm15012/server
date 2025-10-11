@@ -40,5 +40,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT COUNT(s) FROM Member s WHERE s.branch.id = :branchId and s.memberType = 'INSTRUCTOR'")
     long totalInstructorsByBranchId(@Param("branchId") Long branchId);
-
+    
+    List<Member> findByBranchIdAndMemberType(Long branchId, String memberType);
 }

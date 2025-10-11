@@ -4,9 +4,9 @@ import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.ConfigurationType;
 import com.dancestudio.erp.enums.UserType;
-import com.dancestudio.erp.enums.WhatsAppStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
+import com.dancestudio.erp.message_queue.services.EmailService;
 import com.dancestudio.erp.repository.StudioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,12 +27,12 @@ import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 @Service
 public class StudioManagerImpl implements StudioManager {
 
+    private final EmailService emailService;
+
     private final StudioRepository studioRepository;
 
     @Autowired
     private UserManager userManager;
-    @Autowired
-    private NotificationManager notificationManager;
     @Autowired
     private TemplateManager templateManager;
     @Autowired
@@ -41,8 +41,9 @@ public class StudioManagerImpl implements StudioManager {
     private static final String MAIN_BRANCH_NAME = "MAIN BRANCH";
 
     @Autowired
-    public StudioManagerImpl(StudioRepository studioRepository) {
+    public StudioManagerImpl(StudioRepository studioRepository, EmailService emailService) {
         this.studioRepository = studioRepository;
+        this.emailService = emailService;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -81,8 +82,8 @@ public class StudioManagerImpl implements StudioManager {
                 .replace("{studio_name}", updatedStudio.getName()));
 
         if (Objects.nonNull(studioEntry.getEmail()) && Objects.nonNull(studioEntry.getPasscode())) {
-            notificationManager.sendEmail(studioEntry.getEmail(), templateEntry.getSubject(),
-                    templateEntry.getTemplateBody(), null, null, null);
+            emailService.sendHighPriorityEmail(studioEntry.getEmail(), templateEntry.getSubject(),
+                    templateEntry.getTemplateBody(), null, null, null, null);
         }
         return convertToEntry(updatedStudio);
     }
@@ -133,7 +134,7 @@ public class StudioManagerImpl implements StudioManager {
         TemplateEntry templateEntry = templateManager.getTemplateDetails(ADD_NEW_STUDIO_EMAIL);
         String updatedBody = formatEmailBody(studio, templateEntry, userEntry);
 
-        notificationManager.sendEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null, null, null);
+        emailService.sendHighPriorityEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null, null, null, null);
     }
 
     private String formatEmailBody(Studio studio, TemplateEntry templateEntry, UserEntry userEntry) {

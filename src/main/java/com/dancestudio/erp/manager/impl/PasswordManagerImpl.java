@@ -4,8 +4,8 @@ import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entry.PasswordEntry;
 import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.enums.AuthType;
-import com.dancestudio.erp.manager.NotificationManager;
 import com.dancestudio.erp.manager.UserManager;
+import com.dancestudio.erp.message_queue.services.EmailService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,16 +17,19 @@ import java.util.UUID;
 @Component
 public class PasswordManagerImpl {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final EmailService emailService;
 
     @Autowired
-    private NotificationManager notificationManager;
+    private JwtUtil jwtUtil;
 
     @Autowired
     private UserManager userManager;
 
     private static final String PASSWORD_CHANGE_NOTIFICATION = "Password Reset OTP";
+
+    PasswordManagerImpl(EmailService emailService) {
+        this.emailService = emailService;
+    }
 
     public PasswordEntry initiatePasswordReset(String email) throws Exception {
         UserEntry userEntry = userManager.getUserByEmail(email);
@@ -37,7 +40,7 @@ public class PasswordManagerImpl {
         String otp = jwtUtil.generateOtp();
         String otpToken = jwtUtil.generateToken(email, null, otp, AuthType.OTP);
         String body = "Your OTP is: " + otp + ". It is valid for 5 minutes.";
-        notificationManager.sendEmail(email, PASSWORD_CHANGE_NOTIFICATION, body, null, null, null);
+        emailService.sendHighPriorityEmail(email, PASSWORD_CHANGE_NOTIFICATION, body, null, null, null, null);
 
         PasswordEntry passwordEntry = new PasswordEntry();
         passwordEntry.setOtpToken(otpToken);

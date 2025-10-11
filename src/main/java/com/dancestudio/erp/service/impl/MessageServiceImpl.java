@@ -2,7 +2,6 @@ package com.dancestudio.erp.service.impl;
 
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.manager.MessageManager;
-import com.dancestudio.erp.manager.NotificationManager;
 import com.dancestudio.erp.response.*;
 import com.dancestudio.erp.service.MessageService;
 import lombok.Setter;
@@ -22,15 +21,14 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     private MessageManager messageManager;
-    @Autowired
-    private NotificationManager notificationManager;
 
     @Override
     public void sendWhatsAppMessage(String to, String messageText) {
     }
 
     @Override
-    public ResponseEntity<SendMessageResponse> sendMessage(SendMessageRequestEntry request, MultipartFile file) {
+    public ResponseEntity<SendMessageResponse> sendMessage(SendMessageRequestEntry request, MultipartFile file,
+            Integer page, Integer size) {
 
         SendMessageResponse response = new SendMessageResponse();
         try {
@@ -38,10 +36,16 @@ public class MessageServiceImpl implements MessageService {
             String originalName = file != null ? file.getOriginalFilename() : null;
             SendMessageResponse result = messageManager.sendMessage(request, fileBytes, originalName,
                     file != null ? file.getContentType() : null);
+
+            List<MessageEntry> messageEntries = messageManager.getMessagesByBranchId(request.getBranchId(), page, size);
+            long totalMessages = messageManager.getMessageCountByBranchId(request.getBranchId());
+
             response.setStatus(new StatusResponse(1, "Message sent successfully", StatusResponse.Type.SUCCESS,
-                    Objects.isNull(result) ? 0 : 1));
+                    Objects.isNull(result) ? 0 : (int) totalMessages));
+            response.setData(messageEntries);
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
+            ex.printStackTrace();
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

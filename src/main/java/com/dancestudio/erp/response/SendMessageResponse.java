@@ -1,5 +1,8 @@
 package com.dancestudio.erp.response;
 
+import java.util.List;
+
+import com.dancestudio.erp.entry.MessageEntry;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,4 +19,5 @@ public class SendMessageResponse extends AbstractResponse {
     private int success;
     private int failed;
     private String message;
+    private List<MessageEntry> data;
 }

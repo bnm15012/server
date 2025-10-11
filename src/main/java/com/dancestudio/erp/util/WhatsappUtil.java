@@ -1,6 +1,8 @@
 package com.dancestudio.erp.util;
 
 import com.dancestudio.erp.entry.SessionEntry;
+import com.dancestudio.erp.enums.WhatsAppStatus;
+import com.dancestudio.erp.repository.BranchRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +22,17 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class WhatsappUtil {
 
+    private final BranchRepository branchRepository;
+
     @Value("${ultramsg.api.url}")
     private String baseUrl;
 
     @Value("${create.session.url}")
     private String createSessionUrl;
+
+    WhatsappUtil(BranchRepository branchRepository) {
+        this.branchRepository = branchRepository;
+    }
 
     public boolean sendMessage(String token, String instanceId, String to, String body) {
         String apiUrl = baseUrl + "/" + instanceId + "/messages/chat";
@@ -68,7 +76,6 @@ public class WhatsappUtil {
                     while ((line = reader.readLine()) != null) {
                         response.append(line);
                     }
-
                     ObjectMapper objectMapper = new ObjectMapper();
                     return objectMapper.readValue(response.toString(), SessionEntry.class);
                 }
@@ -125,9 +132,46 @@ public class WhatsappUtil {
         }
     }
 
+    public SessionEntry checkSessionStatus(Long branchId) {
+        SessionEntry sessionEntry = new SessionEntry();
+        String apiUrl = createSessionUrl + "/status/" + branchId;
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setDoOutput(true);
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    branchRepository.updateWhatsAppStatus(branchId, WhatsAppStatus.ACTIVE.name());
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    return objectMapper.readValue(response.toString(), SessionEntry.class);
+                }
+            } else {
+                log.error("Failed to create session: HTTP " + responseCode);
+                sessionEntry.setData(null);
+                sessionEntry.setMessage("Whatsapp socket hang up !");
+                sessionEntry.setSuccess(false);
+                return sessionEntry;
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating session: {}", e.getMessage());
+            sessionEntry.setData(null);
+            sessionEntry.setMessage("Internal server error !");
+            sessionEntry.setSuccess(false);
+            return sessionEntry;
+        }
+    }
+
     public boolean sendMessage(String number, String message, Long branchId, byte[] fileBytes, String originalName,
             String contentType) {
-        createSession(branchId);
+
         String apiUrl = createSessionUrl + "/send/" + branchId;
 
         String boundary = "----Boundary" + System.currentTimeMillis();

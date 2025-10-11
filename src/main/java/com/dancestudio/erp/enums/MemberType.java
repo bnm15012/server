@@ -4,5 +4,6 @@ public enum MemberType {
 
     INSTRUCTOR,
     STUDENT,
-    STAFF
+    STAFF,
+    ALL,
 }

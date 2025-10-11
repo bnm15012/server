@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.dancestudio.erp.constants.TemplateName.PAYMENT_REMINDER;
 import static com.dancestudio.erp.constants.TemplateName.STUDIO_CLOSED_NOTICE;
+import static com.dancestudio.erp.constants.TemplateName.UPDATE_USER_EMAIL;
 
 @Service
 public class TemplateManagerImpl implements TemplateManager {
@@ -65,6 +67,9 @@ public class TemplateManagerImpl implements TemplateManager {
     @Override
     public TemplateEntry getTemplateDetails(String templateName) {
         Optional<Template> template = Optional.ofNullable(templateRepository.findByName(templateName));
+        if (template.isEmpty()) {
+            throw new RuntimeException("No default template available named:" + templateName);
+        }
         return template.map(this::convertToEntry).orElse(null);
     }
 

@@ -6,18 +6,18 @@ import com.dancestudio.erp.entry.EnquiryEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.EnquiryManager;
 import com.dancestudio.erp.repository.EnquiryRepository;
+import com.dancestudio.erp.specification.EnquirySpecifications;
 import com.dancestudio.erp.util.DateUtil;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Setter(onMethod = @__({ @Autowired }))
@@ -29,20 +29,16 @@ public class EnquiryManagerImpl implements EnquiryManager {
     @Override
     public EnquiryEntry add(EnquiryEntry entry) throws Exception {
         Enquiry entity = EnquiryConverter.toEntity(entry, null);
-        Enquiry saved = enquiryRepository.save(entity);
-        return EnquiryConverter.toEntry(saved);
+        return EnquiryConverter.toEntry(enquiryRepository.save(entity));
     }
 
     @Override
     public EnquiryEntry update(Long id, EnquiryEntry entry) throws Exception {
-        Optional<Enquiry> existingOpt = enquiryRepository.findById(id);
-        if (existingOpt.isEmpty()) {
-            throw new EntityNotFoundException("Enquiry not found with id: " + id);
-        }
+        Enquiry existing = enquiryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Enquiry not found with id: " + id));
 
-        Enquiry existing = existingOpt.get();
-        Enquiry updated = enquiryRepository.save(EnquiryConverter.toEntity(entry, existing));
-        return EnquiryConverter.toEntry(updated);
+        Enquiry updated = EnquiryConverter.toEntity(entry, existing);
+        return EnquiryConverter.toEntry(enquiryRepository.save(updated));
     }
 
     @Override
@@ -66,21 +62,20 @@ public class EnquiryManagerImpl implements EnquiryManager {
             Integer endMonth, Integer endYear,
             String searchTerm) throws Exception {
 
-        Page<Enquiry> pageResult;
         Pageable pageable = PageRequest.of(page, size, Sort.by("enquiryDate").descending());
+        Specification<Enquiry> spec = Specification.where(EnquirySpecifications.hasBranchId(branchId));
 
-        if (Objects.nonNull(startMonth) && Objects.nonNull(startMonth) && Objects.nonNull(startYear)
-                && Objects.nonNull(endMonth) && Objects.nonNull(endMonth) && Objects.nonNull(endYear)) {
-
+        if (startMonth != null && startYear != null && endMonth != null && endYear != null) {
             Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-            String term = (searchTerm != null) ? searchTerm : "";
-
-            pageResult = enquiryRepository.findByBranchIdAndEnquiryDateBetweenAndNameContainingIgnoreCase(
-                    branchId, monthRange.get("start"), monthRange.get("end"), term, pageable);
-        } else {
-            String term = (searchTerm != null) ? searchTerm : "";
-            pageResult = enquiryRepository.findByBranchId(branchId, pageable, term);// .getContent();
+            spec = spec.and(EnquirySpecifications.enquiryDateBetween(monthRange.get("start"), monthRange.get("end")));
         }
+
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            spec = spec.and(EnquirySpecifications.searchTerm(searchTerm));
+        }
+
+        Page<Enquiry> pageResult = enquiryRepository.findAll(spec, pageable);
+
         return pageResult.stream()
                 .map(EnquiryConverter::toEntry)
                 .collect(Collectors.toList());
@@ -88,7 +83,7 @@ public class EnquiryManagerImpl implements EnquiryManager {
 
     @Override
     public long countEnquiriesByBranchId(Long branchId) throws Exception {
-        return enquiryRepository.countByBranchId(branchId);
+        return enquiryRepository.count(EnquirySpecifications.hasBranchId(branchId));
     }
 
     @Override
@@ -96,8 +91,11 @@ public class EnquiryManagerImpl implements EnquiryManager {
             Integer endMonth, Integer endYear, String searchTerm) throws Exception {
 
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-        String term = (searchTerm != null) ? searchTerm : "";
-        return enquiryRepository.countByBranchIdAndEnquiryDateBetweenAndNameContainingIgnoreCase(
-                branchId, monthRange.get("start"), monthRange.get("end"), term);
+        Specification<Enquiry> spec = Specification
+                .where(EnquirySpecifications.hasBranchId(branchId))
+                .and(EnquirySpecifications.enquiryDateBetween(monthRange.get("start"), monthRange.get("end")))
+                .and(EnquirySpecifications.searchTerm(searchTerm));
+
+        return enquiryRepository.count(spec);
     }
 }

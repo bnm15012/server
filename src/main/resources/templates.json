@@ -1,0 +1,62 @@
+[
+    {
+        "name": "NEW_STUDIO_EMAIL",
+        "body": "Dear {studio_name},\n\nCongratulations! Your studio has been successfully registered.\nWe are thrilled to have you join us and look forward to helping your studio grow and connect with more dance enthusiasts.\n\nIf you have any questions or need assistance, please do not hesitate to reach out to our support team.\n\nWe have created a user with a dummy password below, please update as per your convenience.\n\nUsername: {username}\nPassword: {password}\n\nBest regards,\nBook & Manage Team",
+        "subject": "Welcome to Book & Manage !!",
+        "templateType": "EMAIL"
+    },
+    {
+        "name": "UPDATE_STUDIO_EMAIL",
+        "body": "Hi {studio_name},\n\nYour details have been updated. Please check the dashboard to view the changes.\n\nBest regards,\nBook & Manage Team",
+        "subject": "Updated Studio Details",
+        "templateType": "EMAIL"
+    },
+    {
+        "name": "NEW_STUDENT_EMAIL",
+        "body": "Dear {student_name},\n\nYour registration has been completed! We are thrilled to welcome you to {studio_name}.\n\nIf you have any questions or need assistance, please don’t hesitate to reach out to us. We’re here to help!\n\nLooking forward to seeing you in our classes!\n\nBest regards,\n{studio_name} Team",
+        "subject": "Welcome to Book & Manage !!",
+        "templateType": "EMAIL"
+    },
+    {
+        "name": "SUBSCRIPTION_RENEWAL_REMINDER",
+        "body": "Dear {student_name},\n\nThis is a gentle reminder that your subscription is due for renewal. Please renew your {activity_type} membership to continue enjoying our services.\n\nBest regards,\n{studio_name} Team",
+        "subject": "Subscription Renewal Reminder",
+        "templateType": "EMAIL"
+    },
+    {
+        "name": "STUDIO_CLOSED_NOTICE",
+        "body": "Dear students,\n\nPlease note that the studio will be closed on {closure_date} due to {reason}. We apologize for any inconvenience.\n\nBest regards,\n{studio_name} Team",
+        "subject": "Studio Closed Notice",
+        "templateType": "SMS"
+    },
+    {
+        "name": "PAYMENT_REMINDER",
+        "body": "Hello {student_name},\n\nThis is a reminder that your payment of ₹{amount_due} is pending. Please renew the membership plan to continue the  services\n\nThank you,\n{studio_name}",
+        "subject": "Payment Reminder",
+        "templateType": "SMS"
+    },
+    {
+        "name": "NEW_USER_EMAIL",
+        "body": "Dear {user_name},\n\nCongratulations! You has been successfully registered.\nWe are thrilled to have you join us and look forward to helping your studio grow and connect with more dance enthusiasts.\n\nIf you have any questions or need assistance, please do not hesitate to reach out to our support team.\n\nWe have created a user with a dummy password below, please update as per your convenience.\n\nUsername: {username}\nPassword: {password}\n\nBest regards,\nBook & Manage Team",
+        "subject": "Welcome to Book & Manage !!",
+        "templateType": "EMAIL"
+    },
+    {
+        "name": "UPDATE_USER_EMAIL",
+        "body": "Dear {user_name},\n\nYour details have been updated. Please check the dashboard to view the changes.\n\nBest regards,\nBook & Manage Team",
+        "subject": "Updated User Details",
+        "templateType": "EMAIL"
+    },
+    {
+        "name": "MEMBERSHIP_INVOICE",
+        "body": "Dear {student_name},\n\nThank you for registering for {activity_name}. The attached documnent below for invoice details.\n\nBest regards,\n{studio_name}",
+        "subject": "Membership Invoice Details",
+        "templateType": "EMAIL"
+    },
+    {
+        "name": "BOOKING_INVOICE",
+        "body": "Dear {student_name},\n\nThank you for appointment booking. The attached documnent below for invoice details.\n\nBest regards,\n{studio_name}",
+        "subject": "Booking Invoice Details",
+        "templateType": "EMAIL"
+    }
+]

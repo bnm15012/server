@@ -2,31 +2,28 @@ package com.dancestudio.erp.entity;
 
 import com.dancestudio.erp.enums.MessageStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "message_recipient")
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class MessageRecipient extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_id", nullable = false, foreignKey = @ForeignKey(name = "fk_recipient_message_id"))
     private Message message;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(name = "fk_recipient_member_id"))
-    private Member member;
-
     @Column(name = "name")
     private String name;
 
-    @Column(name = "phone_number", nullable = false, length = 20)
-    private String phoneNumber;
-
-    @Column(name = "email")
-    private String email;
+    @Column(name = "contact", nullable = false)
+    private String contact;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

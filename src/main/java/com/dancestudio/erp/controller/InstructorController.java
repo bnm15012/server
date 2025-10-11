@@ -45,9 +45,9 @@ public class InstructorController extends BaseController<InstructorEntry, Instru
     public ResponseEntity<InstructorCommunicationResponse> getAllInstructors(
             @PathVariable Long branchId,
             @RequestParam(required = false) MembershipStatus membershipStatus,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "-1") int size) {
-        return instructorService.getAllInstructorsForCommunication(branchId, membershipStatus, page, size);
+        return instructorService.getAllInstructorsForCommunication(branchId, membershipStatus, --page, size);
     }
 
 }

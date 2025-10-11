@@ -3,11 +3,15 @@ package com.dancestudio.erp.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "message")
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Message extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

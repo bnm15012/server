@@ -8,9 +8,9 @@ import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.enums.UserType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.exception.InvalidCredentialsException;
-import com.dancestudio.erp.manager.NotificationManager;
 import com.dancestudio.erp.manager.TemplateManager;
 import com.dancestudio.erp.manager.UserManager;
+import com.dancestudio.erp.message_queue.services.EmailService;
 import com.dancestudio.erp.repository.UserRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import lombok.Setter;
@@ -33,16 +33,18 @@ import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 @Setter(onMethod = @__({@Autowired}))
 public class UserManagerImpl implements UserManager {
 
+    private final EmailService emailService;
+
     private final UserRepository userRepository;
 
     private BCryptPasswordEncoder passwordEncoder;
     private JwtUtil jwtUtil;
-    private NotificationManager notificationManager;
     private TemplateManager templateManager;
 
     @Autowired
-    public UserManagerImpl(UserRepository userRepository) {
+    public UserManagerImpl(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -74,7 +76,7 @@ public class UserManagerImpl implements UserManager {
             TemplateEntry templateEntry = templateManager.getTemplateDetails(ADD_NEW_USER_EMAIL);
             String updatedBody = formatEmailBody(user, templateEntry, entry);
 
-            notificationManager.sendEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null, null, null);
+            emailService.sendHighPriorityEmail(userEntry.getEmail(), templateEntry.getSubject(), updatedBody, null, null, null, null);
         }
 
         return entry;
@@ -125,7 +127,7 @@ public class UserManagerImpl implements UserManager {
         TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_USER_EMAIL);
         String updatedBody = templateEntry.getTemplateBody().replace("{user_name}", existingUser.getName());
 
-        notificationManager.sendEmail(entry.getEmail(), templateEntry.getSubject(), updatedBody, null, null, null);
+        emailService.sendHighPriorityEmail(entry.getEmail(), templateEntry.getSubject(), updatedBody, null, null, null, null);
         return entry;
     }
 

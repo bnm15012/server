@@ -8,6 +8,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.ClientManager;
 import com.dancestudio.erp.repository.ClientRepository;
+import com.dancestudio.erp.specification.ClientSpecifications;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
 
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,21 +27,20 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-@Setter
+@Setter(onMethod = @__({@Autowired}))
 public class ClientManagerImpl implements ClientManager {
 
     private final ClientRepository clientRepository;
 
-    @Autowired private BranchManager branchManager;
-
     @Autowired
+    private BranchManager branchManager;
+
     public ClientManagerImpl(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 
     @Override
     public ClientEntry add(ClientEntry clientEntry) throws Exception {
-
         if (Objects.isNull(clientEntry.getBranchId())) {
             throw new EntityNotFoundException("BranchId cannot be null");
         }
@@ -62,7 +63,6 @@ public class ClientManagerImpl implements ClientManager {
     public void delete(Long clientId) throws EntityNotFoundException {
         clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Client not found"));
-
         clientRepository.deleteById(clientId);
     }
 
@@ -70,47 +70,58 @@ public class ClientManagerImpl implements ClientManager {
     public ClientEntry getById(Long clientId) throws EntityNotFoundException {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Client not found"));
-
         return convertToEntry(client);
     }
 
     @Override
     public Long countClientsByBranchId(Long branchId) {
-        return clientRepository.countByBranchId(branchId);
+        return clientRepository
+                .count((Specification<Client>) (root, query, cb) -> cb.equal(root.get("branch").get("id"), branchId));
     }
 
     @Override
-    public Long countClientsByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear,  Integer endMonth, Integer endYear) {
+    public Long countClientsByBranchIdAndMonth(Long branchId, Integer startMonth, Integer startYear, Integer endMonth,
+            Integer endYear) {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-        return clientRepository.countClientsByBranchIdAndDateRange(branchId, monthRange.get("start"), monthRange.get("end"));
+        Specification<Client> spec = Specification
+                .where(ClientSpecifications.hasBranchId(branchId))
+                .and(ClientSpecifications.createdBetween(monthRange.get("start"), monthRange.get("end")));
+        return clientRepository.count(spec);
     }
 
     @Override
-    public List<ClientEntry> getAllClients(Long branchId, int page, int size, Integer startMonth,Integer startYear,  Integer endMonth, Integer endYear, String searchTerm) throws EntityNotFoundException {
-        Page<Client> entries;
-        
+    public List<ClientEntry> getAllClients(Long branchId, int page, int size, Integer startMonth, Integer startYear,
+            Integer endMonth, Integer endYear, String searchTerm) throws EntityNotFoundException {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
-        
-        if (startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0)) {
-            entries = clientRepository.findClientsByBranchIdWithSearchTerm(branchId, searchTerm, pageable);
-        } else {
+
+        Date startDate = null, endDate = null;
+        if (!(startMonth.equals(0) || endMonth.equals(0) || startYear.equals(0) || endYear.equals(0))) {
             Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(startMonth, startYear, endMonth, endYear);
-            entries = clientRepository.findAllByBranchIdAndDateRangeAndSearchTerm(branchId, monthRange.get("start"), monthRange.get("end"), searchTerm, pageable);
+            startDate = monthRange.get("start");
+            endDate = monthRange.get("end");
         }
+
+        Specification<Client> spec = Specification
+                .where(ClientSpecifications.hasBranchId(branchId))
+                .and(ClientSpecifications.createdBetween(startDate, endDate))
+                .and(ClientSpecifications.searchByText(searchTerm));
+
+        Page<Client> entries = clientRepository.findAll(spec, pageable);
 
         List<ClientEntry> clientEntries = new ArrayList<>();
         for (Client entry : entries) {
-            ClientEntry clientEntry = convertToEntry(entry);
-            clientEntries.add(clientEntry);
+            clientEntries.add(convertToEntry(entry));
         }
-
         return clientEntries;
     }
 
     @Override
-    public List<ClientEntry> searchClientsByName(String clientName, Integer page, Integer size) throws EntityNotFoundException {
+    public List<ClientEntry> searchClientsByName(String clientName, Integer page, Integer size)
+            throws EntityNotFoundException {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
-        Page<Client> clients = clientRepository.findByGroupNameContainingIgnoreCase(clientName, pageable);
+        Specification<Client> spec = ClientSpecifications.searchByText(clientName);
+
+        Page<Client> clients = clientRepository.findAll(spec, pageable);
         List<ClientEntry> clientEntries = new ArrayList<>();
         for (Client client : clients) {
             clientEntries.add(convertToEntry(client));

@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.util.List;
 
+import com.dancestudio.erp.enums.MemberType;
+
 @Data
 public class SendMessageRequestEntry {
 
@@ -11,7 +13,7 @@ public class SendMessageRequestEntry {
     private String content;
     private String notificationType;
     private Long branchId;
-    private Boolean sentToAll = false;
+    private MemberType memberType;
     private List<Long> memberIds;
     private List<Long> clientIds;
 
