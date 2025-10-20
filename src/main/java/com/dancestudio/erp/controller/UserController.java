@@ -34,7 +34,6 @@ public class UserController extends BaseController<UserEntry, UserResponse, Long
         return userService.get(id);
     }
 
-    @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@RequestBody UserEntry userEntry) {
         return userService.registerUser(userEntry);
     }
@@ -44,7 +43,7 @@ public class UserController extends BaseController<UserEntry, UserResponse, Long
         return userService.loginUser(userEntry.getUserName(), userEntry.getPassword());
     }
     
-    @GetMapping("/getUsersByBranchId/{branchId}")
+    @GetMapping("/getAll/{branchId}")
     public ResponseEntity<UserResponse> getUsersByBranchId(@PathVariable Long branchId) {
         return userService.getUsersBybranchId(branchId);
     }

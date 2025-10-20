@@ -21,8 +21,7 @@ public class InstructorEntry {
     private String emergencyContactNumber;
     private MembershipStatus instructorStatus;
     private BankAccountEntry bankAccountDetails;
-    private BranchEntry branchEntry;
-    private StudioEntry studioEntry;
+    private Long branchId;
 
     private List<InstructorActivityAssignmentEntry> assignments;
 

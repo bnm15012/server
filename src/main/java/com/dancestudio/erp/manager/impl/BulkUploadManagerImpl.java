@@ -261,9 +261,7 @@ public class BulkUploadManagerImpl implements BulkUploadManager {
             instructorEntry.setEmergencyContactNumber(emergencyContact);
         }
 
-        BranchEntry branch = new BranchEntry();
-        branch.setBranchId(branchId);
-        instructorEntry.setBranchEntry(branch);
+        instructorEntry.setBranchId(branchId);
 
         instructorManager.add(instructorEntry);
     }

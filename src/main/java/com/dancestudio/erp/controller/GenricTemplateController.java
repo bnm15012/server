@@ -38,7 +38,7 @@ public class GenricTemplateController extends BaseController<GenricTemplateEntry
     @GetMapping("/getAll/{studioId}")
     public ResponseEntity<GenericTemplateResponse> getAllConditions(
             @PathVariable Long studioId,
-            @RequestParam(required = false) String templateType,
+            @RequestParam(required = false, name = "searchTerm") String templateType,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return genericTemplateService.getAllByStudioId(studioId, templateType, page, size);

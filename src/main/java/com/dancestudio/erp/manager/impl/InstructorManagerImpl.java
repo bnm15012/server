@@ -129,15 +129,7 @@ public class InstructorManagerImpl implements InstructorManager {
         instructorEntry.setEmergencyContactNumber(instructor.getEmergencyContactNumber());
 
         try {
-            if (instructor.getBranch() != null) {
-                StudioEntry studioEntry = studioManager.getById(instructor.getBranch().getStudio().getId());
-                instructorEntry.setStudioEntry(studioEntry);
-            }
-
-            if (instructor.getBranch() != null) {
-                BranchEntry branchEntry = branchManager.getById(instructor.getBranch().getId());
-                instructorEntry.setBranchEntry(branchEntry);
-            }
+            instructorEntry.setBranchId(instructor.getBranch().getId());
 
             BankAccountEntry bankAccountEntry = bankAccountManager.getByInstructorId(instructor.getId());
             if (Objects.nonNull(bankAccountEntry)) {
@@ -194,10 +186,8 @@ public class InstructorManagerImpl implements InstructorManager {
             instructor.setEmergencyContactNumber(instructorEntry.getEmergencyContactNumber());
         }
 
-        if (instructorEntry.getBranchEntry() != null && instructorEntry.getBranchEntry().getBranchId() != null) {
-            BranchEntry entry = branchManager.getById(instructorEntry.getBranchEntry().getBranchId());
-            instructor.setBranch(ConvertToEntryUtil.convertToEntity(entry, null));
-        }
+        BranchEntry branchEntry = branchManager.getById(instructorEntry.getBranchId());
+        instructor.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
 
         return instructor;
     }
