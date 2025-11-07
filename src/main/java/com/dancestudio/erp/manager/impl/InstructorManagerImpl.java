@@ -136,16 +136,7 @@ public class InstructorManagerImpl implements InstructorManager {
                 instructorEntry.setBankAccountDetails(bankAccountEntry);
             }
 
-            List<InstructorActivityAssignmentEntry> entries = instructorActivityAssignmentManager.getInstructorAssignmentsByInstructorId(instructor.getId());
             boolean isActive = false;
-
-            instructorEntry.setAssignments(entries);
-            for (InstructorActivityAssignmentEntry entry : entries) {
-                if (entry.getEndDate() == null || entry.getEndDate().after(DateUtil.getCurrentDateUTC())) {
-                    isActive = true;
-                    break;
-                }
-            }
 
             instructorEntry.setInstructorStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
         } catch (Exception ex) {

@@ -2,6 +2,9 @@ package com.dancestudio.erp.repository;
 
 
 import com.dancestudio.erp.entity.InstructorActivityAssignment;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +17,10 @@ public interface InstructorActivityAssignmentRepository extends JpaRepository<In
     InstructorActivityAssignment findByInstructorIdAndActivityId(@Param("instructorId") Long instructorId, @Param("activityName") String activityName);
 
     @Query("SELECT a FROM InstructorActivityAssignment a WHERE a.instructor.id = :instructorId")
-    List<InstructorActivityAssignment> findByInstructorId(@Param("instructorId") Long instructorId);
+    Page<InstructorActivityAssignment> findByInstructorId(
+            @Param("instructorId") Long instructorId,
+            Pageable pageable
+    );
 
 }
 

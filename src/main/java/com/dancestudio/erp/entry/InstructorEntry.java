@@ -22,22 +22,4 @@ public class InstructorEntry {
     private MembershipStatus instructorStatus;
     private BankAccountEntry bankAccountDetails;
     private Long branchId;
-
-    private List<InstructorActivityAssignmentEntry> assignments;
-
-
-    @JsonIgnore
-    public List<Long> getAssignedActivityIds() {
-        List<Long> activityIds = new ArrayList<>();
-
-        if (assignments != null) {
-            for (InstructorActivityAssignmentEntry activity : assignments) {
-                if (activity != null) {
-                    activityIds.add(activity.getAssignmentId());
-                }
-            }
-        }
-
-        return activityIds;
-    }
 }

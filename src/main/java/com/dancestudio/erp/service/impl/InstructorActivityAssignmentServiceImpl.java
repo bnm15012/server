@@ -1,6 +1,8 @@
 package com.dancestudio.erp.service.impl;
 
 
+import com.dancestudio.erp.converter.InstructorActivityAssignmentConvertor;
+import com.dancestudio.erp.entity.InstructorActivityAssignment;
 import com.dancestudio.erp.entry.InstructorActivityAssignmentEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.InstructorActivityAssignmentManager;
@@ -9,15 +11,22 @@ import com.dancestudio.erp.response.InstructorActivityAssignmentResponse;
 import com.dancestudio.erp.service.InstructorActivityAssignmentService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Setter(onMethod = @__({@Autowired}))
 @Component
 public class InstructorActivityAssignmentServiceImpl implements InstructorActivityAssignmentService {
+
 
     private InstructorActivityAssignmentManager instructorActivityAssignmentManager;
 
@@ -84,6 +93,21 @@ public class InstructorActivityAssignmentServiceImpl implements InstructorActivi
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @Override
+    public ResponseEntity<InstructorActivityAssignmentResponse> getAll(Long id, Integer page, Integer size) {
+
+        InstructorActivityAssignmentResponse response = new InstructorActivityAssignmentResponse();
+        try{
+            Page<InstructorActivityAssignment> entries = instructorActivityAssignmentManager.getAssignmentsByInstructor(id, --page, size);
+            response.setData(entries.getContent().stream().map(a-> InstructorActivityAssignmentConvertor.convertToEntry(a)).collect(Collectors.toList()));
+            response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) entries.getTotalElements()));
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

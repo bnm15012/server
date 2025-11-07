@@ -36,7 +36,8 @@ public class ExpenseController extends BaseController<ExpenseEntry, ExpenseRespo
 
     @GetMapping("/getAll/{branchId}")
     public ResponseEntity<ExpenseResponse> getAllExpenses(@PathVariable Long branchId,
-            @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "1") Integer page, 
+            @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) Integer startDate,
             @RequestParam(required = false) Integer startMonth,
             @RequestParam(required = false) Integer startYear,
