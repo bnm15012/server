@@ -227,9 +227,8 @@ public class StudentManagerImpl implements StudentManager {
                 }
             }
             studentEntry.setMembershipStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
-            studentEntry.setEnrolledActivities(entries);
         } catch (Exception ex) {
-            studentEntry.setEnrolledActivities(null);
+            ex.printStackTrace();
         }
         return studentEntry;
     }

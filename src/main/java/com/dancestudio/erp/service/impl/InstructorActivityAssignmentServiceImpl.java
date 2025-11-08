@@ -103,10 +103,17 @@ public class InstructorActivityAssignmentServiceImpl implements InstructorActivi
         InstructorActivityAssignmentResponse response = new InstructorActivityAssignmentResponse();
         try{
             Page<InstructorActivityAssignment> entries = instructorActivityAssignmentManager.getAssignmentsByInstructor(id, --page, size);
-            response.setData(entries.getContent().stream().map(a-> InstructorActivityAssignmentConvertor.convertToEntry(a)).collect(Collectors.toList()));
+            response.setData(entries.getContent().stream().map(a-> {
+                try {
+                    return InstructorActivityAssignmentConvertor.convertToEntry(a);
+                } catch (Exception e) {
+                       throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList()));
             response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) entries.getTotalElements()));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
+            ex.printStackTrace();
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

@@ -363,9 +363,8 @@ public class ConvertToEntryUtil {
                 }
             }
             studentEntry.setMembershipStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
-            studentEntry.setEnrolledActivities(entries);
         } catch (Exception ex) {
-            studentEntry.setEnrolledActivities(null);
+            ex.printStackTrace();
         }
         return studentEntry;
     }

@@ -2,6 +2,9 @@ package com.dancestudio.erp.repository;
 
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.MonthlyReportEntry;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +33,9 @@ public interface StudentActivityAssignmentRepository extends JpaRepository<Stude
           "WHERE YEAR(s.registrationDate) = :year AND s.student.branch.id = :studioId GROUP BY MONTH(s.registrationDate)")
     List<MonthlyReportEntry> getAnalysisReport(@Param("year") int year, @Param("studioId") Long studioId);
 
+    @Query("SELECT a FROM StudentActivityAssignment a WHERE a.student.id = :studentId")
+    Page<StudentActivityAssignment> findActivitiesByStudentId(
+            @Param("studentId") Long studentId,
+            Pageable pageable
+    );
 }

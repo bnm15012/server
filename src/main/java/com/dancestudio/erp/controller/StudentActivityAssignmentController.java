@@ -33,4 +33,14 @@ public class StudentActivityAssignmentController extends BaseController<StudentA
     public ResponseEntity<StudentActivityAssignmentResponse> get(@PathVariable Long id) {
         return studentActivityAssignmentService.get(id);
     }
+
+
+    @GetMapping("/getAll/{studentId}")
+    public ResponseEntity<StudentActivityAssignmentResponse> getAllInstructors(
+        @PathVariable Long studentId,
+        @RequestParam(defaultValue = "1") Integer page, 
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        return studentActivityAssignmentService.getAll(studentId, page, size);
+    }
 }

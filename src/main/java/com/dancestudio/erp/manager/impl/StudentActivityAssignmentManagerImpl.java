@@ -1,14 +1,12 @@
 package com.dancestudio.erp.manager.impl;
 
-import com.dancestudio.erp.entity.Member;
-import com.dancestudio.erp.entity.Payment;
+import com.dancestudio.erp.converter.StudentActivityAssignmentConvertor;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.ExpenseEntry;
 import com.dancestudio.erp.entry.MonthlyReportEntry;
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.enums.ExpenseCategory;
-import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.PaymentManager;
@@ -17,11 +15,14 @@ import com.dancestudio.erp.repository.ExpenseRepository;
 import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.repository.PaymentRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
-import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -43,7 +44,6 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     @Autowired
     private PaymentRepository paymentRepository;
 
-    @Autowired
     public StudentActivityAssignmentManagerImpl(
             StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
         this.studentActivityAssignmentRepository = studentActivityAssignmentRepository;
@@ -55,7 +55,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         memberRepository.findById(studentActivityAssignmentEntry.getStudentId())
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-        StudentActivityAssignment studentStudentActivityAssignmentAssignment = convertToEntity(
+        StudentActivityAssignment studentStudentActivityAssignmentAssignment = StudentActivityAssignmentConvertor.convertToEntity(
                 studentActivityAssignmentEntry, null);
         studentStudentActivityAssignmentAssignment = studentActivityAssignmentRepository
                 .save(studentStudentActivityAssignmentAssignment);
@@ -68,7 +68,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         } catch (Exception ex) {
             throw new EntityNotFoundException("Failed to add payment details");
         }
-        return convertToEntry(studentStudentActivityAssignmentAssignment);
+        return StudentActivityAssignmentConvertor.convertToEntry(studentStudentActivityAssignmentAssignment);
     }
 
     @Override
@@ -78,11 +78,11 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                 .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
-        StudentActivityAssignment updatedStudentActivityAssignment = convertToEntity(studentActivityAssignmentEntry,
+        StudentActivityAssignment updatedStudentActivityAssignment = StudentActivityAssignmentConvertor.convertToEntity(studentActivityAssignmentEntry,
                 existingStudentActivityAssignment);
         updatedStudentActivityAssignment = studentActivityAssignmentRepository.save(updatedStudentActivityAssignment);
 
-        return convertToEntry(studentActivityAssignmentRepository.save(updatedStudentActivityAssignment));
+        return StudentActivityAssignmentConvertor.convertToEntry(studentActivityAssignmentRepository.save(updatedStudentActivityAssignment));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                 .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
-        return convertToEntry(studentActivityAssignment);
+        return StudentActivityAssignmentConvertor.convertToEntry(studentActivityAssignment);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
             String activityName) throws Exception {
         StudentActivityAssignment assignment = studentActivityAssignmentRepository
                 .findByStudentIdAndActivityId(studentId, activityName);
-        return convertToEntry(assignment);
+        return StudentActivityAssignmentConvertor.convertToEntry(assignment);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         List<StudentActivityAssignmentEntry> entries = new ArrayList<>();
 
         for (StudentActivityAssignment enrollment : enrollments) {
-            entries.add(convertToEntry(enrollment));
+            entries.add(StudentActivityAssignmentConvertor.convertToEntry(enrollment));
         }
 
         return entries;
@@ -141,7 +141,7 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         for (StudentActivityAssignment entry : entries) {
             boolean isActive = entry.getMembershipEndDate().after(DateUtil.getCurrentDateUTC());
             if ((status.equalsIgnoreCase("ACTIVE") && isActive) || (status.equalsIgnoreCase("INACTIVE") && !isActive)) {
-                assignmentEntries.add(convertToEntry(entry));
+                assignmentEntries.add(StudentActivityAssignmentConvertor.convertToEntry(entry));
             }
         }
         return assignmentEntries;
@@ -221,83 +221,11 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                 .sum();
     }
 
-    private StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment)
+    @Override
+    public Page<StudentActivityAssignment> getAssignmentsByStudentId(Long id, Integer page, Integer size)
             throws Exception {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        if (Objects.isNull(studentActivityAssignment)) {
-            return null;
-        }
-
-        StudentActivityAssignmentEntry studentActivityAssignmentEntry = new StudentActivityAssignmentEntry();
-        studentActivityAssignmentEntry.setAssignmentId(studentActivityAssignment.getId());
-        studentActivityAssignmentEntry.setStudentId(studentActivityAssignment.getStudent().getId());
-        studentActivityAssignmentEntry.setRegistrationDate(studentActivityAssignment.getRegistrationDate());
-        studentActivityAssignmentEntry.setBatchName(studentActivityAssignment.getBatchName());
-        studentActivityAssignmentEntry.setBatchTime(studentActivityAssignment.getBatchTime());
-        studentActivityAssignmentEntry.setMembershipStartDate(studentActivityAssignment.getMembershipStartDate());
-        studentActivityAssignmentEntry.setMembershipEndDate(studentActivityAssignment.getMembershipEndDate());
-        studentActivityAssignmentEntry.setDaysPerWeek(studentActivityAssignment.getDaysPerWeek());
-        studentActivityAssignmentEntry.setMembershipStatus(
-                studentActivityAssignment.getMembershipEndDate().after(DateUtil.getCurrentDateUTC())
-                        ? MembershipStatus.ACTIVE
-                        : MembershipStatus.INACTIVE);
-        studentActivityAssignmentEntry
-                .setMembershipType((studentActivityAssignment.getMembershipType()));
-        studentActivityAssignmentEntry.setActivityAmount(studentActivityAssignment.getActivityAmount());
-
-        if (Objects.nonNull(studentActivityAssignment.getActivityName())) {
-            studentActivityAssignmentEntry.setActivityName(studentActivityAssignment.getActivityName());
-        }
-
-        Payment payment = paymentRepository.findByPayeeId(studentActivityAssignment.getId());
-        studentActivityAssignmentEntry.setPaymentEntry(ConvertToEntryUtil.convertToEntry(payment));
-
-        return studentActivityAssignmentEntry;
-    }
-
-    private StudentActivityAssignment convertToEntity(StudentActivityAssignmentEntry studentActivityAssignmentEntry,
-            StudentActivityAssignment existingStudentActivityAssignment) throws Exception {
-        StudentActivityAssignment studentActivityAssignment = (existingStudentActivityAssignment != null)
-                ? existingStudentActivityAssignment
-                : new StudentActivityAssignment();
-
-        if (Objects.nonNull(studentActivityAssignmentEntry.getAssignmentId())) {
-            studentActivityAssignment.setId(studentActivityAssignmentEntry.getAssignmentId());
-        }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getRegistrationDate())) {
-            studentActivityAssignment.setRegistrationDate(studentActivityAssignmentEntry.getRegistrationDate());
-        }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getBatchName())) {
-            studentActivityAssignment.setBatchName(studentActivityAssignmentEntry.getBatchName());
-        }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getBatchTime())) {
-            studentActivityAssignment.setBatchTime(studentActivityAssignmentEntry.getBatchTime());
-        }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getMembershipStartDate())) {
-            studentActivityAssignment.setMembershipStartDate(studentActivityAssignmentEntry.getMembershipStartDate());
-        }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getMembershipEndDate())) {
-            studentActivityAssignment.setMembershipEndDate(studentActivityAssignmentEntry.getMembershipEndDate());
-        }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getMembershipType())) {
-            studentActivityAssignment.setMembershipType(studentActivityAssignmentEntry.getMembershipType());
-        }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getActivityAmount())) {
-            studentActivityAssignment.setActivityAmount(studentActivityAssignmentEntry.getActivityAmount());
-        }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getDaysPerWeek())) {
-            studentActivityAssignment.setDaysPerWeek(studentActivityAssignmentEntry.getDaysPerWeek());
-        }
-        if (Objects.nonNull(studentActivityAssignmentEntry.getStudentId())) {
-            Member student = memberRepository.findById(studentActivityAssignmentEntry.getStudentId())
-                    .orElseThrow(() -> new EntityNotFoundException("Student not found"));
-            studentActivityAssignment.setStudent(student);
-        }
-
-        if (Objects.nonNull(studentActivityAssignmentEntry.getActivityName())) {
-            studentActivityAssignment.setActivityName(studentActivityAssignmentEntry.getActivityName());
-        }
-
-        return studentActivityAssignment;
-    }
+        return studentActivityAssignmentRepository.findActivitiesByStudentId(id, pageable);
+            }
 }

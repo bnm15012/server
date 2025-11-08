@@ -30,7 +30,7 @@ public class InstructorActivityAssignmentConvertor {
     }
 
     public static InstructorActivityAssignmentEntry convertToEntry(
-            InstructorActivityAssignment instructorActivityAssignment) {
+            InstructorActivityAssignment instructorActivityAssignment) throws Exception{
 
         if (Objects.isNull(instructorActivityAssignment)) {
             return null;
