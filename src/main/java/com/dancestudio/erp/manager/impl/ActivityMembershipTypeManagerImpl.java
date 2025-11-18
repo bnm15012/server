@@ -6,19 +6,19 @@ import com.dancestudio.erp.entity.activity.ActivityMembershipType;
 import com.dancestudio.erp.manager.ActivityMembershipTypeManager;
 import com.dancestudio.erp.repository.Activity.ActivityMembershipTypeRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ActivityMembershipTypeManagerImpl implements ActivityMembershipTypeManager {
 
     private final ActivityMembershipTypeRepository repository;
 
-    @Autowired
     public ActivityMembershipTypeManagerImpl(ActivityMembershipTypeRepository repository) {
         this.repository = repository;
     }
@@ -59,10 +59,10 @@ public class ActivityMembershipTypeManagerImpl implements ActivityMembershipType
     }
 
     @Override
-    public List<ActivityMembershipTypeEntry> getAllByStudioId(Long studioId) throws Exception {
-        List<ActivityMembershipType> entities = repository.findByStudioId(studioId);
-        return entities.stream()
-                .map(ActivityMembershipTypeConverter::toEntry)
-                .collect(Collectors.toList());
+    public Page<ActivityMembershipType> getAllByStudioId(Long studioId, Integer page, Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        return repository.findByStudioId(studioId, pageable);
     }
 }

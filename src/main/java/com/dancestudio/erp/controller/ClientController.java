@@ -52,7 +52,7 @@ public class ClientController extends BaseController<ClientEntry, ClientResponse
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ClientResponse> searchClientsByName(@RequestParam String clientName,
+    public ResponseEntity<ClientResponse> searchClientsByName(@RequestParam(defaultValue = "") String clientName,
             @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size) {
         return clientService.searchClientsByName(clientName, page, size);
     }

@@ -8,7 +8,6 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
-import com.dancestudio.erp.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,11 +26,8 @@ public class InstructorManagerImpl implements InstructorManager {
     private final MemberRepository memberRepository;
 
     @Autowired private BranchManager branchManager;
-    @Autowired private StudioManager studioManager;
-    @Autowired private InstructorActivityAssignmentManager instructorActivityAssignmentManager;
     @Autowired private BankAccountManager bankAccountManager;
 
-    @Autowired
     public InstructorManagerImpl(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }

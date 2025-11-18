@@ -1,10 +1,11 @@
 package com.dancestudio.erp.manager;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
+import com.dancestudio.erp.entity.activity.ActivityMembershipType;
 import com.dancestudio.erp.entry.activity.ActivityMembershipTypeEntry;
 
 public interface ActivityMembershipTypeManager extends BaseManager<ActivityMembershipTypeEntry, Long> {
 
-    List<ActivityMembershipTypeEntry> getAllByStudioId(Long activityId) throws Exception;
+   public Page<ActivityMembershipType> getAllByStudioId(Long studioId, Integer page, Integer size);
 }

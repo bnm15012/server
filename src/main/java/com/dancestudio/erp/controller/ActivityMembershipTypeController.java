@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/activity-membership-type")
+@RequestMapping("/activityMembershipType")
 public class ActivityMembershipTypeController extends BaseController<ActivityMembershipTypeEntry, ActivityMembershipTypeResponse, Long> {
 
     @Autowired
@@ -36,9 +36,11 @@ public class ActivityMembershipTypeController extends BaseController<ActivityMem
         return activityMembershipTypeService.get(id);
     }
 
-    // Example: Get all membership types by activityId
-    @GetMapping("/getAll/{activityId}")
-    public ResponseEntity<ActivityMembershipTypeResponse> getAllByActivity(@PathVariable Long activityId) {
-        return activityMembershipTypeService.getAllByStudioId(activityId);
+    // Example: Get all membership types by studioId
+    @GetMapping("/getAll/{studioId}")
+    public ResponseEntity<ActivityMembershipTypeResponse> getAllByActivity(@PathVariable Long studioId, 
+        @RequestParam(defaultValue = "1") Integer page, 
+        @RequestParam(defaultValue = "10") Integer size) {
+        return activityMembershipTypeService.getAllByStudioId(studioId, page, size);
     }
 }

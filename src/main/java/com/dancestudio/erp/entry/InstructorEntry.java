@@ -1,12 +1,9 @@
 package com.dancestudio.erp.entry;
 
 import com.dancestudio.erp.enums.MembershipStatus;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Data
 public class InstructorEntry {

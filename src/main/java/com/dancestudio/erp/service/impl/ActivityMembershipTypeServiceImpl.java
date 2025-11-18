@@ -1,5 +1,7 @@
 package com.dancestudio.erp.service.impl;
 
+import com.dancestudio.erp.converter.ActivityMembershipTypeConverter;
+import com.dancestudio.erp.entity.activity.ActivityMembershipType;
 import com.dancestudio.erp.entry.activity.ActivityMembershipTypeEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ActivityMembershipTypeManager;
@@ -9,12 +11,14 @@ import com.dancestudio.erp.service.ActivityMembershipTypeService;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Setter(onMethod = @__({ @Autowired }))
 @Component
@@ -99,22 +103,19 @@ public class ActivityMembershipTypeServiceImpl implements ActivityMembershipType
     }
 
     @Override
-    public ResponseEntity<ActivityMembershipTypeResponse> getAllByStudioId(Long activityId) {
+    public ResponseEntity<ActivityMembershipTypeResponse> getAllByStudioId(Long stuidId, Integer page, Integer size) {
         ActivityMembershipTypeResponse response = new ActivityMembershipTypeResponse();
-        try {
-
-            List<ActivityMembershipTypeEntry> entries = manager.getAllByStudioId(activityId);
-            response.setData(entries);
-            response.setStatus(new StatusResponse(1,
-                    "ActivityMembershipTypes retrieved successfully",
-                    StatusResponse.Type.SUCCESS,
-                    entries != null ? entries.size() : 0));
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (EntityNotFoundException e) {
-            response.setStatus(new StatusResponse(0,
-                    e.getMessage(),
-                    StatusResponse.Type.ERROR, 0));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        try{
+            Page<ActivityMembershipType> entries = manager.getAllByStudioId(stuidId, --page, size);
+            response.setData(entries.getContent().stream().map(a-> {
+                try {
+                    return ActivityMembershipTypeConverter.toEntry(a);
+                } catch (Exception e) {
+                       throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList()));
+            response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) entries.getTotalElements()));
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0,
                     e.getMessage(),

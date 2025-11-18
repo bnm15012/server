@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
 public interface InstructorActivityAssignmentRepository extends JpaRepository<InstructorActivityAssignment, Long> {
 
     @Query("SELECT a FROM InstructorActivityAssignment a WHERE a.instructor.id = :instructorId AND a.activityName = :activityName")

@@ -8,5 +8,6 @@ import com.dancestudio.erp.response.ActivityMembershipTypeResponse;
 public interface ActivityMembershipTypeService
         extends BaseService<ActivityMembershipTypeEntry, ActivityMembershipTypeResponse, Long> {
 
-    ResponseEntity<ActivityMembershipTypeResponse> getAllByStudioId(Long activityId);
+    public ResponseEntity<ActivityMembershipTypeResponse> getAllByStudioId(Long stuidId, Integer page, Integer size);
+
 }
