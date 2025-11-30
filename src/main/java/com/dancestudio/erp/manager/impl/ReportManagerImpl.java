@@ -100,20 +100,23 @@ public class ReportManagerImpl implements ReportManager {
         incomeEntry.setPaymentMode(paymentEntry.getPaymentType().name());
         incomeEntry.setPaymenDate(paymentEntry.getPaymentDate());
 
-        // if (paymentEntry.getStudentEntry() != null && paymentEntry.getStudentEntry().getEnrolledActivities() != null) {
-        //     Long payeeId = paymentEntry.getPayeeId();
-        //     paymentEntry.getStudentEntry().getEnrolledActivities().stream()
-        //         .filter(activityAssignmentEntry -> payeeId.equals(activityAssignmentEntry.getAssignmentId()))
-        //         .findFirst()
-        //         .ifPresent(matchedActivityAssignment -> {
-        //             if (matchedActivityAssignment.getActivityName() != null) {
-        //                 incomeEntry.setActivityName(matchedActivityAssignment.getActivityName());
-        //             }
-        //             if (matchedActivityAssignment.getMembershipType() != null) {
-        //                 incomeEntry.setMembershipType(matchedActivityAssignment.getMembershipType());
-        //             }
-        //         });
-        // }
+        if (paymentEntry.getStudentEntry() != null) {
+            Long activityAssignmentId = paymentEntry.getPayeeId();
+            try {
+                StudentActivityAssignmentEntry studentActivityAssignment = studentActivityAssignmentManager.getById(activityAssignmentId);
+
+                if (studentActivityAssignment.getActivityName() != null) {
+                    incomeEntry.setActivityName(studentActivityAssignment.getActivityName());
+                }
+                if (studentActivityAssignment.getMembershipType() != null) {
+                    incomeEntry.setMembershipType(studentActivityAssignment.getMembershipType());
+                }
+                    
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
 
         return incomeEntry;
     }
