@@ -2,6 +2,7 @@ package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.ExpenseEntry;
 import com.dancestudio.erp.response.ExpenseResponse;
+import com.dancestudio.erp.service.BaseService;
 import com.dancestudio.erp.service.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,29 +15,9 @@ public class ExpenseController extends BaseController<ExpenseEntry, ExpenseRespo
     @Autowired
     private ExpenseService expenseService;
 
-    @Override
-    public ResponseEntity<ExpenseResponse> add(@RequestBody ExpenseEntry expenseEntry) {
-        return expenseService.add(expenseEntry);
-    }
-
-    @Override
-    public ResponseEntity<ExpenseResponse> update(@PathVariable Long id, @RequestBody ExpenseEntry expenseEntry) {
-        return expenseService.update(id, expenseEntry);
-    }
-
-    @Override
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return expenseService.delete(id);
-    }
-
-    @Override
-    public ResponseEntity<ExpenseResponse> get(@PathVariable Long id) {
-        return expenseService.get(id);
-    }
-
     @GetMapping("/getAll/{branchId}")
     public ResponseEntity<ExpenseResponse> getAllExpenses(@PathVariable Long branchId,
-            @RequestParam(defaultValue = "1") Integer page, 
+            @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) Integer startDate,
             @RequestParam(required = false) Integer startMonth,
@@ -47,5 +28,10 @@ public class ExpenseController extends BaseController<ExpenseEntry, ExpenseRespo
             @RequestParam(required = false) String searchTerm) {
         return expenseService.getAllExpenses(branchId, page, size, startDate, startMonth, startYear, endDate, endMonth,
                 endYear, searchTerm);
+    }
+
+    @Override
+    protected BaseService<ExpenseEntry, ExpenseResponse, Long> getService() {
+        return expenseService;
     }
 }

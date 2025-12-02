@@ -12,4 +12,5 @@ public interface BaseService<Input, Output, ID> {
 
     ResponseEntity<Output> get(ID id);
 
+    // ResponseEntity<Output> getAll(ID id);
 }

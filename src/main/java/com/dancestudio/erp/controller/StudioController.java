@@ -2,6 +2,7 @@ package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.response.StudioResponse;
+import com.dancestudio.erp.service.BaseService;
 import com.dancestudio.erp.service.StudioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,28 +15,13 @@ public class StudioController extends BaseController<StudioEntry, StudioResponse
     @Autowired
     private StudioService studioService;
 
-    @Override
-    public ResponseEntity<StudioResponse> add(@RequestBody StudioEntry studioEntry) {
-        return studioService.add(studioEntry);
-    }
-
-    @Override
-    public ResponseEntity<StudioResponse> update(@PathVariable Long id, @RequestBody StudioEntry studioEntry) {
-        return studioService.update(id, studioEntry);
-    }
-
-    @Override
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return studioService.delete(id);
-    }
-
-    @Override
-    public ResponseEntity<StudioResponse> get(@PathVariable Long id) {
-        return studioService.get(id);
-    }
-
     @GetMapping("/getAll")
     public ResponseEntity<StudioResponse> getAllStudios() {
         return studioService.getAllStudios();
+    }
+
+    @Override
+    protected BaseService<StudioEntry, StudioResponse, Long> getService() {
+        return studioService;
     }
 }

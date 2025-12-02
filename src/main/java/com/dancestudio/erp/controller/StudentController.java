@@ -4,6 +4,7 @@ import com.dancestudio.erp.entry.StudentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.response.StudentCommunicationResponse;
 import com.dancestudio.erp.response.StudentResponse;
+import com.dancestudio.erp.service.BaseService;
 import com.dancestudio.erp.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,27 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/students")
 public class StudentController extends BaseController<StudentEntry, StudentResponse, Long> {
 
-    @Autowired private StudentService studentService;
-
-    @Override
-    public ResponseEntity<StudentResponse> add(@RequestBody StudentEntry studentEntry) {
-        return studentService.add(studentEntry);
-    }
-
-    @Override
-    public ResponseEntity<StudentResponse> update(@PathVariable Long id, @RequestBody StudentEntry studentEntry) {
-        return studentService.update(id, studentEntry);
-    }
-
-    @Override
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return studentService.delete(id);
-    }
-
-    @Override
-    public ResponseEntity<StudentResponse> get(@PathVariable Long id) {
-        return studentService.get(id);
-    }
+    @Autowired
+    private StudentService studentService;
 
     @GetMapping("/getAll/{branchId}")
     public ResponseEntity<StudentResponse> getAllStudents(
@@ -57,7 +39,13 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
     }
 
     @PostMapping("/sendSubscriptionRenewalReminder/{studentId}/{activityName}")
-    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(@PathVariable Long studentId, @PathVariable String activityName) {
+    public ResponseEntity<StudentResponse> sendSubscriptionRenewalReminder(@PathVariable Long studentId,
+            @PathVariable String activityName) {
         return studentService.sendSubscriptionRenewalReminder(studentId, activityName);
+    }
+
+    @Override
+    protected BaseService<StudentEntry, StudentResponse, Long> getService() {
+        return studentService;
     }
 }

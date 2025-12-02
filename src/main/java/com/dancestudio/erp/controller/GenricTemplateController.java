@@ -2,6 +2,7 @@ package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.GenricTemplateEntry;
 import com.dancestudio.erp.response.GenericTemplateResponse;
+import com.dancestudio.erp.service.BaseService;
 import com.dancestudio.erp.service.GenricTemplateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,26 +16,6 @@ public class GenricTemplateController extends BaseController<GenricTemplateEntry
     @Autowired
     private GenricTemplateService genericTemplateService;
 
-    @Override
-    public ResponseEntity<GenericTemplateResponse> add(@RequestBody GenricTemplateEntry genericTemplateEntry) {
-        return genericTemplateService.add(genericTemplateEntry);
-    }
-
-    @Override
-    public ResponseEntity<GenericTemplateResponse> update(@PathVariable Long id, @RequestBody GenricTemplateEntry genericTemplateEntry) {
-        return genericTemplateService.update(id, genericTemplateEntry);
-    }
-
-    @Override
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return genericTemplateService.delete(id);
-    }
-
-    @Override
-    public ResponseEntity<GenericTemplateResponse> get(@PathVariable Long id) {
-        return genericTemplateService.get(id);
-    }
-
     @GetMapping("/getAll/{studioId}")
     public ResponseEntity<GenericTemplateResponse> getAllConditions(
             @PathVariable Long studioId,
@@ -42,5 +23,10 @@ public class GenricTemplateController extends BaseController<GenricTemplateEntry
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return genericTemplateService.getAllByStudioId(studioId, templateType, page, size);
+    }
+
+    @Override
+    protected BaseService<GenricTemplateEntry, GenericTemplateResponse, Long> getService() {
+        return genericTemplateService;
     }
 }
