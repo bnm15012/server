@@ -2,7 +2,7 @@ package com.dancestudio.erp.manager;
 
 import com.dancestudio.erp.entry.SubscriptionEntry;
 
-public interface SubscriptionManager extends BaseManager<SubscriptionEntry, Long> {
+public interface SubscriptionManager extends BaseManagerInt<SubscriptionEntry, Long> {
 
     SubscriptionEntry createOrder(SubscriptionEntry subscriptionEntry, String countryCode);
 

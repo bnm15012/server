@@ -4,7 +4,7 @@ import com.dancestudio.erp.entry.GenricTemplateEntry;
 
 import java.util.List;
 
-public interface GenricTemplateManager extends BaseManager<GenricTemplateEntry, Long> {
+public interface GenricTemplateManager extends BaseManagerInt<GenricTemplateEntry, Long> {
 
     List<GenricTemplateEntry> getAllConditionsByStudioId(Long studioId, String templateType, Integer page, Integer size) throws Exception;
 

@@ -5,7 +5,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 
 import java.util.List;
 
-public interface ClientManager extends BaseManager<ClientEntry, Long> {
+public interface ClientManager extends BaseManagerInt<ClientEntry, Long> {
 
     Long countClientsByBranchId(Long branchId);
 

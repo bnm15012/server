@@ -1,5 +1,7 @@
 package com.dancestudio.erp.service.impl;
 
+import com.dancestudio.erp.converter.ExpenseConvertor;
+import com.dancestudio.erp.entity.Expense;
 import com.dancestudio.erp.entry.ExpenseEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.ExpenseManager;
@@ -8,13 +10,13 @@ import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.service.ExpenseService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Setter(onMethod = @__({ @Autowired }))
 @Component
@@ -96,18 +98,20 @@ public class ExpenseServiceImpl implements ExpenseService {
         ExpenseResponse response = new ExpenseResponse();
 
         try {
-            List<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, --page, size, startDate, startMonth,
+            Page<Expense> entries = expenseManager.getAllExpenses(branchId, --page, size, startDate, startMonth,
                     startYear, endDate,
                     endMonth, endYear, searchTerm);
-            long expenseCount = (Objects.nonNull(startDate) && Objects.nonNull(startMonth) && Objects.nonNull(startYear)
-                    && Objects.nonNull(endDate) && Objects.nonNull(endMonth) && Objects.nonNull(endYear))
-                            ? expenseManager.countExpensesByBranchIdAndMonth(branchId, startMonth, startYear, endMonth,
-                                    endYear,
-                                    searchTerm)
-                            : expenseManager.countExpensesByBranchId(branchId);
-            response.setData(entries);
+
+            response.setData(entries.getContent().stream().map(a -> {
+                try {
+                    return ExpenseConvertor.toEntry(a);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList()));
+
             response.setStatus(new StatusResponse(1, "Expenses retrieved successfully", StatusResponse.Type.SUCCESS,
-                    (int) expenseCount));
+                    (int) entries.getTotalElements()));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));

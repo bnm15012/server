@@ -5,7 +5,7 @@ import com.dancestudio.erp.entry.InstructorActivityAssignmentEntry;
 
 import org.springframework.data.domain.Page;
 
-public interface InstructorActivityAssignmentManager extends BaseManager<InstructorActivityAssignmentEntry, Long> {
+public interface InstructorActivityAssignmentManager extends BaseManagerInt<InstructorActivityAssignmentEntry, Long> {
 
     InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId, String activityName) throws Exception;
 

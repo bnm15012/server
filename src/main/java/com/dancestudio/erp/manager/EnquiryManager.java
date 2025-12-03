@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dancestudio.erp.entry.EnquiryEntry;
 
-public interface EnquiryManager extends BaseManager<EnquiryEntry, Long> {
+public interface EnquiryManager extends BaseManagerInt<EnquiryEntry, Long> {
 
     List<EnquiryEntry> getAllEnquiries(Long branchId, Integer page, Integer size,
             Integer startMonth, Integer startYear,

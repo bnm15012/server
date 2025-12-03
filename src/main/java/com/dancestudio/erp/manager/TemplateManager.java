@@ -3,7 +3,7 @@ import com.dancestudio.erp.entry.TemplateEntry;
 
 import java.util.List;
 
-public interface TemplateManager extends BaseManager<TemplateEntry, Long> {
+public interface TemplateManager extends BaseManagerInt<TemplateEntry, Long> {
 
     TemplateEntry getTemplateDetails(String templateName);
 

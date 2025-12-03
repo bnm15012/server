@@ -7,7 +7,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 
 import java.util.List;
 
-public interface InstructorManager extends BaseManager<InstructorEntry, Long> {
+public interface InstructorManager extends BaseManagerInt<InstructorEntry, Long> {
 
     List<InstructorEntry> getAllInstructorsByBranch(Long studioId, MembershipStatus membershipStatus, int page, int size, String searchTerm) throws EntityNotFoundException;
 

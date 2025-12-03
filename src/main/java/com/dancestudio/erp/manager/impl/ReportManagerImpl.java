@@ -1,11 +1,14 @@
 package com.dancestudio.erp.manager.impl;
 
+import com.dancestudio.erp.converter.ExpenseConvertor;
+import com.dancestudio.erp.entity.Expense;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.manager.*;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.time.YearMonth;
@@ -13,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Setter(onMethod = @__({@Autowired}))
+@Setter(onMethod = @__({ @Autowired }))
 @Component
 public class ReportManagerImpl implements ReportManager {
 
@@ -32,10 +35,12 @@ public class ReportManagerImpl implements ReportManager {
     }
 
     @Override
-    public IEReportEntry getReports(Long studioId, Long branchId, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear) throws Exception {
+    public IEReportEntry getReports(Long studioId, Long branchId, Integer startDate, Integer startMonth,
+            Integer startYear, Integer endDate, Integer endMonth, Integer endYear) throws Exception {
         IEReportEntry reportEntry = new IEReportEntry();
 
-        IEMonthlyReportEntry monthlyReports = processPaymentEntries(branchId, startDate, startMonth, startYear, endDate, endMonth, endYear);
+        IEMonthlyReportEntry monthlyReports = processPaymentEntries(branchId, startDate, startMonth, startYear, endDate,
+                endMonth, endYear);
         processExpenseEntries(branchId, startDate, startMonth, startYear, endDate, endMonth, endYear, monthlyReports);
         processBookingEntries(branchId, startDate, startMonth, startYear, endDate, endMonth, endYear, monthlyReports);
 
@@ -53,10 +58,12 @@ public class ReportManagerImpl implements ReportManager {
         return reportEntry;
     }
 
-    private IEMonthlyReportEntry processPaymentEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear) throws Exception {
+    private IEMonthlyReportEntry processPaymentEntries(Long branchId, Integer startDate, Integer startMonth,
+            Integer startYear, Integer endDate, Integer endMonth, Integer endYear) throws Exception {
         IEMonthlyReportEntry monthlyReports = new IEMonthlyReportEntry();
 
-        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startDate, startMonth, startYear, endDate, endMonth, endYear, null, null);
+        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startDate,
+                startMonth, startYear, endDate, endMonth, endYear, null, null);
         List<IncomeEntry> incomeEntries = paymentEntries.stream()
                 .filter(paymentEntry -> paymentEntry.getPayeeType().equals(PayeeType.STUDENT))
                 .map(this::extractIncomeEntry)
@@ -71,8 +78,20 @@ public class ReportManagerImpl implements ReportManager {
         return monthlyReports;
     }
 
-    private void processExpenseEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
-        List<ExpenseEntry> expenseEntries = expenseManager.getAllExpenses(branchId, 0, -1, startDate, startMonth, startYear, endDate, endMonth, endYear, null);
+    private void processExpenseEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
+
+        Page<Expense> entries = expenseManager.getAllExpenses(branchId, 0, -1, startDate, startMonth,
+                startYear, endDate,
+                endMonth, endYear, null);
+
+        List<ExpenseEntry> expenseEntries = (entries.getContent().stream().map(a -> {
+            try {
+                return ExpenseConvertor.toEntry(a);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList()));
         double totalExpense = expenseEntries.stream()
                 .mapToDouble(ExpenseEntry::getAmount)
                 .sum();
@@ -81,8 +100,10 @@ public class ReportManagerImpl implements ReportManager {
         monthlyReports.setExpense(totalExpense);
     }
 
-    private void processBookingEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
-        List<BookingEntry> bookingEntries = bookingManager.getAllBookings(branchId, 0, -1, startDate, startMonth, startYear, endDate, endMonth, endYear, null);
+    private void processBookingEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear,
+            Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
+        List<BookingEntry> bookingEntries = bookingManager.getAllBookings(branchId, 0, -1, startDate, startMonth,
+                startYear, endDate, endMonth, endYear, null);
         double totalBooking = bookingEntries.stream()
                 .filter(bookingEntry -> bookingEntry.getPaymentStatus().equals(PaymentStatus.COMPLETED))
                 .mapToDouble(BookingEntry::getTotalAmount)
@@ -103,7 +124,8 @@ public class ReportManagerImpl implements ReportManager {
         if (paymentEntry.getStudentEntry() != null) {
             Long activityAssignmentId = paymentEntry.getPayeeId();
             try {
-                StudentActivityAssignmentEntry studentActivityAssignment = studentActivityAssignmentManager.getById(activityAssignmentId);
+                StudentActivityAssignmentEntry studentActivityAssignment = studentActivityAssignmentManager
+                        .getById(activityAssignmentId);
 
                 if (studentActivityAssignment.getActivityName() != null) {
                     incomeEntry.setActivityName(studentActivityAssignment.getActivityName());
@@ -111,7 +133,7 @@ public class ReportManagerImpl implements ReportManager {
                 if (studentActivityAssignment.getMembershipType() != null) {
                     incomeEntry.setMembershipType(studentActivityAssignment.getMembershipType());
                 }
-                    
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

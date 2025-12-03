@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-public interface StudentActivityAssignmentManager extends BaseManager<StudentActivityAssignmentEntry, Long> {
+public interface StudentActivityAssignmentManager extends BaseManagerInt<StudentActivityAssignmentEntry, Long> {
 
     StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId, String activityName)
             throws Exception;

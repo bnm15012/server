@@ -8,7 +8,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
 
-public interface StudentManager extends BaseManager<StudentEntry, Long> {
+public interface StudentManager extends BaseManagerInt<StudentEntry, Long> {
 
     List<StudentEntry> getAllStudentsByStudio(Long branchId, String activityName, MembershipStatus membershipStatus, int page, int size, String searchTerm);
 

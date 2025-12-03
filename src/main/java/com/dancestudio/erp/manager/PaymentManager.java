@@ -7,7 +7,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 
 import java.util.List;
 
-public interface PaymentManager extends BaseManager<PaymentEntry, Long> {
+public interface PaymentManager extends BaseManagerInt<PaymentEntry, Long> {
 
     PaymentEntry updatePaymentStatus(Long paymentId, PaymentStatus status) throws EntityNotFoundException;
 

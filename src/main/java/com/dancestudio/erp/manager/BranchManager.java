@@ -4,7 +4,7 @@ import com.dancestudio.erp.entry.BranchEntry;
 
 import java.util.List;
 
-public interface BranchManager extends BaseManager<BranchEntry, Long> {
+public interface BranchManager extends BaseManagerInt<BranchEntry, Long> {
 
     List<BranchEntry> findByStudioId(Long studioId) throws Exception;
 

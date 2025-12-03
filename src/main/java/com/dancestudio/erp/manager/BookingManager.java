@@ -4,7 +4,7 @@ import com.dancestudio.erp.entry.BookingEntry;
 
 import java.util.List;
 
-public interface BookingManager extends BaseManager<BookingEntry, Long> {
+public interface BookingManager extends BaseManagerInt<BookingEntry, Long> {
 
     Long countBookingsByBranchId(Long branchId);
 
