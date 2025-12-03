@@ -3,6 +3,7 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
+import com.dancestudio.erp.modules.expense.ExpenseRepository;
 import com.dancestudio.erp.repository.*;
 import com.dancestudio.erp.util.DateUtil;
 

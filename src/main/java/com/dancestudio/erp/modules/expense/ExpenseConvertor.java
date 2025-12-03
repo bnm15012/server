@@ -1,4 +1,4 @@
-package com.dancestudio.erp.converter;
+package com.dancestudio.erp.modules.expense;
 
 import java.util.Objects;
 
@@ -7,9 +7,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entity.Branch;
-import com.dancestudio.erp.entity.Expense;
-import com.dancestudio.erp.entry.ExpenseEntry;
-import com.dancestudio.erp.enums.ExpenseCategory;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.repository.BranchRepository;
 import jakarta.annotation.PostConstruct;
@@ -27,7 +24,7 @@ public class ExpenseConvertor {
         applicationContext = context;
     }
 
-    public static ExpenseEntry toEntry(Expense expense) throws Exception {
+    public static ExpenseEntry toEntry(Expense expense) {
 
         ExpenseEntry expenseEntry = new ExpenseEntry();
         expenseEntry.setExpenseId(expense.getId());
@@ -40,7 +37,7 @@ public class ExpenseConvertor {
         return expenseEntry;
     }
 
-    public static Expense toEntity(ExpenseEntry expenseEntry, Expense existingExpense) throws Exception {
+    public static Expense toEntity(ExpenseEntry expenseEntry, Expense existingExpense) throws EntityNotFoundException{
         Expense expense = (existingExpense != null) ? existingExpense : new Expense();
 
         if (Objects.nonNull(expenseEntry.getExpenseId())) {

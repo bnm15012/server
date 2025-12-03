@@ -1,6 +1,5 @@
-package com.dancestudio.erp.repository;
+package com.dancestudio.erp.modules.expense;
 
-import com.dancestudio.erp.entity.Expense;
 import com.dancestudio.erp.entry.PaymentExpenseSummary;
 
 import org.springframework.data.domain.Page;

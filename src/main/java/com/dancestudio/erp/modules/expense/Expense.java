@@ -1,9 +1,12 @@
-package com.dancestudio.erp.entity;
+package com.dancestudio.erp.modules.expense;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.CreatedDate;
+
+import com.dancestudio.erp.entity.BaseEntity;
+import com.dancestudio.erp.entity.Branch;
 
 import java.util.Date;
 

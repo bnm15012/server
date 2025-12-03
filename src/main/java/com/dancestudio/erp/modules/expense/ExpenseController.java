@@ -1,22 +1,21 @@
-package com.dancestudio.erp.controller;
+package com.dancestudio.erp.modules.expense;
 
-import com.dancestudio.erp.entry.ExpenseEntry;
-import com.dancestudio.erp.response.ExpenseResponse;
-import com.dancestudio.erp.service.BaseService;
-import com.dancestudio.erp.service.ExpenseService;
+import com.dancestudio.erp.base.BaseController;
+import com.dancestudio.erp.base.BaseResponse;
+import com.dancestudio.erp.base.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/expenses")
-public class ExpenseController extends BaseController<ExpenseEntry, ExpenseResponse, Long> {
+public class ExpenseController extends BaseController<ExpenseEntry, Long> {
 
     @Autowired
     private ExpenseService expenseService;
 
     @GetMapping("/getAll/{branchId}")
-    public ResponseEntity<ExpenseResponse> getAllExpenses(@PathVariable Long branchId,
+    public ResponseEntity<BaseResponse<ExpenseEntry>> getAllExpenses(@PathVariable Long branchId,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) Integer startDate,
@@ -31,7 +30,7 @@ public class ExpenseController extends BaseController<ExpenseEntry, ExpenseRespo
     }
 
     @Override
-    protected BaseService<ExpenseEntry, ExpenseResponse, Long> getService() {
+    protected BaseService<ExpenseEntry, Long> getService() {
         return expenseService;
     }
 }

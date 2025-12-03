@@ -1,6 +1,5 @@
-package com.dancestudio.erp.entry;
+package com.dancestudio.erp.modules.expense;
 
-import com.dancestudio.erp.enums.ExpenseCategory;
 import lombok.Data;
 
 import java.util.Date;

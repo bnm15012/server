@@ -1,4 +1,4 @@
-package com.dancestudio.erp.enums;
+package com.dancestudio.erp.modules.expense;
 
 public enum ExpenseCategory {
     ELECTRICITY,

@@ -1,11 +1,14 @@
 package com.dancestudio.erp.manager.impl;
 
-import com.dancestudio.erp.converter.ExpenseConvertor;
-import com.dancestudio.erp.entity.Expense;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.manager.*;
+import com.dancestudio.erp.modules.expense.Expense;
+import com.dancestudio.erp.modules.expense.ExpenseConvertor;
+import com.dancestudio.erp.modules.expense.ExpenseEntry;
+import com.dancestudio.erp.modules.expense.ExpenseManager;
+
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -81,17 +84,11 @@ public class ReportManagerImpl implements ReportManager {
     private void processExpenseEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear,
             Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
 
-        Page<Expense> entries = expenseManager.getAllExpenses(branchId, 0, -1, startDate, startMonth,
+        Page<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, 0, -1, startDate, startMonth,
                 startYear, endDate,
                 endMonth, endYear, null);
 
-        List<ExpenseEntry> expenseEntries = (entries.getContent().stream().map(a -> {
-            try {
-                return ExpenseConvertor.toEntry(a);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList()));
+        List<ExpenseEntry> expenseEntries = (entries.getContent());
         double totalExpense = expenseEntries.stream()
                 .mapToDouble(ExpenseEntry::getAmount)
                 .sum();
