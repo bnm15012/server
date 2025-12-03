@@ -1,6 +1,8 @@
 package com.dancestudio.erp.base;
 
 import com.dancestudio.erp.exception.EntityNotFoundException;
+
+import org.springframework.beans.BeansException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public abstract class BaseManager<Entity, ID, Entry> {
@@ -13,17 +15,18 @@ public abstract class BaseManager<Entity, ID, Entry> {
         this.entityName = entityName;
     }
 
-    protected abstract Entity toEntity(Entry entry, Entity existing) throws EntityNotFoundException;
+    protected abstract Entity toEntity(Entry entry, Entity existing)
+            throws EntityNotFoundException, BeansException, Exception;
 
     protected abstract Entry toEntry(Entity entity) throws EntityNotFoundException;
 
-    public Entry add(Entry entry) throws EntityNotFoundException{
+    public Entry add(Entry entry) throws EntityNotFoundException, BeansException, Exception {
         Entity entity = toEntity(entry, null);
         Entity saved = repository.save(entity);
         return toEntry(saved);
     }
 
-    public Entry update(ID id, Entry entry) throws EntityNotFoundException {
+    public Entry update(ID id, Entry entry) throws EntityNotFoundException, BeansException, Exception {
         Entity existing = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(entityName + " not found"));
 

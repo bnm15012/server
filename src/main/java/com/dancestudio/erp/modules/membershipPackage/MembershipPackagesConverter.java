@@ -1,6 +1,5 @@
-package com.dancestudio.erp.converter;
+package com.dancestudio.erp.modules.membershipPackage;
 
-import com.dancestudio.erp.entry.activity.MembershipPackagesEntry;
 import com.dancestudio.erp.manager.impl.StudioManagerImpl;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 
@@ -8,11 +7,10 @@ import jakarta.annotation.PostConstruct;
 
 import java.util.Objects;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-
-import com.dancestudio.erp.entity.activity.MembershipPackages;
 
 
 @Component
@@ -42,7 +40,7 @@ public class MembershipPackagesConverter {
     }
 
     public static MembershipPackages toEntity(MembershipPackagesEntry entry,
-            MembershipPackages existingEntity) throws Exception {
+            MembershipPackages existingEntity) throws BeansException, Exception {
         if (entry == null)
             return null;
 

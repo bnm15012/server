@@ -1,6 +1,4 @@
-package com.dancestudio.erp.repository.Activity;
-
-import com.dancestudio.erp.entity.activity.MembershipPackages;
+package com.dancestudio.erp.modules.membershipPackage;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

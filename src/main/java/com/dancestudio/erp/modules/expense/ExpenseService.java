@@ -15,26 +15,26 @@ import org.springframework.stereotype.Component;
 public class ExpenseService extends BaseService<ExpenseEntry, Long>  {
 
     @Autowired
-    private ExpenseManager expenseManager;
+    private ExpenseManager manager;
 
     @Override
     protected ExpenseEntry doAdd(ExpenseEntry entry) throws Exception {
-        return expenseManager.add(entry);
+        return manager.add(entry);
     }
 
     @Override
     protected ExpenseEntry doUpdate(Long id, ExpenseEntry entry) throws Exception {
-        return expenseManager.update(id, entry);
+        return manager.update(id, entry);
     }
 
     @Override
     protected void doDelete(Long id) throws Exception {
-        expenseManager.delete(id);
+        manager.delete(id);
     }
 
     @Override
     protected ExpenseEntry doGet(Long id) throws Exception {
-        return expenseManager.getById(id);
+        return manager.getById(id);
     }
 
 
@@ -44,7 +44,7 @@ public class ExpenseService extends BaseService<ExpenseEntry, Long>  {
         BaseResponse<ExpenseEntry> response = new BaseResponse<>();
 
         try {
-            Page<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, --page, size, startDate, startMonth,
+            Page<ExpenseEntry> entries = manager.getAllExpenses(branchId, --page, size, startDate, startMonth,
                     startYear, endDate,
                     endMonth, endYear, searchTerm);
 

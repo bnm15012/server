@@ -1,4 +1,4 @@
-package com.dancestudio.erp.entry.activity;
+package com.dancestudio.erp.modules.membershipPackage;
 
 import lombok.Data;
 

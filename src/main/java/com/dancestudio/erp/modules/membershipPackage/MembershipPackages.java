@@ -1,4 +1,4 @@
-package com.dancestudio.erp.entity.activity;
+package com.dancestudio.erp.modules.membershipPackage;
 
 
 import jakarta.persistence.*;
