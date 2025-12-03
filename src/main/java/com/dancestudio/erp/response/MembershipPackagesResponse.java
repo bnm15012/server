@@ -1,7 +1,7 @@
 package com.dancestudio.erp.response;
 
 
-import com.dancestudio.erp.entry.activity.ActivityMembershipTypeEntry;
+import com.dancestudio.erp.entry.activity.MembershipPackagesEntry;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +14,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivityMembershipTypeResponse extends AbstractResponse {
-    private List<ActivityMembershipTypeEntry> data;
+public class MembershipPackagesResponse extends AbstractResponse {
+    private List<MembershipPackagesEntry> data;
 }

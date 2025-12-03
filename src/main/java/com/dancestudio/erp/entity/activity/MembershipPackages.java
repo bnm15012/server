@@ -14,7 +14,7 @@ import com.dancestudio.erp.entity.Studio;
 @Table(name = "activity_membership_type", uniqueConstraints = {
         @UniqueConstraint(name = "membership_type_studio_key", columnNames = {"membership_type", "studio_id"})
 })
-public class ActivityMembershipType extends BaseEntity {
+public class MembershipPackages extends BaseEntity {
 
     @Column(name = "membership_type", nullable = false)
     private String membershipType;

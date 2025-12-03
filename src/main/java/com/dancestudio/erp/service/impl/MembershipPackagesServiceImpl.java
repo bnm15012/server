@@ -1,13 +1,13 @@
 package com.dancestudio.erp.service.impl;
 
-import com.dancestudio.erp.converter.ActivityMembershipTypeConverter;
-import com.dancestudio.erp.entity.activity.ActivityMembershipType;
-import com.dancestudio.erp.entry.activity.ActivityMembershipTypeEntry;
+import com.dancestudio.erp.converter.MembershipPackagesConverter;
+import com.dancestudio.erp.entity.activity.MembershipPackages;
+import com.dancestudio.erp.entry.activity.MembershipPackagesEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.ActivityMembershipTypeManager;
-import com.dancestudio.erp.response.ActivityMembershipTypeResponse;
+import com.dancestudio.erp.manager.MembershipPackagesManager;
+import com.dancestudio.erp.response.MembershipPackagesResponse;
 import com.dancestudio.erp.response.StatusResponse;
-import com.dancestudio.erp.service.ActivityMembershipTypeService;
+import com.dancestudio.erp.service.MembershipPackagesService;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
 
 @Setter(onMethod = @__({ @Autowired }))
 @Component
-public class ActivityMembershipTypeServiceImpl implements ActivityMembershipTypeService {
+public class MembershipPackagesServiceImpl implements MembershipPackagesService {
 
-    private ActivityMembershipTypeManager manager;
+    private MembershipPackagesManager manager;
 
     @Override
-    public ResponseEntity<ActivityMembershipTypeResponse> add(ActivityMembershipTypeEntry entry) {
-        ActivityMembershipTypeResponse response = new ActivityMembershipTypeResponse();
+    public ResponseEntity<MembershipPackagesResponse> add(MembershipPackagesEntry entry) {
+        MembershipPackagesResponse response = new MembershipPackagesResponse();
         try {
-            ActivityMembershipTypeEntry saved = manager.add(entry);
+            MembershipPackagesEntry saved = manager.add(entry);
             response.setData(Collections.singletonList(saved));
             response.setStatus(new StatusResponse(1,
                     "ActivityMembershipType added successfully",
@@ -45,10 +45,10 @@ public class ActivityMembershipTypeServiceImpl implements ActivityMembershipType
     }
 
     @Override
-    public ResponseEntity<ActivityMembershipTypeResponse> update(Long id, ActivityMembershipTypeEntry entry) {
-        ActivityMembershipTypeResponse response = new ActivityMembershipTypeResponse();
+    public ResponseEntity<MembershipPackagesResponse> update(Long id, MembershipPackagesEntry entry) {
+        MembershipPackagesResponse response = new MembershipPackagesResponse();
         try {
-            ActivityMembershipTypeEntry updated = manager.update(id, entry);
+            MembershipPackagesEntry updated = manager.update(id, entry);
             response.setData(Collections.singletonList(updated));
             response.setStatus(new StatusResponse(1,
                     "ActivityMembershipType updated successfully",
@@ -80,10 +80,10 @@ public class ActivityMembershipTypeServiceImpl implements ActivityMembershipType
     }
 
     @Override
-    public ResponseEntity<ActivityMembershipTypeResponse> get(Long id) {
-        ActivityMembershipTypeResponse response = new ActivityMembershipTypeResponse();
+    public ResponseEntity<MembershipPackagesResponse> get(Long id) {
+        MembershipPackagesResponse response = new MembershipPackagesResponse();
         try {
-            ActivityMembershipTypeEntry found = manager.getById(id);
+            MembershipPackagesEntry found = manager.getById(id);
             response.setData(Collections.singletonList(found));
             response.setStatus(new StatusResponse(1,
                     "ActivityMembershipType retrieved successfully",
@@ -103,18 +103,18 @@ public class ActivityMembershipTypeServiceImpl implements ActivityMembershipType
     }
 
     @Override
-    public ResponseEntity<ActivityMembershipTypeResponse> getAllByStudioId(Long stuidId, Integer page, Integer size) {
-        ActivityMembershipTypeResponse response = new ActivityMembershipTypeResponse();
+    public ResponseEntity<MembershipPackagesResponse> getAllByStudioId(Long stuidId, Integer page, Integer size) {
+        MembershipPackagesResponse response = new MembershipPackagesResponse();
         try{
-            Page<ActivityMembershipType> entries = manager.getAllByStudioId(stuidId, --page, size);
+            Page<MembershipPackages> entries = manager.getAllPackagesByStudioId(stuidId, --page, size);
             response.setData(entries.getContent().stream().map(a-> {
                 try {
-                    return ActivityMembershipTypeConverter.toEntry(a);
+                    return MembershipPackagesConverter.toEntry(a);
                 } catch (Exception e) {
                        throw new RuntimeException(e);
                 }
             }).collect(Collectors.toList()));
-            response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) entries.getTotalElements()));
+            response.setStatus(new StatusResponse(1, "Membership Packages retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) entries.getTotalElements()));
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0,
