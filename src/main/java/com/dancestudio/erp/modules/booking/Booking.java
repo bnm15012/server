@@ -1,10 +1,14 @@
-package com.dancestudio.erp.entity;
+package com.dancestudio.erp.modules.booking;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+
+import com.dancestudio.erp.entity.BaseEntity;
+import com.dancestudio.erp.entity.Branch;
+import com.dancestudio.erp.modules.client.Client;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity

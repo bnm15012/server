@@ -1,4 +1,4 @@
-package com.dancestudio.erp.message_queue;
+package com.dancestudio.erp.modules.message_queue;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

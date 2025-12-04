@@ -3,6 +3,8 @@ package com.dancestudio.erp.entry;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
+import com.dancestudio.erp.modules.client.ClientEntry;
+
 import lombok.Data;
 
 import java.util.Date;

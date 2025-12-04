@@ -1,6 +1,6 @@
-package com.dancestudio.erp.manager;
+package com.dancestudio.erp.modules.booking;
 
-import com.dancestudio.erp.entry.BookingEntry;
+import com.dancestudio.erp.manager.BaseManagerInt;
 
 import java.util.List;
 

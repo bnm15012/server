@@ -1,4 +1,7 @@
-package com.dancestudio.erp.entity;
+package com.dancestudio.erp.modules.client;
+
+import com.dancestudio.erp.entity.BaseEntity;
+import com.dancestudio.erp.entity.Branch;
 
 import jakarta.persistence.*;
 import lombok.Data;

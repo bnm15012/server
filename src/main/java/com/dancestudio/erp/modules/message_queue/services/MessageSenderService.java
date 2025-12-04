@@ -1,4 +1,4 @@
-package com.dancestudio.erp.message_queue.services;
+package com.dancestudio.erp.modules.message_queue.services;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -7,8 +7,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import com.dancestudio.erp.message_queue.events.EmailQueuedEvent;
-import com.dancestudio.erp.message_queue.events.WhatsAppMessageQueuedEvent;
+import com.dancestudio.erp.modules.message_queue.events.EmailQueuedEvent;
+import com.dancestudio.erp.modules.message_queue.events.WhatsAppMessageQueuedEvent;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service

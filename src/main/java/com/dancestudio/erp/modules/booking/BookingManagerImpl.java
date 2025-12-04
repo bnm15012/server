@@ -1,19 +1,15 @@
-package com.dancestudio.erp.manager.impl;
+package com.dancestudio.erp.modules.booking;
 
-import com.dancestudio.erp.entity.Booking;
-import com.dancestudio.erp.entry.BookingEntry;
 import com.dancestudio.erp.entry.BranchEntry;
-import com.dancestudio.erp.entry.ClientEntry;
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.BookingManager;
 import com.dancestudio.erp.manager.BranchManager;
-import com.dancestudio.erp.manager.ClientManager;
 import com.dancestudio.erp.manager.PaymentManager;
-import com.dancestudio.erp.repository.BookingRepository;
+import com.dancestudio.erp.modules.client.ClientEntry;
+import com.dancestudio.erp.modules.client.ClientManager;
 import com.dancestudio.erp.specification.BookingSpecifications;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;

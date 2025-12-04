@@ -1,13 +1,9 @@
-package com.dancestudio.erp.manager.impl;
+package com.dancestudio.erp.modules.client;
 
-import com.dancestudio.erp.entity.Client;
 import com.dancestudio.erp.entry.BranchEntry;
-import com.dancestudio.erp.entry.ClientEntry;
 import com.dancestudio.erp.enums.ClientType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BranchManager;
-import com.dancestudio.erp.manager.ClientManager;
-import com.dancestudio.erp.repository.ClientRepository;
 import com.dancestudio.erp.specification.ClientSpecifications;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;

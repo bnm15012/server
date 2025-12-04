@@ -1,4 +1,4 @@
-package com.dancestudio.erp.entry;
+package com.dancestudio.erp.modules.client;
 
 import com.dancestudio.erp.enums.ClientType;
 import lombok.Data;

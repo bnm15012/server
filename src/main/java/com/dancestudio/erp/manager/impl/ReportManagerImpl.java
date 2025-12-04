@@ -4,6 +4,8 @@ import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.manager.*;
+import com.dancestudio.erp.modules.booking.BookingEntry;
+import com.dancestudio.erp.modules.booking.BookingManager;
 import com.dancestudio.erp.modules.expense.Expense;
 import com.dancestudio.erp.modules.expense.ExpenseConvertor;
 import com.dancestudio.erp.modules.expense.ExpenseEntry;

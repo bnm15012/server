@@ -9,6 +9,8 @@ import com.dancestudio.erp.manager.impl.BranchManagerImpl;
 import com.dancestudio.erp.manager.impl.StudentActivityAssignmentManagerImpl;
 import com.dancestudio.erp.manager.impl.StudioManagerImpl;
 import com.dancestudio.erp.manager.impl.SubscriptionManagerImpl;
+import com.dancestudio.erp.modules.client.Client;
+import com.dancestudio.erp.modules.client.ClientEntry;
 import com.dancestudio.erp.modules.expense.Expense;
 import com.dancestudio.erp.modules.expense.ExpenseCategory;
 import com.dancestudio.erp.modules.expense.ExpenseEntry;

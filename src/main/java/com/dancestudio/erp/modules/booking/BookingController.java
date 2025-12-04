@@ -1,9 +1,9 @@
-package com.dancestudio.erp.controller;
+package com.dancestudio.erp.modules.booking;
 
-import com.dancestudio.erp.entry.BookingEntry;
+import com.dancestudio.erp.controller.BaseController;
 import com.dancestudio.erp.response.BookingResponse;
 import com.dancestudio.erp.service.BaseService;
-import com.dancestudio.erp.service.BookingService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

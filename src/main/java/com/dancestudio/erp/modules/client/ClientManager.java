@@ -1,7 +1,7 @@
-package com.dancestudio.erp.manager;
+package com.dancestudio.erp.modules.client;
 
-import com.dancestudio.erp.entry.ClientEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.BaseManagerInt;
 
 import java.util.List;
 

@@ -1,6 +1,5 @@
-package com.dancestudio.erp.repository;
+package com.dancestudio.erp.modules.booking;
 
-import com.dancestudio.erp.entity.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

@@ -10,7 +10,7 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.exception.InvalidCredentialsException;
 import com.dancestudio.erp.manager.TemplateManager;
 import com.dancestudio.erp.manager.UserManager;
-import com.dancestudio.erp.message_queue.services.EmailService;
+import com.dancestudio.erp.modules.message_queue.services.EmailService;
 import com.dancestudio.erp.repository.UserRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import lombok.Setter;

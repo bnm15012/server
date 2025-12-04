@@ -1,11 +1,9 @@
-package com.dancestudio.erp.service.impl;
+package com.dancestudio.erp.modules.client;
 
-import com.dancestudio.erp.entry.ClientEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.ClientManager;
 import com.dancestudio.erp.response.ClientResponse;
 import com.dancestudio.erp.response.StatusResponse;
-import com.dancestudio.erp.service.ClientService;
+
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

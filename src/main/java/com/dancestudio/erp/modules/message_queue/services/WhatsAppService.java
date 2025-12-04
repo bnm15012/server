@@ -1,4 +1,4 @@
-package com.dancestudio.erp.message_queue.services;
+package com.dancestudio.erp.modules.message_queue.services;
 
 import java.util.List;
 import java.util.Objects;
@@ -15,12 +15,12 @@ import com.dancestudio.erp.entity.MessageRecipient;
 import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.enums.MessageStatus;
 import com.dancestudio.erp.enums.NotificationType;
-import com.dancestudio.erp.message_queue.MessageQueue;
-import com.dancestudio.erp.message_queue.MessageQueueRepository;
+import com.dancestudio.erp.modules.message_queue.MessageQueue;
+import com.dancestudio.erp.modules.message_queue.MessageQueueRepository;
 import com.dancestudio.erp.repository.MessageRecipientRepository;
-import com.dancestudio.erp.util.EmailUtil;
 import com.dancestudio.erp.util.GenericTemplateUtil;
 import com.dancestudio.erp.util.TempFileUtil;
+import com.dancestudio.erp.util.WhatsappUtil;
 import com.dancestudio.erp.util.TempFileUtil.FileData;
 
 import jakarta.transaction.Transactional;
@@ -31,88 +31,85 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Slf4j
-public class EmailService {
+public class WhatsAppService {
+
+    private final MessageRecipientRepository messageRecipientRepository;
 
     private final MessageQueueRepository repository;
-    private final MessageRecipientRepository messageRecipientRepository;
-    private final EmailUtil emailUtil;
+    private final WhatsappUtil whatsappUtil;
 
-    private final Lock emailLock = new ReentrantLock();
+    // Lock to prevent simultaneous sending of bulk and high-priority WhatsApp
+    // messages
+    private final Lock whatsappLock = new ReentrantLock();
 
-    public EmailService(MessageQueueRepository repository, EmailUtil emailUtil,
+    public WhatsAppService(MessageQueueRepository repository, WhatsappUtil whatsappUtil,
             MessageRecipientRepository messageRecipientRepository) {
         this.repository = repository;
-        this.emailUtil = emailUtil;
+        this.whatsappUtil = whatsappUtil;
         this.messageRecipientRepository = messageRecipientRepository;
     }
 
-    private volatile boolean stop = false;
-
-    private List<MessageQueue> findPendingEmails() {
-        List<MessageQueue> messages = repository.findAllWithFileOnePerBranch(NotificationType.EMAIL.toString());
+    private List<MessageQueue> findPendingWhatsAppMessages() {
+        List<MessageQueue> messages = repository.findAllWithFileOnePerBranch(NotificationType.WHATSAPP.toString());
         if (messages.isEmpty()) {
-            return repository.findAllOnePerBranch(NotificationType.EMAIL.toString());
+            return repository.findAllOnePerBranch(NotificationType.WHATSAPP.toString());
         }
         return messages;
     }
 
     @Async
-    public void processBulkEmails() {
-        stop = false;
-
-        while (!stop) {
-            List<MessageQueue> messages = findPendingEmails();
+    public void processBulkWhatsAppMessages() {
+        while (true) {
+            List<MessageQueue> messages = findPendingWhatsAppMessages();
 
             if (messages.isEmpty()) {
-                stop = true;
-                log.info("No pending emails. Exiting loop.");
+                log.info("No pending WhatsApp messages. Exiting loop.");
                 break;
             }
 
-            emailLock.lock(); // Acquire lock for bulk processing
+            whatsappLock.lock(); // Acquire lock for bulk processing
             try {
                 for (MessageQueue msg : messages) {
-                    processEachMail(msg);
+                    processEachMessage(msg);
                 }
             } finally {
-                emailLock.unlock(); // Release lock
+                whatsappLock.unlock(); // Release lock
             }
 
-            log.info("Processed {} messages", messages.size());
-
             try {
-                TimeUnit.SECONDS.sleep(ThreadLocalRandom.current().nextInt(2, 8));
+                TimeUnit.SECONDS.sleep(ThreadLocalRandom.current().nextInt(10, 50));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+
+            log.info("Processed {} messages", messages.size());
         }
     }
 
     @Transactional
-    public void processEachMail(MessageQueue msg) {
+    public void processEachMessage(MessageQueue msg) {
         try {
             Message message = msg.getMessage();
             Member member = msg.getMember();
             Branch branch = msg.getBranch();
-            Studio studio = branch.getStudio();
+            Studio studio = msg.getStudio();
 
             String content = GenericTemplateUtil.generateContentString(
                     message.getContent(), studio, branch, member);
-            String subject = GenericTemplateUtil.generateContentString(
-                    message.getTitle(), studio, branch, member);
 
             FileData fileData = TempFileUtil.getFile(msg.getFilePath());
 
-            Boolean sent = emailUtil.sendEmail(member.getEmail(), subject, content, studio.getId(),
-                    fileData.getFileBytes(), fileData.getOriginalName());
+            Boolean sent = whatsappUtil.sendMessage(
+                    "91" + member.getPhone(), content, branch.getId(), fileData.getFileBytes(),
+                    fileData.getOriginalName(), fileData.getContentType());
 
             if (sent) {
-                MessageRecipient recipient = msg.getRecipient();
-                if (Objects.nonNull(recipient)) {
+                if (Objects.nonNull(msg.getRecipient())) {
+                    MessageRecipient recipient = msg.getRecipient();
                     recipient.setStatus(MessageStatus.SENT);
                     messageRecipientRepository.save(recipient);
-                    repository.deleteById(msg.getId());
                 }
+                repository.deleteById(msg.getId());
                 log.info("Message {} sent and deleted successfully", msg.getId());
             } else {
                 msg.setRetries(msg.getRetries() + 1);
@@ -134,20 +131,20 @@ public class EmailService {
     }
 
     /**
-     * High-priority email sending (blocking)
+     * High-priority WhatsApp message sending (blocking)
      */
-    public void sendHighPriorityEmail(String toEmail, String subject, String body, Long studioId,
-            byte[] attachmentBytes, String attachmentFileName, MessageRecipient recipient) throws Exception {
-        emailLock.lock(); // Acquire lock to prevent conflict with bulk processing
+    public void sendHighPriorityWhatsAppMessage(String to, String messageText, Long branchId,
+            byte[] fileBytes, String originalName, String contentType, MessageRecipient recipient) {
+        whatsappLock.lock(); // Acquire lock to prevent conflict with bulk processing
         try {
-            emailUtil.sendEmail(toEmail, subject, body, studioId, attachmentBytes, attachmentFileName);
+            whatsappUtil.sendMessage(to, messageText, branchId, fileBytes, originalName, contentType);
             if (Objects.nonNull(recipient)) {
                 recipient.setStatus(MessageStatus.SENT);
                 messageRecipientRepository.save(recipient);
             }
-            log.info("High-priority email sent to {}", toEmail);
+            log.info("High-priority WhatsApp message sent to {}", to);
         } finally {
-            emailLock.unlock(); // Release lock
+            whatsappLock.unlock(); // Release lock
         }
     }
 }

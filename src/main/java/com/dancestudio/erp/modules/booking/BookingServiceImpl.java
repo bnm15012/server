@@ -1,11 +1,9 @@
-package com.dancestudio.erp.service.impl;
+package com.dancestudio.erp.modules.booking;
 
-import com.dancestudio.erp.entry.BookingEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.BookingManager;
 import com.dancestudio.erp.response.BookingResponse;
 import com.dancestudio.erp.response.StatusResponse;
-import com.dancestudio.erp.service.BookingService;
+
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

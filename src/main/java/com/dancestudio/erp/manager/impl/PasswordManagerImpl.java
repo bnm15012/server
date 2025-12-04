@@ -5,7 +5,8 @@ import com.dancestudio.erp.entry.PasswordEntry;
 import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.enums.AuthType;
 import com.dancestudio.erp.manager.UserManager;
-import com.dancestudio.erp.message_queue.services.EmailService;
+import com.dancestudio.erp.modules.message_queue.services.EmailService;
+
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

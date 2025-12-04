@@ -1,4 +1,4 @@
-package com.dancestudio.erp.message_queue;
+package com.dancestudio.erp.modules.message_queue;
 
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Branch;

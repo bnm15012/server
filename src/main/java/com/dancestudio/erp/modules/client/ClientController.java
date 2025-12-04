@@ -1,4 +1,4 @@
-package com.dancestudio.erp.controller;
+package com.dancestudio.erp.modules.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dancestudio.erp.entry.ClientEntry;
+import com.dancestudio.erp.controller.BaseController;
 import com.dancestudio.erp.response.ClientResponse;
 import com.dancestudio.erp.service.BaseService;
-import com.dancestudio.erp.service.ClientService;
 
 @RestController
 @RequestMapping("/clients")

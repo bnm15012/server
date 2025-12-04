@@ -6,7 +6,7 @@ import com.dancestudio.erp.enums.ConfigurationType;
 import com.dancestudio.erp.enums.UserType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
-import com.dancestudio.erp.message_queue.services.EmailService;
+import com.dancestudio.erp.modules.message_queue.services.EmailService;
 import com.dancestudio.erp.repository.StudioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
