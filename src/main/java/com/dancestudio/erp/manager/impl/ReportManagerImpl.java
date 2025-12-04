@@ -6,8 +6,6 @@ import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.modules.booking.BookingEntry;
 import com.dancestudio.erp.modules.booking.BookingManager;
-import com.dancestudio.erp.modules.expense.Expense;
-import com.dancestudio.erp.modules.expense.ExpenseConvertor;
 import com.dancestudio.erp.modules.expense.ExpenseEntry;
 import com.dancestudio.erp.modules.expense.ExpenseManager;
 
@@ -101,14 +99,14 @@ public class ReportManagerImpl implements ReportManager {
 
     private void processBookingEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear,
             Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports) throws Exception {
-        List<BookingEntry> bookingEntries = bookingManager.getAllBookings(branchId, 0, -1, startDate, startMonth,
+        Page<BookingEntry> bookingEntries = bookingManager.getAllBookings(branchId, 0, -1, startDate, startMonth,
                 startYear, endDate, endMonth, endYear, null);
         double totalBooking = bookingEntries.stream()
                 .filter(bookingEntry -> bookingEntry.getPaymentStatus().equals(PaymentStatus.COMPLETED))
                 .mapToDouble(BookingEntry::getTotalAmount)
                 .sum();
 
-        monthlyReports.setBookingEntries(bookingEntries);
+        monthlyReports.setBookingEntries(bookingEntries.getContent());
         monthlyReports.setBooking(totalBooking);
     }
 
