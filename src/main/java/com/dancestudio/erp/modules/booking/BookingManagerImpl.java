@@ -4,7 +4,6 @@ import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
-import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.PaymentManager;
@@ -55,8 +54,14 @@ public class BookingManagerImpl implements BookingManager {
         booking = bookingRepository.save(booking);
         try {
             Long payeeId = booking.getId();
-            bookingEntry.getPaymentEntry().setPayeeId(payeeId);
-            paymentManager.add(bookingEntry.getPaymentEntry());
+            bookingEntry.getPaymentEntries().stream().forEach(pe->{
+                try {
+                    pe.setPayeeId(payeeId);
+                    paymentManager.add(pe);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (Exception ex) {
             throw new EntityNotFoundException("Failed to add payment details");
         }
@@ -69,17 +74,6 @@ public class BookingManagerImpl implements BookingManager {
         }
         if (Objects.isNull(bookingEntry.getAdvanceAmount()) || bookingEntry.getAdvanceAmount() <= 0) {
             throw new IllegalArgumentException("Advance amount must be greater than zero");
-        }
-        if (Objects.isNull(bookingEntry.getBalanceAmount())) {
-            if (bookingEntry.getTotalAmount().equals(bookingEntry.getAdvanceAmount())) {
-                throw new IllegalArgumentException("Advance amount should be equal to total amount");
-            }
-        }
-        if (bookingEntry.getBalanceAmount() < 0) {
-            throw new IllegalArgumentException("Balance amount cannot be negative");
-        }
-        if (bookingEntry.getAdvanceAmount() + bookingEntry.getBalanceAmount() != bookingEntry.getTotalAmount()) {
-            throw new IllegalArgumentException("Advance amount + Balance amount should be equal to Total amount");
         }
     }
 
@@ -168,20 +162,16 @@ public class BookingManagerImpl implements BookingManager {
         bookingEntry.setTotalAmount(booking.getTotalAmount());
         bookingEntry.setPaymentStatus(PaymentStatus.valueOf(booking.getPaymentStatus()));
         bookingEntry.setAdvanceAmount(booking.getAdvanceAmount());
-        bookingEntry.setBalanceAmount(booking.getBalanceAmount());
         bookingEntry.setNotes(booking.getNotes());
         bookingEntry.setBookingDate(booking.getBookingDate());
         bookingEntry.setStartTime(booking.getStartTime());
         bookingEntry.setEndTime(booking.getEndTime());
-        bookingEntry.setAdvanceDate(booking.getAdvanceDate());
-        bookingEntry.setAdvanceMode(PaymentType.valueOf(booking.getAdvanceMode()));
-        bookingEntry.setFinalPaymentDate(booking.getFinalPaymentDate());
-        bookingEntry.setPaymentMode(PaymentType.valueOf(booking.getPaymentMode()));
 
         if (Objects.nonNull(booking.getClient())) {
             ClientEntry clientEntry = clientManager.getById(booking.getClient().getId());
             bookingEntry.setClientEntry(clientEntry);
         }
+        
         return bookingEntry;
     }
 
@@ -201,16 +191,10 @@ public class BookingManagerImpl implements BookingManager {
         Optional.ofNullable(bookingEntry.getTotalAmount()).ifPresent(booking::setTotalAmount);
         Optional.ofNullable(bookingEntry.getPaymentStatus()).ifPresent(status -> booking.setPaymentStatus(status.name()));
         Optional.ofNullable(bookingEntry.getAdvanceAmount()).ifPresent(booking::setAdvanceAmount);
-        Optional.ofNullable(bookingEntry.getBalanceAmount()).ifPresent(booking::setBalanceAmount);
         Optional.ofNullable(bookingEntry.getNotes()).ifPresent(booking::setNotes);
         Optional.ofNullable(bookingEntry.getBookingDate()).ifPresent(booking::setBookingDate);
         Optional.ofNullable(bookingEntry.getStartTime()).ifPresent(booking::setStartTime);
         Optional.ofNullable(bookingEntry.getEndTime()).ifPresent(booking::setEndTime);
-        Optional.ofNullable(bookingEntry.getAdvanceDate()).ifPresent(booking::setAdvanceDate);
-        Optional.of(bookingEntry.getAdvanceMode().name()).ifPresent(booking::setAdvanceMode);
-        Optional.ofNullable(bookingEntry.getFinalPaymentDate()).ifPresent(booking::setFinalPaymentDate);
-        Optional.ofNullable(bookingEntry.getPaymentMode()).ifPresent(mode -> booking.setPaymentMode(mode.name()));
-
         return booking;
     }
 }

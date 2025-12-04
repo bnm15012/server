@@ -4,10 +4,13 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Branch;
+import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.modules.client.Client;
 
 @EqualsAndHashCode(callSuper = true)
@@ -35,9 +38,6 @@ public class Booking extends BaseEntity {
     @Column(name = "advance_amount", nullable = false)
     private Double advanceAmount;
 
-    @Column(name = "balance_amount")
-    private Double balanceAmount;
-
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
@@ -51,18 +51,6 @@ public class Booking extends BaseEntity {
     @Column(name = "end_time", nullable = false)
     private Date endTime;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "advance_date", nullable = false)
-    private Date advanceDate;
-
-    @Column(name = "advance_mode")
-    private String advanceMode;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "final_payment_date")
-    private Date finalPaymentDate;
-
-    @Column(name = "payment_mode", nullable = false)
-    private String paymentMode;
-
+    @OneToMany(mappedBy = "payments", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments = new ArrayList<>();
 }
