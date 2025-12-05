@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Service
-@Setter(onMethod = @__({ @Autowired }))
+@Setter
 public class ClientManager extends BaseManager<Client, Long, ClientEntry> {
 
     private final ClientRepository clientRepository;

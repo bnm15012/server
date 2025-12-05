@@ -66,7 +66,7 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
         if (Objects.isNull(bookingEntry.getTotalAmount()) || bookingEntry.getTotalAmount() <= 0) {
             throw new IllegalArgumentException("Total amount must be greater than zero");
         }
-        if (Objects.isNull(bookingEntry.getAdvanceAmount()) || bookingEntry.getAdvanceAmount() <= 0) {
+        if (Objects.isNull(bookingEntry.getPaidAmount()) || bookingEntry.getPaidAmount() <= 0) {
             throw new IllegalArgumentException("Advance amount must be greater than zero");
         }
     }
@@ -76,7 +76,6 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
         validateRequest(bookingEntry);
         Booking existingBooking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-
         Booking updatedBooking = BookingConvertor.convertToEntity(bookingEntry, existingBooking);
         return BookingConvertor.convertToEntry(bookingRepository.save(updatedBooking));
     }

@@ -1,17 +1,16 @@
 package com.dancestudio.erp.modules.booking;
 
+import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
-import com.dancestudio.erp.response.BookingResponse;
 import com.dancestudio.erp.response.StatusResponse;
 
 import lombok.Setter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Setter(onMethod = @__({ @Autowired }))
 @Component
@@ -19,10 +18,10 @@ public class BookingService extends BaseService<BookingEntry, Long> {
 
     private BookingManager bookingManager;
 
-    public ResponseEntity<BookingResponse> getAllBookings(Long branchId, Integer page, Integer size, Integer startMonth,
+    public ResponseEntity<BaseResponse<BookingEntry>> getAllBookings(Long branchId, Integer page, Integer size,
+            Integer startMonth,
             Integer startYear, Integer endMonth, Integer endYear, String searchTerm) {
-        BookingResponse response = new BookingResponse();
-
+        BaseResponse<BookingEntry> response = new BaseResponse<>();
         try {
             Page<BookingEntry> entries = bookingManager.getAllBookings(branchId, --page, size, null, startMonth,
                     startYear, null, endMonth, endYear, searchTerm);
@@ -31,6 +30,7 @@ public class BookingService extends BaseService<BookingEntry, Long> {
                     (int) entries.getTotalElements()));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

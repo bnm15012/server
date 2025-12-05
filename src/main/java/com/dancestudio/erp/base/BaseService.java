@@ -40,6 +40,7 @@ public abstract class BaseService<Entry, ID> implements BaseServiceInterface<Ent
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (Exception e) {
+            e.printStackTrace();
             BaseResponse<Entry> errorResponse = new BaseResponse<>(
                     null,
                     new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
@@ -62,6 +63,7 @@ public abstract class BaseService<Entry, ID> implements BaseServiceInterface<Ent
                     new BaseResponse<>(null,
                             new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0)));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new BaseResponse<>(null,
                             new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0)));
@@ -76,6 +78,7 @@ public abstract class BaseService<Entry, ID> implements BaseServiceInterface<Ent
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -93,6 +96,7 @@ public abstract class BaseService<Entry, ID> implements BaseServiceInterface<Ent
                     new BaseResponse<>(Collections.emptyList(),
                             new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0)));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new BaseResponse<>(null,
                             new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0)));

@@ -35,8 +35,8 @@ public class Booking extends BaseEntity {
     @Column(name = "payment_status", nullable = false)
     private String paymentStatus;
 
-    @Column(name = "advance_amount", nullable = false)
-    private Double advanceAmount;
+    @Column(name = "paid_amount", nullable = false)
+    private Double paidAmount;
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
@@ -51,6 +51,11 @@ public class Booking extends BaseEntity {
     @Column(name = "end_time", nullable = false)
     private Date endTime;
 
-    @OneToMany(mappedBy = "payments", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(
+        name = "booking_payments",
+        joinColumns = @JoinColumn(name = "booking_id"),
+        inverseJoinColumns = @JoinColumn(name = "payment_id")
+    )
     private List<Payment> payments = new ArrayList<>();
 }

@@ -17,7 +17,7 @@ public class BookingEntry {
     private String purpose;
     private Double totalAmount;
     private PaymentStatus paymentStatus;
-    private Double advanceAmount;
+    private Double paidAmount;
     private String notes;
     private Date bookingDate;
 
