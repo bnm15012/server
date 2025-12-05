@@ -3,11 +3,12 @@ package com.dancestudio.erp.service.impl;
 import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.manager.ImageManager;
-import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.manager.ReportManager;
 import com.dancestudio.erp.manager.TemplateManager;
 import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.manager.impl.PasswordManagerImpl;
+import com.dancestudio.erp.modules.payments.PaymentManager;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.dancestudio.erp.response.*;
 import com.dancestudio.erp.service.MiscellaneousService;
 import lombok.Setter;
@@ -156,10 +157,10 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
             String status) {
         PaymentResponse response = new PaymentResponse();
         try {
-            List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1,
-                    startDate, startMonth, startYear,
-                    endDate, endMonth, endYear, status, null);
-            response.setData((paymentEntries));
+            // List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1,
+            //         startDate, startMonth, startYear,
+            //         endDate, endMonth, endYear, status, null);
+            // response.setData((paymentEntries));
             response.setStatus(
                     new StatusResponse(1, "Report data retrieved successfully", StatusResponse.Type.SUCCESS, 1));
 

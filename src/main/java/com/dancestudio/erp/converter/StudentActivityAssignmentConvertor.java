@@ -7,13 +7,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entity.Member;
-import com.dancestudio.erp.entity.Payment;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.modules.payments.entity.Payment;
+import com.dancestudio.erp.modules.payments.repository.PaymentRepository;
 import com.dancestudio.erp.repository.MemberRepository;
-import com.dancestudio.erp.repository.PaymentRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
 
@@ -64,8 +64,8 @@ public class StudentActivityAssignmentConvertor {
 
         PaymentRepository paymentRepository = applicationContext.getBean(PaymentRepository.class);
             
-        Payment payment = paymentRepository.findByPayeeId(studentActivityAssignment.getId());
-        studentActivityAssignmentEntry.setPaymentEntry(ConvertToEntryUtil.convertToEntry(payment));
+        // Payment payment = paymentRepository.findByPayeeId(studentActivityAssignment.getId());
+        // studentActivityAssignmentEntry.setPaymentEntry(ConvertToEntryUtil.convertToEntry(payment));
 
         return studentActivityAssignmentEntry;
     }

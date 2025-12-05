@@ -14,6 +14,8 @@ import com.dancestudio.erp.modules.client.ClientEntry;
 import com.dancestudio.erp.modules.expense.Expense;
 import com.dancestudio.erp.modules.expense.ExpenseCategory;
 import com.dancestudio.erp.modules.expense.ExpenseEntry;
+import com.dancestudio.erp.modules.payments.entity.Payment;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -330,14 +332,12 @@ public class ConvertToEntryUtil {
     public static PaymentEntry convertToEntry(Payment payment) {
 
         PaymentEntry paymentEntry = new PaymentEntry();
-        paymentEntry.setPaymentId(String.valueOf(payment.getId()));
-        paymentEntry.setPayeeId(payment.getPayeeId());
-        paymentEntry.setPayeeType(PayeeType.valueOf(payment.getPayeeType()));
+        paymentEntry.setId((payment.getId()));
+        paymentEntry.setPayeeId(payment.getId());
         paymentEntry.setAmount(payment.getAmount());
-        paymentEntry.setActualAmount(payment.getActualAmount());
         paymentEntry.setPaymentDate(payment.getPaymentDate());
-        paymentEntry.setStatus(PaymentStatus.valueOf(payment.getStatus()));
-        paymentEntry.setPaymentType(PaymentType.valueOf(payment.getPaymentType()));
+        paymentEntry.setStatus((payment.getStatus()));
+        paymentEntry.setPaymentType((payment.getPaymentType()));
         paymentEntry.setBranchId(payment.getBranch().getId());
         return paymentEntry;
     }

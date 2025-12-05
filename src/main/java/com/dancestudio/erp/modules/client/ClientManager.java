@@ -49,10 +49,12 @@ public class ClientManager extends BaseManager<Client, Long, ClientEntry> {
         return clientPages.map(ClientConvertor::convertToEntry);
     }
 
-    public Page<ClientEntry> searchClientsByName(String clientName, Integer page, Integer size)
+    public Page<ClientEntry> searchClientsByName(Long branchId,String clientName, Integer page, Integer size)
             throws EntityNotFoundException {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
-        Specification<Client> spec = ClientSpecifications.searchByText(clientName);
+        Specification<Client> spec = Specification
+                .where(ClientSpecifications.hasBranchId(branchId))
+                .and(ClientSpecifications.searchByText(clientName));
 
         Page<Client> clientPages = clientRepository.findAll(spec, pageable);
 

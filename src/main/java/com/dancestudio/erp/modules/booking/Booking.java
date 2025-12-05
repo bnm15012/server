@@ -10,7 +10,7 @@ import java.util.List;
 
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Branch;
-import com.dancestudio.erp.entity.Payment;
+import com.dancestudio.erp.modules.payments.entity.PaymentBooking;
 import com.dancestudio.erp.modules.client.Client;
 
 @EqualsAndHashCode(callSuper = true)
@@ -22,7 +22,7 @@ public class Booking extends BaseEntity {
     @JoinColumn(name = "branch_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_booking_branch_id"))
     private Branch branch;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_booking_client_id"))
     private Client client;
 
@@ -51,11 +51,7 @@ public class Booking extends BaseEntity {
     @Column(name = "end_time", nullable = false)
     private Date endTime;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(
-        name = "booking_payments",
-        joinColumns = @JoinColumn(name = "booking_id"),
-        inverseJoinColumns = @JoinColumn(name = "payment_id")
-    )
-    private List<Payment> payments = new ArrayList<>();
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PaymentBooking> payments = new ArrayList<>();
+
 }

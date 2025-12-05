@@ -3,17 +3,17 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.converter.StudentActivityAssignmentConvertor;
 import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.MonthlyReportEntry;
-import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.manager.StudentActivityAssignmentManager;
 import com.dancestudio.erp.modules.expense.ExpenseCategory;
 import com.dancestudio.erp.modules.expense.ExpenseEntry;
 import com.dancestudio.erp.modules.expense.ExpenseRepository;
+import com.dancestudio.erp.modules.payments.PaymentManager;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
+import com.dancestudio.erp.modules.payments.repository.PaymentRepository;
 import com.dancestudio.erp.repository.MemberRepository;
-import com.dancestudio.erp.repository.PaymentRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.util.DateUtil;
 import lombok.Setter;
@@ -90,13 +90,13 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         studentActivityAssignmentRepository.findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
-        PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(studentActivityAssignmentId,
-                PayeeType.STUDENT);
-        try {
-            paymentManager.delete(Long.valueOf(paymentEntry.getPaymentId()));
-        } catch (Exception e) {
-            throw new EntityNotFoundException("Failed to delete payment details");
-        }
+        // PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(studentActivityAssignmentId,
+        //         PayeeType.STUDENT_ACTIVITY);
+        // try {
+        //     paymentManager.delete(Long.valueOf(paymentEntry.getPaymentId()));
+        // } catch (Exception e) {
+        //     throw new EntityNotFoundException("Failed to delete payment details");
+        // }
 
         studentActivityAssignmentRepository.deleteById(studentActivityAssignmentId);
     }
@@ -201,16 +201,16 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     private List<PaymentEntry> getPaymentEntriesForMonth(Integer month, Integer year, Long studioId) {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(month, year, month, year);
-        List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByDateRange(studioId,
-                monthRange.get("start"), monthRange.get("end"));
+        // List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByDateRange(studioId,
+        //         monthRange.get("start"), monthRange.get("end"));
         List<PaymentEntry> paymentEntries = new ArrayList<>();
 
-        for (Object[] payment : payments) {
-            PaymentEntry paymentEntry = new PaymentEntry();
-            paymentEntry.setPayeeType(PayeeType.valueOf((String) payment[0]));
-            paymentEntry.setAmount((Double) payment[1]);
-            paymentEntries.add(paymentEntry);
-        }
+        // for (Object[] payment : payments) {
+        //     PaymentEntry paymentEntry = new PaymentEntry();
+        //     paymentEntry.setPayeeType(PayeeType.valueOf((String) payment[0]));
+        //     paymentEntry.setAmount((Double) payment[1]);
+        //     paymentEntries.add(paymentEntry);
+        // }
 
         return paymentEntries;
     }

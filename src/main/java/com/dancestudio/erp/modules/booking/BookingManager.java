@@ -1,12 +1,14 @@
 package com.dancestudio.erp.modules.booking;
 
 import com.dancestudio.erp.base.BaseManager;
-import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.BranchManager;
-import com.dancestudio.erp.manager.PaymentManager;
-import com.dancestudio.erp.modules.client.ClientManager;
+import com.dancestudio.erp.modules.client.ClientRepository;
+import com.dancestudio.erp.modules.payments.PaymentConvertor;
+import com.dancestudio.erp.modules.payments.PaymentManager;
+import com.dancestudio.erp.modules.payments.entity.PaymentBooking;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
+import com.dancestudio.erp.repository.BranchRepository;
 import com.dancestudio.erp.specification.BookingSpecifications;
 import com.dancestudio.erp.util.DateUtil;
 import lombok.Setter;
@@ -27,38 +29,49 @@ import org.springframework.stereotype.Service;
 @Setter(onMethod = @__({ @Autowired }))
 public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
 
+    private final ClientRepository clientRepository;
+
+    private final BranchRepository branchRepository;
+
     private final BookingRepository bookingRepository;
 
-    private BranchManager branchManager;
-    private ClientManager clientManager;
     private PaymentManager paymentManager;
 
-    public BookingManager(BookingRepository bookingRepository) {
+    public BookingManager(BookingRepository bookingRepository, BranchRepository branchRepository,
+            ClientRepository clientRepository) {
         super(bookingRepository, "Booking");
         this.bookingRepository = bookingRepository;
+        this.branchRepository = branchRepository;
+        this.clientRepository = clientRepository;
     }
 
     @Override
     public BookingEntry add(BookingEntry bookingEntry) throws Exception {
         validateRequest(bookingEntry);
-        branchManager.getById(bookingEntry.getBranchId());
-        clientManager.getById(bookingEntry.getClientEntry().getClientId());
+        if (!branchRepository.existsById(bookingEntry.getBranchId())) {
+            throw new EntityNotFoundException("Branch not found");
+        }
+        if (!clientRepository.existsById(bookingEntry.getClientEntry().getClientId())) {
+            throw new EntityNotFoundException("Branch not found");
+        }
 
         Booking booking = BookingConvertor.convertToEntity(bookingEntry, null);
         booking = bookingRepository.save(booking);
+
         try {
             Long payeeId = booking.getId();
-            bookingEntry.getPaymentEntries().stream().forEach(pe -> {
-                try {
-                    pe.setPayeeId(payeeId);
-                    paymentManager.add(pe);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            for (PaymentEntry pe : bookingEntry.getPaymentEntries()) {
+                pe.setPayeeType(PayeeType.BOOKING);
+                pe.setPayeeId(payeeId);
+                PaymentEntry payment = paymentManager.add(pe);
+                booking.getPayments().add(PaymentConvertor.convertToEntity(payment, (PaymentBooking) null));
+            }
+
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new EntityNotFoundException("Failed to add payment details");
         }
+
         return BookingConvertor.convertToEntry(booking);
     }
 
@@ -74,24 +87,7 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
     @Override
     public BookingEntry update(Long bookingId, BookingEntry bookingEntry) throws Exception {
         validateRequest(bookingEntry);
-        Booking existingBooking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-        Booking updatedBooking = BookingConvertor.convertToEntity(bookingEntry, existingBooking);
-        return BookingConvertor.convertToEntry(bookingRepository.save(updatedBooking));
-    }
-
-    @Override
-    public void delete(Long bookingId) throws EntityNotFoundException {
-        bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-
-        PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(bookingId, PayeeType.BOOKING);
-        try {
-            paymentManager.delete(Long.valueOf(paymentEntry.getPaymentId()));
-        } catch (Exception e) {
-            throw new EntityNotFoundException("Failed to delete payment details");
-        }
-        bookingRepository.deleteById(bookingId);
+        return super.update(bookingId, bookingEntry);
     }
 
     public Page<BookingEntry> getAllBookings(Long branchId, Integer page, Integer size,

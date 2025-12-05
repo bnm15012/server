@@ -8,6 +8,8 @@ import com.dancestudio.erp.modules.booking.BookingEntry;
 import com.dancestudio.erp.modules.booking.BookingManager;
 import com.dancestudio.erp.modules.expense.ExpenseEntry;
 import com.dancestudio.erp.modules.expense.ExpenseManager;
+import com.dancestudio.erp.modules.payments.PaymentManager;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,19 +67,19 @@ public class ReportManagerImpl implements ReportManager {
             Integer startYear, Integer endDate, Integer endMonth, Integer endYear) throws Exception {
         IEMonthlyReportEntry monthlyReports = new IEMonthlyReportEntry();
 
-        List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startDate,
-                startMonth, startYear, endDate, endMonth, endYear, null, null);
-        List<IncomeEntry> incomeEntries = paymentEntries.stream()
-                .filter(paymentEntry -> paymentEntry.getPayeeType().equals(PayeeType.STUDENT))
-                .map(this::extractIncomeEntry)
-                .collect(Collectors.toList());
+        // List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startDate,
+        //         startMonth, startYear, endDate, endMonth, endYear, null, null);
+        // List<IncomeEntry> incomeEntries = paymentEntries.stream()
+        //         .filter(paymentEntry -> paymentEntry.getPayeeType().equals(PayeeType.STUDENT_ACTIVITY))
+        //         .map(this::extractIncomeEntry)
+        //         .collect(Collectors.toList());
 
-        double totalIncome = paymentEntries.stream()
-                .mapToDouble(PaymentEntry::getAmount)
-                .sum();
+        // double totalIncome = paymentEntries.stream()
+        //         .mapToDouble(PaymentEntry::getAmount)
+        //         .sum();
 
-        monthlyReports.setIncomeEntries(incomeEntries);
-        monthlyReports.setIncome(totalIncome);
+        // monthlyReports.setIncomeEntries(incomeEntries);
+        // monthlyReports.setIncome(totalIncome);
         return monthlyReports;
     }
 
@@ -113,29 +115,29 @@ public class ReportManagerImpl implements ReportManager {
     private IncomeEntry extractIncomeEntry(PaymentEntry paymentEntry) {
         IncomeEntry incomeEntry = new IncomeEntry();
 
-        incomeEntry.setStudentName(paymentEntry.getStudentEntry().getName());
+        // incomeEntry.setStudentName(paymentEntry.getStudentEntry().getName());
         incomeEntry.setAmount(paymentEntry.getAmount());
         incomeEntry.setPaymentMode(paymentEntry.getPaymentType().name());
         incomeEntry.setPaymenDate(paymentEntry.getPaymentDate());
 
-        if (paymentEntry.getStudentEntry() != null) {
-            Long activityAssignmentId = paymentEntry.getPayeeId();
-            try {
-                StudentActivityAssignmentEntry studentActivityAssignment = studentActivityAssignmentManager
-                        .getById(activityAssignmentId);
+        // if (paymentEntry.getStudentEntry() != null) {
+        //     Long activityAssignmentId = paymentEntry.getPayeeId();
+        //     try {
+        //         StudentActivityAssignmentEntry studentActivityAssignment = studentActivityAssignmentManager
+        //                 .getById(activityAssignmentId);
 
-                if (studentActivityAssignment.getActivityName() != null) {
-                    incomeEntry.setActivityName(studentActivityAssignment.getActivityName());
-                }
-                if (studentActivityAssignment.getMembershipType() != null) {
-                    incomeEntry.setMembershipType(studentActivityAssignment.getMembershipType());
-                }
+        //         if (studentActivityAssignment.getActivityName() != null) {
+        //             incomeEntry.setActivityName(studentActivityAssignment.getActivityName());
+        //         }
+        //         if (studentActivityAssignment.getMembershipType() != null) {
+        //             incomeEntry.setMembershipType(studentActivityAssignment.getMembershipType());
+        //         }
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //     }
 
-        }
+        // }
 
         return incomeEntry;
     }

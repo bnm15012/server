@@ -1,8 +1,8 @@
 package com.dancestudio.erp.modules.booking;
 
-import com.dancestudio.erp.entry.PaymentEntry;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.modules.client.ClientEntry;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 
 import lombok.Data;
 

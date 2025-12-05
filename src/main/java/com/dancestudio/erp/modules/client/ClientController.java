@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dancestudio.erp.base.BaseController;
+import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
-import com.dancestudio.erp.response.ClientResponse;
 
 
 @RestController
@@ -21,7 +21,7 @@ public class ClientController extends BaseController<ClientEntry, Long> {
     private ClientService clientService;
 
     @GetMapping("/getAll/{branchId}")
-    public ResponseEntity<ClientResponse> getAllClients(@PathVariable Long branchId,
+    public ResponseEntity<BaseResponse<ClientEntry>> getAllClients(@PathVariable Long branchId,
             @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "0") Integer startMonth,
             @RequestParam(defaultValue = "0") Integer startYear,
@@ -31,10 +31,10 @@ public class ClientController extends BaseController<ClientEntry, Long> {
         return clientService.getAllClients(branchId, page, size, startMonth, startYear, endMonth, endYear, searchTerm);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<ClientResponse> searchClientsByName(@RequestParam(defaultValue = "") String clientName,
+    @GetMapping("/search/{branchId}")
+    public ResponseEntity<BaseResponse<ClientEntry>> searchClientsByName(@PathVariable Long branchId, @RequestParam(defaultValue = "") String clientName,
             @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size) {
-        return clientService.searchClientsByName(clientName, page, size);
+        return clientService.searchClientsByName(branchId, clientName, page, size);
     }
 
     @Override

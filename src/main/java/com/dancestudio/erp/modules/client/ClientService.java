@@ -1,8 +1,8 @@
 package com.dancestudio.erp.modules.client;
 
+import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.response.ClientResponse;
 import com.dancestudio.erp.response.StatusResponse;
 
 import lombok.Setter;
@@ -20,9 +20,9 @@ public class ClientService extends BaseService<ClientEntry, Long> {
 
     private ClientManager clientManager;
 
-    public ResponseEntity<ClientResponse> getAllClients(Long branchId, Integer page, Integer size, Integer startMonth,
+    public ResponseEntity<BaseResponse<ClientEntry>> getAllClients(Long branchId, Integer page, Integer size, Integer startMonth,
             Integer startYear, Integer endMonth, Integer endYear, String searchTerm) {
-        ClientResponse response = new ClientResponse();
+        BaseResponse<ClientEntry> response = new BaseResponse<>();
 
         try {
             Page<ClientEntry> entries = clientManager.getAllClients(branchId, --page, size, startMonth, startYear,
@@ -38,10 +38,10 @@ public class ClientService extends BaseService<ClientEntry, Long> {
         }
     }
 
-    public ResponseEntity<ClientResponse> searchClientsByName(String clientName, Integer page, Integer size) {
-        ClientResponse response = new ClientResponse();
+    public ResponseEntity<BaseResponse<ClientEntry>> searchClientsByName(Long branchId, String clientName, Integer page, Integer size) {
+        BaseResponse<ClientEntry> response = new BaseResponse<>();
         try {
-            Page<ClientEntry> clients = clientManager.searchClientsByName(clientName, --page, size);
+            Page<ClientEntry> clients = clientManager.searchClientsByName(branchId, clientName, --page, size);
             response.setData(clients.getContent());
             response.setStatus(new StatusResponse(1, "Client retrieved successfully", StatusResponse.Type.SUCCESS, (int) clients.getTotalElements()));
             return ResponseEntity.status(HttpStatus.OK).body(response);

@@ -1,6 +1,8 @@
 package com.dancestudio.erp.entry;
 
 import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
+
 import lombok.Data;
 
 import java.util.Date;

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 import com.dancestudio.erp.modules.expense.ExpenseEntry;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 
 @Data
 @AllArgsConstructor

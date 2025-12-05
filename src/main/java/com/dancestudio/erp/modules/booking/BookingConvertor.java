@@ -11,12 +11,11 @@ import com.dancestudio.erp.entity.Branch;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.client.Client;
-import com.dancestudio.erp.modules.client.ClientEntry;
-import com.dancestudio.erp.modules.client.ClientManager;
 import com.dancestudio.erp.modules.client.ClientRepository;
+import com.dancestudio.erp.modules.payments.PaymentConvertor;
 import com.dancestudio.erp.repository.BranchRepository;
 import jakarta.annotation.PostConstruct;
-
+import com.dancestudio.erp.modules.client.ClientConvertor;
 @Component
 public class BookingConvertor {
     private static ApplicationContext applicationContext;
@@ -29,7 +28,7 @@ public class BookingConvertor {
         applicationContext = context;
     }
 
-    public static BookingEntry convertToEntry(Booking booking) throws EntityNotFoundException {
+    public static BookingEntry convertToEntry(Booking booking){
         BookingEntry bookingEntry = new BookingEntry();
 
         bookingEntry.setId(booking.getId());
@@ -42,13 +41,10 @@ public class BookingConvertor {
         bookingEntry.setBookingDate(booking.getBookingDate());
         bookingEntry.setStartTime(booking.getStartTime());
         bookingEntry.setEndTime(booking.getEndTime());
-
         if (Objects.nonNull(booking.getClient())) {
-            ClientManager clientManager = applicationContext.getBean(ClientManager.class);
-            ClientEntry clientEntry = clientManager.getById(booking.getClient().getId());
-            bookingEntry.setClientEntry(clientEntry);
+            bookingEntry.setClientEntry(ClientConvertor.convertToEntry(booking.getClient()));
         }
-
+        bookingEntry.setPaymentEntries(booking.getPayments().stream().map(PaymentConvertor::convertToEntry).toList());
         return bookingEntry;
     }
 
