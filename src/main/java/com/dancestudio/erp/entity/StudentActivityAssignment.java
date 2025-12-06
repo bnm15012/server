@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
+import com.dancestudio.erp.modules.payments.entity.PaymentStudentActivity;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
@@ -41,4 +43,7 @@ public class StudentActivityAssignment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_student_id"))
     private Member student;
+
+    @OneToOne(mappedBy = "studentActivityAssignment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PaymentStudentActivity payment;
 }

@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.dancestudio.erp.enums.PayeeType;
+import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.payments.entity.Payment;
 import com.dancestudio.erp.modules.payments.entity.PaymentBooking;
@@ -76,10 +77,11 @@ public class PaymentManager {
         throw new IllegalArgumentException("Payee type not found");
     }
 
-    public Page<PaymentEntry> getAll(Long branchId, int page, int size, Date startDate, Date endDate) {
+    public Page<PaymentEntry> getAll(Long branchId, int page, int size, Date startDate, Date endDate, PaymentStatus status) {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
         Specification<Payment> spec = Specification.where(PaymentSpecification.withJoins())
                 .and(PaymentSpecification.byBranch(branchId))
+                .and(PaymentSpecification.byStatus(status))
                 .and(PaymentSpecification.byDateRange(startDate, endDate));
 
         Page<Payment> pages = paymentRepository.findAll(spec, pageable);

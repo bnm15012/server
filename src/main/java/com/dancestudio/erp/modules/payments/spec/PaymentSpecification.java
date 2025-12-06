@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.modules.payments.entity.Payment;
 
 import jakarta.persistence.criteria.JoinType;
@@ -22,6 +23,11 @@ public class PaymentSpecification {
     public static Specification<Payment> byBranch(Long branchId) {
         return (root, query, cb) -> 
             branchId == null ? null : cb.equal(root.get("branch").get("id"), branchId);
+    }    
+    
+    public static Specification<Payment> byStatus(PaymentStatus status) {
+        return (root, query, cb) -> 
+            status == null ? null : cb.equal(root.get("status"), status);
     }
 
     public static Specification<Payment> byDateRange(Date from, Date to) {

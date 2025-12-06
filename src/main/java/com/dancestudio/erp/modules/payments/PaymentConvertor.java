@@ -6,13 +6,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entity.Branch;
+import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.modules.booking.Booking;
+import com.dancestudio.erp.modules.booking.BookingRepository;
 import com.dancestudio.erp.modules.payments.entity.Payment;
 import com.dancestudio.erp.modules.payments.entity.PaymentBooking;
 import com.dancestudio.erp.modules.payments.entity.PaymentStudentActivity;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.dancestudio.erp.repository.BranchRepository;
+import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +89,12 @@ public class PaymentConvertor {
                 setId(paymentEntry.getPayeeId());
             }
         });
+        if (Objects.nonNull(paymentEntry.getPayeeId())) {
+            BookingRepository repository = applicationContext
+                    .getBean(BookingRepository.class);
+            Booking booking = repository.getReferenceById(paymentEntry.getPayeeId());
+            paymentBooking.setBooking(booking);
+        }
         paymentBooking.setPayment(convertToEntity(paymentEntry, paymentBooking.getPayment()));
         return paymentBooking;
     }
@@ -94,7 +104,16 @@ public class PaymentConvertor {
         PaymentStudentActivity studentActivityPayment = (existingStudentActivityPayment != null)
                 ? existingStudentActivityPayment
                 : new PaymentStudentActivity();
-        studentActivityPayment.setPayment(convertToEntity(paymentEntry, existingStudentActivityPayment.getPayment()));
+        if (Objects.nonNull(paymentEntry.getActualAmount())) {
+            studentActivityPayment.setActualAmount(paymentEntry.getActualAmount());
+        }
+        if (Objects.nonNull(paymentEntry.getPayeeId())) {
+            StudentActivityAssignmentRepository repository = applicationContext
+                    .getBean(StudentActivityAssignmentRepository.class);
+            StudentActivityAssignment assignment = repository.getReferenceById(paymentEntry.getPayeeId());
+            studentActivityPayment.setStudentActivityAssignment(assignment);
+        }
+        studentActivityPayment.setPayment(convertToEntity(paymentEntry, studentActivityPayment.getPayment()));
         return studentActivityPayment;
     }
 

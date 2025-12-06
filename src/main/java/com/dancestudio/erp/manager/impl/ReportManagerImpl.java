@@ -16,8 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,19 +71,18 @@ public class ReportManagerImpl implements ReportManager {
             Integer startYear, Integer endDate, Integer endMonth, Integer endYear) throws Exception {
         IEMonthlyReportEntry monthlyReports = new IEMonthlyReportEntry();
 
-        // List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1, startDate,
-        //         startMonth, startYear, endDate, endMonth, endYear, null, null);
-        // List<IncomeEntry> incomeEntries = paymentEntries.stream()
-        //         .filter(paymentEntry -> paymentEntry.getPayeeType().equals(PayeeType.STUDENT_ACTIVITY))
-        //         .map(this::extractIncomeEntry)
-        //         .collect(Collectors.toList());
+        List<PaymentEntry> paymentEntries = paymentManager.getAll(branchId, 0, -1, toUtcDate(startDate,
+                startMonth, startYear), toUtcDate(endDate, endMonth, endYear), null).getContent();
+        List<IncomeEntry> incomeEntries = paymentEntries.stream()
+                .map(this::extractIncomeEntry)
+                .collect(Collectors.toList());
 
-        // double totalIncome = paymentEntries.stream()
-        //         .mapToDouble(PaymentEntry::getAmount)
-        //         .sum();
+        double totalIncome = paymentEntries.stream()
+                .mapToDouble(PaymentEntry::getAmount)
+                .sum();
 
-        // monthlyReports.setIncomeEntries(incomeEntries);
-        // monthlyReports.setIncome(totalIncome);
+        monthlyReports.setIncomeEntries(incomeEntries);
+        monthlyReports.setIncome(totalIncome);
         return monthlyReports;
     }
 
@@ -112,6 +115,12 @@ public class ReportManagerImpl implements ReportManager {
         monthlyReports.setBooking(totalBooking);
     }
 
+    public static Date toUtcDate(int day, int month, int year) {
+        LocalDate localDate = LocalDate.of(year, month, day);
+        ZonedDateTime zdt = localDate.atStartOfDay(ZoneOffset.UTC);
+        return Date.from(zdt.toInstant());
+    }
+
     private IncomeEntry extractIncomeEntry(PaymentEntry paymentEntry) {
         IncomeEntry incomeEntry = new IncomeEntry();
 
@@ -121,21 +130,22 @@ public class ReportManagerImpl implements ReportManager {
         incomeEntry.setPaymenDate(paymentEntry.getPaymentDate());
 
         // if (paymentEntry.getStudentEntry() != null) {
-        //     Long activityAssignmentId = paymentEntry.getPayeeId();
-        //     try {
-        //         StudentActivityAssignmentEntry studentActivityAssignment = studentActivityAssignmentManager
-        //                 .getById(activityAssignmentId);
+        // Long activityAssignmentId = paymentEntry.getPayeeId();
+        // try {
+        // StudentActivityAssignmentEntry studentActivityAssignment =
+        // studentActivityAssignmentManager
+        // .getById(activityAssignmentId);
 
-        //         if (studentActivityAssignment.getActivityName() != null) {
-        //             incomeEntry.setActivityName(studentActivityAssignment.getActivityName());
-        //         }
-        //         if (studentActivityAssignment.getMembershipType() != null) {
-        //             incomeEntry.setMembershipType(studentActivityAssignment.getMembershipType());
-        //         }
+        // if (studentActivityAssignment.getActivityName() != null) {
+        // incomeEntry.setActivityName(studentActivityAssignment.getActivityName());
+        // }
+        // if (studentActivityAssignment.getMembershipType() != null) {
+        // incomeEntry.setMembershipType(studentActivityAssignment.getMembershipType());
+        // }
 
-        //     } catch (Exception e) {
-        //         e.printStackTrace();
-        //     }
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
 
         // }
 

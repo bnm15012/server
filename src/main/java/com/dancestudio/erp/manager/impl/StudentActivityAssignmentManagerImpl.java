@@ -12,7 +12,6 @@ import com.dancestudio.erp.modules.expense.ExpenseEntry;
 import com.dancestudio.erp.modules.expense.ExpenseRepository;
 import com.dancestudio.erp.modules.payments.PaymentManager;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
-import com.dancestudio.erp.modules.payments.repository.PaymentRepository;
 import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.util.DateUtil;
@@ -41,9 +40,6 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     @Autowired
     private ExpenseRepository expenseRepository;
 
-    @Autowired
-    private PaymentRepository paymentRepository;
-
     public StudentActivityAssignmentManagerImpl(
             StudentActivityAssignmentRepository studentActivityAssignmentRepository) {
         this.studentActivityAssignmentRepository = studentActivityAssignmentRepository;
@@ -55,20 +51,26 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
         memberRepository.findById(studentActivityAssignmentEntry.getStudentId())
                 .orElseThrow(() -> new EntityNotFoundException("Student not found"));
 
-        StudentActivityAssignment studentStudentActivityAssignmentAssignment = StudentActivityAssignmentConvertor.convertToEntity(
-                studentActivityAssignmentEntry, null);
+        StudentActivityAssignment studentStudentActivityAssignmentAssignment = StudentActivityAssignmentConvertor
+                .convertToEntity(
+                        studentActivityAssignmentEntry, null);
         studentStudentActivityAssignmentAssignment = studentActivityAssignmentRepository
                 .save(studentStudentActivityAssignmentAssignment);
 
         try {
             Long payeeId = studentStudentActivityAssignmentAssignment.getId();
-            studentActivityAssignmentEntry.getPaymentEntry().setPayeeId(payeeId);
-
-            paymentManager.add(studentActivityAssignmentEntry.getPaymentEntry());
+            PaymentEntry paymentEntry = studentActivityAssignmentEntry.getPaymentEntry();
+            paymentEntry.setPayeeId(payeeId);
+            paymentEntry.setPayeeType(PayeeType.STUDENT);
+            paymentEntry = paymentManager.add(paymentEntry);
+            studentActivityAssignmentEntry = StudentActivityAssignmentConvertor
+                    .convertToEntry(studentStudentActivityAssignmentAssignment);
+            studentActivityAssignmentEntry.setPaymentEntry(paymentEntry);
+            return studentActivityAssignmentEntry;
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new EntityNotFoundException("Failed to add payment details");
         }
-        return StudentActivityAssignmentConvertor.convertToEntry(studentStudentActivityAssignmentAssignment);
     }
 
     @Override
@@ -78,25 +80,19 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
                 .findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
 
-        StudentActivityAssignment updatedStudentActivityAssignment = StudentActivityAssignmentConvertor.convertToEntity(studentActivityAssignmentEntry,
+        StudentActivityAssignment updatedStudentActivityAssignment = StudentActivityAssignmentConvertor.convertToEntity(
+                studentActivityAssignmentEntry,
                 existingStudentActivityAssignment);
         updatedStudentActivityAssignment = studentActivityAssignmentRepository.save(updatedStudentActivityAssignment);
 
-        return StudentActivityAssignmentConvertor.convertToEntry(studentActivityAssignmentRepository.save(updatedStudentActivityAssignment));
+        return StudentActivityAssignmentConvertor
+                .convertToEntry(studentActivityAssignmentRepository.save(updatedStudentActivityAssignment));
     }
 
     @Override
     public void delete(Long studentActivityAssignmentId) throws EntityNotFoundException {
         studentActivityAssignmentRepository.findById(studentActivityAssignmentId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
-
-        // PaymentEntry paymentEntry = paymentManager.getPaymentByPayeeIdAndPayeeType(studentActivityAssignmentId,
-        //         PayeeType.STUDENT_ACTIVITY);
-        // try {
-        //     paymentManager.delete(Long.valueOf(paymentEntry.getPaymentId()));
-        // } catch (Exception e) {
-        //     throw new EntityNotFoundException("Failed to delete payment details");
-        // }
 
         studentActivityAssignmentRepository.deleteById(studentActivityAssignmentId);
     }
@@ -201,15 +197,16 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
 
     private List<PaymentEntry> getPaymentEntriesForMonth(Integer month, Integer year, Long studioId) {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(month, year, month, year);
-        // List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByDateRange(studioId,
-        //         monthRange.get("start"), monthRange.get("end"));
+        // List<Object[]> payments =
+        // paymentRepository.findCategoryWiseSumOfPaymentsByDateRange(studioId,
+        // monthRange.get("start"), monthRange.get("end"));
         List<PaymentEntry> paymentEntries = new ArrayList<>();
 
         // for (Object[] payment : payments) {
-        //     PaymentEntry paymentEntry = new PaymentEntry();
-        //     paymentEntry.setPayeeType(PayeeType.valueOf((String) payment[0]));
-        //     paymentEntry.setAmount((Double) payment[1]);
-        //     paymentEntries.add(paymentEntry);
+        // PaymentEntry paymentEntry = new PaymentEntry();
+        // paymentEntry.setPayeeType(PayeeType.valueOf((String) payment[0]));
+        // paymentEntry.setAmount((Double) payment[1]);
+        // paymentEntries.add(paymentEntry);
         // }
 
         return paymentEntries;
@@ -224,8 +221,8 @@ public class StudentActivityAssignmentManagerImpl implements StudentActivityAssi
     @Override
     public Page<StudentActivityAssignment> getAssignmentsByStudentId(Long id, Integer page, Integer size)
             throws Exception {
-            Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
         return studentActivityAssignmentRepository.findActivitiesByStudentId(id, pageable);
-            }
+    }
 }

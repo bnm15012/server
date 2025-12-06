@@ -11,10 +11,8 @@ import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.modules.payments.entity.Payment;
-import com.dancestudio.erp.modules.payments.repository.PaymentRepository;
+import com.dancestudio.erp.modules.payments.PaymentConvertor;
 import com.dancestudio.erp.repository.MemberRepository;
-import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.DateUtil;
 
 import jakarta.annotation.PostConstruct;
@@ -32,8 +30,6 @@ public class StudentActivityAssignmentConvertor {
         applicationContext = context;
     }
 
-    
-    
     public static StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment)
             throws Exception {
 
@@ -61,17 +57,15 @@ public class StudentActivityAssignmentConvertor {
         if (Objects.nonNull(studentActivityAssignment.getActivityName())) {
             studentActivityAssignmentEntry.setActivityName(studentActivityAssignment.getActivityName());
         }
-
-        PaymentRepository paymentRepository = applicationContext.getBean(PaymentRepository.class);
-            
-        // Payment payment = paymentRepository.findByPayeeId(studentActivityAssignment.getId());
-        // studentActivityAssignmentEntry.setPaymentEntry(ConvertToEntryUtil.convertToEntry(payment));
-
+        if (Objects.nonNull(studentActivityAssignment.getPayment())) {
+            studentActivityAssignmentEntry
+                    .setPaymentEntry(PaymentConvertor.convertToEntry(studentActivityAssignment.getPayment()));
+        }
         return studentActivityAssignmentEntry;
     }
-    
 
-    public static StudentActivityAssignment convertToEntity(StudentActivityAssignmentEntry studentActivityAssignmentEntry,
+    public static StudentActivityAssignment convertToEntity(
+            StudentActivityAssignmentEntry studentActivityAssignmentEntry,
             StudentActivityAssignment existingStudentActivityAssignment) throws Exception {
         StudentActivityAssignment studentActivityAssignment = (existingStudentActivityAssignment != null)
                 ? existingStudentActivityAssignment

@@ -27,8 +27,8 @@ public class PaymentStudentActivity {
     private Double actualAmount;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false,
+    @JoinColumn(name = "student_activity_assignment", nullable = false,
         unique = true, // IMPORTANT
-        foreignKey = @ForeignKey(name = "fk_payment_member_member_id"))
+        foreignKey = @ForeignKey(name = "fk_payment_student_activity_assignment_id"))
     private StudentActivityAssignment studentActivityAssignment;
 }
