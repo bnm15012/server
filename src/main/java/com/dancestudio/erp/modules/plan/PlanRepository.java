@@ -1,6 +1,5 @@
-package com.dancestudio.erp.repository;
+package com.dancestudio.erp.modules.plan;
 
-import com.dancestudio.erp.entity.Plan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,15 +1,15 @@
 package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Subscription;
-import com.dancestudio.erp.entry.PlanEntry;
 import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.entry.SubscriptionEntry;
 import com.dancestudio.erp.enums.SubscriptionStatus;
 import com.dancestudio.erp.enums.SubscriptionType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.PlanManager;
 import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.manager.SubscriptionManager;
+import com.dancestudio.erp.modules.plan.PlanEntry;
+import com.dancestudio.erp.modules.plan.PlanManager;
 import com.dancestudio.erp.repository.SubscriptionRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.SubscriptionUtils;

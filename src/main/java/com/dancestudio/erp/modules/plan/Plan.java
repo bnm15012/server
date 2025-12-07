@@ -1,4 +1,6 @@
-package com.dancestudio.erp.entity;
+package com.dancestudio.erp.modules.plan;
+
+import com.dancestudio.erp.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

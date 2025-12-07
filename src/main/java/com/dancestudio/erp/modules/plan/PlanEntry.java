@@ -1,4 +1,4 @@
-package com.dancestudio.erp.entry;
+package com.dancestudio.erp.modules.plan;
 
 import com.dancestudio.erp.enums.MembershipType;
 import lombok.Data;
