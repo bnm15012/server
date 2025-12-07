@@ -14,6 +14,6 @@ import com.dancestudio.erp.entry.activity.ActivityEntry;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivityResponse extends AbstractResponse {
+public class BaseResponse<ActivityEntry> extends AbstractResponse {
     private List<ActivityEntry> data;
 }

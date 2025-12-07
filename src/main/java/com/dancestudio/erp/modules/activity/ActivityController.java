@@ -1,9 +1,9 @@
-package com.dancestudio.erp.controller;
+package com.dancestudio.erp.modules.activity;
 
+import com.dancestudio.erp.base.BaseController;
+import com.dancestudio.erp.base.BaseResponse;
+import com.dancestudio.erp.base.BaseService;
 import com.dancestudio.erp.entry.activity.ActivityEntry;
-import com.dancestudio.erp.response.ActivityResponse;
-import com.dancestudio.erp.service.ActivityService;
-import com.dancestudio.erp.service.BaseService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,19 +11,18 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/activities")
-public class ActivityController extends BaseController<ActivityEntry, ActivityResponse, Long> {
+public class ActivityController extends BaseController<ActivityEntry, Long> {
 
     @Autowired
     private ActivityService activityService;
 
-
     @Override
-    protected BaseService<ActivityEntry, ActivityResponse, Long> getService() {
+    protected BaseService<ActivityEntry, Long> getService() {
         return activityService;
     }
 
     @GetMapping("/getAll/{branchId}")
-    public ResponseEntity<ActivityResponse> getAll(@PathVariable Long branchId) {
+    public ResponseEntity<BaseResponse<ActivityEntry>> getAll(@PathVariable Long branchId) {
         return activityService.getAllActivities(branchId);
     }
 }

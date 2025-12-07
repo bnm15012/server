@@ -1,6 +1,5 @@
-package com.dancestudio.erp.converter;
+package com.dancestudio.erp.modules.activity.convertor;
 
-import com.dancestudio.erp.manager.impl.ActivityManagerImpl;
 import jakarta.annotation.PostConstruct;
 
 import java.util.Objects;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.dancestudio.erp.entity.activity.ActivityBatch;
 import com.dancestudio.erp.entry.activity.ActivityBatchEntry;
 import com.dancestudio.erp.entry.activity.ActivityEntry;
+import com.dancestudio.erp.modules.activity.manager.ActivityManager;
 
 @Component
 public class ActivityBatchConvertor {
@@ -26,10 +26,8 @@ public class ActivityBatchConvertor {
         applicationContext = context;
     }
 
-    public static ActivityBatchEntry convertToEntry(ActivityBatch activityBatch)
-            throws Exception {
+    public static ActivityBatchEntry convertToEntry(ActivityBatch activityBatch) {
         ActivityBatchEntry activityBatchEntry = new ActivityBatchEntry();
-
         activityBatchEntry.setBatchId(activityBatch.getId());
         activityBatchEntry.setActivityId(activityBatch.getActivity().getId());
       
@@ -71,7 +69,7 @@ public class ActivityBatchConvertor {
         }
 
         if (Objects.nonNull(activityBatchEntry.getActivityId())) {
-            ActivityManagerImpl activityManagerImpl = applicationContext.getBean(ActivityManagerImpl.class);
+            ActivityManager activityManagerImpl = applicationContext.getBean(ActivityManager.class);
             ActivityEntry activityEntry = activityManagerImpl.getById(activityBatchEntry.getActivityId());
             newActivityBatch.setActivity(ActivityConverter.convertToEntity(activityEntry, null));
         }

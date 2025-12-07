@@ -1,4 +1,4 @@
-package com.dancestudio.erp.repository.Activity;
+package com.dancestudio.erp.modules.activity.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

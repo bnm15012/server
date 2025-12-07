@@ -1,4 +1,4 @@
-package com.dancestudio.erp.converter;
+package com.dancestudio.erp.modules.activity.convertor;
 
 import com.dancestudio.erp.entity.activity.Activity;
 import com.dancestudio.erp.entity.activity.ActivityBatch;
@@ -31,15 +31,13 @@ public class ActivityConverter {
         applicationContext = context;
     }
 
-    public static ActivityEntry convertToEntry(Activity activity) throws Exception {
+    public static ActivityEntry convertToEntry(Activity activity) {
         ActivityEntry activityEntry = new ActivityEntry();
         activityEntry.setActivityId(activity.getId());
         activityEntry.setActivityType(ActivityType.valueOf(activity.getActivityType()));
         activityEntry.setDescription(activity.getDescription());
         activityEntry.setBranchId(activity.getBranch().getId());
-
         activityEntry.setBatchEntries(convertPlansToEntry(activity.getBatches()));
-
         return activityEntry;
     }
 
