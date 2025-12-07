@@ -1,4 +1,4 @@
-package com.dancestudio.erp.util;
+package com.dancestudio.erp.modules.genericTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
