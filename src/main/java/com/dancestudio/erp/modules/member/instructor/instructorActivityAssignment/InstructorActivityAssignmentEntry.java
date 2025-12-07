@@ -1,4 +1,4 @@
-package com.dancestudio.erp.modules.member.instructor;
+package com.dancestudio.erp.modules.member.instructor.instructorActivityAssignment;
 
 import com.dancestudio.erp.enums.MembershipStatus;
 import lombok.Data;

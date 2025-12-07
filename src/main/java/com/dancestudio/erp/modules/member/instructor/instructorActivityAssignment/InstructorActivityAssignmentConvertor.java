@@ -1,4 +1,4 @@
-package com.dancestudio.erp.modules.member.instructor;
+package com.dancestudio.erp.modules.member.instructor.instructorActivityAssignment;
 
 import java.util.Objects;
 
@@ -28,7 +28,7 @@ public class InstructorActivityAssignmentConvertor {
     }
 
     public static InstructorActivityAssignmentEntry convertToEntry(
-            InstructorActivityAssignment instructorActivityAssignment) throws Exception{
+            InstructorActivityAssignment instructorActivityAssignment) {
 
         if (Objects.isNull(instructorActivityAssignment)) {
             return null;
@@ -56,7 +56,7 @@ public class InstructorActivityAssignmentConvertor {
 
     public static InstructorActivityAssignment convertToEntity(
             InstructorActivityAssignmentEntry instructorActivityAssignmentEntry,
-            InstructorActivityAssignment existingInstructorActivityAssignment) throws Exception {
+            InstructorActivityAssignment existingInstructorActivityAssignment) throws EntityNotFoundException {
         InstructorActivityAssignment instructorActivityAssignment = (existingInstructorActivityAssignment != null)
                 ? existingInstructorActivityAssignment
                 : new InstructorActivityAssignment();

@@ -1,15 +1,16 @@
-package com.dancestudio.erp.modules.member.instructor;
+package com.dancestudio.erp.modules.member.instructor.instructorActivityAssignment;
 
-import com.dancestudio.erp.controller.BaseController;
-import com.dancestudio.erp.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.dancestudio.erp.base.BaseController;
+import com.dancestudio.erp.base.BaseService;
+
 @RestController
 @RequestMapping("/instructorActivities")
 public class InstructorActivityAssignmentController
-        extends BaseController<InstructorActivityAssignmentEntry, InstructorActivityAssignmentResponse, Long> {
+        extends BaseController<InstructorActivityAssignmentEntry, Long> {
 
     @Autowired
     private InstructorActivityAssignmentService instructorActivityAssignmentService;
@@ -23,7 +24,7 @@ public class InstructorActivityAssignmentController
     }
 
     @Override
-    protected BaseService<InstructorActivityAssignmentEntry, InstructorActivityAssignmentResponse, Long> getService() {
+    protected BaseService<InstructorActivityAssignmentEntry, Long> getService() {
         return instructorActivityAssignmentService;
     }
 }

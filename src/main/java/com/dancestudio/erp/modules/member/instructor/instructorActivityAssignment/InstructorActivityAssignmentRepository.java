@@ -1,4 +1,4 @@
-package com.dancestudio.erp.modules.member.instructor;
+package com.dancestudio.erp.modules.member.instructor.instructorActivityAssignment;
 
 
 import org.springframework.data.domain.Page;
