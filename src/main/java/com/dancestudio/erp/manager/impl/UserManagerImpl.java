@@ -3,12 +3,11 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.converter.UserAccessConvertor;
 import com.dancestudio.erp.entity.User;
-import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.enums.UserType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.exception.InvalidCredentialsException;
-
+import com.dancestudio.erp.modules.template.template.TemplateEntry;
 import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.modules.message_queue.services.EmailService;

@@ -2,9 +2,8 @@ package com.dancestudio.erp.modules.template.genericTemplate;
 
 import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
-import com.dancestudio.erp.entry.GenricTemplateEntry;
-import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.modules.template.template.TemplateEntry;
 import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.response.StatusResponse;
 

@@ -1,7 +1,6 @@
 package com.dancestudio.erp.modules.template.genericTemplate;
 
 import com.dancestudio.erp.base.BaseManager;
-import com.dancestudio.erp.entry.GenricTemplateEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.repository.GenricTemplateRepository;
 import lombok.Setter;

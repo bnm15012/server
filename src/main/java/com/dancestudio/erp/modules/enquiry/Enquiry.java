@@ -1,4 +1,4 @@
-package com.dancestudio.erp.entity;
+package com.dancestudio.erp.modules.enquiry;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+
+import com.dancestudio.erp.entity.BaseEntity;
+import com.dancestudio.erp.entity.Branch;
 
 @Entity
 @EqualsAndHashCode(callSuper = true)

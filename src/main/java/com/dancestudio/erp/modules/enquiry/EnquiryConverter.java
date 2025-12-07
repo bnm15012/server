@@ -1,12 +1,8 @@
-package com.dancestudio.erp.converter;
+package com.dancestudio.erp.modules.enquiry;
 
-import com.dancestudio.erp.entity.Enquiry;
-import com.dancestudio.erp.entry.BranchEntry;
-import com.dancestudio.erp.entry.EnquiryEntry;
-import com.dancestudio.erp.manager.impl.BranchManagerImpl;
-import com.dancestudio.erp.util.ConvertToEntryUtil;
-
+import com.dancestudio.erp.repository.BranchRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.Objects;
 
@@ -45,9 +41,9 @@ public class EnquiryConverter {
             enquiry.setEnquiryPurpose(entry.getEnquiryPurpose());
         }
         if (Objects.nonNull(entry.getBranchId())) {
-            BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
-            BranchEntry branchEntry = branchManagerImpl.getById(entry.getBranchId());
-            enquiry.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
+            BranchRepository branchRepository = applicationContext.getBean(BranchRepository.class);
+            enquiry.setBranch(branchRepository.findById(entry.getBranchId()).orElseThrow(
+                    () -> new EntityNotFoundException("Branch not found with id: " + entry.getBranchId() + "")));
         }
         return enquiry;
     }

@@ -1,4 +1,4 @@
-package com.dancestudio.erp.entry;
+package com.dancestudio.erp.modules.template.genericTemplate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

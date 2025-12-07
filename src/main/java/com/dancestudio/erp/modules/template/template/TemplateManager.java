@@ -3,7 +3,6 @@ package com.dancestudio.erp.modules.template.template;
 import com.dancestudio.erp.base.BaseManager;
 import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.StudioEntry;
-import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.repository.StudioRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;

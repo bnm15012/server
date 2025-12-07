@@ -5,14 +5,13 @@ import com.dancestudio.erp.entry.MessageEntry;
 import com.dancestudio.erp.entry.MessageRecipientEntry;
 import com.dancestudio.erp.entry.SendMessageRequestEntry;
 import com.dancestudio.erp.entry.SessionEntry;
-import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.enums.MemberType;
 import com.dancestudio.erp.enums.MessageStatus;
 import com.dancestudio.erp.enums.NotificationType;
 import com.dancestudio.erp.enums.TemplateType;
 import com.dancestudio.erp.enums.WhatsAppStatus;
 import com.dancestudio.erp.manager.MessageManager;
-
+import com.dancestudio.erp.modules.template.template.TemplateEntry;
 import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.modules.client.Client;
 import com.dancestudio.erp.modules.client.ClientRepository;

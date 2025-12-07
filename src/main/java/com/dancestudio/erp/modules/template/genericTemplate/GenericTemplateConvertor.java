@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entity.Studio;
-import com.dancestudio.erp.entry.GenricTemplateEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.repository.StudioRepository;
 import jakarta.annotation.PostConstruct;

@@ -3,7 +3,6 @@ package com.dancestudio.erp.modules.template.genericTemplate;
 import com.dancestudio.erp.base.BaseController;
 import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
-import com.dancestudio.erp.entry.GenricTemplateEntry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

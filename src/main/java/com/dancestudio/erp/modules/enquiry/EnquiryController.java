@@ -1,22 +1,20 @@
-package com.dancestudio.erp.controller;
-
-import com.dancestudio.erp.entry.EnquiryEntry;
-import com.dancestudio.erp.response.EnquiryResponse;
-import com.dancestudio.erp.service.BaseService;
-import com.dancestudio.erp.service.EnquiryService;
+package com.dancestudio.erp.modules.enquiry;
+import com.dancestudio.erp.base.BaseController;
+import com.dancestudio.erp.base.BaseResponse;
+import com.dancestudio.erp.base.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/enquiries")
-public class EnquiryController extends BaseController<EnquiryEntry, EnquiryResponse, Long> {
+public class EnquiryController extends BaseController<EnquiryEntry, Long> {
 
     @Autowired
     private EnquiryService enquiryService;
 
     @GetMapping("/getAll/{branchId}")
-    public ResponseEntity<EnquiryResponse> getAllEnquiries(@PathVariable Long branchId,
+    public ResponseEntity<BaseResponse<EnquiryEntry>> getAllEnquiries(@PathVariable Long branchId,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) Integer startMonth,
@@ -29,7 +27,7 @@ public class EnquiryController extends BaseController<EnquiryEntry, EnquiryRespo
     }
 
     @Override
-    protected BaseService<EnquiryEntry, EnquiryResponse, Long> getService() {
+    protected BaseService<EnquiryEntry, Long> getService() {
         return enquiryService;
     }
 }

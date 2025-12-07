@@ -2,7 +2,6 @@ package com.dancestudio.erp.modules.template.template;
 
 import org.springframework.stereotype.Component;
 
-import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.enums.TemplateType;
 
 @Component

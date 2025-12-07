@@ -1,4 +1,4 @@
-package com.dancestudio.erp.entry;
+package com.dancestudio.erp.modules.enquiry;
 
 import java.util.Date;
 
