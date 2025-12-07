@@ -12,7 +12,8 @@ import com.dancestudio.erp.enums.NotificationType;
 import com.dancestudio.erp.enums.TemplateType;
 import com.dancestudio.erp.enums.WhatsAppStatus;
 import com.dancestudio.erp.manager.MessageManager;
-import com.dancestudio.erp.manager.TemplateManager;
+
+import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.modules.client.Client;
 import com.dancestudio.erp.modules.client.ClientRepository;
 import com.dancestudio.erp.modules.message_queue.MessageQueue;

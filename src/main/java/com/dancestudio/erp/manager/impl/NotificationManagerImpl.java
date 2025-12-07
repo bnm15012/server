@@ -8,7 +8,8 @@ import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.enums.MessageStatus;
 import com.dancestudio.erp.enums.NotificationType;
 import com.dancestudio.erp.manager.NotificationManager;
-import com.dancestudio.erp.manager.TemplateManager;
+
+import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.modules.message_queue.services.EmailService;
 import com.dancestudio.erp.repository.MessageRepository;
 

@@ -11,6 +11,7 @@ import com.dancestudio.erp.enums.NotificationType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.modules.message_queue.services.EmailService;
+import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.repository.MessageRecipientRepository;
 import com.dancestudio.erp.repository.MessageRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;

@@ -74,12 +74,6 @@ public class MiscellaneousController {
         return miscellaneousService.refreshToken(userEntry);
     }
 
-    // TODO: remove this endpoint after testing
-    @GetMapping("getTemplates/{studioId}")
-    public ResponseEntity<TemplateResponse> getTemplates(@PathVariable("studioId") Long studioId) {
-        return miscellaneousService.getTemplates(studioId);
-    }
-
     @PostMapping("whatsapp/sendMessage")
     public String sendWhatsAppMessage(@RequestParam String to, @RequestParam String message) {
         messageService.sendWhatsAppMessage(to, message);

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.dancestudio.erp.modules.genericTemplate.GenericTemplate;
+import com.dancestudio.erp.modules.template.genericTemplate.GenericTemplate;
 
 @Repository
 public interface GenricTemplateRepository extends JpaRepository<GenericTemplate, Long> {

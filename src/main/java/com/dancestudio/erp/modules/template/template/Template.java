@@ -1,4 +1,6 @@
-package com.dancestudio.erp.entity;
+package com.dancestudio.erp.modules.template.template;
+
+import com.dancestudio.erp.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,10 +11,6 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 public class Template extends BaseEntity {
-
-    private static final long serialVersionUID = -1700105192677945854L;
-    private static final String dateFormat = "yyyy-MM-dd HH:mm:ss";
-
     @Column(name = "name")
     private String name;
 
@@ -24,6 +22,4 @@ public class Template extends BaseEntity {
 
     @Column(name = "templateType", nullable = false)
     private String templateType;
-
-
 }

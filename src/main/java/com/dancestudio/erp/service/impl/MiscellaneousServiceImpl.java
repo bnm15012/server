@@ -5,7 +5,8 @@ import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.manager.ImageManager;
 import com.dancestudio.erp.manager.ReportManager;
-import com.dancestudio.erp.manager.TemplateManager;
+
+import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.manager.impl.PasswordManagerImpl;
 import com.dancestudio.erp.modules.payments.PaymentManager;
@@ -139,22 +140,6 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
-    @Override
-    public ResponseEntity<TemplateResponse> getTemplates(Long studioId) {
-        TemplateResponse response = new TemplateResponse();
-        try {
-            List<TemplateEntry> templates = templateManager.getAllTemplates(studioId);
-            response.setData(templates);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS,
-                    Objects.isNull(templates) ? 0 : templates.size()));
-            return ResponseEntity.ok(response);
-        } catch (Exception ex) {
-            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-
 
     public static Date toUtcDate(int day, int month, int year) {
         // Step 1: Create a LocalDate (no timezone)

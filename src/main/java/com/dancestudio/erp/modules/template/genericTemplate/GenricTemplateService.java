@@ -1,11 +1,11 @@
-package com.dancestudio.erp.modules.genericTemplate;
+package com.dancestudio.erp.modules.template.genericTemplate;
 
 import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
 import com.dancestudio.erp.entry.GenricTemplateEntry;
 import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.manager.TemplateManager;
+import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.response.StatusResponse;
 
 import lombok.Setter;
@@ -80,24 +80,20 @@ public class GenricTemplateService extends BaseService<GenricTemplateEntry, Long
     @Override
     protected GenricTemplateEntry doAdd(GenricTemplateEntry entry) throws Exception {
         return genericTemplateManager.add(entry);
-
     }
 
     @Override
     protected GenricTemplateEntry doUpdate(Long id, GenricTemplateEntry entry) throws Exception {
         return genericTemplateManager.update(id, entry);
-
     }
 
     @Override
     protected void doDelete(Long id) throws Exception {
         genericTemplateManager.delete(id);
-
     }
 
     @Override
     protected GenricTemplateEntry doGet(Long id) throws Exception {
         return genericTemplateManager.getById(id);
     }
-
 }

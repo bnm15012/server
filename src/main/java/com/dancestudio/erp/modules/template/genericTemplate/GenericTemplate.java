@@ -1,4 +1,4 @@
-package com.dancestudio.erp.modules.genericTemplate;
+package com.dancestudio.erp.modules.template.genericTemplate;
 
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Studio;

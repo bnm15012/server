@@ -1,7 +1,7 @@
 package com.dancestudio.erp.configuration;
 
-import com.dancestudio.erp.entity.Template;
-import com.dancestudio.erp.repository.TemplateRepository;
+import com.dancestudio.erp.modules.template.template.Template;
+import com.dancestudio.erp.modules.template.template.TemplateRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.CommandLineRunner;
