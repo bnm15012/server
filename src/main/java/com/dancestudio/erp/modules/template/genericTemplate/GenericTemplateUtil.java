@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.dancestudio.erp.entity.Branch;
-import com.dancestudio.erp.entity.Member;
 import com.dancestudio.erp.entity.Studio;
+import com.dancestudio.erp.modules.member.Member;
 
 public class GenericTemplateUtil {
 

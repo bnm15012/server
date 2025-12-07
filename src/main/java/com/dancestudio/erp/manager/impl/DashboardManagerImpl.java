@@ -4,6 +4,8 @@ import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.modules.expense.ExpenseRepository;
+import com.dancestudio.erp.modules.member.MemberRepository;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.modules.payments.repository.PaymentRepository;
 import com.dancestudio.erp.repository.*;
 import com.dancestudio.erp.util.DateUtil;

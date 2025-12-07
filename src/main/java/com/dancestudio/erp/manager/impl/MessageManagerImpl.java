@@ -15,6 +15,8 @@ import com.dancestudio.erp.modules.template.template.TemplateEntry;
 import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.modules.client.Client;
 import com.dancestudio.erp.modules.client.ClientRepository;
+import com.dancestudio.erp.modules.member.Member;
+import com.dancestudio.erp.modules.member.MemberRepository;
 import com.dancestudio.erp.modules.message_queue.MessageQueue;
 import com.dancestudio.erp.modules.message_queue.MessageQueueRepository;
 import com.dancestudio.erp.modules.message_queue.events.EmailQueuedEvent;
@@ -22,7 +24,6 @@ import com.dancestudio.erp.modules.message_queue.events.WhatsAppMessageQueuedEve
 import com.dancestudio.erp.modules.message_queue.services.EmailService;
 import com.dancestudio.erp.modules.message_queue.services.WhatsAppService;
 import com.dancestudio.erp.repository.BranchRepository;
-import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.repository.MessageRecipientRepository;
 import com.dancestudio.erp.repository.MessageRepository;
 import com.dancestudio.erp.repository.StudioRepository;

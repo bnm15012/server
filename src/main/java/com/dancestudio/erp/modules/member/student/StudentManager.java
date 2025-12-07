@@ -1,0 +1,22 @@
+package com.dancestudio.erp.modules.member.student;
+
+import com.dancestudio.erp.enums.MembershipStatus;
+import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.manager.BaseManagerInt;
+
+import java.util.Date;
+import java.util.List;
+
+public interface StudentManager extends BaseManagerInt<StudentEntry, Long> {
+
+    List<StudentEntry> getAllStudentsByStudio(Long branchId, String activityName, MembershipStatus membershipStatus, int page, int size, String searchTerm);
+
+    List<StudentCommunicationEntry> getAllStudentsForCommunication(Long branchId, MembershipStatus membershipStatus, int page, int size, int birthday);
+
+    List<StudentEntry> findByMembershipEndDate(Date reminderDate) throws EntityNotFoundException;
+
+    boolean sendSubscriptionRenewalReminder(Long studentId, String activityName) throws Exception;
+
+    Long getAllStudentsCountByStudio(Long studioId);
+
+}

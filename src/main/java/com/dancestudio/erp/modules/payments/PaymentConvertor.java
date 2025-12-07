@@ -6,16 +6,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entity.Branch;
-import com.dancestudio.erp.entity.StudentActivityAssignment;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.modules.booking.Booking;
 import com.dancestudio.erp.modules.booking.BookingRepository;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.modules.payments.entity.Payment;
 import com.dancestudio.erp.modules.payments.entity.PaymentBooking;
 import com.dancestudio.erp.modules.payments.entity.PaymentStudentActivity;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.dancestudio.erp.repository.BranchRepository;
-import com.dancestudio.erp.repository.StudentActivityAssignmentRepository;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;

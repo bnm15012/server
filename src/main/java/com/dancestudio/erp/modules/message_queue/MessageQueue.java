@@ -2,11 +2,11 @@ package com.dancestudio.erp.modules.message_queue;
 
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Branch;
-import com.dancestudio.erp.entity.Member;
 import com.dancestudio.erp.entity.Message;
 import com.dancestudio.erp.entity.MessageRecipient;
 import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.enums.NotificationType;
+import com.dancestudio.erp.modules.member.Member;
 
 import jakarta.persistence.*;
 import lombok.Data;

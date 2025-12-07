@@ -8,6 +8,7 @@ import com.dancestudio.erp.enums.WhatsAppStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.manager.UserManager;
+import com.dancestudio.erp.modules.member.student.StudioManagerImpl;
 import com.dancestudio.erp.repository.BranchRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import org.springframework.beans.factory.annotation.Autowired;

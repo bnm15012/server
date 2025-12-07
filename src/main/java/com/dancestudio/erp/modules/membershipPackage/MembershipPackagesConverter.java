@@ -1,6 +1,6 @@
 package com.dancestudio.erp.modules.membershipPackage;
 
-import com.dancestudio.erp.manager.impl.StudioManagerImpl;
+import com.dancestudio.erp.modules.member.student.StudioManagerImpl;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 
 import jakarta.annotation.PostConstruct;

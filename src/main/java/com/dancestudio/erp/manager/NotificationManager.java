@@ -1,7 +1,7 @@
 package com.dancestudio.erp.manager;
 
-import com.dancestudio.erp.entity.Member;
-import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
+import com.dancestudio.erp.modules.member.Member;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignmentEntry;
 
 public interface NotificationManager {
 
