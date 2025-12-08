@@ -8,7 +8,7 @@ import com.dancestudio.erp.manager.NotificationManager;
 import com.dancestudio.erp.modules.template.template.TemplateEntry;
 import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.modules.member.Member;
-import com.dancestudio.erp.modules.member.student.StudentActivityAssignmentEntry;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentEntry;
 import com.dancestudio.erp.modules.message_queue.services.EmailService;
 import com.dancestudio.erp.repository.MessageRepository;
 

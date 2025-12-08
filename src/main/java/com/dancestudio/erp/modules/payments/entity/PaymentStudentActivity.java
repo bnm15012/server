@@ -1,6 +1,6 @@
 package com.dancestudio.erp.modules.payments.entity;
 
-import com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignment;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

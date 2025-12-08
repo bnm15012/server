@@ -1,4 +1,4 @@
-package com.dancestudio.erp.modules.member.student;
+package com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
 
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;

@@ -1,4 +1,4 @@
-package com.dancestudio.erp.modules.member.student;
+package com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
 
 import jakarta.persistence.*;
 import lombok.Data;

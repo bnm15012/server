@@ -1,4 +1,4 @@
-package com.dancestudio.erp.modules.member.student;
+package com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
 
 import java.util.Objects;
 
@@ -28,8 +28,7 @@ public class StudentActivityAssignmentConvertor {
         applicationContext = context;
     }
 
-    public static StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment)
-            throws Exception {
+    public static StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment) {
 
         if (Objects.isNull(studentActivityAssignment)) {
             return null;

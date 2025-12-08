@@ -15,10 +15,10 @@ import com.dancestudio.erp.modules.expense.ExpenseEntry;
 import com.dancestudio.erp.modules.member.BankAccount;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.instructor.bankAccount.BankAccountEntry;
-import com.dancestudio.erp.modules.member.student.StudentActivityAssignmentEntry;
-import com.dancestudio.erp.modules.member.student.StudentActivityAssignmentManagerImpl;
 import com.dancestudio.erp.modules.member.student.StudentEntry;
 import com.dancestudio.erp.modules.member.student.StudioManagerImpl;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentEntry;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentManager;
 import com.dancestudio.erp.modules.payments.entity.Payment;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -361,8 +361,8 @@ public class ConvertToEntryUtil {
 
         try {
 
-            StudentActivityAssignmentManagerImpl studentActivityAssignmentManagerImpl = applicationContext
-                    .getBean(StudentActivityAssignmentManagerImpl.class);
+            StudentActivityAssignmentManager studentActivityAssignmentManagerImpl = applicationContext
+                    .getBean(StudentActivityAssignmentManager.class);
             List<StudentActivityAssignmentEntry> entries = studentActivityAssignmentManagerImpl
                     .getStudentAssignmentsByStudentId(student.getId());
             boolean isActive = false;

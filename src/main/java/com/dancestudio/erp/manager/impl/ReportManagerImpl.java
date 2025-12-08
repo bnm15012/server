@@ -8,7 +8,7 @@ import com.dancestudio.erp.modules.booking.BookingEntry;
 import com.dancestudio.erp.modules.booking.BookingManager;
 import com.dancestudio.erp.modules.expense.ExpenseEntry;
 import com.dancestudio.erp.modules.expense.ExpenseManager;
-import com.dancestudio.erp.modules.member.student.StudentActivityAssignmentManager;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentManager;
 import com.dancestudio.erp.modules.payments.PaymentManager;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 

@@ -1,15 +1,15 @@
 package com.dancestudio.erp.modules.member.student;
 
-import com.dancestudio.erp.controller.BaseController;
+import com.dancestudio.erp.base.BaseController;
+import com.dancestudio.erp.base.BaseService;
 import com.dancestudio.erp.enums.MembershipStatus;
-import com.dancestudio.erp.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/students")
-public class StudentController extends BaseController<StudentEntry, StudentResponse, Long> {
+public class StudentController extends BaseController<StudentEntry, Long> {
 
     @Autowired
     private StudentService studentService;
@@ -42,7 +42,7 @@ public class StudentController extends BaseController<StudentEntry, StudentRespo
     }
 
     @Override
-    protected BaseService<StudentEntry, StudentResponse, Long> getService() {
+    protected BaseService<StudentEntry, Long> getService() {
         return studentService;
     }
 }

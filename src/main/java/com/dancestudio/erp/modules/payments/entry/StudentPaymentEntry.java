@@ -1,6 +1,6 @@
 package com.dancestudio.erp.modules.payments.entry;
 
-import com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignment;
 
 import lombok.Data;
 

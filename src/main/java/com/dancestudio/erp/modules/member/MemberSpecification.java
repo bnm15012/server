@@ -3,7 +3,7 @@ package com.dancestudio.erp.modules.member;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignment;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
