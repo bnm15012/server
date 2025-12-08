@@ -1,15 +1,15 @@
 package com.dancestudio.erp.modules.member.instructor;
 
-import com.dancestudio.erp.controller.BaseController;
+import com.dancestudio.erp.base.BaseController;
+import com.dancestudio.erp.base.BaseService;
 import com.dancestudio.erp.enums.MembershipStatus;
-import com.dancestudio.erp.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/instructors")
-public class InstructorController extends BaseController<InstructorEntry, InstructorResponse, Long> {
+public class InstructorController extends BaseController<InstructorEntry, Long> {
 
     @Autowired
     private InstructorService instructorService;
@@ -32,7 +32,7 @@ public class InstructorController extends BaseController<InstructorEntry, Instru
     }
 
     @Override
-    protected BaseService<InstructorEntry, InstructorResponse, Long> getService() {
+    protected BaseService<InstructorEntry, Long> getService() {
         return instructorService;
     }
 
