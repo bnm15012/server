@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PaymentExpenseSummary {
-    private long count;
-    private double totalAmount;
+    private Long count;        
+    private Double totalAmount; 
 
     public PaymentExpenseSummary() {
         this.count = 0L;

@@ -19,6 +19,7 @@ import com.dancestudio.erp.modules.message_queue.services.EmailService;
 import com.dancestudio.erp.modules.template.template.TemplateEntry;
 import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.repository.MessageRepository;
+import com.dancestudio.erp.util.DateUtil;
 import com.dancestudio.erp.util.WhatsappUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -125,10 +127,17 @@ public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
     public Page<StudentCommunicationEntry> getAllStudentsForCommunication(Long branchId,
             MembershipStatus membershipStatus, int page, int size, int birthday) {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
-        Page<Member> studentPage = memberRepository
-                .findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null,
-                        membershipStatus.name(), pageable, null);
-
+        Page<Member> studentPage;
+        if (birthday == 1) {
+            Date today = DateUtil.getToday();
+            int month = today.getMonth() + 1;
+            int day = today.getDate();
+            studentPage = memberRepository.findByDobMonthDay(month, day, pageable);
+        } else {
+            studentPage = memberRepository
+                    .findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null,
+                            membershipStatus.name(), pageable, null);
+        }
         return studentPage.map(this::convertToEntryComm);
     }
 

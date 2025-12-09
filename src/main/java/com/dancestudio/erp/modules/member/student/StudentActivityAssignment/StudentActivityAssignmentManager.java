@@ -10,7 +10,6 @@ import com.dancestudio.erp.modules.expense.ExpenseRepository;
 import com.dancestudio.erp.modules.member.MemberRepository;
 import com.dancestudio.erp.modules.payments.PaymentManager;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
-import com.dancestudio.erp.modules.payments.repository.PaymentRepository;
 import com.dancestudio.erp.util.DateUtil;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -40,9 +39,6 @@ public class StudentActivityAssignmentManager
 
     @Autowired
     private ExpenseRepository expenseRepository;
-
-    @Autowired
-    private PaymentRepository paymentRepository;
 
     protected StudentActivityAssignmentManager(StudentActivityAssignmentRepository repository) {
         super(repository, "StudentActivityAssignment");
@@ -164,18 +160,9 @@ public class StudentActivityAssignmentManager
 
     private List<PaymentEntry> getPaymentEntriesForMonth(Integer month, Integer year, Long studioId) {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(month, year, month, year);
-        List<Object[]> payments = paymentRepository.findCategoryWiseSumOfPaymentsByDateRange(studioId,
-                monthRange.get("start"), monthRange.get("end"));
-        List<PaymentEntry> paymentEntries = new ArrayList<>();
+        return paymentManager.getAll(studioId, 0, -1,
+                monthRange.get("start"), monthRange.get("end"), null).getContent();
 
-        for (Object[] payment : payments) {
-            PaymentEntry paymentEntry = new PaymentEntry();
-            paymentEntry.setPayeeType(PayeeType.valueOf((String) payment[0]));
-            paymentEntry.setAmount((Double) payment[1]);
-            paymentEntries.add(paymentEntry);
-        }
-
-        return paymentEntries;
     }
 
     private double calculateRevenueForMonth(List<MonthlyReportEntry> reportEntries, int month) {
