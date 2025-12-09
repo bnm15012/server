@@ -7,7 +7,6 @@ import com.dancestudio.erp.modules.expense.ExpenseRepository;
 import com.dancestudio.erp.modules.member.MemberRepository;
 import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentRepository;
 import com.dancestudio.erp.modules.payments.repository.PaymentRepository;
-import com.dancestudio.erp.repository.*;
 import com.dancestudio.erp.util.DateUtil;
 
 import lombok.Setter;
@@ -22,8 +21,9 @@ import java.util.Map;
 public class DashboardManagerImpl implements DashboardManager {
 
         private MemberRepository memberRepository;
-        private ExpenseRepository expenseRepository;
         private PaymentRepository paymentRepository;
+        private ExpenseRepository expenseRepository;
+        
         private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
 
         @Override
@@ -41,15 +41,15 @@ public class DashboardManagerImpl implements DashboardManager {
                 Map<String, Date> currentMonthRange = DateUtil.getDateRangeByMonthYear(currentMonth, currentYear, currentMonth,currentYear);
 
                 Map<String, Date> lastMonthRange = DateUtil.getDateRangeByMonthYear(lastMonth, lastMonthYear, lastMonth, lastMonthYear);
-                // PaymentExpenseSummary currentPayment = paymentRepository.findCountAndTotalAmountByBranchAndDateRange(
-                //                 branchId, currentMonthRange.get("start"), currentMonthRange.get("end"));
-                // PaymentExpenseSummary lastPayment = paymentRepository.findCountAndTotalAmountByBranchAndDateRange(
-                //                 branchId, lastMonthRange.get("start"), lastMonthRange.get("end"));
+                PaymentExpenseSummary currentPayment = paymentRepository.findCountAndTotalAmountByBranchAndDateRange(
+                                branchId, currentMonthRange.get("start"), currentMonthRange.get("end"));
+                PaymentExpenseSummary lastPayment = paymentRepository.findCountAndTotalAmountByBranchAndDateRange(
+                                branchId, lastMonthRange.get("start"), lastMonthRange.get("end"));
 
-                // entry.setTotalCurrentMonthPaymentCount(currentPayment.getCount());
-                // entry.setTotalCurrentMonthPaymentAmount(currentPayment.getTotalAmount());
-                // entry.setTotalLastMonthPaymentCount(lastPayment.getCount());
-                // entry.setTotalLastMonthPaymentAmount(lastPayment.getTotalAmount());
+                entry.setTotalCurrentMonthPaymentCount(currentPayment.getCount());
+                entry.setTotalCurrentMonthPaymentAmount(currentPayment.getTotalAmount());
+                entry.setTotalLastMonthPaymentCount(lastPayment.getCount());
+                entry.setTotalLastMonthPaymentAmount(lastPayment.getTotalAmount());
 
                 PaymentExpenseSummary currentExpense = expenseRepository.findCountAndTotalAmountByBranchAndDateRange(
                                 branchId, currentMonthRange.get("start"), currentMonthRange.get("end"));
