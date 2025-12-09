@@ -40,8 +40,7 @@ public class StudentActivityAssignmentManager
     @Autowired
     private ExpenseRepository expenseRepository;
 
-    protected StudentActivityAssignmentManager(StudentActivityAssignmentRepository repository,
-            String entityName) {
+    protected StudentActivityAssignmentManager(StudentActivityAssignmentRepository repository) {
         super(repository, "StudentActivityAssignment");
         this.studentActivityAssignmentRepository = repository;
     }

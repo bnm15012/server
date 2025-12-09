@@ -50,6 +50,7 @@ public class PaymentConvertor {
         paymentEntry.setPayeeType(PayeeType.STUDENT);
         paymentEntry.setPayeeName(
                 paymentMember.getStudentActivityAssignment().getStudent().getName());
+        paymentEntry.setActualAmount(paymentMember.getActualAmount());
         return paymentEntry;
     }
 
@@ -67,6 +68,7 @@ public class PaymentConvertor {
             paymentEntry.setPayeeId(payment.getPaymentStudentActivity().getStudentActivityAssignment().getId());
             paymentEntry.setPayeeName(
                     payment.getPaymentStudentActivity().getStudentActivityAssignment().getStudent().getName());
+            paymentEntry.setActualAmount(payment.getPaymentStudentActivity().getActualAmount());
         }
         return paymentEntry;
     }
