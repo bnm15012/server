@@ -8,6 +8,7 @@ import com.dancestudio.erp.modules.expense.ExpenseCategory;
 import com.dancestudio.erp.modules.expense.ExpenseEntry;
 import com.dancestudio.erp.modules.expense.ExpenseRepository;
 import com.dancestudio.erp.modules.member.MemberRepository;
+import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusUtil;
 import com.dancestudio.erp.modules.payments.PaymentManager;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.dancestudio.erp.util.DateUtil;
@@ -54,8 +55,12 @@ public class StudentActivityAssignmentManager
         StudentActivityAssignment studentStudentActivityAssignmentAssignment = StudentActivityAssignmentConvertor
                 .convertToEntity(
                         studentActivityAssignmentEntry, null);
+
         studentStudentActivityAssignmentAssignment = studentActivityAssignmentRepository
                 .save(studentStudentActivityAssignmentAssignment);
+        MemberActiveStatusUtil.addNewAssignment(studentStudentActivityAssignmentAssignment.getStudent(),
+                studentActivityAssignmentEntry.getMembershipStartDate(),
+                studentActivityAssignmentEntry.getMembershipEndDate());
 
         try {
             Long payeeId = studentStudentActivityAssignmentAssignment.getId();
@@ -73,10 +78,44 @@ public class StudentActivityAssignmentManager
         }
     }
 
+    @Override
+    public void delete(Long id) throws EntityNotFoundException {
+        StudentActivityAssignment studentActivityAssignment = studentActivityAssignmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
+        try {
+            MemberActiveStatusUtil.deleteNewAssignment(studentActivityAssignment.getStudent(),
+                    studentActivityAssignment.getMembershipStartDate(),
+                    studentActivityAssignment.getMembershipEndDate());
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        super.delete(id);
+    }
+
+    @Override
+    public StudentActivityAssignmentEntry update(Long id, StudentActivityAssignmentEntry entry)
+            throws EntityNotFoundException, BeansException, Exception {
+
+        StudentActivityAssignment studentActivityAssignment = studentActivityAssignmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
+
+        MemberActiveStatusUtil.updateNewAssignment(
+                studentActivityAssignment.getStudent(),
+                studentActivityAssignment.getMembershipStartDate(),
+                studentActivityAssignment.getMembershipEndDate(),
+                entry.getMembershipStartDate(),
+                entry.getMembershipEndDate());
+
+        return super.update(id, entry);
+    }
+
     public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId,
             String activityName) throws Exception {
         StudentActivityAssignment assignment = studentActivityAssignmentRepository
                 .findByStudentIdAndActivityId(studentId, activityName);
+
         return StudentActivityAssignmentConvertor.convertToEntry(assignment);
     }
 
@@ -188,4 +227,5 @@ public class StudentActivityAssignmentManager
     protected StudentActivityAssignmentEntry toEntry(StudentActivityAssignment entity) throws EntityNotFoundException {
         return StudentActivityAssignmentConvertor.convertToEntry(entity);
     }
+
 }

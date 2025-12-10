@@ -1,6 +1,5 @@
 package com.dancestudio.erp.modules.member.student;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +11,8 @@ import com.dancestudio.erp.enums.MemberType;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.modules.member.Member;
-import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentEntry;
-import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentManager;
+import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusManager;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
-import com.dancestudio.erp.util.DateUtil;
-
 import jakarta.annotation.PostConstruct;
 
 @Component
@@ -44,17 +40,9 @@ public class StudentConvertor {
         studentEntry.setAddress(student.getAddress());
         studentEntry.setEmergencyContactNumber(student.getEmergencyContactNumber());
         try {
-            StudentActivityAssignmentManager studentActivityAssignmentManager = applicationContext
-                    .getBean(StudentActivityAssignmentManager.class);
-            List<StudentActivityAssignmentEntry> entries = studentActivityAssignmentManager
-                    .getStudentAssignmentsByStudentId(student.getId());
-            boolean isActive = false;
-            for (StudentActivityAssignmentEntry entry : entries) {
-                if (entry.getMembershipEndDate().after(DateUtil.getCurrentDateUTC())) {
-                    isActive = true;
-                    break;
-                }
-            }
+            MemberActiveStatusManager activityStatusManager = applicationContext
+                    .getBean(MemberActiveStatusManager.class);
+            boolean isActive = activityStatusManager.isMemberActive(student.getId());
             studentEntry.setMembershipStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
         } catch (Exception ex) {
             ex.printStackTrace();

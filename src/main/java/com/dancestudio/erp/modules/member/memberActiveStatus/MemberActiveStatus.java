@@ -2,18 +2,14 @@ package com.dancestudio.erp.modules.member.memberActiveStatus;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.util.Date;
 
-import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.modules.member.Member;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "member_active_status")
-public class MemberActiveStatus extends BaseEntity {
+public class MemberActiveStatus {
 
     @Id
     @Column(name = "member_id")

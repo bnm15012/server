@@ -63,7 +63,7 @@ public class StudentActivityAssignmentConvertor {
 
     public static StudentActivityAssignment convertToEntity(
             StudentActivityAssignmentEntry studentActivityAssignmentEntry,
-            StudentActivityAssignment existingStudentActivityAssignment) throws Exception {
+            StudentActivityAssignment existingStudentActivityAssignment) throws EntityNotFoundException {
         StudentActivityAssignment studentActivityAssignment = (existingStudentActivityAssignment != null)
                 ? existingStudentActivityAssignment
                 : new StudentActivityAssignment();

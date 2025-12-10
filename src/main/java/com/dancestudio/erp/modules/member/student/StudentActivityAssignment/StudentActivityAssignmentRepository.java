@@ -14,13 +14,15 @@ import java.util.List;
 public interface StudentActivityAssignmentRepository extends JpaRepository<StudentActivityAssignment, Long> {
 
     @Query("SELECT a FROM StudentActivityAssignment a WHERE a.student.id = :studentId AND a.activityName = :activityName")
-    StudentActivityAssignment findByStudentIdAndActivityId(@Param("studentId") Long studentId, @Param("activityName") String activityName);
+    StudentActivityAssignment findByStudentIdAndActivityId(@Param("studentId") Long studentId,
+            @Param("activityName") String activityName);
 
     @Query("SELECT a FROM StudentActivityAssignment a WHERE a.student.id = :studentId")
     List<StudentActivityAssignment> findByStudentId(@Param("studentId") Long studentId);
 
     @Query("SELECT a FROM StudentActivityAssignment a WHERE (:activityName IS NULL OR :activityName = '' OR a.activityName = :activityName) AND a.student.branch.id = :studioId")
-    List<StudentActivityAssignment> findStudentsWithActiveMemberships(@Param("activityName") String activityName, @Param("studioId") Long studioId);
+    List<StudentActivityAssignment> findStudentsWithActiveMemberships(@Param("activityName") String activityName,
+            @Param("studioId") Long studioId);
 
     @Query("SELECT a.student FROM StudentActivityAssignment a WHERE a.membershipEndDate <= :reminderDate")
     List<Long> findStudentIdsWithMembershipEndingOnDate(@Param("reminderDate") Date reminderDate);
@@ -28,13 +30,23 @@ public interface StudentActivityAssignmentRepository extends JpaRepository<Stude
     @Query("SELECT COUNT(s) FROM StudentActivityAssignment s WHERE s.student.branch.id = :studioId AND CURRENT_DATE >= DATE(s.membershipStartDate) AND CURRENT_DATE <= DATE(s.membershipEndDate)")
     long totalStudentActiveMembershipByStudioId(@Param("studioId") Long studioId);
 
-    @Query("SELECT new com.dancestudio.erp.entry.MonthlyReportEntry(MONTH(s.registrationDate), SUM(s.activityAmount)) FROM StudentActivityAssignment s " +
-          "WHERE YEAR(s.registrationDate) = :year AND s.student.branch.id = :studioId GROUP BY MONTH(s.registrationDate)")
+    @Query("SELECT new com.dancestudio.erp.entry.MonthlyReportEntry(MONTH(s.registrationDate), SUM(s.activityAmount)) FROM StudentActivityAssignment s "
+            +
+            "WHERE YEAR(s.registrationDate) = :year AND s.student.branch.id = :studioId GROUP BY MONTH(s.registrationDate)")
     List<MonthlyReportEntry> getAnalysisReport(@Param("year") int year, @Param("studioId") Long studioId);
 
     @Query("SELECT a FROM StudentActivityAssignment a WHERE a.student.id = :studentId")
     Page<StudentActivityAssignment> findActivitiesByStudentId(
             @Param("studentId") Long studentId,
-            Pageable pageable
-    );
+            Pageable pageable);
+
+
+    @Query("""
+        SELECT 
+            MIN(a.membershipStartDate) AS earliest,
+            MAX(a.membershipEndDate)   AS latest
+        FROM StudentActivityAssignment a 
+        WHERE a.student.id = :memberId
+    """)
+    Object[] findMinMaxWindow(Long memberId);
 }
