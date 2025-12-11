@@ -1,4 +1,4 @@
-package com.dancestudio.erp.modules.member.student;
+package com.dancestudio.erp.manager.impl;
 
 import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.*;
@@ -6,7 +6,6 @@ import com.dancestudio.erp.enums.ConfigurationType;
 import com.dancestudio.erp.enums.UserType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
-import com.dancestudio.erp.manager.impl.PasswordManagerImpl;
 import com.dancestudio.erp.modules.message_queue.services.EmailService;
 import com.dancestudio.erp.modules.template.template.TemplateEntry;
 import com.dancestudio.erp.modules.template.template.TemplateManager;

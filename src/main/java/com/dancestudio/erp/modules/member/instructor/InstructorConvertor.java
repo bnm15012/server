@@ -13,6 +13,7 @@ import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.instructor.bankAccount.BankAccountEntry;
 import com.dancestudio.erp.modules.member.instructor.bankAccount.BankAccountManager;
+import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusManager;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 
 import jakarta.annotation.PostConstruct;
@@ -49,7 +50,9 @@ public class InstructorConvertor {
                 instructorEntry.setBankAccountDetails(bankAccountEntry);
             }
 
-            boolean isActive = false;
+            MemberActiveStatusManager activityStatusManager = applicationContext
+                    .getBean(MemberActiveStatusManager.class);
+            boolean isActive = activityStatusManager.isMemberActive(instructor.getId());
 
             instructorEntry.setInstructorStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
         } catch (Exception ex) {

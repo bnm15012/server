@@ -19,16 +19,18 @@ import org.springframework.stereotype.Service;
 public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, Long, MemberActiveStatusEntry> {
 
     private final MemberActiveStatusRepository repository;
-    
+
     private final MemberRepository memberRepository;
 
-    private StudentActivityAssignmentRepository assignedRepo;
+    private final StudentActivityAssignmentRepository assignedRepo;
 
     @Autowired
-    public MemberActiveStatusManager(MemberActiveStatusRepository repository, MemberRepository memberRepository) {
+    public MemberActiveStatusManager(MemberActiveStatusRepository repository, MemberRepository memberRepository,
+            StudentActivityAssignmentRepository assignedRepo) {
         super(repository, "Member Active Status");
         this.repository = repository;
         this.memberRepository = memberRepository;
+        this.assignedRepo = assignedRepo;
     }
 
     @Override
@@ -56,16 +58,34 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
     public boolean isMemberActive(Long memberId) {
         Date today = new Date();
         return repository.findById(memberId)
-                .map(status -> !today.before(status.getEarliestStartDate()) &&
-                        !today.after(status.getLatestEndDate()))
+                .map(status -> {
+                    Date start = status.getEarliestStartDate();
+                    Date end = status.getLatestEndDate();
+
+                    if (start == null)
+                        return false;
+
+                    boolean started = !today.before(start);
+
+                    if (end == null)
+                        return started;
+
+                    boolean notEnded = !today.after(end);
+                    return started && notEnded;
+                })
                 .orElse(false);
     }
-
 
     public MemberActiveStatusEntry rebuildWindowForMember(Long memberId)
             throws EntityNotFoundException, Exception {
 
         Object[] result = assignedRepo.findMinMaxWindow(memberId);
+
+        
+        if (result == null || result.length < 2) {
+            repository.deleteById(memberId);
+            return null;
+        }
 
         Date earliest = (Date) result[0];
         Date latest = (Date) result[1];
@@ -76,7 +96,8 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
         }
 
         MemberActiveStatus entity = repository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("MemberActiveStatus not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "MemberActiveStatus not found for memberId: " + memberId));
 
         entity.setEarliestStartDate(earliest);
         entity.setLatestEndDate(latest);

@@ -2,6 +2,10 @@ package com.dancestudio.erp.modules.member.instructor.instructorActivityAssignme
 
 import com.dancestudio.erp.base.BaseManager;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.modules.member.Member;
+import com.dancestudio.erp.modules.member.MemberRepository;
+import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusUtil;
+
 import org.springframework.beans.BeansException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,12 +16,64 @@ import org.springframework.stereotype.Service;
 @Service
 public class InstructorActivityAssignmentManager
                 extends BaseManager<InstructorActivityAssignment, Long, InstructorActivityAssignmentEntry> {
+
+        private final MemberRepository memberRepository;
         private final InstructorActivityAssignmentRepository instructorActivityAssignmentRepository;
 
         public InstructorActivityAssignmentManager(
-                        InstructorActivityAssignmentRepository instructorActivityAssignmentRepository) {
+                        InstructorActivityAssignmentRepository instructorActivityAssignmentRepository,
+                        MemberRepository memberRepository) {
                 super(instructorActivityAssignmentRepository, "InstructorActivityAssignment");
                 this.instructorActivityAssignmentRepository = instructorActivityAssignmentRepository;
+                this.memberRepository = memberRepository;
+        }
+
+        @Override
+        public InstructorActivityAssignmentEntry add(InstructorActivityAssignmentEntry entry)
+                        throws EntityNotFoundException, BeansException, Exception {
+
+                Member member = memberRepository.findById(entry.getInstructorId())
+                                .orElseThrow(() -> new EntityNotFoundException("Student not found"));
+
+                InstructorActivityAssignmentEntry activityAssignmentEntry = super.add(entry);
+
+                MemberActiveStatusUtil.addNewAssignment(member,
+                                entry.getStartDate(),
+                                entry.getEndDate());
+
+                return activityAssignmentEntry;
+
+        }
+
+        @Override
+        public void delete(Long id) throws EntityNotFoundException {
+                try {
+                        InstructorActivityAssignment assignment = instructorActivityAssignmentRepository
+                                        .findById(id)
+                                        .orElseThrow(() -> new EntityNotFoundException(
+                                                        "InstructorActivityAssignment not found"));
+                        MemberActiveStatusUtil.deleteNewAssignment(assignment.getInstructor(),
+                                        assignment.getStartDate(),
+                                        assignment.getEndDate());
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+                super.delete(id);
+        }
+
+        @Override
+        public InstructorActivityAssignmentEntry update(Long id, InstructorActivityAssignmentEntry entry)
+                        throws EntityNotFoundException, BeansException, Exception {
+                InstructorActivityAssignment assignment = instructorActivityAssignmentRepository
+                                .findById(entry.getAssignmentId()).orElseThrow(() -> new EntityNotFoundException(
+                                                "InstructorActivityAssignment not found"));
+                MemberActiveStatusUtil.updateNewAssignment(assignment.getInstructor(),
+                                assignment.getStartDate(),
+                                assignment.getEndDate(),
+                                entry.getStartDate(),
+                                entry.getEndDate());
+
+                return super.update(id, entry);
         }
 
         public InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId,

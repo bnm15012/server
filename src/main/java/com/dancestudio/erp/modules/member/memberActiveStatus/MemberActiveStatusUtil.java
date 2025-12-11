@@ -40,24 +40,36 @@ public class MemberActiveStatusUtil {
     }
 
     private static Date maxDate(Date d1, Date d2) {
-        if (d1 == null)
-            return d2;
         if (d2 == null)
+            return d2;
+        if (d1 == null)
             return d1;
         return d2.after(d1) ? d2 : d1;
     }
 
+    /**
+     * Detects whether deleting a date range changes the boundary window (min/max)
+     * IMPORTANT: Handles NULL end dates correctly.
+     */
     private static boolean deletionBreaksWindow(Date currentEarliest, Date currentLatest,
             Date deletedStart, Date deletedEnd) {
-        boolean breaksStart = deletedStart != null && deletedStart.equals(currentEarliest);
-        boolean breaksEnd = deletedEnd != null && deletedEnd.equals(currentLatest);
+
+        boolean breaksStart = deletedStart != null &&
+                currentEarliest != null &&
+                deletedStart.equals(currentEarliest);
+
+        boolean breaksEnd =
+                // Both null → deleting the only open-ended range
+                (deletedEnd == null && currentLatest == null) ||
+                // Exact match
+                        (deletedEnd != null && deletedEnd.equals(currentLatest));
+
         return breaksStart || breaksEnd;
     }
 
     /**
      * ==============================================================
      * ADD NEW ASSIGNMENT
-     * If row doesn't exist → create new (O(1))
      * ==============================================================
      */
     public static void addNewAssignment(Member member, Date start, Date end)
@@ -73,8 +85,9 @@ public class MemberActiveStatusUtil {
             entry.setLatestEndDate(maxDate(entry.getLatestEndDate(), end));
 
             manager.update(memberId, entry);
+
         } catch (EntityNotFoundException ex) {
-            // Create new row
+            // New member → Create fresh entry
             manager.add(new MemberActiveStatusEntry(memberId, start, end));
         }
     }
@@ -82,25 +95,31 @@ public class MemberActiveStatusUtil {
     /**
      * ==============================================================
      * UPDATE ASSIGNMENT
-     * - On update, remove old range and add new range
      * ==============================================================
+     * On update:
+     * - Remove old window
+     * - Apply new window
      */
     public static void updateNewAssignment(Member member, Date oldStart, Date oldEnd,
             Date newStart, Date newEnd)
             throws Exception {
-        MemberActiveStatusManager manager = getManager();
-        try {
-            Long memberId = member.getId();
 
+        MemberActiveStatusManager manager = getManager();
+        Long memberId = member.getId();
+
+        try {
             MemberActiveStatusEntry entry = manager.getById(memberId);
 
-            // If old window affects the boundary → full rescan required
-            if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(), oldStart, oldEnd)) {
+            if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
+                    oldStart, oldEnd)) {
 
-                // 🟡 REBUILD WINDOW ONLY FOR THIS USER
                 MemberActiveStatusEntry rebuilt = manager.rebuildWindowForMember(memberId);
 
-                // Apply updated range
+                if (rebuilt == null) {
+                    return;
+                }
+
+                // Now merge new range
                 rebuilt.setEarliestStartDate(minDate(rebuilt.getEarliestStartDate(), newStart));
                 rebuilt.setLatestEndDate(maxDate(rebuilt.getLatestEndDate(), newEnd));
 
@@ -108,14 +127,15 @@ public class MemberActiveStatusUtil {
                 return;
             }
 
-            // If no boundary effect → just merge new date
+            // Otherwise just merge new dates
             entry.setEarliestStartDate(minDate(entry.getEarliestStartDate(), newStart));
             entry.setLatestEndDate(maxDate(entry.getLatestEndDate(), newEnd));
 
             manager.update(memberId, entry);
+
         } catch (EntityNotFoundException ex) {
-            // Create new row
-            manager.add(new MemberActiveStatusEntry(member.getId(), newStart, newEnd));
+            // No entry exists → create new
+            manager.add(new MemberActiveStatusEntry(memberId, newStart, newEnd));
         }
     }
 
@@ -123,28 +143,28 @@ public class MemberActiveStatusUtil {
      * ==============================================================
      * DELETE ASSIGNMENT
      * ==============================================================
-     * 
-     * @throws Exception
-     * @throws EntityNotFoundException
      */
     public static void deleteNewAssignment(Member member, Date start, Date end)
             throws EntityNotFoundException, Exception {
 
         MemberActiveStatusManager manager = getManager();
-        try {
-            Long memberId = member.getId();
+        Long memberId = member.getId();
 
+        try {
             MemberActiveStatusEntry entry = manager.getById(memberId);
 
-            // If deletion breaks min/max window → full rescan required
-            if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(), start, end)) {
+            // If deletion affects min/max window → rebuild
+            if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
+                    start, end)) {
+
                 MemberActiveStatusEntry rebuilt = manager.rebuildWindowForMember(memberId);
                 manager.update(memberId, rebuilt);
             }
+
         } catch (EntityNotFoundException ex) {
-            // Create new row
-            manager.add(new MemberActiveStatusEntry(member.getId(), start, end));
+            // No entry exists → but user deleted something?
+            // Create neutral entry so system is consistent
+            manager.add(new MemberActiveStatusEntry(memberId, start, end));
         }
-        // If not affecting boundary → do nothing (window stays same)
     }
 }
