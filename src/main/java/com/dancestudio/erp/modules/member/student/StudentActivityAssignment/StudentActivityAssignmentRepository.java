@@ -1,6 +1,7 @@
 package com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
 
 import com.dancestudio.erp.entry.MonthlyReportEntry;
+import com.dancestudio.erp.modules.member.memberActiveStatus.MinMax;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,11 +43,12 @@ public interface StudentActivityAssignmentRepository extends JpaRepository<Stude
 
 
     @Query("""
-        SELECT 
-            MIN(a.membershipStartDate) AS earliest,
-            MAX(a.membershipEndDate)   AS latest
+        SELECT  new com.dancestudio.erp.modules.member.memberActiveStatus.MinMax(
+            MIN(a.membershipStartDate) AS minDate,
+            MAX(a.membershipEndDate)   AS maxDate
+        )
         FROM StudentActivityAssignment a 
         WHERE a.student.id = :memberId
     """)
-    Object[] findMinMaxWindow(Long memberId);
+    MinMax findMinMaxWindow(Long memberId);
 }

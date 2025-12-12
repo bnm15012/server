@@ -82,6 +82,7 @@ public class StudentActivityAssignmentManager
     public void delete(Long id) throws EntityNotFoundException {
         StudentActivityAssignment studentActivityAssignment = studentActivityAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
+        super.delete(id);
         try {
             MemberActiveStatusUtil.deleteNewAssignment(studentActivityAssignment.getStudent(),
                     studentActivityAssignment.getMembershipStartDate(),
@@ -91,7 +92,6 @@ public class StudentActivityAssignmentManager
         } catch (Exception e) {
             e.printStackTrace();
         }
-        super.delete(id);
     }
 
     @Override

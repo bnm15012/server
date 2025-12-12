@@ -68,7 +68,6 @@ public class MemberActiveStatusUtil {
             manager.update(memberId, entry);
 
         } catch (EntityNotFoundException ex) {
-            // New member → Create fresh entry
             manager.add(new MemberActiveStatusEntry(memberId, start, end));
         }
     }
@@ -90,34 +89,16 @@ public class MemberActiveStatusUtil {
 
         try {
             MemberActiveStatusEntry entry = manager.getById(memberId);
-
-            if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
-                    oldStart, oldEnd)
-            ) {
-
-                MemberActiveStatusEntry rebuilt = manager.rebuildWindowForMember(memberId);
-
-                if (rebuilt == null) {
-                    return;
-                }
-
-                // Now merge new range
-                rebuilt.setEarliestStartDate(minDate(rebuilt.getEarliestStartDate(), newStart));
-                rebuilt.setLatestEndDate(maxDate(rebuilt.getLatestEndDate(), newEnd));
-
-                manager.update(memberId, rebuilt);
-                return;
-            }
-
-            // Otherwise just merge new dates
             entry.setEarliestStartDate(minDate(entry.getEarliestStartDate(), newStart));
             entry.setLatestEndDate(maxDate(entry.getLatestEndDate(), newEnd));
-
             manager.update(memberId, entry);
 
+            if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
+                    oldStart, oldEnd)) {
+                manager.rebuildWindowForMember(memberId);
+            }
         } catch (EntityNotFoundException ex) {
-            // No entry exists → create new
-            manager.add(new MemberActiveStatusEntry(memberId, newStart, newEnd));
+            ex.printStackTrace();
         }
     }
 
@@ -138,9 +119,7 @@ public class MemberActiveStatusUtil {
             // If deletion affects min/max window → rebuild
             if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
                     start, end)) {
-
-                MemberActiveStatusEntry rebuilt = manager.rebuildWindowForMember(memberId);
-                manager.update(memberId, rebuilt);
+                manager.rebuildWindowForMember(memberId);
             }
 
         } catch (EntityNotFoundException ex) {

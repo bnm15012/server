@@ -9,9 +9,9 @@ import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.Stud
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Objects;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +24,6 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
 
     private final StudentActivityAssignmentRepository assignedRepo;
 
-    @Autowired
     public MemberActiveStatusManager(MemberActiveStatusRepository repository, MemberRepository memberRepository,
             StudentActivityAssignmentRepository assignedRepo) {
         super(repository, "Member Active Status");
@@ -79,18 +78,9 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
     public MemberActiveStatusEntry rebuildWindowForMember(Long memberId)
             throws EntityNotFoundException, Exception {
 
-        Object[] result = assignedRepo.findMinMaxWindow(memberId);
+        MinMax result = assignedRepo.findMinMaxWindow(memberId);
 
-        
-        // if (result == null || result.length < 2) {
-        //     repository.deleteById(memberId);
-        //     return null;
-        // }
-
-        Date earliest = (Date) result[0];
-        Date latest = (Date) result[1];
-
-        if (earliest == null || latest == null) {
+        if (Objects.isNull(result.minDate) || Objects.isNull(result.maxDate)) {
             repository.deleteById(memberId);
             return null;
         }
@@ -99,8 +89,8 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
                 .orElseThrow(() -> new EntityNotFoundException(
                         "MemberActiveStatus not found for memberId: " + memberId));
 
-        entity.setEarliestStartDate(earliest);
-        entity.setLatestEndDate(latest);
+        entity.setEarliestStartDate(result.minDate);
+        entity.setLatestEndDate(result.maxDate);
 
         entity = repository.save(entity);
 
