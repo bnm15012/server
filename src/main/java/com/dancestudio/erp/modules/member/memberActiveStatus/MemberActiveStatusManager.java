@@ -82,10 +82,10 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
         Object[] result = assignedRepo.findMinMaxWindow(memberId);
 
         
-        if (result == null || result.length < 2) {
-            repository.deleteById(memberId);
-            return null;
-        }
+        // if (result == null || result.length < 2) {
+        //     repository.deleteById(memberId);
+        //     return null;
+        // }
 
         Date earliest = (Date) result[0];
         Date latest = (Date) result[1];

@@ -21,10 +21,8 @@ public class MemberActiveStatus {
     private Member member;
 
     @Column(name = "earliest_start_date", nullable = false)
-    @Temporal(TemporalType.DATE)
     private Date earliestStartDate;
 
     @Column(name = "latest_end_date")
-    @Temporal(TemporalType.DATE)
     private Date latestEndDate;
 }

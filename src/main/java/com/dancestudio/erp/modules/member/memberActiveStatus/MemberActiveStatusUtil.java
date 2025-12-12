@@ -1,6 +1,7 @@
 package com.dancestudio.erp.modules.member.memberActiveStatus;
 
 import java.util.Date;
+import java.util.Objects;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,49 +30,29 @@ public class MemberActiveStatusUtil {
         return applicationContext.getBean(MemberActiveStatusManager.class);
     }
 
-    /** ====================== UTIL HELPERS ====================== **/
-
     private static Date minDate(Date d1, Date d2) {
-        if (d1 == null)
-            return d2;
-        if (d2 == null)
-            return d1;
         return d2.before(d1) ? d2 : d1;
     }
 
     private static Date maxDate(Date d1, Date d2) {
-        if (d2 == null)
-            return d2;
-        if (d1 == null)
-            return d1;
+        if (d2 == null || d1 == null)
+            return null;
         return d2.after(d1) ? d2 : d1;
     }
 
-    /**
-     * Detects whether deleting a date range changes the boundary window (min/max)
-     * IMPORTANT: Handles NULL end dates correctly.
-     */
-    private static boolean deletionBreaksWindow(Date currentEarliest, Date currentLatest,
+    private static Boolean deletionBreaksWindow(Date currentEarliest, Date currentLatest,
             Date deletedStart, Date deletedEnd) {
-
-        boolean breaksStart = deletedStart != null &&
-                currentEarliest != null &&
-                deletedStart.equals(currentEarliest);
-
-        boolean breaksEnd =
-                // Both null → deleting the only open-ended range
-                (deletedEnd == null && currentLatest == null) ||
-                // Exact match
-                        (deletedEnd != null && deletedEnd.equals(currentLatest));
-
-        return breaksStart || breaksEnd;
+        if (currentEarliest.equals(deletedStart) && Objects.equals(currentLatest, (deletedEnd))) {
+            return true;
+        } else if (currentEarliest.equals(deletedStart)) {
+            return true;
+        } else if (currentLatest.equals(deletedEnd)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    /**
-     * ==============================================================
-     * ADD NEW ASSIGNMENT
-     * ==============================================================
-     */
     public static void addNewAssignment(Member member, Date start, Date end)
             throws BeansException, EntityNotFoundException, Exception {
 
@@ -111,7 +92,8 @@ public class MemberActiveStatusUtil {
             MemberActiveStatusEntry entry = manager.getById(memberId);
 
             if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
-                    oldStart, oldEnd)) {
+                    oldStart, oldEnd)
+            ) {
 
                 MemberActiveStatusEntry rebuilt = manager.rebuildWindowForMember(memberId);
 
