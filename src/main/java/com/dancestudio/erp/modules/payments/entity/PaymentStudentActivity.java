@@ -2,6 +2,7 @@ package com.dancestudio.erp.modules.payments.entity;
 
 import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignment;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -18,7 +19,7 @@ public class PaymentStudentActivity {
     @Id
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapsId
     @JoinColumn(name = "id", foreignKey = @ForeignKey(name = "fk_payment_member_payment_id"))
     private Payment payment;
