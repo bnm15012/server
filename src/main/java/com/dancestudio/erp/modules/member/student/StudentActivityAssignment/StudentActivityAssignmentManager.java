@@ -100,15 +100,14 @@ public class StudentActivityAssignmentManager
 
         StudentActivityAssignment studentActivityAssignment = studentActivityAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("StudentActivityAssignment not found"));
-
+        entry = super.update(id, entry);
         MemberActiveStatusUtil.updateNewAssignment(
                 studentActivityAssignment.getStudent(),
                 studentActivityAssignment.getMembershipStartDate(),
                 studentActivityAssignment.getMembershipEndDate(),
                 entry.getMembershipStartDate(),
                 entry.getMembershipEndDate());
-
-        return super.update(id, entry);
+        return entry;
     }
 
     public StudentActivityAssignmentEntry getStudentAssignmentsByStudentAndActivityId(Long studentId,

@@ -42,11 +42,11 @@ public class MemberActiveStatusUtil {
 
     private static Boolean deletionBreaksWindow(Date currentEarliest, Date currentLatest,
             Date deletedStart, Date deletedEnd) {
-        if (currentEarliest.equals(deletedStart) && Objects.equals(currentLatest, (deletedEnd))) {
+        if (currentEarliest.equals(deletedStart) && Objects.equals(currentLatest, deletedEnd)) {
             return true;
         } else if (currentEarliest.equals(deletedStart)) {
             return true;
-        } else if (currentLatest.equals(deletedEnd)) {
+        } else if (Objects.equals(currentLatest, deletedEnd)) {
             return true;
         } else {
             return false;
@@ -92,10 +92,9 @@ public class MemberActiveStatusUtil {
             entry.setEarliestStartDate(minDate(entry.getEarliestStartDate(), newStart));
             entry.setLatestEndDate(maxDate(entry.getLatestEndDate(), newEnd));
             manager.update(memberId, entry);
-
             if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
                     oldStart, oldEnd)) {
-                manager.rebuildWindowForMember(memberId);
+                manager.rebuildWindowForMember(memberId, member.getMemberType());
             }
         } catch (EntityNotFoundException ex) {
             ex.printStackTrace();
@@ -119,7 +118,7 @@ public class MemberActiveStatusUtil {
             // If deletion affects min/max window → rebuild
             if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
                     start, end)) {
-                manager.rebuildWindowForMember(memberId);
+                manager.rebuildWindowForMember(memberId, member.getMemberType());
             }
 
         } catch (EntityNotFoundException ex) {

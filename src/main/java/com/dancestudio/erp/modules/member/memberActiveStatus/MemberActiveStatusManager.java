@@ -1,9 +1,11 @@
 package com.dancestudio.erp.modules.member.memberActiveStatus;
 
 import com.dancestudio.erp.base.BaseManager;
+import com.dancestudio.erp.enums.MemberType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.MemberRepository;
+import com.dancestudio.erp.modules.member.instructor.instructorActivityAssignment.InstructorActivityAssignmentRepository;
 import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentRepository;
 
 import lombok.Setter;
@@ -24,12 +26,16 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
 
     private final StudentActivityAssignmentRepository assignedRepo;
 
+    private final InstructorActivityAssignmentRepository activityAssignmentRepository;
+
     public MemberActiveStatusManager(MemberActiveStatusRepository repository, MemberRepository memberRepository,
-            StudentActivityAssignmentRepository assignedRepo) {
+            StudentActivityAssignmentRepository assignedRepo,
+            InstructorActivityAssignmentRepository activityAssignmentRepository) {
         super(repository, "Member Active Status");
         this.repository = repository;
         this.memberRepository = memberRepository;
         this.assignedRepo = assignedRepo;
+        this.activityAssignmentRepository = activityAssignmentRepository;
     }
 
     @Override
@@ -75,12 +81,17 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
                 .orElse(false);
     }
 
-    public MemberActiveStatusEntry rebuildWindowForMember(Long memberId)
+    public MemberActiveStatusEntry rebuildWindowForMember(Long memberId, String memberType)
             throws EntityNotFoundException, Exception {
 
-        MinMax result = assignedRepo.findMinMaxWindow(memberId);
+        MinMax result;
+        if (memberType.equals(MemberType.STUDENT.toString())) {
+            result = assignedRepo.findMinMaxWindow(memberId);
+        } else {
+            result = activityAssignmentRepository.findMinAndCustomMax(memberId);
+        }
 
-        if (Objects.isNull(result.minDate) || Objects.isNull(result.maxDate)) {
+        if (memberType.equals(MemberType.STUDENT.toString()) ? (Objects.isNull(result.minDate) || Objects.isNull(result.maxDate)) : (Objects.isNull(result.minDate))) {
             repository.deleteById(memberId);
             return null;
         }

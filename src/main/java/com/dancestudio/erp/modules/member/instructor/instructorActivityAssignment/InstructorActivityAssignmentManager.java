@@ -47,18 +47,18 @@ public class InstructorActivityAssignmentManager
 
         @Override
         public void delete(Long id) throws EntityNotFoundException {
+                InstructorActivityAssignment assignment = instructorActivityAssignmentRepository
+                                .findById(id)
+                                .orElseThrow(() -> new EntityNotFoundException(
+                                                "InstructorActivityAssignment not found"));
+                super.delete(id);
                 try {
-                        InstructorActivityAssignment assignment = instructorActivityAssignmentRepository
-                                        .findById(id)
-                                        .orElseThrow(() -> new EntityNotFoundException(
-                                                        "InstructorActivityAssignment not found"));
                         MemberActiveStatusUtil.deleteNewAssignment(assignment.getInstructor(),
                                         assignment.getStartDate(),
                                         assignment.getEndDate());
                 } catch (Exception e) {
                         e.printStackTrace();
                 }
-                super.delete(id);
         }
 
         @Override
@@ -67,13 +67,13 @@ public class InstructorActivityAssignmentManager
                 InstructorActivityAssignment assignment = instructorActivityAssignmentRepository
                                 .findById(entry.getAssignmentId()).orElseThrow(() -> new EntityNotFoundException(
                                                 "InstructorActivityAssignment not found"));
+                entry = super.update(id, entry);
                 MemberActiveStatusUtil.updateNewAssignment(assignment.getInstructor(),
                                 assignment.getStartDate(),
                                 assignment.getEndDate(),
                                 entry.getStartDate(),
                                 entry.getEndDate());
-
-                return super.update(id, entry);
+                return entry;
         }
 
         public InstructorActivityAssignmentEntry getInstructorAssignmentsByInstructorAndActivityId(Long instructorId,
