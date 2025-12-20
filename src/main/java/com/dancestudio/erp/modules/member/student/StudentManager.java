@@ -131,7 +131,7 @@ public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
             Date today = DateUtil.getToday();
             int month = today.getMonth() + 1;
             int day = today.getDate();
-            studentPage = memberRepository.findByDobMonthDay(month, day, pageable);
+            studentPage = memberRepository.findByDobMonthDay(month, day, branchId, pageable);
         } else {
             studentPage = memberRepository
                     .findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null,

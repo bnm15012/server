@@ -1,4 +1,5 @@
 
+BEGIN;
 -- student_activity_assignment --
 INSERT INTO member_active_status (member_id, earliest_start_date, latest_end_date)
 SELECT 
@@ -31,7 +32,6 @@ ON DUPLICATE KEY UPDATE
 
 
 
-BEGIN;
 
 UPDATE payment SET transaction_type = 'CREDIT' WHERE transaction_type IS NULL;
 
@@ -62,5 +62,12 @@ ALTER TABLE payment
 DROP COLUMN actual_amount,
 DROP COLUMN payee_id,
 DROP COLUMN payee_type;
+
+
+UPDATE instructor_activity_assignment SET end_date = NULL WHERE end_date < '1000-01-01';
+
+UPDATE member_active_status
+SET latest_end_date = NULL
+WHERE latest_end_date < '1000-01-01';
 
 COMMIT;

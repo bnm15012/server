@@ -57,7 +57,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
         List<Member> findByBranchIdAndMemberType(Long branchId, String memberType);
 
-        @Query("SELECT m FROM Member m WHERE FUNCTION('MONTH', m.dob) = :month AND FUNCTION('DAY', m.dob) = :day")
-        Page<Member> findByDobMonthDay(@Param("month") int month, @Param("day") int day, Pageable pageable);
+        @Query("SELECT m FROM Member m WHERE m.branch.id = :branchId and FUNCTION('MONTH', m.dob) = :month AND FUNCTION('DAY', m.dob) = :day")
+        Page<Member> findByDobMonthDay(@Param("month") int month, @Param("day") int day, @Param("branchId") Long branchId, Pageable pageable);
 
 }
