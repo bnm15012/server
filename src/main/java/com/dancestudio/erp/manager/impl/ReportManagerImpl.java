@@ -25,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Setter(onMethod = @__({ @Autowired }))
@@ -79,6 +80,11 @@ public class ReportManagerImpl implements ReportManager {
                 List<PaymentEntry> paymentEntries = paymentManager.getAll(branchId, 0, -1, toUtcDate(startDate,
                                 startMonth, startYear), toUtcDate(endDate, endMonth, endYear), null).getContent();
                 List<IncomeEntry> incomeEntries = paymentEntries.stream()
+                                .filter(paymentEntry -> Objects.equals(paymentEntry.getPayeeType(), PayeeType.STUDENT))
+                                .map(this::extractIncomeEntry)
+                                .collect(Collectors.toList());
+                List<IncomeEntry> bookingEntries = paymentEntries.stream()
+                                .filter(paymentEntry -> Objects.equals(paymentEntry.getPayeeType(), PayeeType.BOOKING))
                                 .map(this::extractIncomeEntry)
                                 .collect(Collectors.toList());
 
@@ -86,6 +92,7 @@ public class ReportManagerImpl implements ReportManager {
                                 .mapToDouble(PaymentEntry::getAmount)
                                 .sum();
 
+                monthlyReports.setBookingEntries(bookingEntries);
                 monthlyReports.setIncomeEntries(incomeEntries);
                 monthlyReports.setIncome(totalIncome);
                 return monthlyReports;
@@ -119,7 +126,7 @@ public class ReportManagerImpl implements ReportManager {
                                 .mapToDouble(BookingEntry::getTotalAmount)
                                 .sum();
 
-                monthlyReports.setBookingEntries(bookingEntries.getContent());
+                // monthlyReports.setBookingEntries(bookingEntries.getContent());
                 monthlyReports.setBooking(totalBooking);
         }
 
@@ -137,12 +144,14 @@ public class ReportManagerImpl implements ReportManager {
                 incomeEntry.setPaymentMode(paymentEntry.getPaymentType().name());
                 incomeEntry.setPaymenDate(paymentEntry.getPaymentDate());
 
-                if (paymentEntry.getPayeeType().equals(PayeeType.STUDENT)) {
+                if (Objects.equals(paymentEntry.getPayeeType(), PayeeType.STUDENT)) {
                         Long activityAssignmentId = paymentEntry.getPayeeId();
                         try {
                                 StudentActivityAssignmentEntry studentActivityAssignment = studentActivityAssignmentManager
                                                 .getById(activityAssignmentId);
-
+                                if (paymentEntry.getPayeeName() != null) {
+                                        incomeEntry.setStudentName(paymentEntry.getPayeeName());
+                                }
                                 if (studentActivityAssignment.getActivityName() != null) {
                                         incomeEntry.setActivityName(studentActivityAssignment.getActivityName());
                                 }
@@ -154,6 +163,12 @@ public class ReportManagerImpl implements ReportManager {
                                 e.printStackTrace();
                         }
 
+                }
+
+                if (Objects.equals(paymentEntry.getPayeeType(), PayeeType.BOOKING)) {
+                        if (paymentEntry.getPayeeName() != null)
+                                incomeEntry.setClientName(paymentEntry.getPayeeName());
+                        incomeEntry.setActivityName(PayeeType.BOOKING.name());
                 }
 
                 return incomeEntry;

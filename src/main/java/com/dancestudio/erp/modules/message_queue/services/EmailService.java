@@ -121,6 +121,7 @@ public class EmailService {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             msg.setRetries(msg.getRetries() + 1);
             repository.save(msg);
             log.error("Error sending message {}: {}", msg.getId(), e.getMessage(), e);

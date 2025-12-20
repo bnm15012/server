@@ -120,6 +120,7 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
 
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
+            ex.printStackTrace();
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
@@ -136,6 +137,7 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
 
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
+            ex.printStackTrace();
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
