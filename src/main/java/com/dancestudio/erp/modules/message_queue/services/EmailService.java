@@ -115,18 +115,25 @@ public class EmailService {
                 }
                 log.info("Message {} sent and deleted successfully", msg.getId());
             } else {
-                msg.setRetries(msg.getRetries() + 1);
-                repository.save(msg);
-                log.warn("Message {} failed to send. Retry count: {}", msg.getId(), msg.getRetries());
+                throw new RuntimeException("Email failed to send");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            msg.setRetries(msg.getRetries() + 1);
             repository.save(msg);
-            log.error("Error sending message {}: {}", msg.getId(), e.getMessage(), e);
+            log.error("Message {} failed to send. Retry count: {}", msg.getId(), msg.getRetries());
 
             try {
+                msg.setRetries(msg.getRetries() + 1);
+                if (msg.getRetries() > 3) {
+                    MessageRecipient recipient = msg.getRecipient();
+                    recipient.setStatus(MessageStatus.FAILED);
+                    messageRecipientRepository.save(recipient);
+                    repository.deleteById(msg.getId());
+                } else {
+                    repository.save(msg);
+                }
+
                 TimeUnit.SECONDS.sleep(60);
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();

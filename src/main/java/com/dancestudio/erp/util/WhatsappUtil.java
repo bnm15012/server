@@ -113,6 +113,7 @@ public class WhatsappUtil {
                         response.append(line);
                     }
 
+                    branchRepository.updateWhatsAppStatus(branchId, WhatsAppStatus.LOGOUT.name());
                     ObjectMapper objectMapper = new ObjectMapper();
                     return objectMapper.readValue(response.toString(), SessionEntry.class);
                 }
@@ -212,17 +213,17 @@ public class WhatsappUtil {
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 return true;
-            } else {
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getErrorStream()))) {
-                    String line;
-                    StringBuilder response = new StringBuilder();
-                    while ((line = br.readLine()) != null) {
-                        response.append(line);
-                    }
-                    log.error("Failed to send message. Response: {}", response.toString());
+            } 
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getErrorStream()))) {
+                String line;
+                StringBuilder response = new StringBuilder();
+                while ((line = br.readLine()) != null) {
+                    response.append(line);
                 }
-                return false;
+                log.error("Failed to send message. Response: {}", response.toString());
             }
+        
+            return false;
 
         } catch (Exception e) {
             log.error("Error occurred while sending message", e);
