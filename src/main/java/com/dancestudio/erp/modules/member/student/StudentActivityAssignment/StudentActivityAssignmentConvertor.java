@@ -44,8 +44,9 @@ public class StudentActivityAssignmentConvertor {
         studentActivityAssignmentEntry.setMembershipEndDate(studentActivityAssignment.getMembershipEndDate());
         studentActivityAssignmentEntry.setDaysPerWeek(studentActivityAssignment.getDaysPerWeek());
         studentActivityAssignmentEntry.setMembershipStatus(
-                studentActivityAssignment.getMembershipEndDate().after(DateUtil.getCurrentDateUTC())
-                        ? MembershipStatus.ACTIVE
+                (!studentActivityAssignment.getMembershipStartDate().after(DateUtil.getCurrentDateUTC()) &&
+                        !studentActivityAssignment.getMembershipEndDate().before(DateUtil.getCurrentDateUTC()))
+                        ? MembershipStatus.ACTIVE 
                         : MembershipStatus.INACTIVE);
         studentActivityAssignmentEntry
                 .setMembershipType((studentActivityAssignment.getMembershipType()));
