@@ -14,36 +14,47 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         Optional<Member> findByNameAndMemberTypeAndEmail(String name, String memberType, String email);
 
         @Query("SELECT s FROM Member s WHERE s.branch.id = :branchId AND s.memberType = 'STUDENT' AND (:activityName IS NULL OR :activityName = '' OR s.id IN (SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activityName = :activityName AND "
-                        +
-                        "((:status = 'ACTIVE' AND sa.membershipEndDate >= CURRENT_DATE) OR (:status = 'INACTIVE' AND sa.membershipEndDate < CURRENT_DATE)))) "
-                        +
-                        "AND (:searchTerm IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(s.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+                        + "((:status = 'ACTIVE' AND sa.membershipEndDate >= CURRENT_DATE) OR (:status = 'INACTIVE' AND sa.membershipEndDate < CURRENT_DATE)))) " // This line is from the original query, kept for context of the previous fix
+                        + "AND (:searchTerm IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(s.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')))") // This line is from the original query, kept for context of the previous fix
         List<Member> findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(
                         @Param("branchId") Long branchId, @Param("activityName") String activityName,
                         @Param("status") String status, @Param("searchTerm") String searchTerm);
 
-        @Query("SELECT s FROM Member s WHERE s.branch.id = :branchId AND s.memberType = 'STUDENT' AND (:activityName IS NULL OR :activityName = '' OR s.id IN (SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activityName = :activityName AND "
-                        +
-                        "((:status = 'ACTIVE' AND sa.membershipEndDate >= CURRENT_DATE) OR (:status = 'INACTIVE' AND sa.membershipEndDate < CURRENT_DATE)))) "
-                        +
-                        "AND (:searchTerm IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(s.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+        @Query("""
+                        SELECT s FROM Member s
+                        LEFT JOIN MemberActiveStatus mas ON s.id = mas.id
+                        WHERE s.branch.id = :branchId AND s.memberType = 'STUDENT'
+                        AND (:activityName IS NULL OR :activityName = '' OR s.id IN (SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activityName = :activityName))
+                        AND ( (:status IS NULL) OR (:status = 'ACTIVE' AND CURRENT_DATE BETWEEN mas.earliestStartDate AND mas.latestEndDate) OR (:status = 'INACTIVE' AND (mas.id IS NULL OR NOT (CURRENT_DATE BETWEEN mas.earliestStartDate AND mas.latestEndDate))) )
+                        AND (:searchTerm IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(s.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')))
+                        """)
         Page<Member> findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(
                         @Param("branchId") Long branchId, @Param("activityName") String activityName,
                         @Param("status") String status, Pageable pageable, @Param("searchTerm") String searchTerm);
 
-        @Query("SELECT i FROM Member i WHERE i.branch.id = :branchId AND i.memberType = 'INSTRUCTOR' AND (:activityName IS NULL OR :activityName = '' OR i.id IN (SELECT sa.instructor.id FROM InstructorActivityAssignment sa WHERE sa.activityName = :activityName AND"
-                        +
-                        "((:status = 'ACTIVE' AND sa.endDate >= CURRENT_DATE) OR (:status = 'INACTIVE' AND sa.endDate < CURRENT_DATE)))) AND (:searchTerm IS NULL OR LOWER(i.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(i.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+        @Query("""
+                        SELECT i FROM Member i
+                        LEFT JOIN MemberActiveStatus mas ON i.id = mas.id
+                        WHERE i.branch.id = :branchId AND i.memberType = 'INSTRUCTOR'
+                        AND (:activityName IS NULL OR :activityName = '' OR i.id IN (SELECT sa.instructor.id FROM InstructorActivityAssignment sa WHERE sa.activityName = :activityName))
+                        AND ( (:status IS NULL) OR (:status = 'ACTIVE' AND CURRENT_DATE BETWEEN mas.earliestStartDate AND mas.latestEndDate) OR (:status = 'INACTIVE' AND (mas.id IS NULL OR NOT (CURRENT_DATE BETWEEN mas.earliestStartDate AND mas.latestEndDate))) )
+                        AND (:searchTerm IS NULL OR LOWER(i.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(i.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')))
+                        """)
         List<Member> findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(
                         @Param("branchId") Long branchId, @Param("activityName") String activityName,
                         @Param("status") String status, @Param("searchTerm") String searchTerm);
 
-        @Query("SELECT s FROM Member s WHERE s.branch.id = :branchId AND s.memberType = 'INSTRUCTOR' AND (:activityName IS NULL OR :activityName = '' OR s.id IN (SELECT sa.instructor.id FROM InstructorActivityAssignment sa WHERE sa.activityName = :activityName AND "
-                        +
-                        "((:status = 'ACTIVE' AND sa.endDate >= CURRENT_DATE) OR (:status = 'INACTIVE' AND sa.endDate < CURRENT_DATE)))) AND (:searchTerm IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(s.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+        @Query("""
+                        SELECT i FROM Member i
+                        LEFT JOIN MemberActiveStatus mas ON i.id = mas.id
+                        WHERE i.branch.id = :branchId AND i.memberType = 'INSTRUCTOR'
+                        AND (:activityName IS NULL OR :activityName = '' OR i.id IN (SELECT sa.instructor.id FROM InstructorActivityAssignment sa WHERE sa.activityName = :activityName))
+                        AND ( (:status IS NULL) OR (:status = 'ACTIVE' AND CURRENT_DATE BETWEEN mas.earliestStartDate AND mas.latestEndDate) OR (:status = 'INACTIVE' AND (mas.id IS NULL OR NOT (CURRENT_DATE BETWEEN mas.earliestStartDate AND mas.latestEndDate))) )
+                        AND (:searchTerm IS NULL OR LOWER(i.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(i.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')))
+                        """)
         Page<Member> findAllInstructorsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(
                         @Param("branchId") Long branchId, @Param("activityName") String activityName,
-                        @Param("status") String membershipStatus, Pageable pageable,
+                        @Param("status") String status, Pageable pageable,
                         @Param("searchTerm") String searchTerm);
 
         @Query("SELECT COUNT(s) FROM Member s WHERE s.branch.id = :branchId and s.memberType = 'STUDENT'")
