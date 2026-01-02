@@ -90,9 +90,9 @@ public class MessageManagerImpl implements MessageManager {
             List<Member> members = new ArrayList<>();
             if (Objects.nonNull(memberType)) {
                 if (memberType.equals(MemberType.ALL)) {
-                    members = memberRepository.findByBranchId(branch.getId());
+                    members = memberRepository.findActiveMembersByBranchId(branch.getId(), null);
                 } else {
-                    members = memberRepository.findByBranchIdAndMemberType(branch.getId(), memberType.name());
+                    members = memberRepository.findActiveMembersByBranchId(branch.getId(), memberType.name());
                 }
             } else if (Objects.nonNull(request.getMemberIds())) {
                 members = memberRepository.findAllById(request.getMemberIds());
