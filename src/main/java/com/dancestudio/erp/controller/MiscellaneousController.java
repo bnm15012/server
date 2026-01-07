@@ -74,12 +74,6 @@ public class MiscellaneousController {
         return miscellaneousService.refreshToken(userEntry);
     }
 
-    // TODO: remove this endpoint after testing
-    @GetMapping("getTemplates/{studioId}")
-    public ResponseEntity<TemplateResponse> getTemplates(@PathVariable("studioId") Long studioId) {
-        return miscellaneousService.getTemplates(studioId);
-    }
-
     @PostMapping("whatsapp/sendMessage")
     public String sendWhatsAppMessage(@RequestParam String to, @RequestParam String message) {
         messageService.sendWhatsAppMessage(to, message);
@@ -95,13 +89,13 @@ public class MiscellaneousController {
     public ResponseEntity<SendMessageResponse> sendMessage(@ModelAttribute SendMessageRequestEntry request, @PathVariable String branchId,
             @RequestParam(value = "file", required=false) MultipartFile file, 
             @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "-1") int size) {
-        return messageService.sendMessage(request, file, --page, size);
+        return messageService.sendMessage(request, file, page, size);
     }
 
     @GetMapping("getMessageHistory/{branchId}")
     public ResponseEntity<MessageResponse> getMessageHistory(@PathVariable Long branchId,
             @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "-1") int size) {
-        return messageService.getMessagesByBranchId(branchId, --page, size);
+        return messageService.getMessagesByBranchId(branchId, page, size);
     }
 
     @GetMapping("getMessageRecipients/{messageId}")

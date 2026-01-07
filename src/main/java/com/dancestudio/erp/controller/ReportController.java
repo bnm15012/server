@@ -22,7 +22,7 @@ public class ReportController {
             @RequestParam(required = false) Long branchId,
             @RequestParam String startDate,
             @RequestParam String endDate,
-            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
         return reportService.getReport(studioId, branchId, report_type, startDate, endDate, page, size);
     }

@@ -51,14 +51,14 @@ services:
       - DB_NAME=studio
       - DB_PASSWORD=rootpassword
 
-  backup:
-    build:
-      context: ../backup
-      dockerfile: Dockerfile.backup
-    volumes:
-      - ./backups:/backups
-    depends_on:
-      - mysql-db
+  # backup:
+  #   build:
+  #     context: ../backup
+  #     dockerfile: Dockerfile.backup
+  #   volumes:
+  #     - ./backups:/backups
+  #   depends_on:
+  #     - mysql-db
 
   studio-app:
     image: dhruv4023/studio-app-1.0:latest

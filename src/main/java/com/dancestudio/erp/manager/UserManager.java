@@ -5,7 +5,7 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 
-public interface UserManager extends BaseManager<UserEntry, Long> {
+public interface UserManager extends BaseManagerInt<UserEntry, Long> {
 
     @Transactional
     UserEntry registerUser(UserEntry userEntry) throws Exception;

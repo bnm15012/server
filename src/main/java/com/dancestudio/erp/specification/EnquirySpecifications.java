@@ -1,7 +1,8 @@
 package com.dancestudio.erp.specification;
 
-import com.dancestudio.erp.entity.Enquiry;
 import org.springframework.data.jpa.domain.Specification;
+
+import com.dancestudio.erp.modules.enquiry.Enquiry;
 
 import java.util.Date;
 

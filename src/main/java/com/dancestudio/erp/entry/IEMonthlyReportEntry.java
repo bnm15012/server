@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import com.dancestudio.erp.modules.expense.ExpenseEntry;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,6 +18,6 @@ public class IEMonthlyReportEntry {
     private double booking;
     private List<ExpenseEntry> expenseEntries;
     private List<IncomeEntry> incomeEntries;
-    private List<BookingEntry> bookingEntries;
+    private List<IncomeEntry> bookingEntries;
 
 }

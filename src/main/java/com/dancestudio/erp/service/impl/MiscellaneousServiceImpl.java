@@ -2,12 +2,15 @@ package com.dancestudio.erp.service.impl;
 
 import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entry.*;
+import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.manager.ImageManager;
-import com.dancestudio.erp.manager.PaymentManager;
 import com.dancestudio.erp.manager.ReportManager;
-import com.dancestudio.erp.manager.TemplateManager;
+
+import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.manager.impl.PasswordManagerImpl;
+import com.dancestudio.erp.modules.payments.PaymentManager;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.dancestudio.erp.response.*;
 import com.dancestudio.erp.service.MiscellaneousService;
 import lombok.Setter;
@@ -17,7 +20,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -113,6 +120,7 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
 
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
+            ex.printStackTrace();
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
@@ -129,24 +137,21 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
 
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
+            ex.printStackTrace();
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
-    @Override
-    public ResponseEntity<TemplateResponse> getTemplates(Long studioId) {
-        TemplateResponse response = new TemplateResponse();
-        try {
-            List<TemplateEntry> templates = templateManager.getAllTemplates(studioId);
-            response.setData(templates);
-            response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS,
-                    Objects.isNull(templates) ? 0 : templates.size()));
-            return ResponseEntity.ok(response);
-        } catch (Exception ex) {
-            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+    public static Date toUtcDate(int day, int month, int year) {
+        // Step 1: Create a LocalDate (no timezone)
+        LocalDate localDate = LocalDate.of(year, month, day);
+
+        // Step 2: Set time to midnight UTC (00:00:00)
+        ZonedDateTime zdt = localDate.atStartOfDay(ZoneOffset.UTC);
+
+        // Step 3: Convert to java.util.Date
+        return Date.from(zdt.toInstant());
     }
 
     @Override
@@ -156,9 +161,9 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
             String status) {
         PaymentResponse response = new PaymentResponse();
         try {
-            List<PaymentEntry> paymentEntries = paymentManager.getAllPaymentsByBranch(branchId, 0, -1,
-                    startDate, startMonth, startYear,
-                    endDate, endMonth, endYear, status, null);
+            List<PaymentEntry> paymentEntries = paymentManager.getAll(branchId, 0, -1,
+                    toUtcDate(startDate, startMonth, startYear),
+                    toUtcDate(endDate, endMonth, endYear), PaymentStatus.valueOf(status)).getContent();
             response.setData((paymentEntries));
             response.setStatus(
                     new StatusResponse(1, "Report data retrieved successfully", StatusResponse.Type.SUCCESS, 1));

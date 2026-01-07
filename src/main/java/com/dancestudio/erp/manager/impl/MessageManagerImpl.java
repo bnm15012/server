@@ -5,23 +5,25 @@ import com.dancestudio.erp.entry.MessageEntry;
 import com.dancestudio.erp.entry.MessageRecipientEntry;
 import com.dancestudio.erp.entry.SendMessageRequestEntry;
 import com.dancestudio.erp.entry.SessionEntry;
-import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.enums.MemberType;
 import com.dancestudio.erp.enums.MessageStatus;
 import com.dancestudio.erp.enums.NotificationType;
 import com.dancestudio.erp.enums.TemplateType;
 import com.dancestudio.erp.enums.WhatsAppStatus;
 import com.dancestudio.erp.manager.MessageManager;
-import com.dancestudio.erp.manager.TemplateManager;
-import com.dancestudio.erp.message_queue.MessageQueue;
-import com.dancestudio.erp.message_queue.MessageQueueRepository;
-import com.dancestudio.erp.message_queue.events.EmailQueuedEvent;
-import com.dancestudio.erp.message_queue.events.WhatsAppMessageQueuedEvent;
-import com.dancestudio.erp.message_queue.services.EmailService;
-import com.dancestudio.erp.message_queue.services.WhatsAppService;
+import com.dancestudio.erp.modules.template.template.TemplateEntry;
+import com.dancestudio.erp.modules.template.template.TemplateManager;
+import com.dancestudio.erp.modules.client.Client;
+import com.dancestudio.erp.modules.client.ClientRepository;
+import com.dancestudio.erp.modules.member.Member;
+import com.dancestudio.erp.modules.member.MemberRepository;
+import com.dancestudio.erp.modules.message_queue.MessageQueue;
+import com.dancestudio.erp.modules.message_queue.MessageQueueRepository;
+import com.dancestudio.erp.modules.message_queue.events.EmailQueuedEvent;
+import com.dancestudio.erp.modules.message_queue.events.WhatsAppMessageQueuedEvent;
+import com.dancestudio.erp.modules.message_queue.services.EmailService;
+import com.dancestudio.erp.modules.message_queue.services.WhatsAppService;
 import com.dancestudio.erp.repository.BranchRepository;
-import com.dancestudio.erp.repository.ClientRepository;
-import com.dancestudio.erp.repository.MemberRepository;
 import com.dancestudio.erp.repository.MessageRecipientRepository;
 import com.dancestudio.erp.repository.MessageRepository;
 import com.dancestudio.erp.repository.StudioRepository;
@@ -88,9 +90,9 @@ public class MessageManagerImpl implements MessageManager {
             List<Member> members = new ArrayList<>();
             if (Objects.nonNull(memberType)) {
                 if (memberType.equals(MemberType.ALL)) {
-                    members = memberRepository.findByBranchId(branch.getId());
+                    members = memberRepository.findActiveMembersByBranchId(branch.getId(), null);
                 } else {
-                    members = memberRepository.findByBranchIdAndMemberType(branch.getId(), memberType.name());
+                    members = memberRepository.findActiveMembersByBranchId(branch.getId(), memberType.name());
                 }
             } else if (Objects.nonNull(request.getMemberIds())) {
                 members = memberRepository.findAllById(request.getMemberIds());

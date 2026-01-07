@@ -92,14 +92,11 @@ public class DateUtil {
                 endDate.getYear());
     }
 
-    public static boolean isTodaysDate(Date date) {
-        if (date == null) {
-            return false;
-        }
-        LocalDate inputDate = date.toInstant().atZone(ZoneOffset.UTC).toLocalDate();
-        LocalDate updatedDate = inputDate.plusDays(1);
-        LocalDate currentDateUTC = LocalDate.now(ZoneOffset.UTC);
-        return updatedDate.getMonth() == currentDateUTC.getMonth()
-                && updatedDate.getDayOfMonth() == currentDateUTC.getDayOfMonth();
+    public static Date getToday() {
+        ZoneId zoneId = TimeZoneContext.getTimeZone();
+        LocalDate today = LocalDate.now(zoneId);
+        ZonedDateTime startOfDayIst = today.atStartOfDay(zoneId);
+        return Date.from(startOfDayIst.toInstant());
     }
+
 }

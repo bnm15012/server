@@ -8,3 +8,5 @@ DO
   DELETE
     FROM message_queue
    WHERE updated_at < NOW() - INTERVAL 7 DAY;
+
+

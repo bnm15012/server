@@ -1,15 +1,15 @@
 package com.dancestudio.erp.manager.impl;
 
-import com.dancestudio.erp.entity.Member;
 import com.dancestudio.erp.entity.Message;
 import com.dancestudio.erp.entity.MessageRecipient;
-import com.dancestudio.erp.entry.StudentActivityAssignmentEntry;
-import com.dancestudio.erp.entry.TemplateEntry;
 import com.dancestudio.erp.enums.MessageStatus;
 import com.dancestudio.erp.enums.NotificationType;
 import com.dancestudio.erp.manager.NotificationManager;
-import com.dancestudio.erp.manager.TemplateManager;
-import com.dancestudio.erp.message_queue.services.EmailService;
+import com.dancestudio.erp.modules.template.template.TemplateEntry;
+import com.dancestudio.erp.modules.template.template.TemplateManager;
+import com.dancestudio.erp.modules.member.Member;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentEntry;
+import com.dancestudio.erp.modules.message_queue.services.EmailService;
 import com.dancestudio.erp.repository.MessageRepository;
 
 import lombok.Setter;

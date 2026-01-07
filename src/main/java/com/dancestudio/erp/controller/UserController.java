@@ -2,6 +2,7 @@ package com.dancestudio.erp.controller;
 
 import com.dancestudio.erp.entry.UserEntry;
 import com.dancestudio.erp.response.UserResponse;
+import com.dancestudio.erp.service.BaseService;
 import com.dancestudio.erp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,26 +16,15 @@ public class UserController extends BaseController<UserEntry, UserResponse, Long
     private UserService userService;
 
     @Override
+    protected BaseService<UserEntry, UserResponse, Long> getService() {
+        return userService;
+    }
+
+    @Override
     public ResponseEntity<UserResponse> add(@RequestBody UserEntry userEntry) {
         return userService.registerUser(userEntry);
     }
 
-    @Override
-    public ResponseEntity<UserResponse> update(@PathVariable Long id, @RequestBody UserEntry userEntry) {
-        return userService.update(id, userEntry);
-    }
-
-    @Override
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return userService.delete(id);
-    }
-
-    @Override
-    public ResponseEntity<UserResponse> get(@PathVariable Long id) {
-        return userService.get(id);
-    }
-
-    @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@RequestBody UserEntry userEntry) {
         return userService.registerUser(userEntry);
     }
@@ -43,9 +33,10 @@ public class UserController extends BaseController<UserEntry, UserResponse, Long
     public ResponseEntity<UserResponse> login(@RequestBody UserEntry userEntry) {
         return userService.loginUser(userEntry.getUserName(), userEntry.getPassword());
     }
-    
-    @GetMapping("/getUsersByBranchId/{branchId}")
+
+    @GetMapping("/getAll/{branchId}")
     public ResponseEntity<UserResponse> getUsersByBranchId(@PathVariable Long branchId) {
         return userService.getUsersBybranchId(branchId);
     }
+
 }

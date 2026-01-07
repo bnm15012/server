@@ -3,7 +3,10 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
-import com.dancestudio.erp.repository.*;
+import com.dancestudio.erp.modules.expense.ExpenseRepository;
+import com.dancestudio.erp.modules.member.MemberRepository;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentRepository;
+import com.dancestudio.erp.modules.payments.repository.PaymentRepository;
 import com.dancestudio.erp.util.DateUtil;
 
 import lombok.Setter;
@@ -18,8 +21,9 @@ import java.util.Map;
 public class DashboardManagerImpl implements DashboardManager {
 
         private MemberRepository memberRepository;
-        private ExpenseRepository expenseRepository;
         private PaymentRepository paymentRepository;
+        private ExpenseRepository expenseRepository;
+        
         private StudentActivityAssignmentRepository studentActivityAssignmentRepository;
 
         @Override

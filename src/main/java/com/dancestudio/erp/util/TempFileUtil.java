@@ -41,7 +41,8 @@ public class TempFileUtil {
         Path path = Paths.get(pathStr);
 
         if (!Files.exists(path)) {
-            throw new IOException("File does not exist: " + path);
+            System.err.println("File does not exist: " + path);
+            return new FileData(null, null, null);
         }
 
         byte[] fileBytes = Files.readAllBytes(path);

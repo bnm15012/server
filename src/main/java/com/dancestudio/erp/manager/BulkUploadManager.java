@@ -4,7 +4,7 @@ import com.dancestudio.erp.entry.BulkUploadEntry;
 
 import java.util.List;
 
-public interface BulkUploadManager extends BaseManager<BulkUploadEntry, Long> {
+public interface BulkUploadManager extends BaseManagerInt<BulkUploadEntry, Long> {
 
     BulkUploadEntry processBulkUpload(BulkUploadEntry jobEntry, Long branchId, String entityType, String fileUrl);
 

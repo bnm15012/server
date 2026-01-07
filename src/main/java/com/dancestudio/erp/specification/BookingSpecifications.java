@@ -1,6 +1,7 @@
 package com.dancestudio.erp.specification;
-import com.dancestudio.erp.entity.Booking;
 import org.springframework.data.jpa.domain.Specification;
+
+import com.dancestudio.erp.modules.booking.Booking;
 
 import java.util.Date;
 
