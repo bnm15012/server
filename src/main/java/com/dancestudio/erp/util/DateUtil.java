@@ -92,11 +92,10 @@ public class DateUtil {
                 endDate.getYear());
     }
 
-    public static Date getToday() {
+    public static LocalDate getToday() {
         ZoneId zoneId = TimeZoneContext.getTimeZone();
         LocalDate today = LocalDate.now(zoneId);
         ZonedDateTime startOfDayIst = today.atStartOfDay(zoneId);
-        return Date.from(startOfDayIst.toInstant());
+        return startOfDayIst.toLocalDate();
     }
-
 }

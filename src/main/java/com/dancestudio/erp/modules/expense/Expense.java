@@ -29,8 +29,7 @@ public class Expense extends BaseEntity {
     private String expenseCategory;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate
-    @Column(name = "expense_date", nullable = false, updatable = false)
+    @Column(name = "expense_date", nullable = false)
     private Date expenseDate;
 
 }
