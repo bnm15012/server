@@ -6,13 +6,14 @@ import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.manager.ImageManager;
 import com.dancestudio.erp.manager.ReportManager;
 
-import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.manager.UserManager;
 import com.dancestudio.erp.manager.impl.PasswordManagerImpl;
 import com.dancestudio.erp.modules.payments.PaymentManager;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.dancestudio.erp.response.*;
 import com.dancestudio.erp.service.MiscellaneousService;
+import com.dancestudio.erp.util.DateUtil;
+
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -38,7 +40,6 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
     private UserManager userManager;
     private JwtUtil jwtUtil;
     private ReportManager reportManager;
-    private TemplateManager templateManager;
 
     @Override
     public ResponseEntity<StringResponse> uploadImage(String entityType, MultipartFile file) {
@@ -127,11 +128,13 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
     }
 
     @Override
-    public ResponseEntity<IEReportResponse> getExpenseIncomeReports(Long studioId, Long branchId, Integer startDate, Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear) {
+    public ResponseEntity<IEReportResponse> getExpenseIncomeReports(Long studioId, Long branchId, Integer startDate,
+            Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear) {
 
         IEReportResponse response = new IEReportResponse();
         try {
-            IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear);
+            IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startDate, startMonth, startYear,
+                    endDate, endMonth, endYear);
             response.setData(Collections.singletonList(reportEntry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
 
@@ -143,17 +146,6 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
         }
     }
 
-    public static Date toUtcDate(int day, int month, int year) {
-        // Step 1: Create a LocalDate (no timezone)
-        LocalDate localDate = LocalDate.of(year, month, day);
-
-        // Step 2: Set time to midnight UTC (00:00:00)
-        ZonedDateTime zdt = localDate.atStartOfDay(ZoneOffset.UTC);
-
-        // Step 3: Convert to java.util.Date
-        return Date.from(zdt.toInstant());
-    }
-
     @Override
     public ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId,
             Integer startDate, int startMonth, int startYear,
@@ -161,9 +153,12 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
             String status) {
         PaymentResponse response = new PaymentResponse();
         try {
+            Map<String, Date> utcDateRange = DateUtil.getUTCDateRange(startDate,
+                    startMonth, startYear, endDate, endMonth, endYear);
+
             List<PaymentEntry> paymentEntries = paymentManager.getAll(branchId, 0, -1,
-                    toUtcDate(startDate, startMonth, startYear),
-                    toUtcDate(endDate, endMonth, endYear), PaymentStatus.valueOf(status)).getContent();
+                    utcDateRange.get("start"),
+                    utcDateRange.get("end"), PaymentStatus.valueOf(status)).getContent();
             response.setData((paymentEntries));
             response.setStatus(
                     new StatusResponse(1, "Report data retrieved successfully", StatusResponse.Type.SUCCESS, 1));

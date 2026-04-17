@@ -31,6 +31,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -128,10 +129,9 @@ public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
         Page<Member> studentPage;
         if (birthday == 1) {
-            Date today = DateUtil.getToday();
-            int month = today.getMonth() + 1;
-            int day = today.getDate();
-            studentPage = memberRepository.findByDobMonthDay(month, day, branchId, pageable);
+            LocalDate today = DateUtil.getToday();
+            studentPage = memberRepository.findByDobMonthDay(today.getMonthValue(), today.getDayOfMonth(), branchId,
+                    pageable);
         } else {
             studentPage = memberRepository
                     .findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null,

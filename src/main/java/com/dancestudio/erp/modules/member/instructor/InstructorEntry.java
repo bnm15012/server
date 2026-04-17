@@ -5,7 +5,7 @@ import com.dancestudio.erp.modules.member.instructor.bankAccount.BankAccountEntr
 
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class InstructorEntry {
@@ -14,7 +14,7 @@ public class InstructorEntry {
     private String name;
     private String email;
     private String phone;
-    private Date dob;
+    private LocalDate dob;
     private String imageUrl;
     private String address;
     private String emergencyContactNumber;

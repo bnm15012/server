@@ -12,19 +12,18 @@ import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.Stud
 import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentManager;
 import com.dancestudio.erp.modules.payments.PaymentManager;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
+import com.dancestudio.erp.util.DateUtil;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -76,9 +75,11 @@ public class ReportManagerImpl implements ReportManager {
         private IEMonthlyReportEntry processPaymentEntries(Long branchId, Integer startDate, Integer startMonth,
                         Integer startYear, Integer endDate, Integer endMonth, Integer endYear) throws Exception {
                 IEMonthlyReportEntry monthlyReports = new IEMonthlyReportEntry();
-
-                List<PaymentEntry> paymentEntries = paymentManager.getAll(branchId, 0, -1, toUtcDate(startDate,
-                                startMonth, startYear), toUtcDate(endDate, endMonth, endYear), null).getContent();
+                Map<String, Date> utcDateRange = DateUtil.getUTCDateRange(startDate,
+                                startMonth, startYear, endDate, endMonth, endYear);
+                List<PaymentEntry> paymentEntries = paymentManager
+                                .getAll(branchId, 0, -1, utcDateRange.get("start"), utcDateRange.get("end"), null)
+                                .getContent();
                 List<IncomeEntry> incomeEntries = paymentEntries.stream()
                                 .filter(paymentEntry -> Objects.equals(paymentEntry.getPayeeType(), PayeeType.STUDENT))
                                 .map(this::extractIncomeEntry)
@@ -128,12 +129,6 @@ public class ReportManagerImpl implements ReportManager {
 
                 // monthlyReports.setBookingEntries(bookingEntries.getContent());
                 monthlyReports.setBooking(totalBooking);
-        }
-
-        public static Date toUtcDate(int day, int month, int year) {
-                LocalDate localDate = LocalDate.of(year, month, day);
-                ZonedDateTime zdt = localDate.atStartOfDay(ZoneOffset.UTC);
-                return Date.from(zdt.toInstant());
         }
 
         private IncomeEntry extractIncomeEntry(PaymentEntry paymentEntry) {

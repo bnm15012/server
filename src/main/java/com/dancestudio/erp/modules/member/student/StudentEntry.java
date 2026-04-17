@@ -4,7 +4,7 @@ package com.dancestudio.erp.modules.member.student;
 import com.dancestudio.erp.enums.MembershipStatus;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class StudentEntry {
@@ -13,7 +13,7 @@ public class StudentEntry {
     private String name;
     private String email;
     private String phone;
-    private Date dob;
+    private LocalDate dob;
     private String imageUrl;
     private String address;
     private String emergencyContactNumber;

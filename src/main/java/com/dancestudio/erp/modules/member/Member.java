@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.dancestudio.erp.entity.BaseEntity;
@@ -26,9 +27,8 @@ public class Member extends BaseEntity {
     @Column(name = "phone", nullable = false, length = 10)
     private String phone;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "dob", columnDefinition = "TIMESTAMP")
-    private Date dob;
+    @Column(name = "dob")
+    private LocalDate dob;
 
     @Column(name = "profile_image")
     private String profileImage;
