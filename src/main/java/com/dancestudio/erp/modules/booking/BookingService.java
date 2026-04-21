@@ -27,7 +27,7 @@ public class BookingService extends BaseService<BookingEntry, Long> {
                     startYear, null, endMonth, endYear, searchTerm);
             response.setData(entries.getContent());
             response.setStatus(new StatusResponse(1, "Bookings retrieved successfully", StatusResponse.Type.SUCCESS,
-                    (int) entries.getTotalElements()));
+                    entries.getTotalElements()));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             e.printStackTrace();

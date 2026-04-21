@@ -27,7 +27,7 @@ public class InstructorService extends BaseService<InstructorEntry, Long> {
                     --page, size, searchTerm);
             response.setData(entries.getContent());
             response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS,
-                    Objects.isNull(entries) ? 0 : (int) entries.getTotalElements()));
+                    Objects.isNull(entries) ? 0 : entries.getTotalElements()));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
@@ -44,7 +44,7 @@ public class InstructorService extends BaseService<InstructorEntry, Long> {
                     membershipStatus, --page, size);
             response.setData(entries.getContent());
             response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS,
-                    Objects.isNull(entries) ? 0 : (int) entries.getTotalElements()));
+                    Objects.isNull(entries) ? 0 : entries.getTotalElements()));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));

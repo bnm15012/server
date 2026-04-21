@@ -28,7 +28,7 @@ public class EnquiryService extends BaseService<EnquiryEntry, Long> {
 
             response.setData(entries.getContent());
             response.setStatus(new StatusResponse(1, "Enquiries retrieved successfully", StatusResponse.Type.SUCCESS,
-                    (int) entries.getTotalElements()));
+                    entries.getTotalElements()));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));

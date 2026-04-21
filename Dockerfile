@@ -8,4 +8,4 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 COPY --from=build /app/target/studio_backend-0.0.1-SNAPSHOT.jar app.jar
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-Xms128m", "-Xmx512m", "-jar", "app.jar"]

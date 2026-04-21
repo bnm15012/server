@@ -8,14 +8,14 @@ import java.util.Date;
 @Data
 public class InstructorActivityAssignmentEntry {
 
+    private Long instructorId;
     private Long assignmentId;
     private String activityName;
     private Date assignedDate;
 
     private Date startDate;
     private Date endDate;
-    private String contractDocument;
     private MembershipStatus membershipStatus = MembershipStatus.INACTIVE;
 
-    private Long instructorId;
+    private String contractDocument;
 }

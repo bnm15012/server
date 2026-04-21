@@ -83,4 +83,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         List<Member> findActiveMembersByBranchId(
                         @Param("branchId") Long branchId,
                         @Param("memberType") String memberType);
+
+        Member findByEmail(String email);
 }

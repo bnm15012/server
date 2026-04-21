@@ -46,7 +46,7 @@ public class GenricTemplateService extends BaseService<GenricTemplateEntry, Long
             // Set response
             response.setData(entries);
             response.setStatus(new StatusResponse(1, "Templates merged successfully",
-                    StatusResponse.Type.SUCCESS, (int) page2.getTotalElements()));
+                    StatusResponse.Type.SUCCESS, page2.getTotalElements()));
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
 

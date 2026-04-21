@@ -35,7 +35,7 @@ public class InstructorActivityAssignmentService extends BaseService<InstructorA
                 }
             }).collect(Collectors.toList()));
             response.setStatus(new StatusResponse(1, "Instructors retrieved successfully", StatusResponse.Type.SUCCESS,
-                    Objects.isNull(entries) ? 0 : (int) entries.getTotalElements()));
+                    Objects.isNull(entries) ? 0 : entries.getTotalElements()));
             return ResponseEntity.ok(response);
         } catch (Exception ex) {
             ex.printStackTrace();

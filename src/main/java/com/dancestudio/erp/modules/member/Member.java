@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Branch;
@@ -14,8 +13,9 @@ import com.dancestudio.erp.entity.Branch;
 @Entity
 @Data
 @Table(name = "members", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "email", "member_type", "branch_id"}, name = "unique_name_email_membertype_branch")
-})
+        @UniqueConstraint(columnNames = { "name", "email", "member_type",
+                "branch_id" }, name = "unique_name_email_membertype_branch")
+}, indexes = { @Index(name = "idx_members_email", columnList = "email") })
 public class Member extends BaseEntity {
 
     @Column(name = "name", nullable = false)

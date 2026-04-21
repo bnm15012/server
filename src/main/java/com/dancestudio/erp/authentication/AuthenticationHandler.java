@@ -31,7 +31,7 @@ public class AuthenticationHandler extends OncePerRequestFilter {
         String formAuthorizationHeader = request.getHeader("Form-Authorization");
         String requestURI = request.getRequestURI();
 
-        List<String> excludedPaths = List.of("/swagger-ui", "/refreshToken", "/verify", "/plans/getAll", "api-docs", "/v3/api-docs", "/swagger-ui.html", "/users/login", "/password/reset", "/studios/add");
+        List<String> excludedPaths = List.of("/swagger-ui", "/refreshToken", "/verify", "/plans/getAll", "api-docs", "/v3/api-docs", "/swagger-ui.html", "/users/login", "/password/reset", "/studios/add", "/member/google/login");
         if (excludedPaths.stream().anyMatch(requestURI::contains)) {
             filterChain.doFilter(request, response);
             return;

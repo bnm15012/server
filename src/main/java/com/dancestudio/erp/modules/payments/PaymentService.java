@@ -58,7 +58,7 @@ public class PaymentService extends BaseService<PaymentEntry, Long> {
             }
             response.setData(entries.getContent());
             response.setStatus(new StatusResponse(1, "Payments retrieved successfully", StatusResponse.Type.SUCCESS,
-                    (int) entries.getTotalElements()));
+                    entries.getTotalElements()));
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             e.printStackTrace();
