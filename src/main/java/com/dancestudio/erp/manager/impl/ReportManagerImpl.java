@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +128,15 @@ public class ReportManagerImpl implements ReportManager {
                                 .mapToDouble(BookingEntry::getTotalAmount)
                                 .sum();
 
-                // monthlyReports.setBookingEntries(bookingEntries.getContent());
+                List<IncomeEntry> incomeEntries = new ArrayList<>();
+                bookingEntries.getContent().stream().forEach(bookingEntry -> {
+                        for (PaymentEntry payments : bookingEntry.getPaymentEntries()) {
+                                incomeEntries.add(new IncomeEntry(bookingEntry.getClientEntry().getGroupName(), null,
+                                                payments.getAmount(), payments.getPaymentType().name(),
+                                                PayeeType.BOOKING.name(), payments.getPaymentDate(), null));
+                        }
+                });
+                monthlyReports.getIncomeEntries().addAll(incomeEntries);
                 monthlyReports.setBooking(totalBooking);
         }
 
