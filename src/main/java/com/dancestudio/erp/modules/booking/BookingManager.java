@@ -79,9 +79,6 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
         if (Objects.isNull(bookingEntry.getTotalAmount()) || bookingEntry.getTotalAmount() <= 0) {
             throw new IllegalArgumentException("Total amount must be greater than zero");
         }
-        if (Objects.isNull(bookingEntry.getPaidAmount()) || bookingEntry.getPaidAmount() <= 0) {
-            throw new IllegalArgumentException("Advance amount must be greater than zero");
-        }
     }
 
     @Override

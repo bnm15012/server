@@ -2,6 +2,7 @@ package com.dancestudio.erp.modules.payments;
 
 import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
+import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.util.DateUtil;
@@ -26,7 +27,10 @@ public class PaymentService extends BaseService<PaymentEntry, Long> {
 
     @Override
     protected PaymentEntry doAdd(PaymentEntry entry) throws Exception {
-        throw new UnsupportedOperationException("Not supported to ADD");
+        if (entry.getPayeeType() != PayeeType.BOOKING) {
+            throw new UnsupportedOperationException("Not supported to ADD");
+        }
+        return paymentManager.add(entry);
     }
 
     @Override

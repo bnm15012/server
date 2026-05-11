@@ -35,9 +35,6 @@ public class Booking extends BaseEntity {
     @Column(name = "payment_status", nullable = false)
     private String paymentStatus;
 
-    @Column(name = "paid_amount", nullable = false)
-    private Double paidAmount;
-
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 

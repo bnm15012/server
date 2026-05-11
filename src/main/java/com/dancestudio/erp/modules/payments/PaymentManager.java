@@ -11,6 +11,7 @@ import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -77,8 +78,9 @@ public class PaymentManager {
         throw new IllegalArgumentException("Payee type not found");
     }
 
-    public Page<PaymentEntry> getAll(Long branchId, int page, int size, Date startDate, Date endDate, PaymentStatus status) {
-        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
+    public Page<PaymentEntry> getAll(Long branchId, int page, int size, Date startDate, Date endDate,
+            PaymentStatus status) {
+        Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by("id").descending());
         Specification<Payment> spec = Specification.where(PaymentSpecification.withJoins())
                 .and(PaymentSpecification.byBranch(branchId))
                 .and(PaymentSpecification.byStatus(status))

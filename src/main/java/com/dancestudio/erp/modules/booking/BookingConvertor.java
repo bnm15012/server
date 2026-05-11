@@ -36,7 +36,6 @@ public class BookingConvertor {
         bookingEntry.setPurpose(booking.getPurpose());
         bookingEntry.setTotalAmount(booking.getTotalAmount());
         bookingEntry.setPaymentStatus(PaymentStatus.valueOf(booking.getPaymentStatus()));
-        bookingEntry.setPaidAmount(booking.getPaidAmount());
         bookingEntry.setNotes(booking.getNotes());
         bookingEntry.setBookingDate(booking.getBookingDate());
         bookingEntry.setStartTime(booking.getStartTime());
@@ -70,7 +69,6 @@ public class BookingConvertor {
         Optional.ofNullable(bookingEntry.getTotalAmount()).ifPresent(booking::setTotalAmount);
         Optional.ofNullable(bookingEntry.getPaymentStatus())
                 .ifPresent(status -> booking.setPaymentStatus(status.name()));
-        Optional.ofNullable(bookingEntry.getPaidAmount()).ifPresent(booking::setPaidAmount);
         Optional.ofNullable(bookingEntry.getNotes()).ifPresent(booking::setNotes);
         Optional.ofNullable(bookingEntry.getBookingDate()).ifPresent(booking::setBookingDate);
         Optional.ofNullable(bookingEntry.getStartTime()).ifPresent(booking::setStartTime);
