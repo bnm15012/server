@@ -7,4 +7,5 @@ public class MembershipPackagesEntry {
     private Long id;
     private String membershipPackage;
     private Long studioId;
+    private Integer days;
 }

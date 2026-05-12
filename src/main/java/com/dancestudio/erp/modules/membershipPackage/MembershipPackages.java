@@ -19,6 +19,9 @@ public class MembershipPackages extends BaseEntity {
     @Column(name = "membership_type", nullable = false)
     private String membershipType;
 
+    @Column(name = "days", nullable = false)
+    private Integer days;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "studio_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_activity_membership_type_studio_id"))
     private Studio studio;
