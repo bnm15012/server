@@ -33,6 +33,7 @@ public class MembershipPackagesConverter {
         MembershipPackagesEntry entry = new MembershipPackagesEntry();
         entry.setId(entity.getId());
         entry.setMembershipPackage(entity.getMembershipType());
+        entry.setDays(entity.getDays());
         if (Objects.nonNull(entity.getStudio().getId())) {
             entry.setStudioId(entity.getStudio().getId());
         }
@@ -48,6 +49,9 @@ public class MembershipPackagesConverter {
 
         if (Objects.nonNull(entry.getId())) {
             entity.setId(entry.getId());
+        }
+        if (Objects.nonNull(entry.getDays())) {
+            entity.setDays(entry.getDays());
         }
         if (Objects.nonNull(entry.getStudioId())) {
             entity.setStudio(ConvertToEntryUtil.convertToEntity(
