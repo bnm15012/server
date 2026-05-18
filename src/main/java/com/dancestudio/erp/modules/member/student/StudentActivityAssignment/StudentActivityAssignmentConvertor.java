@@ -1,15 +1,18 @@
 package com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.dancestudio.erp.enums.ActivityType;
 import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.MemberRepository;
+import com.dancestudio.erp.modules.member.attendance.AttendanceEntryConverter;
 import com.dancestudio.erp.modules.payments.PaymentConvertor;
 import com.dancestudio.erp.util.DateUtil;
 
@@ -28,37 +31,75 @@ public class StudentActivityAssignmentConvertor {
         applicationContext = context;
     }
 
-    public static StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment) {
+    public static StudentActivityAssignmentEntry convertToEntry(StudentActivityAssignment studentActivityAssignment,
+            String[] fields) {
 
         if (Objects.isNull(studentActivityAssignment)) {
             return null;
         }
+        boolean includeAll = fields.length == 0;
 
         StudentActivityAssignmentEntry studentActivityAssignmentEntry = new StudentActivityAssignmentEntry();
         studentActivityAssignmentEntry.setAssignmentId(studentActivityAssignment.getId());
-        studentActivityAssignmentEntry.setStudentId(studentActivityAssignment.getStudent().getId());
-        studentActivityAssignmentEntry.setRegistrationDate(studentActivityAssignment.getRegistrationDate());
-        studentActivityAssignmentEntry.setBatchName(studentActivityAssignment.getBatchName());
-        studentActivityAssignmentEntry.setBatchTime(studentActivityAssignment.getBatchTime());
-        studentActivityAssignmentEntry.setMembershipStartDate(studentActivityAssignment.getMembershipStartDate());
-        studentActivityAssignmentEntry.setMembershipEndDate(studentActivityAssignment.getMembershipEndDate());
-        studentActivityAssignmentEntry.setDaysPerWeek(studentActivityAssignment.getDaysPerWeek());
-        studentActivityAssignmentEntry.setMembershipStatus(
-                (!studentActivityAssignment.getMembershipStartDate().after(DateUtil.getCurrentDateUTC()) &&
-                        !studentActivityAssignment.getMembershipEndDate().before(DateUtil.getCurrentDateUTC()))
-                        ? MembershipStatus.ACTIVE 
-                        : MembershipStatus.INACTIVE);
-        studentActivityAssignmentEntry
-                .setMembershipType((studentActivityAssignment.getMembershipType()));
-        studentActivityAssignmentEntry.setActivityAmount(studentActivityAssignment.getActivityAmount());
 
-        if (Objects.nonNull(studentActivityAssignment.getActivityName())) {
-            studentActivityAssignmentEntry.setActivityName(studentActivityAssignment.getActivityName());
+        if (includeAll || Arrays.asList(fields).contains("studentName")) {
+            studentActivityAssignmentEntry.setStudentName(studentActivityAssignment.getStudent().getName());
         }
-        if (Objects.nonNull(studentActivityAssignment.getPayment())) {
-            studentActivityAssignmentEntry
-                    .setPaymentEntry(PaymentConvertor.convertToEntry(studentActivityAssignment.getPayment()));
+        if (includeAll || Arrays.asList(fields).contains("studentId")) {
+            studentActivityAssignmentEntry.setStudentId(studentActivityAssignment.getStudent().getId());
         }
+        if (includeAll || Arrays.asList(fields).contains("registrationDate")) {
+            studentActivityAssignmentEntry.setRegistrationDate(studentActivityAssignment.getRegistrationDate());
+        }
+        if (includeAll || Arrays.asList(fields).contains("batchName")) {
+            studentActivityAssignmentEntry.setBatchName(studentActivityAssignment.getBatchName());
+        }
+        if (includeAll || Arrays.asList(fields).contains("batchTime")) {
+            studentActivityAssignmentEntry.setBatchTime(studentActivityAssignment.getBatchTime());
+        }
+        if (includeAll || Arrays.asList(fields).contains("membershipStartDate")) {
+            studentActivityAssignmentEntry.setMembershipStartDate(studentActivityAssignment.getMembershipStartDate());
+        }
+        if (includeAll || Arrays.asList(fields).contains("membershipEndDate")) {
+            studentActivityAssignmentEntry.setMembershipEndDate(studentActivityAssignment.getMembershipEndDate());
+        }
+        if (includeAll || Arrays.asList(fields).contains("daysPerWeek")) {
+            studentActivityAssignmentEntry.setDaysPerWeek(studentActivityAssignment.getDaysPerWeek());
+        }
+        if (includeAll || Arrays.asList(fields).contains("membershipStatus")) {
+            studentActivityAssignmentEntry.setMembershipStatus(
+                    (!studentActivityAssignment.getMembershipStartDate().after(DateUtil.getCurrentDateUTC()) &&
+                            !studentActivityAssignment.getMembershipEndDate().before(DateUtil.getCurrentDateUTC()))
+                                    ? MembershipStatus.ACTIVE
+                                    : MembershipStatus.INACTIVE);
+        }
+        if (includeAll || Arrays.asList(fields).contains("membershipType")) {
+            studentActivityAssignmentEntry.setMembershipType((studentActivityAssignment.getMembershipType()));
+        }
+        if (includeAll || Arrays.asList(fields).contains("activityAmount")) {
+            studentActivityAssignmentEntry.setActivityAmount(studentActivityAssignment.getActivityAmount());
+        }
+        if (includeAll || Arrays.asList(fields).contains("attendanceEntries")) {
+            if (Objects.nonNull(studentActivityAssignment.getAttendanceBitmap())
+                    && Objects.nonNull(studentActivityAssignment.getMembershipStartDate())) {
+                studentActivityAssignmentEntry.setAttendanceEntries(AttendanceEntryConverter.bitmapToEntries(
+                        studentActivityAssignment.getAttendanceBitmap(),
+                        studentActivityAssignment.getMembershipStartDate()));
+            }
+        }
+        if (includeAll || Arrays.asList(fields).contains("activityName")) {
+            if (Objects.nonNull(studentActivityAssignment.getActivityName())) {
+                studentActivityAssignmentEntry
+                        .setActivityName(studentActivityAssignment.getActivityName().name());
+            }
+        }
+        if (includeAll || Arrays.asList(fields).contains("payment")) {
+            if (Objects.nonNull(studentActivityAssignment.getPayment())) {
+                studentActivityAssignmentEntry
+                        .setPaymentEntry(PaymentConvertor.convertToEntry(studentActivityAssignment.getPayment()));
+            }
+        }
+
         return studentActivityAssignmentEntry;
     }
 
@@ -103,8 +144,15 @@ public class StudentActivityAssignmentConvertor {
             studentActivityAssignment.setStudent(student);
         }
 
+        if (Objects.nonNull(studentActivityAssignmentEntry.getAttendanceEntries())) {
+            studentActivityAssignment.setAttendanceBitmap(AttendanceEntryConverter.entriesToBitmap(
+                    studentActivityAssignmentEntry.getAttendanceEntries(),
+                    studentActivityAssignment.getMembershipStartDate()));
+        }
+
         if (Objects.nonNull(studentActivityAssignmentEntry.getActivityName())) {
-            studentActivityAssignment.setActivityName(studentActivityAssignmentEntry.getActivityName());
+            studentActivityAssignment
+                    .setActivityName(ActivityType.valueOf(studentActivityAssignmentEntry.getActivityName()));
         }
 
         return studentActivityAssignment;

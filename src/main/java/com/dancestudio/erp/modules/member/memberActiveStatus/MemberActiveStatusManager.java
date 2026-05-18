@@ -51,7 +51,7 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
     }
 
     @Override
-    protected MemberActiveStatusEntry toEntry(MemberActiveStatus entity) throws EntityNotFoundException {
+    protected MemberActiveStatusEntry toEntry(MemberActiveStatus entity, String[] fields) throws EntityNotFoundException {
         MemberActiveStatusEntry entry = new MemberActiveStatusEntry();
         entry.setMemberId(entity.getId());
         entry.setEarliestStartDate(entity.getEarliestStartDate());
@@ -61,22 +61,11 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
     }
 
     public boolean isMemberActive(Long memberId) {
-        Date today = new Date();
         return repository.findById(memberId)
                 .map(status -> {
                     Date start = status.getEarliestStartDate();
                     Date end = status.getLatestEndDate();
-
-                    if (start == null)
-                        return false;
-
-                    boolean started = !today.before(start);
-
-                    if (end == null)
-                        return started;
-
-                    boolean notEnded = !today.after(end);
-                    return started && notEnded;
+                    return MemberActiveStatusUtil.isMembershipActive(start, end);
                 })
                 .orElse(false);
     }
@@ -105,7 +94,7 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
 
         entity = repository.save(entity);
 
-        return toEntry(entity);
+        return toEntry(entity, new String[] {});
     }
 
 }

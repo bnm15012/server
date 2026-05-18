@@ -190,7 +190,7 @@ public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
     }
 
     @Override
-    protected StudentEntry toEntry(Member entity) throws EntityNotFoundException {
+    protected StudentEntry toEntry(Member entity, String[] fields) throws EntityNotFoundException {
         return StudentConvertor.convertToEntry(entity);
     }
 }

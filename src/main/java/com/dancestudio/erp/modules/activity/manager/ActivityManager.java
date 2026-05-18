@@ -39,11 +39,11 @@ public class ActivityManager extends BaseManager<Activity, Long, ActivityEntry> 
     @Override
     protected Activity toEntity(ActivityEntry entry, Activity existing)
             throws EntityNotFoundException, BeansException, Exception {
-                return ActivityConverter.convertToEntity(entry, existing);
+        return ActivityConverter.convertToEntity(entry, existing);
     }
 
     @Override
-    protected ActivityEntry toEntry(Activity entity) throws EntityNotFoundException {
+    protected ActivityEntry toEntry(Activity entity, String[] fields) throws EntityNotFoundException {
         return ActivityConverter.convertToEntry(entity);
     }
 }

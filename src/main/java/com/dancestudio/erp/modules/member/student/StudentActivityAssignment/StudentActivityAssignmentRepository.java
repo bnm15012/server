@@ -12,7 +12,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 import java.util.List;
 
-public interface StudentActivityAssignmentRepository extends JpaRepository<StudentActivityAssignment, Long> {
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+public interface StudentActivityAssignmentRepository extends JpaRepository<StudentActivityAssignment, Long>, JpaSpecificationExecutor<StudentActivityAssignment> {
 
     @Query("SELECT a FROM StudentActivityAssignment a WHERE a.student.id = :studentId AND a.activityName = :activityName")
     StudentActivityAssignment findByStudentIdAndActivityId(@Param("studentId") Long studentId,

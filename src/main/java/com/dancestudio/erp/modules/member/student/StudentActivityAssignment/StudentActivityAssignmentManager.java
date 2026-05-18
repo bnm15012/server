@@ -1,19 +1,10 @@
 package com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
 
-import com.dancestudio.erp.base.BaseManager;
-import com.dancestudio.erp.entry.MonthlyReportEntry;
-import com.dancestudio.erp.enums.PayeeType;
-import com.dancestudio.erp.exception.EntityNotFoundException;
-import com.dancestudio.erp.modules.expense.ExpenseCategory;
-import com.dancestudio.erp.modules.expense.ExpenseEntry;
-import com.dancestudio.erp.modules.expense.ExpenseRepository;
-import com.dancestudio.erp.modules.member.MemberRepository;
-import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusUtil;
-import com.dancestudio.erp.modules.payments.PaymentManager;
-import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
-import com.dancestudio.erp.util.DateUtil;
-import lombok.Setter;
-import lombok.SneakyThrows;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +14,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import com.dancestudio.erp.base.BaseManager;
+import com.dancestudio.erp.entry.MonthlyReportEntry;
+import com.dancestudio.erp.enums.PayeeType;
+import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.modules.expense.ExpenseCategory;
+import com.dancestudio.erp.modules.expense.ExpenseEntry;
+import com.dancestudio.erp.modules.expense.ExpenseRepository;
+import com.dancestudio.erp.modules.member.MemberRepository;
+import com.dancestudio.erp.modules.member.attendance.AttendanceReqDTO;
+import com.dancestudio.erp.modules.member.attendance.AttendanceUtils;
+import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusUtil;
+import com.dancestudio.erp.modules.payments.PaymentManager;
+import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
+import com.dancestudio.erp.util.DateUtil;
+
+import lombok.Setter;
+import lombok.SneakyThrows;
 
 @Service
 @Setter
@@ -69,7 +76,7 @@ public class StudentActivityAssignmentManager
             paymentEntry.setPayeeType(PayeeType.STUDENT);
             paymentEntry = paymentManager.add(paymentEntry);
             studentActivityAssignmentEntry = StudentActivityAssignmentConvertor
-                    .convertToEntry(studentStudentActivityAssignmentAssignment);
+                    .convertToEntry(studentStudentActivityAssignmentAssignment, new String[] {});
             studentActivityAssignmentEntry.setPaymentEntry(paymentEntry);
             return studentActivityAssignmentEntry;
         } catch (Exception ex) {
@@ -115,7 +122,7 @@ public class StudentActivityAssignmentManager
         StudentActivityAssignment assignment = studentActivityAssignmentRepository
                 .findByStudentIdAndActivityId(studentId, activityName);
 
-        return StudentActivityAssignmentConvertor.convertToEntry(assignment);
+        return StudentActivityAssignmentConvertor.convertToEntry(assignment, new String[] {});
     }
 
     public List<StudentActivityAssignmentEntry> getStudentAssignmentsByStudentId(Long studentId) throws Exception {
@@ -123,7 +130,7 @@ public class StudentActivityAssignmentManager
         List<StudentActivityAssignmentEntry> entries = new ArrayList<>();
 
         for (StudentActivityAssignment enrollment : enrollments) {
-            entries.add(StudentActivityAssignmentConvertor.convertToEntry(enrollment));
+            entries.add(StudentActivityAssignmentConvertor.convertToEntry(enrollment, new String[] {}));
         }
 
         return entries;
@@ -139,7 +146,7 @@ public class StudentActivityAssignmentManager
         for (StudentActivityAssignment entry : entries) {
             boolean isActive = entry.getMembershipEndDate().after(DateUtil.getCurrentDateUTC());
             if ((status.equalsIgnoreCase("ACTIVE") && isActive) || (status.equalsIgnoreCase("INACTIVE") && !isActive)) {
-                assignmentEntries.add(StudentActivityAssignmentConvertor.convertToEntry(entry));
+                assignmentEntries.add(StudentActivityAssignmentConvertor.convertToEntry(entry, new String[] {}));
             }
         }
         return assignmentEntries;
@@ -209,13 +216,6 @@ public class StudentActivityAssignmentManager
                 .sum();
     }
 
-    public Page<StudentActivityAssignment> getAssignmentsByStudentId(Long id, Integer page, Integer size)
-            throws Exception {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-
-        return studentActivityAssignmentRepository.findActivitiesByStudentId(id, pageable);
-    }
-
     @Override
     protected StudentActivityAssignment toEntity(StudentActivityAssignmentEntry entry,
             StudentActivityAssignment existing) throws EntityNotFoundException, BeansException, Exception {
@@ -223,8 +223,81 @@ public class StudentActivityAssignmentManager
     }
 
     @Override
-    protected StudentActivityAssignmentEntry toEntry(StudentActivityAssignment entity) throws EntityNotFoundException {
-        return StudentActivityAssignmentConvertor.convertToEntry(entity);
+    protected StudentActivityAssignmentEntry toEntry(StudentActivityAssignment entity, String[] fields)
+            throws EntityNotFoundException {
+        return StudentActivityAssignmentConvertor.convertToEntry(entity, fields);
     }
 
+    public StudentActivityAssignmentEntry markAttendance(Long activityAssignmentId) throws Exception {
+        StudentActivityAssignment assignment = studentActivityAssignmentRepository
+                .findById(activityAssignmentId)
+                .orElseThrow(() -> new EntityNotFoundException("Activity assignment not found"));
+        if (!MemberActiveStatusUtil.isMembershipActive(assignment.getMembershipStartDate(),
+                assignment.getMembershipEndDate())) {
+            throw new RuntimeException("Membership is not active");
+        }
+        toggleAttendance(assignment, DateUtil.getTodayDate(), true);
+        return toEntry(studentActivityAssignmentRepository.save(assignment),
+                new String[] { "attendanceEntries" });
+    }
+
+    public List<StudentActivityAssignmentEntry> markAttendanceBulk(
+            AttendanceReqDTO reqDTO) throws Exception {
+
+        List<StudentActivityAssignment> assignments = studentActivityAssignmentRepository
+                .findAllById(reqDTO.getActivityAssignmentIds());
+
+        if (assignments.size() != reqDTO.getActivityAssignmentIds().size()) {
+            throw new EntityNotFoundException("Some assignments not found");
+        }
+
+        Date today = DateUtil.getUTCDate(reqDTO.getDate());
+
+        for (StudentActivityAssignment assignment : assignments) {
+
+            if (!MemberActiveStatusUtil.isMembershipActive(
+                    assignment.getMembershipStartDate(),
+                    assignment.getMembershipEndDate())) {
+
+                throw new RuntimeException(
+                        "Membership inactive for assignment id: "
+                                + assignment.getId());
+            }
+            toggleAttendance(assignment, today, reqDTO.isPresent());
+        }
+
+        List<StudentActivityAssignment> saved = studentActivityAssignmentRepository.saveAll(assignments);
+        return saved.stream()
+                .map(arg0 -> {
+                    try {
+                        return toEntry(arg0, new String[] { "attendanceEntries" });
+                    } catch (EntityNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                })
+                .toList();
+    }
+
+    public void toggleAttendance(StudentActivityAssignment assignment, Date date, boolean preset) {
+        assignment.setAttendanceBitmap(AttendanceUtils.toggleAttendance(
+                assignment.getAttendanceBitmap(), assignment.getMembershipStartDate(),
+                assignment.getMembershipEndDate(),
+                date, preset));
+    }
+
+    public Page<StudentActivityAssignment> getAssignmentsByCriteria(
+            Long rootId,
+            String rootType,
+            com.dancestudio.erp.enums.ActivityType activityName,
+            String searchText,
+            java.time.LocalDate date,
+            Integer page,
+            Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        org.springframework.data.jpa.domain.Specification<StudentActivityAssignment> spec = StudentActivityAssignmentSpecification
+                .getAssignmentsByCriteria(
+                        rootId, rootType, activityName, searchText, date);
+        return studentActivityAssignmentRepository.findAll(spec, pageable);
+    }
 }

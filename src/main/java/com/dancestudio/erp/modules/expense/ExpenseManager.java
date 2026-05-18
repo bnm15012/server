@@ -69,7 +69,7 @@ public class ExpenseManager extends BaseManager<Expense, Long, ExpenseEntry> {
     }
 
     @Override
-    protected ExpenseEntry toEntry(Expense entity) throws EntityNotFoundException {
+    protected ExpenseEntry toEntry(Expense entity, String[] fields) throws EntityNotFoundException {
         return ExpenseConvertor.toEntry(entity);
     }
 }
