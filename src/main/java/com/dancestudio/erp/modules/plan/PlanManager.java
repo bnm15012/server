@@ -55,7 +55,7 @@ public class PlanManager extends BaseManager<Plan, Long, PlanEntry> {
     }
 
     @Override
-    protected PlanEntry toEntry(Plan entity) throws EntityNotFoundException {
+    protected PlanEntry toEntry(Plan entity, String[] fields) throws EntityNotFoundException {
         return PlanConvertor.convertToEntry(entity);
     }
 

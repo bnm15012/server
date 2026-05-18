@@ -99,7 +99,7 @@ public class InstructorActivityAssignmentManager
         }
 
         @Override
-        protected InstructorActivityAssignmentEntry toEntry(InstructorActivityAssignment entity)
+        protected InstructorActivityAssignmentEntry toEntry(InstructorActivityAssignment entity, String[] fields)
                         throws EntityNotFoundException {
                 return InstructorActivityAssignmentConvertor.convertToEntry(entity);
         }

@@ -1,6 +1,5 @@
 package com.dancestudio.erp.modules.membershipPackage;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 import org.springframework.beans.BeansException;
@@ -42,7 +41,7 @@ public class MembershipPackagesManager extends BaseManager<MembershipPackages, L
    }
 
    @Override
-   protected MembershipPackagesEntry toEntry(MembershipPackages entity) throws EntityNotFoundException {
+   protected MembershipPackagesEntry toEntry(MembershipPackages entity, String[] fields) throws EntityNotFoundException {
       return MembershipPackagesConverter.toEntry(entity);
    }
 
@@ -87,8 +86,8 @@ public class MembershipPackagesManager extends BaseManager<MembershipPackages, L
    }
 
    private void validate(MembershipPackagesEntry entry) {
-      if (entry.getDays() > 368) {
-         throw new RuntimeException("Days cannot be more than 368");
+      if (entry.getDays() >= 368) {
+         throw new RuntimeException("Days cannot be more than or equal to 368");
       }
       if (predefinedMemberShipTypes.contains(entry.getMembershipPackage())) {
          throw new RuntimeException(entry.getMembershipPackage() + " is predefined membership type.");

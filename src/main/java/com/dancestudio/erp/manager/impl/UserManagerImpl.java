@@ -21,7 +21,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_USER_EMAIL;
@@ -97,8 +99,14 @@ public class UserManagerImpl implements UserManager {
 
         UserEntry entry = convertToEntry(user);
 
-        String token = jwtUtil.generateAuthToken(user.getEmail(), (entry.getSubscriptionEntry() != null) ? entry.getSubscriptionEntry().getEndDate() : null);
+        Map<String, Object> claims = new HashMap<>();
+        if(entry.getSubscriptionEntry() != null) {
+            claims.put("membershipEndDate", entry.getSubscriptionEntry().getEndDate());
+            claims.put("branchId", user.getBranch().getId());
+            claims.put("studioId", user.getBranch().getStudio().getId());
+        }
 
+        String token = jwtUtil.generateAuthToken(user.getEmail(), claims);
         entry.setToken(token);
         return entry;
     }

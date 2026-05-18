@@ -28,7 +28,7 @@ public class ActivityBatchManager extends BaseManager<ActivityBatch, Long, Activ
     }
 
     @Override
-    protected ActivityBatchEntry toEntry(ActivityBatch entity) throws EntityNotFoundException {
+    protected ActivityBatchEntry toEntry(ActivityBatch entity, String[] fields) throws EntityNotFoundException {
         return ActivityBatchConvertor.convertToEntry(entity);
     }
 

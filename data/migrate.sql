@@ -71,3 +71,6 @@ SET latest_end_date = NULL
 WHERE latest_end_date < '1000-01-01';
 
 COMMIT;
+
+
+-- done 

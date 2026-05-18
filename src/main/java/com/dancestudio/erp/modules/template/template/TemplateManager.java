@@ -65,7 +65,7 @@ public class TemplateManager extends BaseManager<Template, Long, TemplateEntry> 
     }
 
     @Override
-    protected TemplateEntry toEntry(Template entity) throws EntityNotFoundException {
+    protected TemplateEntry toEntry(Template entity, String[] fields) throws EntityNotFoundException {
         return TemplateConvertor.convertToEntry(entity);
     }
 

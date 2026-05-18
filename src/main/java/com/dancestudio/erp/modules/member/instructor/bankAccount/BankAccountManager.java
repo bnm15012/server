@@ -31,7 +31,7 @@ public class BankAccountManager extends BaseManager<BankAccount, Long, BankAccou
     }
 
     @Override
-    protected BankAccountEntry toEntry(BankAccount entity) throws EntityNotFoundException {
+    protected BankAccountEntry toEntry(BankAccount entity, String[] fields) throws EntityNotFoundException {
         return ConvertToEntryUtil.convertToEntry(entity);
     }
 

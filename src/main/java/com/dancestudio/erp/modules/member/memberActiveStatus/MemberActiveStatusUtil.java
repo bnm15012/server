@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.member.Member;
+import com.dancestudio.erp.util.DateUtil;
 
 import jakarta.annotation.PostConstruct;
 
@@ -126,5 +127,19 @@ public class MemberActiveStatusUtil {
             // Create neutral entry so system is consistent
             manager.add(new MemberActiveStatusEntry(memberId, start, end));
         }
+    }
+
+    public static Boolean isMembershipActive(Date start, Date end) {
+        Date today = DateUtil.getTodayDate();
+        if (start == null)
+            return false;
+
+        boolean started = !today.before(start);
+
+        if (end == null)
+            return started;
+
+        boolean notEnded = !today.after(end);
+        return started && notEnded;
     }
 }

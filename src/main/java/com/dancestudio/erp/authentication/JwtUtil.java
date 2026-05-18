@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -42,7 +43,7 @@ public class JwtUtil {
         return String.valueOf(otp);
     }
 
-    public String generateToken(String email, Date membershipEndDate, String otp, AuthType authType) {
+    public String generateToken(String email, Map<String, Object> claims, String otp, AuthType authType) {
         Date now = DateUtil.getCurrentDateUTC();
         Date expiryDate;
 
@@ -62,15 +63,15 @@ public class JwtUtil {
             tokenBuilder.claim("otp", otp);
         }
 
-        if(Objects.nonNull(membershipEndDate)) {
-            tokenBuilder.claim("membershipEndDate", membershipEndDate);
+        if(Objects.nonNull(claims)) {
+            claims.forEach((key, value) -> tokenBuilder.claim(key, value));
         }
 
         return tokenBuilder.compact();
     }
 
-    public String generateAuthToken(String email, Date membershipEndDate) {
-        return generateToken(email, membershipEndDate, null, AuthType.AUTH);
+    public String generateAuthToken(String email, Map<String, Object> claims) {
+        return generateToken(email, claims, null, AuthType.AUTH);
     }
 
     public String generateAccessToken(String email) {

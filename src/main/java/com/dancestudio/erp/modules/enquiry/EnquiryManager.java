@@ -57,7 +57,7 @@ public class EnquiryManager extends BaseManager<Enquiry, Long, EnquiryEntry> {
     }
 
     @Override
-    protected EnquiryEntry toEntry(Enquiry entity) throws EntityNotFoundException {
+    protected EnquiryEntry toEntry(Enquiry entity, String[] fields) throws EntityNotFoundException {
         return EnquiryConverter.toEntry(entity);
     }
 }

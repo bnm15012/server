@@ -26,6 +26,11 @@ public class DateUtil {
         return Date.from(Instant.now());
     }
 
+    public static Date getUTCDate(LocalDate localDate) {
+        ZonedDateTime zonedStart = localDate.atStartOfDay(TimeZoneContext.getTimeZone());
+        return Date.from(zonedStart.toInstant());
+    }
+
     public static Map<String, Date> getDateRangeByMonthYear(int startMonth, int startYear, int endMonth, int endYear) {
         return getUTCDateRange(1, startMonth, startYear, 31, endMonth, endYear);
     }
@@ -94,8 +99,10 @@ public class DateUtil {
 
     public static LocalDate getToday() {
         ZoneId zoneId = TimeZoneContext.getTimeZone();
-        LocalDate today = LocalDate.now(zoneId);
-        ZonedDateTime startOfDayIst = today.atStartOfDay(zoneId);
-        return startOfDayIst.toLocalDate();
+        return LocalDate.now(zoneId);
+    }
+
+    public static Date getTodayDate() {
+        return Date.from(getToday().atStartOfDay(TimeZoneContext.getTimeZone()).toInstant());
     }
 }

@@ -18,12 +18,12 @@ public abstract class BaseManager<Entity, ID, Entry> {
     protected abstract Entity toEntity(Entry entry, Entity existing)
             throws EntityNotFoundException, BeansException, Exception;
 
-    protected abstract Entry toEntry(Entity entity) throws EntityNotFoundException;
+    protected abstract Entry toEntry(Entity entity, String[] fields) throws EntityNotFoundException;
 
     public Entry add(Entry entry) throws EntityNotFoundException, BeansException, Exception {
         Entity entity = toEntity(entry, null);
         Entity saved = repository.save(entity);
-        return toEntry(saved);
+        return toEntry(saved, new String[] {});
     }
 
     public Entry update(ID id, Entry entry) throws EntityNotFoundException, BeansException, Exception {
@@ -32,7 +32,7 @@ public abstract class BaseManager<Entity, ID, Entry> {
 
         Entity updated = toEntity(entry, existing);
         Entity saved = repository.save(updated);
-        return toEntry(saved);
+        return toEntry(saved, new String[] {});
     }
 
     public void delete(ID id) throws EntityNotFoundException {
@@ -45,6 +45,6 @@ public abstract class BaseManager<Entity, ID, Entry> {
         Entity entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(entityName + " not found"));
 
-        return toEntry(entity);
+        return toEntry(entity, new String[] {});
     }
 }

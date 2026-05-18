@@ -114,7 +114,7 @@ public class InstructorManager extends BaseManager<Member, Long, InstructorEntry
     }
 
     @Override
-    protected InstructorEntry toEntry(Member entity) throws EntityNotFoundException {
+    protected InstructorEntry toEntry(Member entity, String[] fields) throws EntityNotFoundException {
         return InstructorConvertor.convertToEntry(entity);
     }
 }

@@ -64,12 +64,12 @@ public class ClientManager extends BaseManager<Client, Long, ClientEntry> {
     @Override
     protected Client toEntity(ClientEntry entry, Client existing)
             throws EntityNotFoundException, BeansException, Exception {
-                return ClientConvertor.convertToEntity(entry, existing);
+        return ClientConvertor.convertToEntity(entry, existing);
 
     }
 
     @Override
-    protected ClientEntry toEntry(Client entity) throws EntityNotFoundException {
+    protected ClientEntry toEntry(Client entity, String[] fields) throws EntityNotFoundException {
         return ClientConvertor.convertToEntry(entity);
     }
 

@@ -127,7 +127,7 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
     }
 
     @Override
-    protected BookingEntry toEntry(Booking entity) throws EntityNotFoundException {
+    protected BookingEntry toEntry(Booking entity, String[] fields) throws EntityNotFoundException {
         return BookingConvertor.convertToEntry(entity);
     }
 }

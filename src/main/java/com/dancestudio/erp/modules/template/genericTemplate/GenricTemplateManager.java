@@ -41,7 +41,7 @@ public class GenricTemplateManager extends BaseManager<GenericTemplate, Long, Ge
     }
 
     @Override
-    protected GenricTemplateEntry toEntry(GenericTemplate entity) throws EntityNotFoundException {
+    protected GenricTemplateEntry toEntry(GenericTemplate entity, String[] fields) throws EntityNotFoundException {
         return GenericTemplateConvertor.convertToEntry(entity);
     }
 }

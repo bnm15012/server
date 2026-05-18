@@ -7,16 +7,21 @@ import lombok.EqualsAndHashCode;
 import java.util.Date;
 
 import com.dancestudio.erp.entity.BaseEntity;
+import com.dancestudio.erp.enums.ActivityType;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.payments.entity.PaymentStudentActivity;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@Table(indexes = {
+    @Index(name = "idx_student_activity_search", columnList = "activity_name, batch_name, batch_time")
+})
 public class StudentActivityAssignment extends BaseEntity {
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "activity_name", nullable = false, length = 100)
-    private String activityName;
+    private ActivityType activityName;
 
     @Column(name = "registration_date", nullable = false)
     private Date registrationDate;
@@ -48,4 +53,7 @@ public class StudentActivityAssignment extends BaseEntity {
 
     @OneToOne(mappedBy = "studentActivityAssignment", cascade = CascadeType.ALL, orphanRemoval = true)
     private PaymentStudentActivity payment;
+
+    @Column(columnDefinition = "VARBINARY(48)", name = "attendance")
+    private byte[] attendanceBitmap;
 }
