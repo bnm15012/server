@@ -236,7 +236,7 @@ public class StudentActivityAssignmentManager
                 assignment.getMembershipEndDate())) {
             throw new RuntimeException("Membership is not active");
         }
-        toggleAttendance(assignment, DateUtil.getTodayDate(), true);
+        toggleAttendance(assignment, DateUtil.getCurrentDateUTC(), true);
         return toEntry(studentActivityAssignmentRepository.save(assignment),
                 new String[] { "attendanceEntries" });
     }

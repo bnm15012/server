@@ -130,7 +130,7 @@ public class MemberActiveStatusUtil {
     }
 
     public static Boolean isMembershipActive(Date start, Date end) {
-        Date today = DateUtil.getTodayDate();
+        Date today = DateUtil.getCurrentDateUTC();
         if (start == null)
             return false;
 
