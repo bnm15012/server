@@ -9,12 +9,14 @@ import java.time.LocalDate;
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Branch;
 import com.dancestudio.erp.enums.GenderType;
+import com.dancestudio.erp.modules.member.student.StudentEnrollmentData;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "members", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "email", "member_type", "branch_id"}, name = "unique_name_email_membertype_branch")
+        @UniqueConstraint(columnNames = { "name", "email", "member_type",
+                "branch_id" }, name = "unique_name_email_membertype_branch")
 })
 public class Member extends BaseEntity {
 
@@ -49,4 +51,7 @@ public class Member extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_member_branch_id"))
     private Branch branch;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private StudentEnrollmentData enrollmentData;
 }

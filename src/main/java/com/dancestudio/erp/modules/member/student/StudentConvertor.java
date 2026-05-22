@@ -48,6 +48,10 @@ public class StudentConvertor {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        studentEntry.setAdditionalData(student.getEnrollmentData() != null
+                ? student.getEnrollmentData().getAdditionalData()
+                : null);
+
         return studentEntry;
     }
 
@@ -89,6 +93,18 @@ public class StudentConvertor {
                     .getBean(BranchManager.class);
             BranchEntry entry = branchManager.getById(studentEntry.getBranchId());
             student.setBranch(ConvertToEntryUtil.convertToEntity(entry, null));
+        }
+
+        String additionalData = studentEntry.getAdditionalData();
+        if (additionalData != null && !additionalData.isBlank()) {
+            StudentEnrollmentData enrollmentData = student.getEnrollmentData() != null
+                    ? student.getEnrollmentData()
+                    : new StudentEnrollmentData();
+            enrollmentData.setMember(student);
+            enrollmentData.setAdditionalData(additionalData);
+            student.setEnrollmentData(enrollmentData);
+        } else if (student.getEnrollmentData() != null) {
+            student.setEnrollmentData(null);
         }
 
         return student;

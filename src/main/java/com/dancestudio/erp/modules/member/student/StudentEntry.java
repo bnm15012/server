@@ -23,4 +23,6 @@ public class StudentEntry {
     private GenderType gender;
     private Long activeMembershipCount;
 
+    // additional info
+    private String additionalData;   
 }
