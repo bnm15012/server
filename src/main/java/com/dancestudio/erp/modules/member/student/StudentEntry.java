@@ -1,6 +1,7 @@
 package com.dancestudio.erp.modules.member.student;
 
 
+import com.dancestudio.erp.enums.GenderType;
 import com.dancestudio.erp.enums.MembershipStatus;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class StudentEntry {
     private String emergencyContactNumber;
     private MembershipStatus membershipStatus;
     private Long branchId;
+    private GenderType gender;
     private Long activeMembershipCount;
 
 }

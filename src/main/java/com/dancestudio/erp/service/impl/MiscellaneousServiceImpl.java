@@ -15,15 +15,14 @@ import com.dancestudio.erp.service.MiscellaneousService;
 import com.dancestudio.erp.util.DateUtil;
 
 import lombok.Setter;
+
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +49,10 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
             response.setData(Collections.singletonList(url));
             response.setStatus(new StatusResponse(1, "Image uploaded successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);
+        } catch (SizeLimitExceededException ex) {
+            response.setStatus(
+                    new StatusResponse(1, "Image size is too large. Upload max 1MB file.", StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(1, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

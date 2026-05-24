@@ -5,10 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Branch;
+import com.dancestudio.erp.enums.GenderType;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -29,6 +29,10 @@ public class Member extends BaseEntity {
 
     @Column(name = "dob")
     private LocalDate dob;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
+    private GenderType gender;
 
     @Column(name = "profile_image")
     private String profileImage;

@@ -35,6 +35,7 @@ public class StudentConvertor {
         studentEntry.setName(student.getName());
         studentEntry.setPhone(student.getPhone());
         studentEntry.setDob(student.getDob());
+        studentEntry.setGender(student.getGender());
         studentEntry.setEmail(student.getEmail());
         studentEntry.setImageUrl(student.getProfileImage());
         studentEntry.setAddress(student.getAddress());
@@ -61,6 +62,9 @@ public class StudentConvertor {
         }
         if (Objects.nonNull(studentEntry.getName())) {
             student.setName(studentEntry.getName());
+        }
+        if (Objects.nonNull(studentEntry.getGender())) {
+            student.setGender(studentEntry.getGender());
         }
         if (Objects.nonNull(studentEntry.getEmail())) {
             student.setEmail(studentEntry.getEmail());
