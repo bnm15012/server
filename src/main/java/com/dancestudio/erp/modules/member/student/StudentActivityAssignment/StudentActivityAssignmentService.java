@@ -1,6 +1,7 @@
 package com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
 
 import com.dancestudio.erp.base.BaseService;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenResponse;
 import com.dancestudio.erp.modules.member.attendance.AttendanceReqDTO;
 import com.dancestudio.erp.response.StatusResponse;
 import lombok.Setter;
@@ -89,8 +90,23 @@ public class StudentActivityAssignmentService extends BaseService<StudentActivit
             java.util.List<StudentActivityAssignmentEntry> activityAssignmentEntries = studentActivityAssignmentManager
                     .markAttendanceBulk(reqDTO);
             response.setData(activityAssignmentEntries);
-            response.setStatus(new StatusResponse(1, "Bulk attendance marked successfully", StatusResponse.Type.SUCCESS));
+            response.setStatus(
+                    new StatusResponse(1, "Bulk attendance marked successfully", StatusResponse.Type.SUCCESS));
             return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    public ResponseEntity<InvoiceTokenResponse> getInvoiceDataByToken(String token) {
+        InvoiceTokenResponse response = new InvoiceTokenResponse();
+        try {
+            InvoiceTokenResponse data = studentActivityAssignmentManager.getInvoiceDataByToken(token);
+            return ResponseEntity.ok(data);
+        } catch (com.dancestudio.erp.exception.EntityNotFoundException ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception ex) {
             response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

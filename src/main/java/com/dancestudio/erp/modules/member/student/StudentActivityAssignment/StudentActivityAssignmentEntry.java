@@ -30,4 +30,5 @@ public class StudentActivityAssignmentEntry {
 
     private PaymentEntry paymentEntry;
     private Long studentId;
+    private String invoiceToken;
 }

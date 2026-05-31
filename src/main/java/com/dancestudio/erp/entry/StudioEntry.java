@@ -3,7 +3,10 @@ package com.dancestudio.erp.entry;
 import lombok.Data;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudioEntry {
 
     private Long studioId;

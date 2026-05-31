@@ -10,8 +10,8 @@ import com.dancestudio.erp.manager.StudioManager;
 import com.dancestudio.erp.manager.SubscriptionManager;
 import com.dancestudio.erp.modules.plan.PlanEntry;
 import com.dancestudio.erp.modules.plan.PlanManager;
+import com.dancestudio.erp.modules.studio.StudioConvertor;
 import com.dancestudio.erp.repository.SubscriptionRepository;
-import com.dancestudio.erp.util.ConvertToEntryUtil;
 import com.dancestudio.erp.util.SubscriptionUtils;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
@@ -192,7 +192,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         }
         if (Objects.nonNull(subscriptionEntry.getStudioId())) {
             StudioEntry entry = studioManager.getById(subscriptionEntry.getStudioId());
-            subscription.setStudio(ConvertToEntryUtil.convertToEntity(entry, null));
+            subscription.setStudio(StudioConvertor.convertToEntity(entry, null));
         }
         if (Objects.nonNull(subscriptionEntry.getSubscriptionPlan())) {
             subscription.setSubscriptionPlan(String.valueOf(subscriptionEntry.getSubscriptionPlan()));

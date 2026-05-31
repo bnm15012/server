@@ -21,9 +21,7 @@ import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.Stud
 import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentManager;
 import com.dancestudio.erp.modules.payments.entity.Payment;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dancestudio.erp.modules.studio.StudioConvertor;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,14 +30,12 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Component
 public class ConvertToEntryUtil {
 
     private static ApplicationContext applicationContext;
-    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private ApplicationContext context;
@@ -140,7 +136,7 @@ public class ConvertToEntryUtil {
 
             StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
             StudioEntry studioEntry = studioManagerImpl.getById(studioId);
-            user.setStudio(convertToEntity(studioEntry, null));
+            user.setStudio(StudioConvertor.convertToEntity(studioEntry, null));
         }
 
         if (Objects.nonNull(userEntry.getStudioEntry())
@@ -159,89 +155,6 @@ public class ConvertToEntryUtil {
         }
 
         return user;
-    }
-
-    public static StudioEntry convertToEntry(Studio studio) throws Exception {
-
-        StudioEntry studioEntry = new StudioEntry();
-        studioEntry.setStudioId(studio.getId());
-        studioEntry.setStudioName(studio.getName());
-        studioEntry.setLocation(studio.getLocation());
-        studioEntry.setLogo(studio.getLogo());
-        studioEntry.setEmail(studio.getEmail());
-        studioEntry.setGstNumber(studio.getGstNumber());
-        studioEntry.setPasscode(studio.getPasscode());
-        studioEntry.setContactDetails(studio.getContactDetails());
-        studioEntry.setAmcEnabled(studio.getAmcEnabled());
-
-        if (studio.getConfiguration() != null) {
-            try {
-                Map<String, Boolean> configurationMap = objectMapper.readValue(
-                        studio.getConfiguration(),
-                        new TypeReference<Map<String, Boolean>>() {
-                        });
-
-                StudioConfigurationRequest request = new StudioConfigurationRequest();
-                request.setConfigrationEntryList(configurationMap);
-                studioEntry.setConfiguration(request);
-            } catch (Exception e) {
-                throw new RuntimeException("Error parsing configuration settings JSON ", e);
-            }
-        }
-
-        try {
-            BranchManagerImpl branchManager = applicationContext.getBean(BranchManagerImpl.class);
-            List<BranchEntry> branchEntries = branchManager.findByStudioId(studio.getId());
-            studioEntry.setBranchList(branchEntries);
-        } catch (Exception ex) {
-            studioEntry.setBranchList(null);
-        }
-
-        return studioEntry;
-    }
-
-    public static Studio convertToEntity(StudioEntry studioEntry, Studio existingStudio) {
-        Studio studio = (existingStudio != null) ? existingStudio : new Studio();
-
-        if (Objects.nonNull(studioEntry.getStudioId())) {
-            studio.setId(studioEntry.getStudioId());
-        }
-        if (Objects.nonNull(studioEntry.getStudioName())) {
-            studio.setName(studioEntry.getStudioName());
-        }
-        if (Objects.nonNull(studioEntry.getLogo())) {
-            studio.setLogo(studioEntry.getLogo());
-        }
-        if (Objects.nonNull(studioEntry.getGstNumber())) {
-            studio.setGstNumber(studioEntry.getGstNumber());
-        }
-        if (Objects.nonNull(studioEntry.getEmail())) {
-            studio.setEmail(studioEntry.getEmail());
-        }
-        if (Objects.nonNull(studioEntry.getPasscode())) {
-            studio.setPasscode(studioEntry.getPasscode());
-        }
-        if (Objects.nonNull(studioEntry.getLocation())) {
-            studio.setLocation(studioEntry.getLocation());
-        }
-        if (Objects.nonNull(studioEntry.getContactDetails())) {
-            studio.setContactDetails(studioEntry.getContactDetails());
-        }
-        if (Objects.nonNull(studioEntry.getConfiguration())) {
-            Map<String, Boolean> configurationMap = studioEntry.getConfiguration()
-                    .getConfigrationEntryList();
-            try {
-                String configurationJson = objectMapper.writeValueAsString(configurationMap);
-                studio.setConfiguration(configurationJson);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException("Error converting configuration settings to JSON", e);
-            }
-        }
-        if (Objects.nonNull(studioEntry.getAmcEnabled())) {
-            studio.setAmcEnabled(studioEntry.getAmcEnabled());
-        }
-
-        return studio;
     }
 
     public static Client convertToEntity(ClientEntry clientEntry, Client existingClient) {
@@ -409,7 +322,7 @@ public class ConvertToEntryUtil {
         if (Objects.nonNull(branchEntry.getStudioId())) {
             StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
             StudioEntry studioEntry = studioManagerImpl.getById(branchEntry.getStudioId());
-            branch.setStudio(ConvertToEntryUtil.convertToEntity(studioEntry, null));
+            branch.setStudio(StudioConvertor.convertToEntity(studioEntry, null));
         }
 
         return branch;

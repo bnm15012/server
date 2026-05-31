@@ -99,6 +99,12 @@ public class StudentActivityAssignmentConvertor {
                         .setPaymentEntry(PaymentConvertor.convertToEntry(studentActivityAssignment.getPayment()));
             }
         }
+        if (includeAll || Arrays.asList(fields).contains("invoiceToken")) {
+            if (Objects.nonNull(studentActivityAssignment.getStudentInvoiceToken())) {
+                studentActivityAssignmentEntry
+                        .setInvoiceToken(studentActivityAssignment.getStudentInvoiceToken().getInvoiceToken().toString());
+            }
+        }
 
         return studentActivityAssignmentEntry;
     }

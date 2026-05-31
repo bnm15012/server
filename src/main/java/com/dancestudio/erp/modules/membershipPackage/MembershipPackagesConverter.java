@@ -1,8 +1,7 @@
 package com.dancestudio.erp.modules.membershipPackage;
 
 import com.dancestudio.erp.manager.impl.StudioManagerImpl;
-import com.dancestudio.erp.util.ConvertToEntryUtil;
-
+import com.dancestudio.erp.modules.studio.StudioConvertor;
 import jakarta.annotation.PostConstruct;
 
 import java.util.Objects;
@@ -54,7 +53,7 @@ public class MembershipPackagesConverter {
             entity.setDays(entry.getDays());
         }
         if (Objects.nonNull(entry.getStudioId())) {
-            entity.setStudio(ConvertToEntryUtil.convertToEntity(
+            entity.setStudio(StudioConvertor.convertToEntity(
                     applicationContext.getBean(StudioManagerImpl.class).getById(entry.getStudioId()), null));
         }
         if (Objects.nonNull(entry.getMembershipPackage())) {

@@ -4,8 +4,8 @@ import com.dancestudio.erp.base.BaseManager;
 import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.entry.StudioEntry;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.modules.studio.StudioConvertor;
 import com.dancestudio.erp.repository.StudioRepository;
-import com.dancestudio.erp.util.ConvertToEntryUtil;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class TemplateManager extends BaseManager<Template, Long, TemplateEntry> 
                 .toList();
 
         Studio studio = studioRepository.findById(studioId).get();
-        StudioEntry studioEntry = ConvertToEntryUtil.convertToEntry(studio);
+        StudioEntry studioEntry = StudioConvertor.convertToEntry(studio);
 
         return templates.stream()
                 .map(template -> {

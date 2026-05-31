@@ -8,6 +8,7 @@ import java.util.Date;
 
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.enums.ActivityType;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceToken;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.payments.entity.PaymentStudentActivity;
 
@@ -53,6 +54,9 @@ public class StudentActivityAssignment extends BaseEntity {
 
     @OneToOne(mappedBy = "studentActivityAssignment", cascade = CascadeType.ALL, orphanRemoval = true)
     private PaymentStudentActivity payment;
+
+    @OneToOne(mappedBy = "studentActivityAssignment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private InvoiceToken studentInvoiceToken;
 
     @Column(columnDefinition = "VARBINARY(48)", name = "attendance")
     private byte[] attendanceBitmap;

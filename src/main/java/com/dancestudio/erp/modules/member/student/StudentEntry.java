@@ -7,7 +7,10 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentEntry {
 
     private Long studentId;

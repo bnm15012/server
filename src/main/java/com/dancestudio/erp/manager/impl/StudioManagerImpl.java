@@ -7,6 +7,7 @@ import com.dancestudio.erp.enums.UserType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.modules.message_queue.services.EmailService;
+import com.dancestudio.erp.modules.studio.StudioConvertor;
 import com.dancestudio.erp.modules.template.template.TemplateEntry;
 import com.dancestudio.erp.modules.template.template.TemplateManager;
 import com.dancestudio.erp.repository.StudioRepository;
@@ -23,8 +24,6 @@ import java.util.Objects;
 
 import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_STUDIO_EMAIL;
 import static com.dancestudio.erp.constants.TemplateName.UPDATE_STUDIO_EMAIL;
-import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntity;
-import static com.dancestudio.erp.util.ConvertToEntryUtil.convertToEntry;
 
 @Service
 public class StudioManagerImpl implements StudioManager {
@@ -55,7 +54,7 @@ public class StudioManagerImpl implements StudioManager {
             throw new EntityNotFoundException("Studio already exists");
         }
         addDefaultConfiguration(studioEntry);
-        Studio studio = convertToEntity(studioEntry, null);
+        Studio studio = StudioConvertor.convertToEntity(studioEntry, null);
         studio = studioRepository.save(studio);
 
         BranchEntry branchEntry = studioEntry.getBranchList().get(0);
@@ -65,7 +64,7 @@ public class StudioManagerImpl implements StudioManager {
             branchEntry = branchManager.add(branchEntry);
         }
 
-        StudioEntry updateStudioEntry = convertToEntry(studio);
+        StudioEntry updateStudioEntry = StudioConvertor.convertToEntry(studio);
         updateStudioEntry.setBranchList(Collections.singletonList(branchEntry));
         autoRegisterNewUser(studioEntry, studio);
         return updateStudioEntry;
@@ -76,7 +75,7 @@ public class StudioManagerImpl implements StudioManager {
         Studio existingStudio = studioRepository.findById(studioId)
                 .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
 
-        Studio updatedStudio = convertToEntity(studioEntry, existingStudio);
+        Studio updatedStudio = StudioConvertor.convertToEntity(studioEntry, existingStudio);
         updatedStudio = studioRepository.save(updatedStudio);
 
         TemplateEntry templateEntry = templateManager.getTemplateDetails(UPDATE_STUDIO_EMAIL);
@@ -87,7 +86,7 @@ public class StudioManagerImpl implements StudioManager {
             emailService.sendHighPriorityEmail(studioEntry.getEmail(), templateEntry.getSubject(),
                     templateEntry.getTemplateBody(), null, null, null, null);
         }
-        return convertToEntry(updatedStudio);
+        return StudioConvertor.convertToEntry(updatedStudio);
     }
 
     @Override
@@ -103,7 +102,7 @@ public class StudioManagerImpl implements StudioManager {
         Studio studio = studioRepository.findById(studioId)
                 .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
 
-        return convertToEntry(studio);
+        return StudioConvertor.convertToEntry(studio);
     }
 
     @Override
@@ -112,7 +111,7 @@ public class StudioManagerImpl implements StudioManager {
 
         List<StudioEntry> studioEntries = new ArrayList<>();
         for (Studio entry : entries) {
-            StudioEntry studioEntry = convertToEntry(entry);
+            StudioEntry studioEntry = StudioConvertor.convertToEntry(entry);
             studioEntries.add(studioEntry);
         }
 
@@ -129,7 +128,7 @@ public class StudioManagerImpl implements StudioManager {
         userEntry.setPhone(studioEntry.getContactDetails());
         userEntry.setEmail(studioEntry.getEmail());
         userEntry.setRole(UserType.ADMIN);
-        userEntry.setStudioEntry(convertToEntry(studio));
+        userEntry.setStudioEntry(StudioConvertor.convertToEntry(studio));
         userManager.registerUser(userEntry);
         userEntry.setPassword(password);
 

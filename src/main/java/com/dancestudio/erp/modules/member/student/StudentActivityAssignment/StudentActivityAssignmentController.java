@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.dancestudio.erp.base.BaseController;
 import com.dancestudio.erp.base.BaseService;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenResponse;
 import com.dancestudio.erp.modules.member.attendance.AttendanceReqDTO;
 
 @RestController
@@ -45,5 +46,10 @@ public class StudentActivityAssignmentController
     @PutMapping("/mark_attendance/bulk")
     public ResponseEntity<StudentActivityAssignmentResponse> markAttendanceBulk(@RequestBody AttendanceReqDTO reqDTO) {
         return studentActivityAssignmentService.markAttendanceBulk(reqDTO);
+    }
+
+    @GetMapping("/invoice")
+    public ResponseEntity<InvoiceTokenResponse> getInvoiceDataByToken(@RequestParam String token) {
+        return studentActivityAssignmentService.getInvoiceDataByToken(token);
     }
 }

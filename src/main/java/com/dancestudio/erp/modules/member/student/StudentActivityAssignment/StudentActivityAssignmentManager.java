@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +20,10 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.expense.ExpenseCategory;
 import com.dancestudio.erp.modules.expense.ExpenseEntry;
 import com.dancestudio.erp.modules.expense.ExpenseRepository;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceToken;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenManager;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenRepository;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenResponse;
 import com.dancestudio.erp.modules.member.MemberRepository;
 import com.dancestudio.erp.modules.member.attendance.AttendanceReqDTO;
 import com.dancestudio.erp.modules.member.attendance.AttendanceUtils;
@@ -48,6 +51,12 @@ public class StudentActivityAssignmentManager
     @Autowired
     private ExpenseRepository expenseRepository;
 
+    @Autowired
+    private InvoiceTokenManager invoiceTokenManager;
+
+    @Autowired
+    private InvoiceTokenRepository studentInvoiceTokenRepository;
+
     protected StudentActivityAssignmentManager(StudentActivityAssignmentRepository repository) {
         super(repository, "StudentActivityAssignment");
         this.studentActivityAssignmentRepository = repository;
@@ -65,6 +74,20 @@ public class StudentActivityAssignmentManager
 
         studentStudentActivityAssignmentAssignment = studentActivityAssignmentRepository
                 .save(studentStudentActivityAssignmentAssignment);
+
+        // Generate and save token
+        InvoiceToken token = new InvoiceToken();
+        token.setStudentActivityAssignment(studentStudentActivityAssignmentAssignment);
+        token.setCreatedAt(new java.util.Date());
+
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(token.getCreatedAt());
+        cal.add(java.util.Calendar.MONTH, 1);
+        token.setExpiresAt(cal.getTime());
+
+        studentInvoiceTokenRepository.save(token);
+        studentStudentActivityAssignmentAssignment.setStudentInvoiceToken(token);
+
         MemberActiveStatusUtil.addNewAssignment(studentStudentActivityAssignmentAssignment.getStudent(),
                 studentActivityAssignmentEntry.getMembershipStartDate(),
                 studentActivityAssignmentEntry.getMembershipEndDate());
@@ -299,5 +322,10 @@ public class StudentActivityAssignmentManager
                 .getAssignmentsByCriteria(
                         rootId, rootType, activityName, searchText, date);
         return studentActivityAssignmentRepository.findAll(spec, pageable);
+    }
+
+    public InvoiceTokenResponse getInvoiceDataByToken(String token) throws Exception {
+        InvoiceTokenResponse response = invoiceTokenManager.getInvoiceDataByToken(token);
+        return response;
     }
 }
