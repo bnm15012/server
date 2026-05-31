@@ -40,6 +40,9 @@ public class BookingConvertor {
         bookingEntry.setBookingDate(booking.getBookingDate());
         bookingEntry.setStartTime(booking.getStartTime());
         bookingEntry.setEndTime(booking.getEndTime());
+        if (Objects.nonNull(booking.getInvoiceToken())) {
+            bookingEntry.setInvoiceToken(booking.getInvoiceToken().getInvoiceToken().toString());
+        }
         if (Objects.nonNull(booking.getClient())) {
             bookingEntry.setClientEntry(ClientConvertor.convertToEntry(booking.getClient()));
         }

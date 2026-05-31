@@ -3,6 +3,7 @@ package com.dancestudio.erp.modules.booking;
 import com.dancestudio.erp.base.BaseController;
 import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,10 @@ public class BookingController extends BaseController<BookingEntry, Long> {
             @RequestParam(required = false) String searchTerm) {
         return bookingService.getAllBookings(branchId, page, size, startMonth, startYear, endMonth, endYear,
                 searchTerm);
+    }
+
+    @GetMapping("/invoice")
+    public ResponseEntity<InvoiceTokenResponse> getInvoiceDataByToken(@RequestParam String token) {
+        return bookingService.getInvoiceDataByToken(token);
     }
 }

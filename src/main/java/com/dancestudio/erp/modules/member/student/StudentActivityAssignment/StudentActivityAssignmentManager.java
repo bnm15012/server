@@ -22,7 +22,6 @@ import com.dancestudio.erp.modules.expense.ExpenseEntry;
 import com.dancestudio.erp.modules.expense.ExpenseRepository;
 import com.dancestudio.erp.modules.invoiceToken.InvoiceToken;
 import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenManager;
-import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenRepository;
 import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenResponse;
 import com.dancestudio.erp.modules.member.MemberRepository;
 import com.dancestudio.erp.modules.member.attendance.AttendanceReqDTO;
@@ -54,9 +53,6 @@ public class StudentActivityAssignmentManager
     @Autowired
     private InvoiceTokenManager invoiceTokenManager;
 
-    @Autowired
-    private InvoiceTokenRepository studentInvoiceTokenRepository;
-
     protected StudentActivityAssignmentManager(StudentActivityAssignmentRepository repository) {
         super(repository, "StudentActivityAssignment");
         this.studentActivityAssignmentRepository = repository;
@@ -76,16 +72,7 @@ public class StudentActivityAssignmentManager
                 .save(studentStudentActivityAssignmentAssignment);
 
         // Generate and save token
-        InvoiceToken token = new InvoiceToken();
-        token.setStudentActivityAssignment(studentStudentActivityAssignmentAssignment);
-        token.setCreatedAt(new java.util.Date());
-
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.setTime(token.getCreatedAt());
-        cal.add(java.util.Calendar.MONTH, 1);
-        token.setExpiresAt(cal.getTime());
-
-        studentInvoiceTokenRepository.save(token);
+        InvoiceToken token = invoiceTokenManager.addInvoiceToken(studentStudentActivityAssignmentAssignment);
         studentStudentActivityAssignmentAssignment.setStudentInvoiceToken(token);
 
         MemberActiveStatusUtil.addNewAssignment(studentStudentActivityAssignmentAssignment.getStudent(),

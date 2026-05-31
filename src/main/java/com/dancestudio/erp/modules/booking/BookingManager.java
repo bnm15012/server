@@ -4,6 +4,9 @@ import com.dancestudio.erp.base.BaseManager;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.client.ClientRepository;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceToken;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenManager;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenResponse;
 import com.dancestudio.erp.modules.payments.PaymentConvertor;
 import com.dancestudio.erp.modules.payments.PaymentManager;
 import com.dancestudio.erp.modules.payments.entity.PaymentBooking;
@@ -37,12 +40,15 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
 
     private PaymentManager paymentManager;
 
+    private InvoiceTokenManager invoiceTokenManager;
+
     public BookingManager(BookingRepository bookingRepository, BranchRepository branchRepository,
-            ClientRepository clientRepository) {
+            ClientRepository clientRepository, InvoiceTokenManager invoiceTokenManager) {
         super(bookingRepository, "Booking");
         this.bookingRepository = bookingRepository;
         this.branchRepository = branchRepository;
         this.clientRepository = clientRepository;
+        this.invoiceTokenManager = invoiceTokenManager;
     }
 
     @Override
@@ -58,6 +64,8 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
         Booking booking = BookingConvertor.convertToEntity(bookingEntry, null);
         booking = bookingRepository.save(booking);
 
+        InvoiceToken token = invoiceTokenManager.addInvoiceToken(booking);
+        booking.setInvoiceToken(token);
         try {
             Long payeeId = booking.getId();
             for (PaymentEntry pe : bookingEntry.getPaymentEntries()) {
@@ -67,11 +75,11 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
                 booking.getPayments().add(PaymentConvertor.convertToEntity(payment, (PaymentBooking) null));
             }
 
+            
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new EntityNotFoundException("Failed to add payment details");
         }
-
         return BookingConvertor.convertToEntry(booking);
     }
 
@@ -129,5 +137,9 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
     @Override
     protected BookingEntry toEntry(Booking entity, String[] fields) throws EntityNotFoundException {
         return BookingConvertor.convertToEntry(entity);
+    }
+
+    public InvoiceTokenResponse getInvoiceDataByToken(String token) throws Exception {
+        return invoiceTokenManager.getInvoiceDataByToken(token);
     }
 }

@@ -12,6 +12,7 @@ import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Branch;
 import com.dancestudio.erp.modules.payments.entity.PaymentBooking;
 import com.dancestudio.erp.modules.client.Client;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceToken;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -51,4 +52,6 @@ public class Booking extends BaseEntity {
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentBooking> payments = new ArrayList<>();
 
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private InvoiceToken invoiceToken;
 }

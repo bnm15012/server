@@ -2,27 +2,18 @@ package com.dancestudio.erp.modules.message_queue.services;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
+// import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.dancestudio.erp.entity.Branch;
-import com.dancestudio.erp.entity.Message;
 import com.dancestudio.erp.entity.MessageRecipient;
-import com.dancestudio.erp.entity.Studio;
 import com.dancestudio.erp.enums.MessageStatus;
 import com.dancestudio.erp.enums.NotificationType;
-import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.message_queue.MessageQueue;
 import com.dancestudio.erp.modules.message_queue.MessageQueueRepository;
-import com.dancestudio.erp.modules.template.genericTemplate.GenericTemplateUtil;
 import com.dancestudio.erp.repository.MessageRecipientRepository;
-import com.dancestudio.erp.util.TempFileUtil;
-import com.dancestudio.erp.util.WhatsappUtil;
-import com.dancestudio.erp.util.TempFileUtil.FileData;
-
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,16 +27,15 @@ public class WhatsAppService {
     private final MessageRecipientRepository messageRecipientRepository;
 
     private final MessageQueueRepository repository;
-    private final WhatsappUtil whatsappUtil;
+    // private final WhatsappUtil whatsappUtil;
 
     // Lock to prevent simultaneous sending of bulk and high-priority WhatsApp
     // messages
     private final Lock whatsappLock = new ReentrantLock();
 
-    public WhatsAppService(MessageQueueRepository repository, WhatsappUtil whatsappUtil,
+    public WhatsAppService(MessageQueueRepository repository,
             MessageRecipientRepository messageRecipientRepository) {
         this.repository = repository;
-        this.whatsappUtil = whatsappUtil;
         this.messageRecipientRepository = messageRecipientRepository;
     }
 
@@ -76,11 +66,11 @@ public class WhatsAppService {
                 whatsappLock.unlock(); // Release lock
             }
 
-            try {
-                TimeUnit.SECONDS.sleep(ThreadLocalRandom.current().nextInt(10, 50));
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            // try {
+            //     TimeUnit.SECONDS.sleep(ThreadLocalRandom.current().nextInt(10, 50));
+            // } catch (InterruptedException e) {
+            //     Thread.currentThread().interrupt();
+            // }
 
             log.info("Processed {} messages", messages.size());
         }
@@ -89,19 +79,19 @@ public class WhatsAppService {
     @Transactional
     public void processEachMessage(MessageQueue msg) {
         try {
-            Message message = msg.getMessage();
-            Member member = msg.getMember();
-            Branch branch = msg.getBranch();
-            Studio studio = msg.getStudio();
+            // Message message = msg.getMessage();
+            // Member member = msg.getMember();
+            // Branch branch = msg.getBranch();
+            // Studio studio = msg.getStudio();
 
-            String content = GenericTemplateUtil.generateContentString(
-                    message.getContent(), studio, branch, member);
+            // String content = GenericTemplateUtil.generateContentString(
+            //         message.getContent(), studio, branch, member);
 
-            FileData fileData = TempFileUtil.getFile(msg.getFilePath());
-
-            Boolean sent = whatsappUtil.sendMessage(
-                    "91" + member.getPhone(), content, branch.getId(), fileData.getFileBytes(),
-                    fileData.getOriginalName(), fileData.getContentType());
+            // FileData fileData = TempFileUtil.getFile(msg.getFilePath());
+            Boolean sent = true;
+            // Boolean sent = whatsappUtil.sendMessage(
+            //         "91" + member.getPhone(), content, branch.getId(), fileData.getFileBytes(),
+            //         fileData.getOriginalName(), fileData.getContentType());
 
             if (sent) {
                 if (Objects.nonNull(msg.getRecipient())) {
@@ -142,7 +132,7 @@ public class WhatsAppService {
             byte[] fileBytes, String originalName, String contentType, MessageRecipient recipient) {
         whatsappLock.lock(); // Acquire lock to prevent conflict with bulk processing
         try {
-            whatsappUtil.sendMessage(to, messageText, branchId, fileBytes, originalName, contentType);
+            // whatsappUtil.sendMessage(to, messageText, branchId, fileBytes, originalName, contentType);
             if (Objects.nonNull(recipient)) {
                 recipient.setStatus(MessageStatus.SENT);
                 messageRecipientRepository.save(recipient);

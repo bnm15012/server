@@ -25,4 +25,5 @@ public class BookingEntry {
 
     private ClientEntry clientEntry;
     private List<PaymentEntry> paymentEntries;
+    private String invoiceToken;
 }

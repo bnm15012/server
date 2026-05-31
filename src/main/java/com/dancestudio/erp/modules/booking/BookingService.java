@@ -2,6 +2,8 @@ package com.dancestudio.erp.modules.booking;
 
 import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
+import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.modules.invoiceToken.InvoiceTokenResponse;
 import com.dancestudio.erp.response.StatusResponse;
 
 import lombok.Setter;
@@ -54,5 +56,19 @@ public class BookingService extends BaseService<BookingEntry, Long> {
     @Override
     protected BookingEntry doGet(Long id) throws Exception {
         return bookingManager.getById(id);
+    }
+
+    public ResponseEntity<InvoiceTokenResponse> getInvoiceDataByToken(String token) {
+        InvoiceTokenResponse response = new InvoiceTokenResponse();
+        try {
+            InvoiceTokenResponse data = bookingManager.getInvoiceDataByToken(token);
+            return ResponseEntity.ok(data);
+        } catch (EntityNotFoundException ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception ex) {
+            response.setStatus(new StatusResponse(0, ex.getMessage(), StatusResponse.Type.ERROR));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }
