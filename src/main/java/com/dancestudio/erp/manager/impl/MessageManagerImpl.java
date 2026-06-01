@@ -314,12 +314,12 @@ public class MessageManagerImpl implements MessageManager {
 
     private boolean isWhatsappNotification(SendMessageRequestEntry request) throws Exception {
         boolean isWhatsApp = TemplateType.WHATSAPP.name().equals(request.getNotificationType());
-        if (isWhatsApp && checkStatus(request.getBranchId()).equals(WhatsAppStatus.INACTIVE.name())) {
-            throw new RuntimeException("WhatsApp session is not active. Please create session first.");
-        }
-        if (isWhatsApp && checkStatus(request.getBranchId()).equals(WhatsAppStatus.LOGOUT.name())) {
-            throw new RuntimeException("WhatsApp session is logout. Please re-configure session first.");
-        }
+        // if (isWhatsApp && checkStatus(request.getBranchId()).equals(WhatsAppStatus.INACTIVE.name())) {
+        //     throw new RuntimeException("WhatsApp session is not active. Please create session first.");
+        // }
+        // if (isWhatsApp && checkStatus(request.getBranchId()).equals(WhatsAppStatus.LOGOUT.name())) {
+        //     throw new RuntimeException("WhatsApp session is logout. Please re-configure session first.");
+        // }
         return isWhatsApp;
     }
 
