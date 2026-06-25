@@ -3,10 +3,10 @@ package com.dancestudio.erp.modules.expense;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.data.annotation.CreatedDate;
 
 import com.dancestudio.erp.entity.BaseEntity;
 import com.dancestudio.erp.entity.Branch;
+import com.dancestudio.erp.enums.PaymentType;
 
 import java.util.Date;
 
@@ -32,4 +32,7 @@ public class Expense extends BaseEntity {
     @Column(name = "expense_date", nullable = false)
     private Date expenseDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_type", nullable = false)
+    private PaymentType paymentType;
 }

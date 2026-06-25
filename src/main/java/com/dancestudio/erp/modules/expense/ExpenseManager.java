@@ -2,6 +2,7 @@ package com.dancestudio.erp.modules.expense;
 
 import com.dancestudio.erp.base.BaseManager;
 import com.dancestudio.erp.exception.EntityNotFoundException;
+import com.dancestudio.erp.modules.expense.spec.ExpenseSpecification;
 import com.dancestudio.erp.util.DateUtil;
 
 import lombok.Setter;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -35,13 +37,16 @@ public class ExpenseManager extends BaseManager<Expense, Long, ExpenseEntry> {
             Integer endDate,
             Integer endMonth,
             Integer endYear,
-            String searchTerm) {
+            String searchTerm, String paymentType) {
 
         Pageable pageable = size == -1
                 ? Pageable.unpaged()
                 : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
 
-        Page<Expense> expensesPage;
+        Specification<Expense> spec = Specification
+                .where(ExpenseSpecification.byBranch(branchId))
+                .and(ExpenseSpecification.bySearchTerm(searchTerm))
+                .and(ExpenseSpecification.byPaymentType(paymentType));
 
         if (startDate != null && startMonth != null && startYear != null &&
                 endDate != null && endMonth != null && endYear != null) {
@@ -50,17 +55,10 @@ public class ExpenseManager extends BaseManager<Expense, Long, ExpenseEntry> {
                     startDate, startMonth, startYear,
                     endDate, endMonth, endYear);
 
-            expensesPage = expenseRepository.findAllByBranchIdAndDateRange(
-                    branchId,
-                    range.get("start"),
-                    range.get("end"),
-                    pageable,
-                    searchTerm);
-        } else {
-            expensesPage = expenseRepository.findByBranchId(branchId, pageable, searchTerm);
+            spec = spec.and(ExpenseSpecification.byDateRange(range.get("start"), range.get("end")));
         }
 
-        return expensesPage.map(ExpenseConvertor::toEntry);
+        return expenseRepository.findAll(spec, pageable).map(ExpenseConvertor::toEntry);
     }
 
     @Override

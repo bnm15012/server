@@ -56,9 +56,9 @@ public class PaymentService extends BaseService<PaymentEntry, Long> {
             if (Objects.nonNull(startDate) && Objects.nonNull(endDate)) {
                 Map<String, Date> dateRange = DateUtil.getUTCDateRange(startDate, endDate);
                 entries = paymentManager.getAll(branchId, --page, size, dateRange.get("start"),
-                        dateRange.get("end"), null);
+                        dateRange.get("end"), null, null);
             } else {
-                entries = paymentManager.getAll(branchId, --page, size, null, null, null);
+                entries = paymentManager.getAll(branchId, --page, size, null, null, null, null);
             }
             response.setData(entries.getContent());
             response.setStatus(new StatusResponse(1, "Payments retrieved successfully", StatusResponse.Type.SUCCESS,

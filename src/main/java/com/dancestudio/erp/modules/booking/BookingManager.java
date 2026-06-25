@@ -98,13 +98,14 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
     public Page<BookingEntry> getAllBookings(Long branchId, Integer page, Integer size,
             Integer startDate, Integer startMonth, Integer startYear,
             Integer endDate, Integer endMonth, Integer endYear,
-            String searchTerm) throws Exception {
+            String searchTerm, String paymentType) throws Exception {
         Pageable pageable = size == -1
                 ? Pageable.unpaged()
                 : PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "lastModifiedOn"));
 
         Specification<Booking> spec = Specification.where(BookingSpecifications.hasBranchId(branchId))
-                .and(BookingSpecifications.search(searchTerm));
+                .and(BookingSpecifications.search(searchTerm))
+                .and(BookingSpecifications.byPaymentType(paymentType));
 
         if ((startDate != null && startDate > 0) && (endDate != null && endDate > 0)) {
             Map<String, Date> dateRange = DateUtil.getUTCDateRange(startDate, startMonth, startYear, endDate, endMonth,

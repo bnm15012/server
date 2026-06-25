@@ -132,12 +132,13 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
 
     @Override
     public ResponseEntity<IEReportResponse> getExpenseIncomeReports(Long studioId, Long branchId, Integer startDate,
-            Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear) {
+            Integer startMonth, Integer startYear, Integer endDate, Integer endMonth, Integer endYear,
+            String paymentType) {
 
         IEReportResponse response = new IEReportResponse();
         try {
             IEReportEntry reportEntry = reportManager.getReports(studioId, branchId, startDate, startMonth, startYear,
-                    endDate, endMonth, endYear);
+                    endDate, endMonth, endYear, paymentType);
             response.setData(Collections.singletonList(reportEntry));
             response.setStatus(new StatusResponse(1, StatusResponse.Type.SUCCESS, 1));
 
@@ -153,7 +154,7 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
     public ResponseEntity<PaymentResponse> getPaymentReports(Long studioId, Long branchId,
             Integer startDate, int startMonth, int startYear,
             Integer endDate, int endMonth, int endYear,
-            String status) {
+            String status, String paymentType) {
         PaymentResponse response = new PaymentResponse();
         try {
             Map<String, Date> utcDateRange = DateUtil.getUTCDateRange(startDate,
@@ -161,7 +162,7 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
 
             List<PaymentEntry> paymentEntries = paymentManager.getAll(branchId, 0, -1,
                     utcDateRange.get("start"),
-                    utcDateRange.get("end"), PaymentStatus.valueOf(status)).getContent();
+                    utcDateRange.get("end"), PaymentStatus.valueOf(status), paymentType).getContent();
             response.setData((paymentEntries));
             response.setStatus(
                     new StatusResponse(1, "Report data retrieved successfully", StatusResponse.Type.SUCCESS, 1));
