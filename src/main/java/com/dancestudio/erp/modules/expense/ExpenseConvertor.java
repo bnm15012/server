@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entity.Branch;
+import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.repository.BranchRepository;
 import jakarta.annotation.PostConstruct;
@@ -32,6 +33,7 @@ public class ExpenseConvertor {
         expenseEntry.setDescription(expense.getDescription());
         expenseEntry.setBranchId(expense.getBranch().getId());
         expenseEntry.setExpenseDate(expense.getExpenseDate());
+        expenseEntry.setPaymentType(expense.getPaymentType().name());
         expenseEntry.setExpenseCategory(ExpenseCategory.valueOf(expense.getExpenseCategory()));
 
         return expenseEntry;
@@ -45,6 +47,9 @@ public class ExpenseConvertor {
         }
         if (Objects.nonNull(expenseEntry.getAmount())) {
             expense.setAmount(expenseEntry.getAmount());
+        }
+        if (Objects.nonNull(expenseEntry.getPaymentType())) {
+            expense.setPaymentType(PaymentType.valueOf(expenseEntry.getPaymentType()));
         }
         if (Objects.nonNull(expenseEntry.getDescription())) {
             expense.setDescription(expenseEntry.getDescription());

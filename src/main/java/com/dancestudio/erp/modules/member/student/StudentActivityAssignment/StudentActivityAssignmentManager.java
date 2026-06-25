@@ -216,7 +216,7 @@ public class StudentActivityAssignmentManager
     private List<PaymentEntry> getPaymentEntriesForMonth(Integer month, Integer year, Long studioId) {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(month, year, month, year);
         return paymentManager.getAll(studioId, 0, -1,
-                monthRange.get("start"), monthRange.get("end"), null).getContent();
+                monthRange.get("start"), monthRange.get("end"), null, null).getContent();
 
     }
 

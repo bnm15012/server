@@ -79,12 +79,13 @@ public class PaymentManager {
     }
 
     public Page<PaymentEntry> getAll(Long branchId, int page, int size, Date startDate, Date endDate,
-            PaymentStatus status) {
+            PaymentStatus status, String paymentType) {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by("id").descending());
         Specification<Payment> spec = Specification.where(PaymentSpecification.withJoins())
                 .and(PaymentSpecification.byBranch(branchId))
                 .and(PaymentSpecification.byStatus(status))
-                .and(PaymentSpecification.byDateRange(startDate, endDate));
+                .and(PaymentSpecification.byDateRange(startDate, endDate))
+                .and(PaymentSpecification.byPaymentType(paymentType));
 
         Page<Payment> pages = paymentRepository.findAll(spec, pageable);
 

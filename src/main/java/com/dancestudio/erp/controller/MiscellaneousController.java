@@ -42,8 +42,9 @@ public class MiscellaneousController {
             @PathVariable Integer startYear,
             @PathVariable Integer endDate,
             @PathVariable Integer endMonth,
-            @PathVariable Integer endYear) {
-        return miscellaneousService.getExpenseIncomeReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear);
+            @PathVariable Integer endYear,
+            @RequestParam(defaultValue = "all") String paymentType) {
+        return miscellaneousService.getExpenseIncomeReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear, paymentType);
     }
 
     @GetMapping("reports/payments/{studioId}/{branchId}/{startDate}/{startMonth}/{startYear}/{endDate}/{endMonth}/{endYear}")
@@ -55,8 +56,9 @@ public class MiscellaneousController {
             @PathVariable Integer endDate,
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear,
-            @RequestParam String status) {
-        return miscellaneousService.getPaymentReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear, status);
+            @RequestParam String status,
+            @RequestParam(defaultValue = "all") String paymentType) {
+        return miscellaneousService.getPaymentReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear, status, paymentType);
     }
 
     @PostMapping("password/reset")

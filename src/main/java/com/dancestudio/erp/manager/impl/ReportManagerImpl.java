@@ -48,15 +48,18 @@ public class ReportManagerImpl implements ReportManager {
 
         @Override
         public IEReportEntry getReports(Long studioId, Long branchId, Integer startDate, Integer startMonth,
-                        Integer startYear, Integer endDate, Integer endMonth, Integer endYear) throws Exception {
+                        Integer startYear, Integer endDate, Integer endMonth, Integer endYear, String paymentType)
+                        throws Exception {
                 IEReportEntry reportEntry = new IEReportEntry();
 
                 IEMonthlyReportEntry monthlyReports = processPaymentEntries(branchId, startDate, startMonth, startYear,
                                 endDate,
-                                endMonth, endYear);
+                                endMonth, endYear, paymentType);
                 processExpenseEntries(branchId, startDate, startMonth, startYear, endDate, endMonth, endYear,
+                                paymentType,
                                 monthlyReports);
                 processBookingEntries(branchId, startDate, startMonth, startYear, endDate, endMonth, endYear,
+                                paymentType,
                                 monthlyReports);
 
                 reportEntry.setStudioId(studioId);
@@ -74,12 +77,14 @@ public class ReportManagerImpl implements ReportManager {
         }
 
         private IEMonthlyReportEntry processPaymentEntries(Long branchId, Integer startDate, Integer startMonth,
-                        Integer startYear, Integer endDate, Integer endMonth, Integer endYear) throws Exception {
+                        Integer startYear, Integer endDate, Integer endMonth, Integer endYear, String paymentType)
+                        throws Exception {
                 IEMonthlyReportEntry monthlyReports = new IEMonthlyReportEntry();
                 Map<String, Date> utcDateRange = DateUtil.getUTCDateRange(startDate,
                                 startMonth, startYear, endDate, endMonth, endYear);
                 List<PaymentEntry> paymentEntries = paymentManager
-                                .getAll(branchId, 0, -1, utcDateRange.get("start"), utcDateRange.get("end"), null)
+                                .getAll(branchId, 0, -1, utcDateRange.get("start"), utcDateRange.get("end"), null,
+                                                paymentType)
                                 .getContent();
                 List<IncomeEntry> incomeEntries = paymentEntries.stream()
                                 .filter(paymentEntry -> Objects.equals(paymentEntry.getPayeeType(), PayeeType.STUDENT))
@@ -101,12 +106,13 @@ public class ReportManagerImpl implements ReportManager {
         }
 
         private void processExpenseEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear,
-                        Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports)
+                        Integer endDate, Integer endMonth, Integer endYear, String paymentType,
+                        IEMonthlyReportEntry monthlyReports)
                         throws Exception {
 
                 Page<ExpenseEntry> entries = expenseManager.getAllExpenses(branchId, 0, -1, startDate, startMonth,
                                 startYear, endDate,
-                                endMonth, endYear, null);
+                                endMonth, endYear, null, paymentType);
 
                 List<ExpenseEntry> expenseEntries = (entries.getContent());
                 double totalExpense = expenseEntries.stream()
@@ -118,11 +124,12 @@ public class ReportManagerImpl implements ReportManager {
         }
 
         private void processBookingEntries(Long branchId, Integer startDate, Integer startMonth, Integer startYear,
-                        Integer endDate, Integer endMonth, Integer endYear, IEMonthlyReportEntry monthlyReports)
+                        Integer endDate, Integer endMonth, Integer endYear, String paymentType,
+                        IEMonthlyReportEntry monthlyReports)
                         throws Exception {
                 Page<BookingEntry> bookingEntries = bookingManager.getAllBookings(branchId, 0, -1, startDate,
                                 startMonth,
-                                startYear, endDate, endMonth, endYear, null);
+                                startYear, endDate, endMonth, endYear, null, paymentType);
                 double totalBooking = bookingEntries.stream()
                                 .filter(bookingEntry -> bookingEntry.getPaymentStatus().equals(PaymentStatus.COMPLETED))
                                 .mapToDouble(BookingEntry::getTotalAmount)

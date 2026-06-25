@@ -13,5 +13,5 @@ public class ExpenseEntry {
     private Long branchId;
     private Date expenseDate;
     private ExpenseCategory expenseCategory;
-
+    private String paymentType;
 }

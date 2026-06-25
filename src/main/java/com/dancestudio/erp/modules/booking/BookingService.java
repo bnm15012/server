@@ -26,7 +26,7 @@ public class BookingService extends BaseService<BookingEntry, Long> {
         BaseResponse<BookingEntry> response = new BaseResponse<>();
         try {
             Page<BookingEntry> entries = bookingManager.getAllBookings(branchId, --page, size, null, startMonth,
-                    startYear, null, endMonth, endYear, searchTerm);
+                    startYear, null, endMonth, endYear, searchTerm, null);
             response.setData(entries.getContent());
             response.setStatus(new StatusResponse(1, "Bookings retrieved successfully", StatusResponse.Type.SUCCESS,
                     (int) entries.getTotalElements()));

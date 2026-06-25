@@ -46,7 +46,7 @@ public class ExpenseService extends BaseService<ExpenseEntry, Long>  {
         try {
             Page<ExpenseEntry> entries = manager.getAllExpenses(branchId, --page, size, startDate, startMonth,
                     startYear, endDate,
-                    endMonth, endYear, searchTerm);
+                    endMonth, endYear, searchTerm, null);
 
             response.setData(entries.getContent());
 
