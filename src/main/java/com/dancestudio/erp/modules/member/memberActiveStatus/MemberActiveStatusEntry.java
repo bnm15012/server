@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Data
 @AllArgsConstructor
@@ -12,7 +14,5 @@ import java.util.Date;
 public class MemberActiveStatusEntry {
 
     private Long memberId;
-    private Date earliestStartDate;
-    private Date latestEndDate;
+    private List<ActivePeriod> activePeriods = new ArrayList<>();
 }
-

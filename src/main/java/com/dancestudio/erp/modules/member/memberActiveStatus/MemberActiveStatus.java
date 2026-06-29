@@ -2,13 +2,21 @@ package com.dancestudio.erp.modules.member.memberActiveStatus;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.Date;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.dancestudio.erp.modules.member.Member;
 
+/**
+ * Entity that caches a member's merged active status using a list of {@link ActivePeriod}s.
+ * Saved as a One-to-Many normalized database table representation.
+ */
 @Entity
 @Data
 @Table(name = "member_active_status")
+@NoArgsConstructor
 public class MemberActiveStatus {
 
     @Id
@@ -20,9 +28,25 @@ public class MemberActiveStatus {
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 
-    @Column(name = "earliest_start_date", nullable = false)
-    private Date earliestStartDate;
+    @OneToMany(mappedBy = "memberActiveStatus", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ActivePeriod> activePeriods = new ArrayList<>();
 
-    @Column(name = "latest_end_date")
-    private Date latestEndDate;
+    public MemberActiveStatus(Member member, List<ActivePeriod> activePeriods) {
+        this.member = member;
+        setActivePeriods(activePeriods);
+    }
+
+    public void setActivePeriods(List<ActivePeriod> periods) {
+        if (this.activePeriods == null) {
+            this.activePeriods = new ArrayList<>();
+        } else {
+            this.activePeriods.clear();
+        }
+        if (periods != null) {
+            for (ActivePeriod p : periods) {
+                p.setMemberActiveStatus(this);
+                this.activePeriods.add(p);
+            }
+        }
+    }
 }

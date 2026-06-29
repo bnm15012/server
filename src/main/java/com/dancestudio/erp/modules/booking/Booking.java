@@ -33,6 +33,7 @@ public class Booking extends BaseEntity {
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
 
+    // TODO:remove
     @Column(name = "payment_status", nullable = false)
     private String paymentStatus;
 

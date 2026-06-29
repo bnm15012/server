@@ -5,15 +5,17 @@ import com.dancestudio.erp.enums.MemberType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.MemberRepository;
+import com.dancestudio.erp.modules.member.instructor.instructorActivityAssignment.InstructorActivityAssignment;
 import com.dancestudio.erp.modules.member.instructor.instructorActivityAssignment.InstructorActivityAssignmentRepository;
+import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignment;
 import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.StudentActivityAssignmentRepository;
 
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.beans.BeansException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,61 +42,87 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
 
     @Override
     protected MemberActiveStatus toEntity(MemberActiveStatusEntry entry, MemberActiveStatus existing)
-            throws EntityNotFoundException, BeansException, Exception {
+            throws EntityNotFoundException, Exception {
         MemberActiveStatus entity = (existing != null) ? existing : new MemberActiveStatus();
         Member member = memberRepository.findById(entry.getMemberId())
                 .orElseThrow(() -> new EntityNotFoundException("Member not found"));
         entity.setMember(member);
-        entity.setEarliestStartDate(entry.getEarliestStartDate());
-        entity.setLatestEndDate(entry.getLatestEndDate());
+        entity.setActivePeriods(entry.getActivePeriods());
         return entity;
     }
 
     @Override
-    protected MemberActiveStatusEntry toEntry(MemberActiveStatus entity, String[] fields) throws EntityNotFoundException {
+    protected MemberActiveStatusEntry toEntry(MemberActiveStatus entity, String[] fields)
+            throws EntityNotFoundException {
         MemberActiveStatusEntry entry = new MemberActiveStatusEntry();
         entry.setMemberId(entity.getId());
-        entry.setEarliestStartDate(entity.getEarliestStartDate());
-        entry.setLatestEndDate(entity.getLatestEndDate());
-
+        entry.setActivePeriods(entity.getActivePeriods());
         return entry;
     }
 
     public boolean isMemberActive(Long memberId) {
         return repository.findById(memberId)
                 .map(status -> {
-                    Date start = status.getEarliestStartDate();
-                    Date end = status.getLatestEndDate();
-                    return MemberActiveStatusUtil.isMembershipActive(start, end);
+                    List<ActivePeriod> periods = status.getActivePeriods();
+                    return isAnyPeriodActive(periods);
                 })
                 .orElse(false);
     }
 
-    public MemberActiveStatusEntry rebuildWindowForMember(Long memberId, String memberType)
+    public MemberActiveStatusEntry rebuildPeriodsForMember(Long memberId, String memberType)
             throws EntityNotFoundException, Exception {
 
-        MinMax result;
-        if (memberType.equals(MemberType.STUDENT.toString())) {
-            result = assignedRepo.findMinMaxWindow(memberId);
-        } else {
-            result = activityAssignmentRepository.findMinAndCustomMax(memberId);
-        }
+        List<ActivePeriod> periods = loadPeriodsFromAssignments(memberId, memberType);
 
-        if (memberType.equals(MemberType.STUDENT.toString()) ? (Objects.isNull(result.minDate) || Objects.isNull(result.maxDate)) : (Objects.isNull(result.minDate))) {
-            repository.deleteById(memberId);
+        periods = MemberActiveStatusUtil.mergePeriods(periods);
+        periods = MemberActiveStatusUtil.removeExpiredPeriods(periods);
+
+        if (periods.isEmpty()) {
+            if (repository.existsById(memberId)) {
+                repository.deleteById(memberId);
+            }
             return null;
         }
 
-        MemberActiveStatus entity = repository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "MemberActiveStatus not found for memberId: " + memberId));
+        MemberActiveStatus entity = repository.findById(memberId).orElse(null);
+        if (entity == null) {
+            MemberActiveStatusEntry newEntry = new MemberActiveStatusEntry(memberId, periods);
+            return this.add(newEntry);
+        }
 
-        entity.setEarliestStartDate(result.minDate);
-        entity.setLatestEndDate(result.maxDate);
-
+        entity.setActivePeriods(periods);
         entity = repository.save(entity);
-
         return toEntry(entity, new String[] {});
     }
 
+    private List<ActivePeriod> loadPeriodsFromAssignments(Long memberId, String memberType) {
+        List<ActivePeriod> periods = new ArrayList<>();
+
+        if (memberType.equals(MemberType.STUDENT.toString())) {
+            List<StudentActivityAssignment> assignments = assignedRepo.findByStudentId(memberId);
+            for (StudentActivityAssignment a : assignments) {
+                periods.add(new ActivePeriod(a.getMembershipStartDate(), a.getMembershipEndDate()));
+            }
+        } else {
+            List<InstructorActivityAssignment> assignments =
+                    activityAssignmentRepository.findByInstructorId(memberId, Pageable.unpaged()).getContent();
+            for (InstructorActivityAssignment a : assignments) {
+                periods.add(new ActivePeriod(a.getStartDate(), a.getEndDate()));
+            }
+        }
+
+        return periods;
+    }
+
+    private boolean isAnyPeriodActive(List<ActivePeriod> periods) {
+        if (periods == null || periods.isEmpty()) {
+            return false;
+        }
+        for (ActivePeriod period : periods) {
+            if (MemberActiveStatusUtil.isMembershipActive(period.getStartDate(), period.getEndDate())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
