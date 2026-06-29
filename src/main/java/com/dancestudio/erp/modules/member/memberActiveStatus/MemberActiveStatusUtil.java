@@ -1,7 +1,9 @@
 package com.dancestudio.erp.modules.member.memberActiveStatus;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.Objects;
+import java.util.List;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,28 +33,6 @@ public class MemberActiveStatusUtil {
         return applicationContext.getBean(MemberActiveStatusManager.class);
     }
 
-    private static Date minDate(Date d1, Date d2) {
-        return d2.before(d1) ? d2 : d1;
-    }
-
-    private static Date maxDate(Date d1, Date d2) {
-        if (d2 == null || d1 == null)
-            return null;
-        return d2.after(d1) ? d2 : d1;
-    }
-
-    private static Boolean deletionBreaksWindow(Date currentEarliest, Date currentLatest,
-            Date deletedStart, Date deletedEnd) {
-        if (currentEarliest.equals(deletedStart) && Objects.equals(currentLatest, deletedEnd)) {
-            return true;
-        } else if (currentEarliest.equals(deletedStart)) {
-            return true;
-        } else if (Objects.equals(currentLatest, deletedEnd)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     public static void addNewAssignment(Member member, Date start, Date end)
             throws BeansException, EntityNotFoundException, Exception {
@@ -63,24 +43,24 @@ public class MemberActiveStatusUtil {
         try {
             MemberActiveStatusEntry entry = manager.getById(memberId);
 
-            entry.setEarliestStartDate(minDate(entry.getEarliestStartDate(), start));
-            entry.setLatestEndDate(maxDate(entry.getLatestEndDate(), end));
+            List<ActivePeriod> periods = new ArrayList<>(entry.getActivePeriods());
+            periods.add(new ActivePeriod(start, end));
 
+            periods = mergePeriods(periods);
+            periods = removeExpiredPeriods(periods);
+
+            entry.setActivePeriods(periods);
             manager.update(memberId, entry);
 
         } catch (EntityNotFoundException ex) {
-            manager.add(new MemberActiveStatusEntry(memberId, start, end));
+            List<ActivePeriod> periods = new ArrayList<>();
+            periods.add(new ActivePeriod(start, end));
+            periods = removeExpiredPeriods(periods);
+
+            MemberActiveStatusEntry newEntry = new MemberActiveStatusEntry(memberId, periods);
+            manager.add(newEntry);
         }
     }
-
-    /**
-     * ==============================================================
-     * UPDATE ASSIGNMENT
-     * ==============================================================
-     * On update:
-     * - Remove old window
-     * - Apply new window
-     */
     public static void updateNewAssignment(Member member, Date oldStart, Date oldEnd,
             Date newStart, Date newEnd)
             throws Exception {
@@ -88,47 +68,17 @@ public class MemberActiveStatusUtil {
         MemberActiveStatusManager manager = getManager();
         Long memberId = member.getId();
 
-        try {
-            MemberActiveStatusEntry entry = manager.getById(memberId);
-            entry.setEarliestStartDate(minDate(entry.getEarliestStartDate(), newStart));
-            entry.setLatestEndDate(maxDate(entry.getLatestEndDate(), newEnd));
-            manager.update(memberId, entry);
-            if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
-                    oldStart, oldEnd)) {
-                manager.rebuildWindowForMember(memberId, member.getMemberType());
-            }
-        } catch (EntityNotFoundException ex) {
-            ex.printStackTrace();
-        }
+        manager.rebuildPeriodsForMember(memberId, member.getMemberType());
     }
 
-    /**
-     * ==============================================================
-     * DELETE ASSIGNMENT
-     * ==============================================================
-     */
     public static void deleteNewAssignment(Member member, Date start, Date end)
             throws EntityNotFoundException, Exception {
 
         MemberActiveStatusManager manager = getManager();
         Long memberId = member.getId();
 
-        try {
-            MemberActiveStatusEntry entry = manager.getById(memberId);
-
-            // If deletion affects min/max window → rebuild
-            if (deletionBreaksWindow(entry.getEarliestStartDate(), entry.getLatestEndDate(),
-                    start, end)) {
-                manager.rebuildWindowForMember(memberId, member.getMemberType());
-            }
-
-        } catch (EntityNotFoundException ex) {
-            // No entry exists → but user deleted something?
-            // Create neutral entry so system is consistent
-            manager.add(new MemberActiveStatusEntry(memberId, start, end));
-        }
+        manager.rebuildPeriodsForMember(memberId, member.getMemberType());
     }
-
     public static Boolean isMembershipActive(Date start, Date end) {
         Date today = DateUtil.getCurrentDateUTC();
         if (start == null)
@@ -141,5 +91,71 @@ public class MemberActiveStatusUtil {
 
         boolean notEnded = !today.after(end);
         return started && notEnded;
+    }
+
+    static List<ActivePeriod> mergePeriods(List<ActivePeriod> periods) {
+        if (periods == null || periods.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<ActivePeriod> sorted = new ArrayList<>(periods);
+        sorted.sort(Comparator.comparing(ActivePeriod::getStartDate, Comparator.nullsFirst(Comparator.naturalOrder())));
+
+        List<ActivePeriod> merged = new ArrayList<>();
+        ActivePeriod current = new ActivePeriod(sorted.get(0).getStartDate(), sorted.get(0).getEndDate());
+
+        for (int i = 1; i < sorted.size(); i++) {
+            ActivePeriod next = sorted.get(i);
+
+            if (shouldMerge(current, next)) {
+                // Expand the current period to cover both
+                current.setEndDate(maxDate(current.getEndDate(), next.getEndDate()));
+            } else {
+                merged.add(current);
+                current = new ActivePeriod(next.getStartDate(), next.getEndDate());
+            }
+        }
+        merged.add(current);
+
+        return merged;
+    }
+
+
+    static List<ActivePeriod> removeExpiredPeriods(List<ActivePeriod> periods) {
+        if (periods == null || periods.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Date today = DateUtil.getCurrentDateUTC();
+        List<ActivePeriod> kept = new ArrayList<>();
+        for (ActivePeriod p : periods) {
+            if (p.getEndDate() == null || !p.getEndDate().before(today)) {
+                kept.add(p);
+            }
+        }
+        return kept;
+    }
+
+    private static boolean shouldMerge(ActivePeriod current, ActivePeriod next) {
+        if (current.getEndDate() == null) {
+            return true;
+        }
+
+        Date currentEnd = current.getEndDate();
+        Date nextStart = next.getStartDate();
+
+        if (!nextStart.after(currentEnd)) {
+            return true;
+        }
+        Date dayAfterCurrentEnd = DateUtil.addDays(currentEnd, 1);
+        return !nextStart.after(dayAfterCurrentEnd);
+    }
+
+
+    private static Date maxDate(Date d1, Date d2) {
+        if (d1 == null || d2 == null) {
+            return null; 
+        }
+        return d2.after(d1) ? d2 : d1;
     }
 }

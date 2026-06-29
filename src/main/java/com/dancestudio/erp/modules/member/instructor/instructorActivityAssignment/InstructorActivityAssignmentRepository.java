@@ -1,4 +1,6 @@
 package com.dancestudio.erp.modules.member.instructor.instructorActivityAssignment;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +34,13 @@ public interface InstructorActivityAssignmentRepository extends JpaRepository<In
             """)
     MinMax findMinAndCustomMax(@Param("memberId") Long memberId);
 
+        @Query("""
+        SELECT s
+        FROM InstructorActivityAssignment s
+        JOIN FETCH s.instructor st
+        WHERE s.endDate IS NULL
+        OR s.endDate >= CURRENT_DATE
+        ORDER BY st.id, s.startDate, s.endDate
+        """)
+    List<InstructorActivityAssignment> findAllForInstructorActiveStatusCache();
 }

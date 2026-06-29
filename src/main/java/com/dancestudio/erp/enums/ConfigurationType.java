@@ -1,8 +1,6 @@
 package com.dancestudio.erp.enums;
 
 public enum ConfigurationType {
-
-    BULK_UPLOAD,
     BRANCH,
     CLIENT,
     BOOKINGS,
@@ -14,6 +12,6 @@ public enum ConfigurationType {
     EXPENSE,
     ANALYSIS,
     REPORTS,
-    TEMPLATES
-
+    TEMPLATES,
+    BATCH,
 }
