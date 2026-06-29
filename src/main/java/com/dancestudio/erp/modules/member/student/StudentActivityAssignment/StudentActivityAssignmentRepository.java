@@ -54,13 +54,13 @@ public interface StudentActivityAssignmentRepository extends JpaRepository<Stude
     """)
     MinMax findMinMaxWindow(Long memberId);
 
-    @Query("""
-        SELECT s
-        FROM StudentActivityAssignment s
-        JOIN FETCH s.student st
-        WHERE s.membershipEndDate IS NULL
-        OR s.membershipEndDate >= CURRENT_DATE
-        ORDER BY st.id, s.membershipStartDate, s.membershipEndDate
-        """)
-    List<StudentActivityAssignment> findAllForMemberActiveStatusCache();
+    // @Query("""
+    //     SELECT s
+    //     FROM StudentActivityAssignment s
+    //     JOIN FETCH s.student st
+    //     WHERE s.membershipEndDate IS NULL
+    //     OR s.membershipEndDate >= CURRENT_DATE
+    //     ORDER BY st.id, s.membershipStartDate, s.membershipEndDate
+    //     """)
+    // List<StudentActivityAssignment> findAllForMemberActiveStatusCache();
 }

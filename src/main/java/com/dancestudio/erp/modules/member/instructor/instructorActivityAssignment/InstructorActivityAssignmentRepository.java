@@ -34,13 +34,13 @@ public interface InstructorActivityAssignmentRepository extends JpaRepository<In
             """)
     MinMax findMinAndCustomMax(@Param("memberId") Long memberId);
 
-        @Query("""
-        SELECT s
-        FROM InstructorActivityAssignment s
-        JOIN FETCH s.instructor st
-        WHERE s.endDate IS NULL
-        OR s.endDate >= CURRENT_DATE
-        ORDER BY st.id, s.startDate, s.endDate
-        """)
-    List<InstructorActivityAssignment> findAllForInstructorActiveStatusCache();
+    //     @Query("""
+    //     SELECT s
+    //     FROM InstructorActivityAssignment s
+    //     JOIN FETCH s.instructor st
+    //     WHERE s.endDate IS NULL
+    //     OR s.endDate >= CURRENT_DATE
+    //     ORDER BY st.id, s.startDate, s.endDate
+    //     """)
+    // List<InstructorActivityAssignment> findAllForInstructorActiveStatusCache();
 }
