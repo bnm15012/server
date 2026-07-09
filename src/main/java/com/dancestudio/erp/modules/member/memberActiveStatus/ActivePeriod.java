@@ -25,11 +25,11 @@ public class ActivePeriod {
     private MemberActiveStatus memberActiveStatus;
 
     @Column(name = "start_date", nullable = false)
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
 
     @Column(name = "end_date")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
 
     public ActivePeriod(Date startDate, Date endDate) {

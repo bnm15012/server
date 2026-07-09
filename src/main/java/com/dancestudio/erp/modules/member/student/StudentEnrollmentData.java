@@ -10,12 +10,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "member_additional_data")
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class StudentEnrollmentData extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
