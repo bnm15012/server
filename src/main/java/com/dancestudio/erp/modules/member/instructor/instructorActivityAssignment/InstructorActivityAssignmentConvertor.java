@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.MemberRepository;
-import com.dancestudio.erp.util.DateUtil;
+import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusUtil;
 
 import jakarta.annotation.PostConstruct;
 
@@ -43,10 +42,8 @@ public class InstructorActivityAssignmentConvertor {
         instructorActivityAssignmentEntry.setContractDocument(instructorActivityAssignment.getContractDocument());
 
         instructorActivityAssignmentEntry.setMembershipStatus(
-                (instructorActivityAssignment.getEndDate() == null
-                        || instructorActivityAssignment.getEndDate().after(DateUtil.getCurrentDateUTC()))
-                                ? MembershipStatus.ACTIVE
-                                : MembershipStatus.INACTIVE);
+                (MemberActiveStatusUtil.getMembershipStatus(instructorActivityAssignment.getStartDate(),
+                        instructorActivityAssignment.getEndDate())));
 
         if (Objects.nonNull(instructorActivityAssignment.getActivityName())) {
             instructorActivityAssignmentEntry.setActivityName(instructorActivityAssignment.getActivityName());
