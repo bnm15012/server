@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.enums.MemberType;
-import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.instructor.bankAccount.BankAccountEntry;
@@ -52,9 +51,7 @@ public class InstructorConvertor {
 
             MemberActiveStatusManager activityStatusManager = applicationContext
                     .getBean(MemberActiveStatusManager.class);
-            boolean isActive = activityStatusManager.isMemberActive(instructor.getId());
-
-            instructorEntry.setInstructorStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
+            instructorEntry.setInstructorStatus(activityStatusManager.getMembershipStatus(instructor.getId()));
         } catch (Exception ex) {
             instructorEntry.setInstructorStatus(null);
         }

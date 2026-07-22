@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.util.DateUtil;
@@ -79,18 +80,26 @@ public class MemberActiveStatusUtil {
 
         manager.rebuildPeriodsForMember(memberId, member.getMemberType());
     }
+
     public static Boolean isMembershipActive(Date start, Date end) {
         Date today = DateUtil.getCurrentDateUTC();
         if (start == null)
             return false;
 
         boolean started = !today.before(start);
-
         if (end == null)
             return started;
 
         boolean notEnded = !today.after(end);
         return started && notEnded;
+    }
+
+    public static MembershipStatus getMembershipStatus(Date start, Date end) {
+        if (isMembershipActive(start, end)) {
+            return MembershipStatus.ACTIVE;
+        } else {
+            return MembershipStatus.INACTIVE;
+        }
     }
 
     static List<ActivePeriod> mergePeriods(List<ActivePeriod> periods) {

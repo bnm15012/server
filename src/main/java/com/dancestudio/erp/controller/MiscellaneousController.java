@@ -43,7 +43,7 @@ public class MiscellaneousController {
             @PathVariable Integer endDate,
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear,
-            @RequestParam(defaultValue = "all") String paymentType) {
+            @RequestParam(defaultValue = "ALL") String paymentType) {
         return miscellaneousService.getExpenseIncomeReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear, paymentType);
     }
 
@@ -57,7 +57,7 @@ public class MiscellaneousController {
             @PathVariable Integer endMonth,
             @PathVariable Integer endYear,
             @RequestParam String status,
-            @RequestParam(defaultValue = "all") String paymentType) {
+            @RequestParam(defaultValue = "ALL") String paymentType) {
         return miscellaneousService.getPaymentReports(studioId, branchId, startDate, startMonth, startYear, endDate, endMonth, endYear, status, paymentType);
     }
 

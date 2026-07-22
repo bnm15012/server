@@ -13,8 +13,8 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.MemberRepository;
 import com.dancestudio.erp.modules.member.attendance.AttendanceEntryConverter;
+import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusUtil;
 import com.dancestudio.erp.modules.payments.PaymentConvertor;
-import com.dancestudio.erp.util.DateUtil;
 
 import jakarta.annotation.PostConstruct;
 
@@ -68,8 +68,8 @@ public class StudentActivityAssignmentConvertor {
         }
         if (includeAll || Arrays.asList(fields).contains("membershipStatus")) {
             studentActivityAssignmentEntry.setMembershipStatus(
-                    (!studentActivityAssignment.getMembershipStartDate().after(DateUtil.getCurrentDateUTC()) &&
-                            !studentActivityAssignment.getMembershipEndDate().before(DateUtil.getCurrentDateUTC()))
+                    (MemberActiveStatusUtil.isMembershipActive(studentActivityAssignment.getMembershipStartDate(),
+                            studentActivityAssignment.getMembershipEndDate()))
                                     ? MembershipStatus.ACTIVE
                                     : MembershipStatus.INACTIVE);
         }

@@ -3,6 +3,7 @@ package com.dancestudio.erp.manager.impl;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
+import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.manager.*;
 import com.dancestudio.erp.modules.booking.BookingEntry;
 import com.dancestudio.erp.modules.booking.BookingManager;
@@ -83,8 +84,8 @@ public class ReportManagerImpl implements ReportManager {
                 Map<String, Date> utcDateRange = DateUtil.getUTCDateRange(startDate,
                                 startMonth, startYear, endDate, endMonth, endYear);
                 List<PaymentEntry> paymentEntries = paymentManager
-                                .getAll(branchId, 0, -1, utcDateRange.get("start"), utcDateRange.get("end"), null,
-                                                paymentType)
+                                .getAll(branchId, 0, -1, utcDateRange.get("start"), utcDateRange.get("end"),
+                                                PaymentType.valueOf(paymentType.toUpperCase()), null, null)
                                 .getContent();
                 List<IncomeEntry> incomeEntries = paymentEntries.stream()
                                 .filter(paymentEntry -> Objects.equals(paymentEntry.getPayeeType(), PayeeType.STUDENT))

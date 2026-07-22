@@ -1,5 +1,6 @@
 package com.dancestudio.erp.modules.member.student.StudentActivityAssignment;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -11,10 +12,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.dancestudio.erp.base.BaseManager;
 import com.dancestudio.erp.entry.MonthlyReportEntry;
+import com.dancestudio.erp.enums.ActivityType;
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.expense.ExpenseCategory;
@@ -216,7 +219,7 @@ public class StudentActivityAssignmentManager
     private List<PaymentEntry> getPaymentEntriesForMonth(Integer month, Integer year, Long studioId) {
         Map<String, Date> monthRange = DateUtil.getDateRangeByMonthYear(month, year, month, year);
         return paymentManager.getAll(studioId, 0, -1,
-                monthRange.get("start"), monthRange.get("end"), null, null).getContent();
+                monthRange.get("start"), monthRange.get("end"), null, null, null).getContent();
 
     }
 
@@ -299,13 +302,13 @@ public class StudentActivityAssignmentManager
     public Page<StudentActivityAssignment> getAssignmentsByCriteria(
             Long rootId,
             String rootType,
-            com.dancestudio.erp.enums.ActivityType activityName,
+            ActivityType activityName,
             String searchText,
-            java.time.LocalDate date,
+            LocalDate date,
             Integer page,
             Integer size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        org.springframework.data.jpa.domain.Specification<StudentActivityAssignment> spec = StudentActivityAssignmentSpecification
+        Specification<StudentActivityAssignment> spec = StudentActivityAssignmentSpecification
                 .getAssignmentsByCriteria(
                         rootId, rootType, activityName, searchText, date);
         return studentActivityAssignmentRepository.findAll(spec, pageable);

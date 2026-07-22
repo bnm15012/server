@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.enums.MemberType;
-import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusManager;
@@ -43,8 +42,7 @@ public class StudentConvertor {
         try {
             MemberActiveStatusManager activityStatusManager = applicationContext
                     .getBean(MemberActiveStatusManager.class);
-            boolean isActive = activityStatusManager.isMemberActive(student.getId());
-            studentEntry.setMembershipStatus(isActive ? MembershipStatus.ACTIVE : MembershipStatus.INACTIVE);
+            studentEntry.setMembershipStatus(activityStatusManager.getMembershipStatus(student.getId()));
         } catch (Exception ex) {
             ex.printStackTrace();
         }

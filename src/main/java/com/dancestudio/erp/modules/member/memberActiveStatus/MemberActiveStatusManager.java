@@ -2,6 +2,7 @@ package com.dancestudio.erp.modules.member.memberActiveStatus;
 
 import com.dancestudio.erp.base.BaseManager;
 import com.dancestudio.erp.enums.MemberType;
+import com.dancestudio.erp.enums.MembershipStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.MemberRepository;
@@ -60,13 +61,13 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
         return entry;
     }
 
-    public boolean isMemberActive(Long memberId) {
+    public MembershipStatus getMembershipStatus(Long memberId) {
         return repository.findById(memberId)
                 .map(status -> {
                     List<ActivePeriod> periods = status.getActivePeriods();
-                    return isAnyPeriodActive(periods);
+                    return getMembershipStatus(periods);
                 })
-                .orElse(false);
+                .orElse(MembershipStatus.INACTIVE);
     }
 
     public MemberActiveStatusEntry rebuildPeriodsForMember(Long memberId, String memberType)
@@ -114,15 +115,15 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
         return periods;
     }
 
-    private boolean isAnyPeriodActive(List<ActivePeriod> periods) {
+    private MembershipStatus getMembershipStatus(List<ActivePeriod> periods) {
         if (periods == null || periods.isEmpty()) {
-            return false;
+            return MembershipStatus.INACTIVE;
         }
         for (ActivePeriod period : periods) {
             if (MemberActiveStatusUtil.isMembershipActive(period.getStartDate(), period.getEndDate())) {
-                return true;
+                return MembershipStatus.ACTIVE;
             }
         }
-        return false;
+        return MembershipStatus.INACTIVE;
     }
 }
