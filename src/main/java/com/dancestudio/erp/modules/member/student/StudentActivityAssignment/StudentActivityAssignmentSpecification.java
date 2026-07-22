@@ -9,6 +9,8 @@ import org.springframework.util.StringUtils;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +22,7 @@ public class StudentActivityAssignmentSpecification {
             String rootType,
             ActivityType activityName,
             String searchText,
-            java.time.LocalDate date) {
+            LocalDate date) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -32,7 +34,7 @@ public class StudentActivityAssignmentSpecification {
                     predicates.add(criteriaBuilder.equal(root.get("activityName"), activityName));
                 }
                 if (StringUtils.hasText(searchText)) {
-                    predicates.add(criteriaBuilder.like(root.get("batchName"), searchText + "%"));
+                    predicates.add(criteriaBuilder.like(studentJoin.get("name"), searchText + "%"));
                 }
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("membershipStartDate"), now));
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("membershipEndDate"), now));

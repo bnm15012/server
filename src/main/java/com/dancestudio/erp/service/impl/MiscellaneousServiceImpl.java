@@ -3,6 +3,7 @@ package com.dancestudio.erp.service.impl;
 import com.dancestudio.erp.authentication.JwtUtil;
 import com.dancestudio.erp.entry.*;
 import com.dancestudio.erp.enums.PaymentStatus;
+import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.manager.ImageManager;
 import com.dancestudio.erp.manager.ReportManager;
 
@@ -162,7 +163,7 @@ public class MiscellaneousServiceImpl implements MiscellaneousService {
 
             List<PaymentEntry> paymentEntries = paymentManager.getAll(branchId, 0, -1,
                     utcDateRange.get("start"),
-                    utcDateRange.get("end"), PaymentStatus.valueOf(status), paymentType).getContent();
+                    utcDateRange.get("end"), PaymentType.valueOf(paymentType), PaymentStatus.valueOf(status), null).getContent();
             response.setData((paymentEntries));
             response.setStatus(
                     new StatusResponse(1, "Report data retrieved successfully", StatusResponse.Type.SUCCESS, 1));

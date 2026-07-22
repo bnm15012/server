@@ -3,6 +3,8 @@ package com.dancestudio.erp.modules.payments;
 import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
 import com.dancestudio.erp.enums.PayeeType;
+import com.dancestudio.erp.enums.PaymentStatus;
+import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.dancestudio.erp.response.StatusResponse;
 import com.dancestudio.erp.util.DateUtil;
@@ -49,16 +51,16 @@ public class PaymentService extends BaseService<PaymentEntry, Long> {
     }
 
     public ResponseEntity<BaseResponse<PaymentEntry>> getAll(Long branchId, Integer page, Integer size,
-            String startDate, String endDate) {
+            String startDate, String endDate, PaymentType paymentType, PaymentStatus paymentStatus, String searchTerm) {
         BaseResponse<PaymentEntry> response = new BaseResponse<>();
         Page<PaymentEntry> entries;
         try {
             if (Objects.nonNull(startDate) && Objects.nonNull(endDate)) {
                 Map<String, Date> dateRange = DateUtil.getUTCDateRange(startDate, endDate);
                 entries = paymentManager.getAll(branchId, --page, size, dateRange.get("start"),
-                        dateRange.get("end"), null, null);
+                        dateRange.get("end"), paymentType,paymentStatus, searchTerm);
             } else {
-                entries = paymentManager.getAll(branchId, --page, size, null, null, null, null);
+                entries = paymentManager.getAll(branchId, --page, size, null, null, paymentType,paymentStatus, searchTerm);
             }
             response.setData(entries.getContent());
             response.setStatus(new StatusResponse(1, "Payments retrieved successfully", StatusResponse.Type.SUCCESS,

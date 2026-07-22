@@ -46,13 +46,34 @@ public class PaymentSpecification {
         };
     }
 
-    public static Specification<Payment> byPaymentType(String paymentType) {
+    public static Specification<Payment> byPaymentType(PaymentType paymentType) {
         return (root, query, cb) -> {
-            if (paymentType == null || paymentType.equalsIgnoreCase("all")) {
+            if (paymentType == null) {
                 return null;
             }
 
-            return cb.equal(root.get("paymentType"), PaymentType.valueOf(paymentType.toUpperCase()));
+            return cb.equal(root.get("paymentType"), paymentType);
+        };
+    }
+
+    public static Specification<Payment> bySearchTerm(String searchTerm) {
+        return (root, query, cb) -> {
+            if (searchTerm == null || searchTerm.trim().isEmpty()) {
+                return null;
+            }
+
+            String pattern = "%" + searchTerm.toLowerCase() + "%";
+
+            var bookingJoin = root.join("paymentBooking", JoinType.LEFT);
+            var clientJoin = bookingJoin.join("booking", JoinType.LEFT).join("client", JoinType.LEFT);
+
+            var studentActivityJoin = root.join("paymentStudentActivity", JoinType.LEFT);
+            var studentJoin = studentActivityJoin.join("studentActivityAssignment", JoinType.LEFT).join("student", JoinType.LEFT);
+
+            return cb.or(
+                cb.like(cb.lower(clientJoin.get("pocName")), pattern),
+                cb.like(cb.lower(studentJoin.get("name")), pattern)
+            );
         };
     }
 }

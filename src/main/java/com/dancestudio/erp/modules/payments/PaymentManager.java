@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
+import com.dancestudio.erp.enums.PaymentType;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.payments.entity.Payment;
 import com.dancestudio.erp.modules.payments.entity.PaymentBooking;
@@ -79,12 +80,13 @@ public class PaymentManager {
     }
 
     public Page<PaymentEntry> getAll(Long branchId, int page, int size, Date startDate, Date endDate,
-            PaymentStatus status, String paymentType) {
+            PaymentType paymentType, PaymentStatus status, String searchTerm) {
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size, Sort.by("id").descending());
         Specification<Payment> spec = Specification.where(PaymentSpecification.withJoins())
                 .and(PaymentSpecification.byBranch(branchId))
                 .and(PaymentSpecification.byStatus(status))
                 .and(PaymentSpecification.byDateRange(startDate, endDate))
+                .and(PaymentSpecification.bySearchTerm(searchTerm))
                 .and(PaymentSpecification.byPaymentType(paymentType));
 
         Page<Payment> pages = paymentRepository.findAll(spec, pageable);
