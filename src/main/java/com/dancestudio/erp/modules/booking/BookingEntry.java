@@ -1,6 +1,5 @@
 package com.dancestudio.erp.modules.booking;
 
-import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.modules.client.ClientEntry;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 
@@ -16,7 +15,7 @@ public class BookingEntry {
     private Long branchId;
     private String purpose;
     private Double totalAmount;
-    private PaymentStatus paymentStatus;
+    private BookingStatus state;
     private String notes;
     private Date bookingDate;
 

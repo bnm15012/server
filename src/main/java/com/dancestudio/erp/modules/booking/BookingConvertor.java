@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.dancestudio.erp.entity.Branch;
-import com.dancestudio.erp.enums.PaymentStatus;
 import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.modules.client.Client;
 import com.dancestudio.erp.modules.client.ClientRepository;
@@ -16,6 +15,7 @@ import com.dancestudio.erp.modules.payments.PaymentConvertor;
 import com.dancestudio.erp.repository.BranchRepository;
 import jakarta.annotation.PostConstruct;
 import com.dancestudio.erp.modules.client.ClientConvertor;
+
 @Component
 public class BookingConvertor {
     private static ApplicationContext applicationContext;
@@ -28,14 +28,14 @@ public class BookingConvertor {
         applicationContext = context;
     }
 
-    public static BookingEntry convertToEntry(Booking booking){
+    public static BookingEntry convertToEntry(Booking booking) {
         BookingEntry bookingEntry = new BookingEntry();
 
         bookingEntry.setId(booking.getId());
         bookingEntry.setBranchId(booking.getBranch().getId());
         bookingEntry.setPurpose(booking.getPurpose());
         bookingEntry.setTotalAmount(booking.getTotalAmount());
-        bookingEntry.setPaymentStatus(PaymentStatus.valueOf(booking.getPaymentStatus()));
+        bookingEntry.setState(booking.getBookingStatus());
         bookingEntry.setNotes(booking.getNotes());
         bookingEntry.setBookingDate(booking.getBookingDate());
         bookingEntry.setStartTime(booking.getStartTime());
@@ -64,14 +64,14 @@ public class BookingConvertor {
 
             ClientRepository clientRepository = applicationContext.getBean(ClientRepository.class);
             Client client = clientRepository.findById(bookingEntry.getClientEntry().getClientId())
-                    .orElseThrow(() -> new EntityNotFoundException("Client not found"));;
+                    .orElseThrow(() -> new EntityNotFoundException("Client not found"));
+            ;
             booking.setClient(client);
         }
 
         Optional.ofNullable(bookingEntry.getPurpose()).ifPresent(booking::setPurpose);
         Optional.ofNullable(bookingEntry.getTotalAmount()).ifPresent(booking::setTotalAmount);
-        Optional.ofNullable(bookingEntry.getPaymentStatus())
-                .ifPresent(status -> booking.setPaymentStatus(status.name()));
+        Optional.ofNullable(bookingEntry.getState()).ifPresent(booking::setBookingStatus);
         Optional.ofNullable(bookingEntry.getNotes()).ifPresent(booking::setNotes);
         Optional.ofNullable(bookingEntry.getBookingDate()).ifPresent(booking::setBookingDate);
         Optional.ofNullable(bookingEntry.getStartTime()).ifPresent(booking::setStartTime);
