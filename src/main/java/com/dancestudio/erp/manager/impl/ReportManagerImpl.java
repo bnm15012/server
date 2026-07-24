@@ -132,16 +132,26 @@ public class ReportManagerImpl implements ReportManager {
                                 startMonth,
                                 startYear, endDate, endMonth, endYear, null, paymentType);
                 double totalBooking = bookingEntries.stream()
-                                .filter(bookingEntry -> bookingEntry.getPaymentStatus().equals(PaymentStatus.COMPLETED))
+                                .filter(bookingEntry -> bookingEntry.getTotalAmount()
+                                                .equals(bookingEntry.getPaymentEntries().stream()
+                                                                .filter(paymentEntry -> paymentEntry.getStatus()
+                                                                                .equals(PaymentStatus.COMPLETED))
+                                                                .mapToDouble(PaymentEntry::getAmount).sum()))
                                 .mapToDouble(BookingEntry::getTotalAmount)
                                 .sum();
 
                 List<IncomeEntry> incomeEntries = new ArrayList<>();
                 bookingEntries.getContent().stream().forEach(bookingEntry -> {
-                        for (PaymentEntry payments : bookingEntry.getPaymentEntries()) {
-                                incomeEntries.add(new IncomeEntry(bookingEntry.getClientEntry().getGroupName(), null,
-                                                payments.getAmount(), payments.getPaymentType().name(),
-                                                PayeeType.BOOKING.name(), payments.getPaymentDate(), null));
+                        if (bookingEntry.getTotalAmount().equals(bookingEntry.getPaymentEntries().stream()
+                                        .filter(paymentEntry -> paymentEntry.getStatus()
+                                                        .equals(PaymentStatus.COMPLETED))
+                                        .mapToDouble(PaymentEntry::getAmount).sum())) {
+                                for (PaymentEntry payments : bookingEntry.getPaymentEntries()) {
+                                        incomeEntries.add(new IncomeEntry(bookingEntry.getClientEntry().getGroupName(),
+                                                        null,
+                                                        payments.getAmount(), payments.getPaymentType().name(),
+                                                        PayeeType.BOOKING.name(), payments.getPaymentDate(), null));
+                                }
                         }
                 });
                 monthlyReports.getIncomeEntries().addAll(incomeEntries);

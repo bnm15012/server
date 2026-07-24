@@ -33,9 +33,9 @@ public class Booking extends BaseEntity {
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
 
-    // TODO:remove
-    @Column(name = "payment_status", nullable = false)
-    private String paymentStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "booking_status", nullable = false)
+    private BookingStatus bookingStatus;
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;

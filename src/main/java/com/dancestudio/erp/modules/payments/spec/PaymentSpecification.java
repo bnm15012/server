@@ -48,7 +48,7 @@ public class PaymentSpecification {
 
     public static Specification<Payment> byPaymentType(PaymentType paymentType) {
         return (root, query, cb) -> {
-            if (paymentType == null) {
+            if (paymentType == null || paymentType.equals(PaymentType.ALL)) {
                 return null;
             }
 
