@@ -121,12 +121,6 @@ public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
             publisher.publishEvent(new EmailQueuedEvent());
         }
 
-        boolean msgSent = whatsappUtil.sendMessage(member.getPhone(), updatedBody, member.getBranch().getId(), null,
-                null, null);
-        if (!msgSent) {
-            log.error("Failed to send WhatsApp message to student: {}", member.getName());
-        }
-
         return StudentConvertor.convertToEntry(member);
     }
 

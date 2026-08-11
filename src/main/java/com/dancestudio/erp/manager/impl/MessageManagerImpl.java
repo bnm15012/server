@@ -108,11 +108,8 @@ public class MessageManagerImpl implements MessageManager {
 
             Message message = createAndSaveMessage(request, branch);
             int success = 0;
-
-            if (isWhatsappNotification(request)) {
-                success = sendWhatsAppMessagesWithDelay(members, clients, message, branch, fileBytes, originalName,
-                        contentType);
-            } else if (isEmailNotification(request, branch)) {
+            
+            if (isEmailNotification(request, branch)) {
                 sendEmail(request, members, clients, fileBytes, originalName, message, contentType);
                 success = members.size();
             } else if (isSmsNotification(request)) {
