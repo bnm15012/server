@@ -99,9 +99,7 @@ public class StudentActivityAssignmentManager
             return studentActivityAssignmentEntry;
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new EntityNotFoundException(
-                    ex.getMessage() != null ? "Failed to add payment details: " + ex.getMessage()
-                            : "Failed to add payment details");
+            throw ex;
         }
     }
 

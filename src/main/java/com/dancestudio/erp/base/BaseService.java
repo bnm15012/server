@@ -39,11 +39,17 @@ public abstract class BaseService<Entry, ID> implements BaseServiceInterface<Ent
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
+        } catch (EntityNotFoundException e) {
+            BaseResponse<Entry> errorResponse = new BaseResponse<>(
+                    null,
+                    new StatusResponse(0, extractErrorMessage(e), StatusResponse.Type.ERROR, 0));
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
             e.printStackTrace();
             BaseResponse<Entry> errorResponse = new BaseResponse<>(
                     null,
-                    new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+                    new StatusResponse(0, extractErrorMessage(e), StatusResponse.Type.ERROR, 0));
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
@@ -61,12 +67,12 @@ public abstract class BaseService<Entry, ID> implements BaseServiceInterface<Ent
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new BaseResponse<>(null,
-                            new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0)));
+                            new StatusResponse(0, extractErrorMessage(e), StatusResponse.Type.ERROR, 0)));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new BaseResponse<>(null,
-                            new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0)));
+                            new StatusResponse(0, extractErrorMessage(e), StatusResponse.Type.ERROR, 0)));
         }
     }
 
@@ -94,12 +100,29 @@ public abstract class BaseService<Entry, ID> implements BaseServiceInterface<Ent
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new BaseResponse<>(Collections.emptyList(),
-                            new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0)));
+                            new StatusResponse(0, extractErrorMessage(e), StatusResponse.Type.ERROR, 0)));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new BaseResponse<>(null,
-                            new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0)));
+                            new StatusResponse(0, extractErrorMessage(e), StatusResponse.Type.ERROR, 0)));
         }
+    }
+
+    private String extractErrorMessage(Exception e) {
+        if (e == null) {
+            return "An unexpected error occurred";
+        }
+        if (e.getMessage() != null && !e.getMessage().isBlank()) {
+            return e.getMessage();
+        }
+        Throwable cause = e.getCause();
+        while (cause != null) {
+            if (cause.getMessage() != null && !cause.getMessage().isBlank()) {
+                return cause.getMessage();
+            }
+            cause = cause.getCause();
+        }
+        return "An unexpected error occurred";
     }
 }

@@ -6,13 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.dancestudio.erp.entity.Branch;
 import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.enums.MemberType;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.instructor.bankAccount.BankAccountEntry;
 import com.dancestudio.erp.modules.member.instructor.bankAccount.BankAccountManager;
 import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusManager;
+import com.dancestudio.erp.repository.BranchRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 
 import jakarta.annotation.PostConstruct;
@@ -65,7 +68,7 @@ public class InstructorConvertor {
         // add identifier as INSTRUCTOR
         instructor.setMemberType(MemberType.INSTRUCTOR.name());
 
-        if (Objects.nonNull(instructorEntry.getInstructorId())) {
+        if (existingInstructor != null && Objects.nonNull(instructorEntry.getInstructorId()) && instructorEntry.getInstructorId() > 0) {
             instructor.setId(instructorEntry.getInstructorId());
         }
         if (Objects.nonNull(instructorEntry.getName())) {
@@ -89,10 +92,12 @@ public class InstructorConvertor {
         if (Objects.nonNull(instructorEntry.getEmergencyContactNumber())) {
             instructor.setEmergencyContactNumber(instructorEntry.getEmergencyContactNumber());
         }
-        BranchManager branchManager = applicationContext.getBean(BranchManager.class);
-
-        BranchEntry branchEntry = branchManager.getById(instructorEntry.getBranchId());
-        instructor.setBranch(ConvertToEntryUtil.convertToEntity(branchEntry, null));
+        if (Objects.nonNull(instructorEntry.getBranchId())) {
+            BranchRepository branchRepository = applicationContext.getBean(BranchRepository.class);
+            Branch branch = branchRepository.findById(instructorEntry.getBranchId())
+                    .orElseThrow(() -> new EntityNotFoundException("Branch not found"));
+            instructor.setBranch(branch);
+        }
 
         return instructor;
     }

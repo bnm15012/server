@@ -53,6 +53,10 @@ public class BookingConvertor {
     public static Booking convertToEntity(BookingEntry bookingEntry, Booking existingBooking) throws Exception {
         Booking booking = (existingBooking != null) ? existingBooking : new Booking();
 
+        if (existingBooking != null && Objects.nonNull(bookingEntry.getId()) && bookingEntry.getId() > 0) {
+            booking.setId(bookingEntry.getId());
+        }
+
         if (Objects.nonNull(bookingEntry.getBranchId())) {
             BranchRepository branchRepository = applicationContext.getBean(BranchRepository.class);
             Branch branch = branchRepository.findById(bookingEntry.getBranchId())

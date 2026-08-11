@@ -86,11 +86,9 @@ public class PaymentConvertor {
     public static PaymentBooking convertToEntity(PaymentEntry paymentEntry, PaymentBooking existingBookingPayment) {
         PaymentBooking paymentBooking = (existingBookingPayment != null) ? existingBookingPayment
                 : new PaymentBooking();
-        paymentBooking.setBooking(new Booking() {
-            {
-                setId(paymentEntry.getPayeeId());
-            }
-        });
+        if (existingBookingPayment == null) {
+            paymentBooking.setId(null);
+        }
         if (Objects.nonNull(paymentEntry.getPayeeId())) {
             BookingRepository repository = applicationContext
                     .getBean(BookingRepository.class);
@@ -106,6 +104,9 @@ public class PaymentConvertor {
         PaymentStudentActivity studentActivityPayment = (existingStudentActivityPayment != null)
                 ? existingStudentActivityPayment
                 : new PaymentStudentActivity();
+        if (existingStudentActivityPayment == null) {
+            studentActivityPayment.setId(null);
+        }
         if (Objects.nonNull(paymentEntry.getActualAmount())) {
             studentActivityPayment.setActualAmount(paymentEntry.getActualAmount());
         }
@@ -121,8 +122,10 @@ public class PaymentConvertor {
 
     private static Payment convertToEntity(PaymentEntry paymentEntry, Payment existingPayment) {
         Payment payment = (existingPayment != null) ? existingPayment : new Payment();
-        if (Objects.nonNull(paymentEntry.getId())) {
+        if (existingPayment != null && Objects.nonNull(paymentEntry.getId()) && paymentEntry.getId() > 0) {
             payment.setId(Long.valueOf(paymentEntry.getId()));
+        } else if (existingPayment == null) {
+            payment.setId(null);
         }
         if (Objects.nonNull(paymentEntry.getBranchId())) {
             BranchRepository branchRepository = applicationContext.getBean(BranchRepository.class);

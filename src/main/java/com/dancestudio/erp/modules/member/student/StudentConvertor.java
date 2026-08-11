@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.dancestudio.erp.entity.Branch;
 import com.dancestudio.erp.entry.BranchEntry;
 import com.dancestudio.erp.enums.MemberType;
+import com.dancestudio.erp.exception.EntityNotFoundException;
 import com.dancestudio.erp.manager.BranchManager;
 import com.dancestudio.erp.modules.member.Member;
 import com.dancestudio.erp.modules.member.memberActiveStatus.MemberActiveStatusManager;
+import com.dancestudio.erp.repository.BranchRepository;
 import com.dancestudio.erp.util.ConvertToEntryUtil;
 import jakarta.annotation.PostConstruct;
 
@@ -60,7 +63,7 @@ public class StudentConvertor {
         // add identifier as STUDENT
         student.setMemberType(MemberType.STUDENT.name());
 
-        if (Objects.nonNull(studentEntry.getStudentId())) {
+        if (existingStudent != null && Objects.nonNull(studentEntry.getStudentId()) && studentEntry.getStudentId() > 0) {
             student.setId(studentEntry.getStudentId());
         }
         if (Objects.nonNull(studentEntry.getName())) {
@@ -88,10 +91,10 @@ public class StudentConvertor {
             student.setEmergencyContactNumber(studentEntry.getEmergencyContactNumber());
         }
         if (Objects.nonNull(studentEntry.getBranchId())) {
-            BranchManager branchManager = applicationContext
-                    .getBean(BranchManager.class);
-            BranchEntry entry = branchManager.getById(studentEntry.getBranchId());
-            student.setBranch(ConvertToEntryUtil.convertToEntity(entry, null));
+            BranchRepository branchRepository = applicationContext.getBean(BranchRepository.class);
+            Branch branch = branchRepository.findById(studentEntry.getBranchId())
+                    .orElseThrow(() -> new EntityNotFoundException("Branch not found"));
+            student.setBranch(branch);
         }
         if (Objects.nonNull(studentEntry.getIsActive())) {
             student.setIsActive(studentEntry.getIsActive());

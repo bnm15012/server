@@ -116,7 +116,8 @@ public class StudentActivityAssignmentConvertor {
                 ? existingStudentActivityAssignment
                 : new StudentActivityAssignment();
 
-        if (Objects.nonNull(studentActivityAssignmentEntry.getAssignmentId())) {
+        if (existingStudentActivityAssignment != null && Objects.nonNull(studentActivityAssignmentEntry.getAssignmentId())
+                && studentActivityAssignmentEntry.getAssignmentId() > 0) {
             studentActivityAssignment.setId(studentActivityAssignmentEntry.getAssignmentId());
         }
         if (Objects.nonNull(studentActivityAssignmentEntry.getRegistrationDate())) {

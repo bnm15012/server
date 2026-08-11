@@ -41,9 +41,8 @@ public class MemberActiveStatusUtil {
         MemberActiveStatusManager manager = getManager();
         Long memberId = member.getId();
 
-        try {
-            MemberActiveStatusEntry entry = manager.getById(memberId);
-
+        MemberActiveStatusEntry entry = manager.findByMemberId(memberId);
+        if (entry != null) {
             List<ActivePeriod> periods = new ArrayList<>(entry.getActivePeriods());
             periods.add(new ActivePeriod(start, end));
 
@@ -52,8 +51,7 @@ public class MemberActiveStatusUtil {
 
             entry.setActivePeriods(periods);
             manager.update(memberId, entry);
-
-        } catch (EntityNotFoundException ex) {
+        } else {
             List<ActivePeriod> periods = new ArrayList<>();
             periods.add(new ActivePeriod(start, end));
             periods = removeExpiredPeriods(periods);
