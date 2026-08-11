@@ -27,10 +27,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
                         AND (:activityName IS NULL OR :activityName = '' OR s.id IN (SELECT sa.student.id FROM StudentActivityAssignment sa WHERE sa.activityName = :activityName))
                         AND ( (:status IS NULL) OR (:status = 'ACTIVE' AND EXISTS (SELECT 1 FROM ActivePeriod ap WHERE ap.memberActiveStatus.id = s.id AND CURRENT_DATE >= ap.startDate AND (ap.endDate IS NULL OR CURRENT_DATE <= ap.endDate))) OR (:status = 'INACTIVE' AND NOT EXISTS (SELECT 1 FROM ActivePeriod ap WHERE ap.memberActiveStatus.id = s.id AND CURRENT_DATE >= ap.startDate AND (ap.endDate IS NULL OR CURRENT_DATE <= ap.endDate))) )
                         AND (:searchTerm IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(s.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%')))
+                        AND (:isActive IS NULL OR s.isActive = :isActive)
                         """)
-        Page<Member> findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(
+        Page<Member> findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTermAndIsActive(
                         @Param("branchId") Long branchId, @Param("activityName") String activityName,
-                        @Param("status") String status, Pageable pageable, @Param("searchTerm") String searchTerm);
+                        @Param("status") String status, Pageable pageable, @Param("searchTerm") String searchTerm,
+                        @Param("isActive") Boolean isActive);
 
         @Query("""
                         SELECT i FROM Member i

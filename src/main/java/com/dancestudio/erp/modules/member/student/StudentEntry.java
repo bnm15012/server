@@ -28,4 +28,6 @@ public class StudentEntry {
 
     // additional info
     private String additionalData;   
+
+    private Boolean isActive;
 }

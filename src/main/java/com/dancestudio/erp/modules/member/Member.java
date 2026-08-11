@@ -32,6 +32,9 @@ public class Member extends BaseEntity {
     @Column(name = "dob")
     private LocalDate dob;
 
+    @Column(name = "is_active", nullable = false, columnDefinition = "boolean DEFAULT true")
+    private Boolean isActive;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "gender")
     private GenderType gender;

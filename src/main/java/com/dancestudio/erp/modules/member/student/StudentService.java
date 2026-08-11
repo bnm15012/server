@@ -18,11 +18,11 @@ public class StudentService extends BaseService<StudentEntry, Long>{
 
     private StudentManager studentManager;
 
-    public ResponseEntity<StudentResponse> getAllStudents(Long branchId, String activityName, MembershipStatus membershipStatus, int page, int size, String searchTerm) {
+    public ResponseEntity<StudentResponse> getAllStudents(Long branchId, String activityName, MembershipStatus membershipStatus, int page, int size, String searchTerm, Boolean isActive) {
         StudentResponse response = new StudentResponse();
 
         try {
-            Page<StudentEntry> entries = studentManager.getAllStudentsByStudio(branchId, activityName, membershipStatus, --page, size, searchTerm);
+            Page<StudentEntry> entries = studentManager.getAllStudentsByStudio(branchId, activityName, membershipStatus, --page, size, searchTerm, isActive);
             response.setData(entries.getContent());
             response.setStatus(new StatusResponse(1, "Students retrieved successfully", StatusResponse.Type.SUCCESS, Objects.isNull(entries) ? 0 : (int) entries.getTotalElements()));
             return ResponseEntity.ok(response);

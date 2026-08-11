@@ -21,8 +21,9 @@ public class StudentController extends BaseController<StudentEntry, Long> {
             @RequestParam(required = false) MembershipStatus membershipStatus,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "-1") int size,
-            @RequestParam(required = false) String searchTerm) {
-        return studentService.getAllStudents(branchId, activityName, membershipStatus, page, size, searchTerm);
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false, defaultValue = "true") Boolean isActive) {
+        return studentService.getAllStudents(branchId, activityName, membershipStatus, page, size, searchTerm, isActive);
     }
 
     @GetMapping("/getAllStudentsForCommunication/{branchId}")

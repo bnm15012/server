@@ -109,13 +109,13 @@ public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
     }
 
     public Page<StudentEntry> getAllStudentsByStudio(Long branchId, String activityName,
-            MembershipStatus membershipStatus, int page, int size, String searchTerm) {
+            MembershipStatus membershipStatus, int page, int size, String searchTerm, Boolean isActive) {
 
         Pageable pageable = size == -1 ? Pageable.unpaged() : PageRequest.of(page, size);
         Page<Member> studentPage = memberRepository
-                .findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId,
-                        activityName, membershipStatus != null ? membershipStatus.name() : null, pageable,
-                        searchTerm);
+                .findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTermAndIsActive(
+                        branchId, activityName, membershipStatus != null ? membershipStatus.name() : null, pageable,
+                        searchTerm, isActive);
 
         if (membershipStatus == null) {
             return studentPage.map(StudentConvertor::convertToEntry);
@@ -134,8 +134,8 @@ public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
                     pageable);
         } else {
             studentPage = memberRepository
-                    .findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTerm(branchId, null,
-                            membershipStatus.name(), pageable, null);
+                    .findAllStudentsByBranchIdAndOptionalActivityIdAndOptionalStatusAndSearchTermAndIsActive(branchId,
+                            null, membershipStatus.name(), pageable, null, true);
         }
         return studentPage.map(this::convertToEntryComm);
     }

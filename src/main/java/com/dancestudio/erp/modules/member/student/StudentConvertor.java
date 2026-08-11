@@ -46,6 +46,7 @@ public class StudentConvertor {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        studentEntry.setIsActive(student.getIsActive());
         studentEntry.setAdditionalData(student.getEnrollmentData() != null
                 ? student.getEnrollmentData().getAdditionalData()
                 : null);
@@ -91,6 +92,11 @@ public class StudentConvertor {
                     .getBean(BranchManager.class);
             BranchEntry entry = branchManager.getById(studentEntry.getBranchId());
             student.setBranch(ConvertToEntryUtil.convertToEntity(entry, null));
+        }
+        if (Objects.nonNull(studentEntry.getIsActive())) {
+            student.setIsActive(studentEntry.getIsActive());
+        } else {
+            student.setIsActive(true);
         }
 
         String additionalData = studentEntry.getAdditionalData();
