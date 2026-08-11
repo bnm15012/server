@@ -63,6 +63,18 @@ public class MemberActiveStatusManager extends BaseManager<MemberActiveStatus, L
         return entry;
     }
 
+    public MemberActiveStatusEntry findByMemberId(Long memberId) {
+        return repository.findById(memberId)
+                .map(entity -> {
+                    try {
+                        return toEntry(entity, new String[] {});
+                    } catch (EntityNotFoundException e) {
+                        return null;
+                    }
+                })
+                .orElse(null);
+    }
+
     public MembershipStatus getMembershipStatus(Long memberId) {
         return repository.findById(memberId)
                 .map(status -> {

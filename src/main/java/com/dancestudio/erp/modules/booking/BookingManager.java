@@ -81,9 +81,7 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new EntityNotFoundException(
-                    ex.getMessage() != null ? "Failed to add payment details: " + ex.getMessage()
-                            : "Failed to add payment details");
+            throw ex;
         }
         return BookingConvertor.convertToEntry(booking);
     }

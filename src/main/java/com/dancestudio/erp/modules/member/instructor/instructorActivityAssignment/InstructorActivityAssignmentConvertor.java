@@ -58,9 +58,10 @@ public class InstructorActivityAssignmentConvertor {
                 ? existingInstructorActivityAssignment
                 : new InstructorActivityAssignment();
 
-        if (Objects.nonNull(instructorActivityAssignmentEntry.getAssignmentId())) {
+        if (existingInstructorActivityAssignment != null && Objects.nonNull(instructorActivityAssignmentEntry.getAssignmentId())
+                && instructorActivityAssignmentEntry.getAssignmentId() > 0) {
             instructorActivityAssignment.setId(instructorActivityAssignmentEntry.getAssignmentId());
-        }
+        } 
         if (Objects.nonNull(instructorActivityAssignmentEntry.getAssignedDate())) {
             instructorActivityAssignment.setAssignedDate(instructorActivityAssignmentEntry.getAssignedDate());
         }

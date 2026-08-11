@@ -22,6 +22,8 @@ import com.dancestudio.erp.modules.member.student.StudentActivityAssignment.Stud
 import com.dancestudio.erp.modules.payments.entity.Payment;
 import com.dancestudio.erp.modules.payments.entry.PaymentEntry;
 import com.dancestudio.erp.modules.studio.StudioConvertor;
+import com.dancestudio.erp.repository.BranchRepository;
+import com.dancestudio.erp.repository.StudioRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -133,19 +135,19 @@ public class ConvertToEntryUtil {
 
         if (Objects.nonNull(userEntry.getStudioEntry()) && Objects.nonNull(userEntry.getStudioEntry().getStudioId())) {
             Long studioId = userEntry.getStudioEntry().getStudioId();
-
-            StudioManagerImpl studioManagerImpl = applicationContext.getBean(StudioManagerImpl.class);
-            StudioEntry studioEntry = studioManagerImpl.getById(studioId);
-            user.setStudio(StudioConvertor.convertToEntity(studioEntry, null));
+            StudioRepository studioRepository = applicationContext.getBean(StudioRepository.class);
+            Studio studio = studioRepository.findById(studioId)
+                    .orElseThrow(() -> new EntityNotFoundException("Studio not found"));
+            user.setStudio(studio);
         }
 
         if (Objects.nonNull(userEntry.getStudioEntry())
                 && !CollectionUtils.isEmpty(userEntry.getStudioEntry().getBranchList())) {
             Long branchId = userEntry.getStudioEntry().getBranchList().get(0).getBranchId();
-
-            BranchManagerImpl branchManagerImpl = applicationContext.getBean(BranchManagerImpl.class);
-            BranchEntry branchEntry = branchManagerImpl.getById(branchId);
-            user.setBranch(convertToEntity(branchEntry, null));
+            BranchRepository branchRepository = applicationContext.getBean(BranchRepository.class);
+            Branch branch = branchRepository.findById(branchId)
+                    .orElseThrow(() -> new EntityNotFoundException("Branch not found"));
+            user.setBranch(branch);
         }
 
         if (Objects.nonNull(userEntry.getUserAccessEntry())) {
