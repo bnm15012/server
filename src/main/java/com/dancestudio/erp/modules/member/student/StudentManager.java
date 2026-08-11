@@ -31,6 +31,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.dancestudio.erp.modules.message_queue.MessageQueue;
+import com.dancestudio.erp.modules.message_queue.MessageQueueRepository;
+import com.dancestudio.erp.modules.message_queue.events.EmailQueuedEvent;
+import com.dancestudio.erp.repository.MessageRecipientRepository;
+import org.springframework.context.ApplicationEventPublisher;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,6 +67,12 @@ public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
     private StudentActivityAssignmentManager studentActivityAssignmentManager;
     @Autowired
     private WhatsappUtil whatsappUtil;
+    @Autowired
+    private MessageQueueRepository messageQueueRepository;
+    @Autowired
+    private MessageRecipientRepository messageRecipientRepository;
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     public StudentManager(MemberRepository memberRepository,
             StudentActivityAssignmentRepository studentActivityAssignmentRepository, EmailService emailService,
@@ -88,15 +100,23 @@ public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
         StudioEntry studioEntry = studioManager.getById(branchEntry.getStudioId());
 
         String updatedBody = formatEmailBody(studioEntry, templateEntry, member);
+        
         if (Objects.nonNull(studioEntry.getPasscode()) && Objects.nonNull(studioEntry.getEmail())) {
 
             Message message = messageRepository.save(new Message(member.getBranch(), false,
-                    templateEntry.getSubject(), templateEntry.getTemplateBody(),
+                    templateEntry.getSubject(), updatedBody,
                     NotificationType.EMAIL.name()));
-            MessageRecipient recepient = new MessageRecipient(message, member.getName(), member.getEmail(),
-                    MessageStatus.PENDING, null);
-            emailService.sendHighPriorityEmail(member.getEmail(), templateEntry.getSubject(), updatedBody,
-                    branchEntry.getStudioId(), null, null, recepient);
+            MessageRecipient recipient = messageRecipientRepository.save(new MessageRecipient(message, member.getName(), member.getEmail(),
+                    MessageStatus.PENDING, null));
+            MessageQueue messageQueue = new MessageQueue();
+            messageQueue.setMember(member);
+            messageQueue.setMessage(message);
+            messageQueue.setBranch(member.getBranch());
+            messageQueue.setStudio(member.getBranch().getStudio());
+            messageQueue.setNotificationType(NotificationType.EMAIL);
+            messageQueue.setRecipient(recipient);
+            messageQueueRepository.save(messageQueue);
+            publisher.publishEvent(new EmailQueuedEvent());
         }
 
         boolean msgSent = whatsappUtil.sendMessage(member.getPhone(), updatedBody, member.getBranch().getId(), null,
