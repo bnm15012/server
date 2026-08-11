@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dancestudio.erp.enums.PayeeType;
 import com.dancestudio.erp.enums.PaymentStatus;
@@ -29,6 +30,7 @@ import com.dancestudio.erp.modules.payments.repository.PaymentRepository;
 
 @Slf4j
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class PaymentManager {
 
     private final PaymentRepository paymentRepository;

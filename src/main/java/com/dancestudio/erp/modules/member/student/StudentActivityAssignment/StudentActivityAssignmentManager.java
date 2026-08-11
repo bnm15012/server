@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dancestudio.erp.base.BaseManager;
 import com.dancestudio.erp.entry.MonthlyReportEntry;
@@ -39,6 +40,7 @@ import lombok.SneakyThrows;
 
 @Service
 @Setter
+@Transactional(rollbackFor = Exception.class)
 public class StudentActivityAssignmentManager
         extends BaseManager<StudentActivityAssignment, Long, StudentActivityAssignmentEntry> {
 
@@ -85,6 +87,9 @@ public class StudentActivityAssignmentManager
         try {
             Long payeeId = studentStudentActivityAssignmentAssignment.getId();
             PaymentEntry paymentEntry = studentActivityAssignmentEntry.getPaymentEntry();
+            if (paymentEntry == null) {
+                throw new EntityNotFoundException("Payment details not provided");
+            }
             paymentEntry.setPayeeId(payeeId);
             paymentEntry.setPayeeType(PayeeType.STUDENT);
             paymentEntry = paymentManager.add(paymentEntry);
@@ -94,7 +99,9 @@ public class StudentActivityAssignmentManager
             return studentActivityAssignmentEntry;
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new EntityNotFoundException("Failed to add payment details");
+            throw new EntityNotFoundException(
+                    ex.getMessage() != null ? "Failed to add payment details: " + ex.getMessage()
+                            : "Failed to add payment details");
         }
     }
 
