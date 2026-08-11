@@ -27,9 +27,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Setter(onMethod = @__({ @Autowired }))
+@Transactional(rollbackFor = Exception.class)
 public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
 
     private final ClientRepository clientRepository;
@@ -58,7 +60,7 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
             throw new EntityNotFoundException("Branch not found");
         }
         if (!clientRepository.existsById(bookingEntry.getClientEntry().getClientId())) {
-            throw new EntityNotFoundException("Branch not found");
+            throw new EntityNotFoundException("Client not found");
         }
 
         Booking booking = BookingConvertor.convertToEntity(bookingEntry, null);
@@ -68,17 +70,20 @@ public class BookingManager extends BaseManager<Booking, Long, BookingEntry> {
         booking.setInvoiceToken(token);
         try {
             Long payeeId = booking.getId();
+            if (bookingEntry.getPaymentEntries() == null || bookingEntry.getPaymentEntries().isEmpty()) {
+                throw new EntityNotFoundException("Payment details not provided");
+            }
             for (PaymentEntry pe : bookingEntry.getPaymentEntries()) {
                 pe.setPayeeType(PayeeType.BOOKING);
                 pe.setPayeeId(payeeId);
                 PaymentEntry payment = paymentManager.add(pe);
                 booking.getPayments().add(PaymentConvertor.convertToEntity(payment, (PaymentBooking) null));
             }
-
-            
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new EntityNotFoundException("Failed to add payment details");
+            throw new EntityNotFoundException(
+                    ex.getMessage() != null ? "Failed to add payment details: " + ex.getMessage()
+                            : "Failed to add payment details");
         }
         return BookingConvertor.convertToEntry(booking);
     }

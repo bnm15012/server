@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dancestudio.erp.modules.message_queue.MessageQueue;
 import com.dancestudio.erp.modules.message_queue.MessageQueueRepository;
@@ -47,6 +48,7 @@ import static com.dancestudio.erp.constants.TemplateName.ADD_NEW_STUDENT_EMAIL;
 @Service
 @Slf4j
 @Setter
+@Transactional(rollbackFor = Exception.class)
 public class StudentManager extends BaseManager<Member, Long, StudentEntry> {
 
     private final EmailService emailService;

@@ -4,7 +4,9 @@ import com.dancestudio.erp.exception.EntityNotFoundException;
 
 import org.springframework.beans.BeansException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(rollbackFor = Exception.class)
 public abstract class BaseManager<Entity, ID, Entry> {
 
     private final JpaRepository<Entity, ID> repository;
