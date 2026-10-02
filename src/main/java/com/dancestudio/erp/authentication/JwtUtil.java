@@ -105,6 +105,21 @@ public class JwtUtil {
         }
     }
 
+    public Claims extractAllClaims(String token) throws JwtException {
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        if (claims.getExpiration().before(DateUtil.getCurrentDateUTC())) {
+            throw new JwtException("Token expired");
+        }
+
+        return claims;
+    }
+
     public Claims validateAndParseClaims(String token) throws JwtException {
         Claims claims = Jwts
                 .parserBuilder()

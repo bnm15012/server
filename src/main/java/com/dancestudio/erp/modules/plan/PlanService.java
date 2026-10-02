@@ -52,4 +52,20 @@ public class PlanService extends BaseService<PlanEntry, Long> {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    public ResponseEntity<BaseResponse<PlanEntry>> getPlansForStudio(Long studioId,
+            HttpServletRequest request, Boolean AMC) {
+        BaseResponse<PlanEntry> response = new BaseResponse<PlanEntry>();
+
+        try {
+            List<PlanEntry> entries = planManager.getPlansForStudio(studioId, request, AMC);
+            response.setData(entries);
+            response.setStatus(new StatusResponse(1, "Studio plans retrieved successfully",
+                    StatusResponse.Type.SUCCESS, (int) entries.size()));
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }
