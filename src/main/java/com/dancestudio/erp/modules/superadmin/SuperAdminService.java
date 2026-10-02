@@ -324,8 +324,8 @@ public class SuperAdminService {
                 if (subCal.get(Calendar.MONTH) == filterMonth && subCal.get(Calendar.YEAR) == filterYear) {
                     Map<String, Object> payment = new LinkedHashMap<>();
                     payment.put("subscriptionId", sub.getId());
-                    payment.put("studioName", sub.getStudio().getName());
-                    payment.put("studioId", sub.getStudio().getId());
+                    payment.put("studioName", sub.getStudio() != null ? sub.getStudio().getName() : "Unknown");
+                    payment.put("studioId", sub.getStudio() != null ? sub.getStudio().getId() : null);
                     payment.put("plan", sub.getSubscriptionPlan());
                     payment.put("amount", sub.getPrice());
                     payment.put("startDate", sub.getStartDate());
