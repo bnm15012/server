@@ -125,7 +125,9 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     @Override
     public SubscriptionEntry createOrder(SubscriptionEntry subscriptionEntry, String countryCode) {
         try {
-            PlanEntry planEntry = planManager.getPlansByMembershipTypeAndCountryCode(subscriptionEntry.getSubscriptionPlan().name(), countryCode);
+            PlanEntry planEntry = planManager.getStudioPlanByMembershipType(
+                    subscriptionEntry.getStudioId(),
+                    subscriptionEntry.getSubscriptionPlan().name(), countryCode);
 
             subscriptionEntry.setStatus(SubscriptionStatus.CREATED);
             JSONObject options = new JSONObject();

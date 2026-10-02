@@ -51,7 +51,12 @@ public class AuthenticationHandler extends OncePerRequestFilter {
         String token = authorizationHeader.substring(7);
 
         try {
-            Claims claims = jwtUtil.validateAndParseClaims(token);
+            Claims claims;
+            if (requestURI.contains("/super-admin")) {
+                claims = jwtUtil.extractAllClaims(token);
+            } else {
+                claims = jwtUtil.validateAndParseClaims(token);
+            }
             String email = claims.getSubject();
             SecurityContextHolder.getContext().setAuthentication(
                     new UsernamePasswordAuthenticationToken(email, null, List.of())

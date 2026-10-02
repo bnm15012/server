@@ -14,4 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByBranchId(Long branchId);
 
+    List<User> findByStudioId(Long studioId);
+
 }
