@@ -303,6 +303,7 @@ public class SuperAdminService {
         }
     }
 
+    @jakarta.transaction.Transactional
     public ResponseEntity<Map<String, Object>> getRevenueDetails(Integer month, Integer year) {
         try {
             Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
