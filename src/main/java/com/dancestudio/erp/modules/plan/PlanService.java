@@ -3,6 +3,7 @@ package com.dancestudio.erp.modules.plan;
 import com.dancestudio.erp.base.BaseResponse;
 import com.dancestudio.erp.base.BaseService;
 import com.dancestudio.erp.response.StatusResponse;
+import com.dancestudio.erp.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,7 @@ public class PlanService extends BaseService<PlanEntry, Long> {
         }
     }
 
-    public ResponseEntity<BaseResponse<PlanEntry>> getPlansForStudio(Long studioId,
-            HttpServletRequest request, Boolean AMC) {
+    public ResponseEntity<BaseResponse<PlanEntry>> getPlansForStudio(HttpServletRequest request, Boolean AMC, Long studioId) {
         BaseResponse<PlanEntry> response = new BaseResponse<PlanEntry>();
 
         try {
@@ -63,6 +63,9 @@ public class PlanService extends BaseService<PlanEntry, Long> {
             response.setStatus(new StatusResponse(1, "Studio plans retrieved successfully",
                     StatusResponse.Type.SUCCESS, (int) entries.size()));
             return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (UnauthorizedException e) {
+            response.setStatus(new StatusResponse(0, e.getMessage(), StatusResponse.Type.ERROR, 0));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (Exception e) {
             response.setStatus(new StatusResponse(0, StatusResponse.Type.ERROR, 0));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

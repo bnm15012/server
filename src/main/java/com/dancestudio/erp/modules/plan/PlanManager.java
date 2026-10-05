@@ -10,6 +10,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,7 +60,7 @@ public class PlanManager extends BaseManager<Plan, Long, PlanEntry> {
         String countryCode = geoLocationUtil.getCountryCode(ip);
 
         List<Plan> plans = planRepository.findPlansByCountryCodeAndAmcFlag(countryCode, AMC);
-        List<StudioPlan> studioPlans = studioPlanRepository.findByStudioId(studioId);
+        List<StudioPlan> studioPlans = studioId != null ? studioPlanRepository.findByStudioId(studioId) : Collections.emptyList();
 
         List<PlanEntry> planEntries = new ArrayList<>();
         for (Plan plan : plans) {

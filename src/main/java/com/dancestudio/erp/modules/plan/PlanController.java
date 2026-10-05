@@ -23,9 +23,9 @@ public class PlanController extends BaseController<PlanEntry, Long> {
 
     @GetMapping("/getByStudio")
     public ResponseEntity<BaseResponse<PlanEntry>> getPlansForStudio(HttpServletRequest request,
-            @RequestParam Long studioId,
-            @RequestParam(defaultValue = "false") Boolean AMC) {
-        return planService.getPlansForStudio(studioId, request, AMC);
+            @RequestParam(defaultValue = "false") Boolean AMC,
+            @RequestParam Long studioId) {
+        return planService.getPlansForStudio(request, AMC, studioId);
     }
 
     @Override

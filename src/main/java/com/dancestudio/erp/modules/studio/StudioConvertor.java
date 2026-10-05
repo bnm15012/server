@@ -59,7 +59,7 @@ public class StudioConvertor {
                 request.setConfigrationEntryList(configurationMap);
                 studioEntry.setConfiguration(request);
             } catch (Exception e) {
-                throw new RuntimeException("Error parsing configuration settings JSON ", e);
+                // throw new RuntimeException("Error parsing configuration settings JSON ", e);
             }
         }
 
