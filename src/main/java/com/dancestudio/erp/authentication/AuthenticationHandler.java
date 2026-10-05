@@ -52,7 +52,7 @@ public class AuthenticationHandler extends OncePerRequestFilter {
 
         try {
             Claims claims;
-            if (requestURI.contains("/super-admin")) {
+            if (requestURI.contains("/super-admin") || requestURI.contains("/plans")) {
                 claims = jwtUtil.extractAllClaims(token);
             } else {
                 claims = jwtUtil.validateAndParseClaims(token);

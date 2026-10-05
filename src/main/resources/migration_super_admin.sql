@@ -10,7 +10,7 @@ WHERE NOT EXISTS (SELECT 1 FROM studio WHERE name = 'BookAndManage');
 INSERT INTO branch (name, studio_id, address, city, state, pincode, phone, 
                     is_active, whatsapp_status, created_on, last_modified_on, created_by)
 SELECT 'Platform', s.id, '', '', '', '', '', 
-       true, 'DISABLED', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'system'
+       true, 'INACTIVE', UTC_TIMESTAMP(), UTC_TIMESTAMP(), 'system'
 FROM studio s
 WHERE s.name = 'BookAndManage'
 AND NOT EXISTS (
